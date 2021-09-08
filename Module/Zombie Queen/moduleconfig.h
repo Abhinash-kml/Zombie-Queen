@@ -10,7 +10,7 @@
 #define MODULE_AUTHOR "Abhinash"
 #define MODULE_URL "Discord: EYE | NeO#1275"
 #define MODULE_LOGTAG "ZOMBIE QUEEN"
-#define MODULE_LIBRARY "zombie_queen"
+#define MODULE_LIBRARY "ZombieQueen"
 #define MODULE_LIBCLASS ""
 // If you want the module not to be reloaded on mapchange, remove / comment out the next line
 #define MODULE_RELOAD_ON_MAPCHANGE
