@@ -1,10 +1,10 @@
-PROJECT = zombie_plague_amxx_i386.so
+PROJECT = zombie_queen_amxx_i386.so
 
 INCLUDE = -I. \
 	-IHLSDK -IMETAMOD
 
 OBJECTS = amxxmodule.cpp \
-	Zombie_Plague.cpp
+	ZombieQueen.cpp
 
 FLAGS = -DNDEBUG -O2 -funroll-loops -fomit-frame-pointer -pipe \
     -fvisibility=hidden -fvisibility-inlines-hidden -DLINUX \
