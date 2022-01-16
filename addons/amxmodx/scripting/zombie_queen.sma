@@ -2654,14 +2654,8 @@ public Save_MySql(id)
 public Sql_Rank(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
 	new id, rank, Float:var1, g_menu, menudata[256]
-	static cRank[15], cKills[15], cDeaths[15], cScore[15], cTotalPlayers[15]
     rank = SQL_NumResults(Query)
    	id = Data[0]
-   	AddCommas(rank, cRank, charsmax(cRank))
-	AddCommas(g_kills[id], cKills, charsmax(cKills))
-	AddCommas(g_deaths[id], cDeaths, charsmax(cDeaths))
-	AddCommas(g_score[id], cScore, charsmax(cScore))
-	AddCommas(g_totalplayers, cTotalPlayers, charsmax(cTotalPlayers))
    
 	if (g_deaths[id])
 	{
@@ -2672,18 +2666,18 @@ public Sql_Rank(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 		var1 = float(g_kills[id]);
 	}
 
-	g_menu = menu_create("Ranking", "EmptyPanel", 0);
-	formatex(menudata, 255, "Rank: %s out of %s  Score: %s", cRank, cTotalPlayers, cScore);
-	menu_additem(g_menu, menudata, "1", 0, -1);
-	formatex(menudata, 255, "Kills: %s  Deaths: %s  KPD: %0.2f", cKills, cDeaths, var1);
-	menu_additem(g_menu, menudata, "2", 0, -1);
-	formatex(menudata, 255, "Status: %s", g_bVip[id] ? "Gold Member ®" : "Player" );
-	menu_additem(g_menu, menudata, "3", 0, -1);
-	menu_setprop(g_menu, 6, -1);
-	menu_display(id, g_menu, 0);
+	g_menu = menu_create("Ranking", "EmptyPanel", 0)
+	formatex(menudata, 255, "Rank: %s out of %s  Score: %s", AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]))
+	menu_additem(g_menu, menudata, "1", 0, -1)
+	formatex(menudata, 255, "Kills: %s  Deaths: %s  KPD: %0.2f", AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
+	menu_additem(g_menu, menudata, "2", 0, -1)
+	formatex(menudata, 255, "Status: %s", g_bVip[id] ? "Gold Member ®" : "Player")
+	menu_additem(g_menu, menudata, "3", 0, -1)
+	menu_setprop(g_menu, 6, -1)
+	menu_display(id, g_menu, 0)
 
 
-	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is^4 %s^1 out of^4 %s^1 -- ^3KILLS: ^4%s ^3DEATHS: ^4%s ^3KPD: ^4%0.2f", CHAT_PREFIX, g_playername[id], cRank, cTotalPlayers, cKills, cDeaths, var1)
+	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is^4 %s^1 out of^4 %s^1 -- ^3KILLS: ^4%s ^3DEATHS: ^4%s ^3KPD: ^4%0.2f", CHAT_PREFIX, g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
     
     return PLUGIN_HANDLED
 } 
@@ -2691,22 +2685,16 @@ public Sql_Rank(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 public Sql_WelcomeRank(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
 	new id, rank, Float:var1
-	static cRank[15], cKills[15], cDeaths[15], cScore[15], cTotalPlayers[15]
     rank = SQL_NumResults(Query)
    	id = Data[0]
-   	AddCommas(rank, cRank, charsmax(cRank))
-	AddCommas(g_kills[id], cKills, charsmax(cKills))
-	AddCommas(g_deaths[id], cDeaths, charsmax(cDeaths))
-	AddCommas(g_score[id], cScore, charsmax(cScore))
-	AddCommas(g_totalplayers, cTotalPlayers, charsmax(cTotalPlayers))
-   
+
 	if (g_deaths[id])
 	{
-		var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]));
+		var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]))
 	}
 	else
 	{
-		var1 = float(g_kills[id]);
+		var1 = float(g_kills[id])
 	}
 
 	new HostName[64]
@@ -2714,7 +2702,7 @@ public Sql_WelcomeRank(FailState, Handle:Query, Error[], Errcode, Data[], DataSi
 
 	set_dhudmessage(0, 255, 0, 0.02, 0.2, 2, 6.0, 8.0)
 	show_dhudmessage(id, "Welcome, %s^nRank: %s of %s Score: %s^nKills: %s Deaths: %s KPD: %0.2f^nEnjoy!",
-	g_playername[id], cRank, cTotalPlayers, cScore, cKills, cDeaths, var1)
+	g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
 	
 	
 	set_dhudmessage(157, 103, 200, 0.02, 0.5, 2, 6.0, 8.0)
@@ -2725,7 +2713,7 @@ public Sql_WelcomeRank(FailState, Handle:Query, Error[], Errcode, Data[], DataSi
 
 public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 {
-	static id, Buffer[4096], Place, PlaceString[16], Name[32], Score, ScoreString[16], Kills, KillsString[16], Deaths, DeathsString[16], Points, PointsString[16], Len
+	static id, Buffer[4096], Place, Name[32], Score, Kills, Deaths, Points, Len
 
 	Buffer[0] = '^0';
 
@@ -2735,40 +2723,35 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 
 	if (is_user_connected(id))
 	{
-		formatex(Buffer, charsmax(Buffer), "<meta charset=utf-8><style>body{background:#112233;font-family:Arial}th{background:#2E2E2E;color:#FFF;padding:5px 2px;text-align:left}td{padding:5px 2px}table{width:100%%;background:#EEEECC;font-size:12px;}h2{color:#FFF;font-family:Verdana;text-align:center}#nr{text-align:center}#c{background:#E2E2BC}</style><h2>%s</h2><table border=^"0^" align=^"center^" cellpadding=^"0^" cellspacing=^"1^"><tbody>", "TOP 15");
-		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>Name<th>Kills<th>Deaths<th>Points<th>Score");
+		formatex(Buffer, charsmax(Buffer), "<meta charset=utf-8><style>body{background:#112233;font-family:Arial}th{background:#2E2E2E;color:#FFF;padding:5px 2px;text-align:left}td{padding:5px 2px}table{width:100%%;background:#EEEECC;font-size:12px;}h2{color:#FFF;font-family:Verdana;text-align:center}#nr{text-align:center}#c{background:#E2E2BC}</style><h2>%s</h2><table border=^"0^" align=^"center^" cellpadding=^"0^" cellspacing=^"1^"><tbody>", "TOP 15")
+		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>Name<th>Kills<th>Deaths<th>Points<th>Score")
 
 		while (SQL_MoreResults(Query))
 		{
-			SQL_ReadResult(Query, 0, Name, sizeof(Name) - 1);
+			SQL_ReadResult(Query, 0, Name, sizeof(Name) - 1)
 
-			Points = SQL_ReadResult(Query, 1);
-			Kills = SQL_ReadResult(Query, 2);
-			Deaths = SQL_ReadResult(Query, 3);
-			Score = SQL_ReadResult(Query, 4);
+			Points = SQL_ReadResult(Query, 1)
+			Kills = SQL_ReadResult(Query, 2)
+			Deaths = SQL_ReadResult(Query, 3)
+			Score = SQL_ReadResult(Query, 4)
 			
-			AddCommas(Score, ScoreString, sizeof(ScoreString) - 1);
-			AddCommas(Kills, KillsString, sizeof(KillsString) - 1);
-			AddCommas(Deaths, DeathsString, sizeof(DeathsString) - 1);
-			AddCommas(Points, PointsString, sizeof(PointsString) - 1);
+			++Place
 
-			formatex(PlaceString, sizeof(PlaceString) - 1, "%d.", ++Place);
+			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%s<td>%s<td>%s<td>%s<td>%s<td>%s", Place % 2 == 0 ? "" : " id=c", AddCommas(Place), Name, AddCommas(Kills), AddCommas(Deaths), AddCommas(Points), AddCommas(Score))
 
-			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%s<td>%s<td>%s<td>%s<td>%s<td>%s", Place % 2 == 0 ? "" : " id=c", PlaceString, Name, KillsString, DeathsString, PointsString, ScoreString);
-
-			SQL_NextRow(Query);
+			SQL_NextRow(Query)
 		}
 
-		new ServerName[64];
-		get_cvar_string("hostname", ServerName, charsmax(ServerName));
+		new ServerName[64]
+		get_cvar_string("hostname", ServerName, charsmax(ServerName))
 		
-		formatex(Buffer[Len], charsmax(Buffer), "<tr><th colspan=^"7^" id=nr>%s", ServerName);	
-		add(Buffer, charsmax(Buffer), "</tbody></table></body>");
+		formatex(Buffer[Len], charsmax(Buffer), "<tr><th colspan=^"7^" id=nr>%s", ServerName)
+		add(Buffer, charsmax(Buffer), "</tbody></table></body>")
 		
-		show_motd(id, Buffer, "Top Players");
+		show_motd(id, Buffer, "Top Players")
 	}
 
-	SQL_FreeHandle(Query);
+	SQL_FreeHandle(Query)
 }
 
 public init_welcome(id)
@@ -3005,15 +2988,13 @@ public Advertise_HUD()
 
 public TaskReminder()
 {
-	static cHealth[15]
 	static id
 	id = 1
 	while (g_maxplayers + 1 > id)
 	{
 		if (g_isalive[id] && g_specialclass[id])
 		{
-			AddCommas(pev(id, pev_health), cHealth, 14)
-			client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_cClass[id], cHealth)
+			client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_cClass[id], AddCommas(pev(id, pev_health)))
 		}
 		id += 1
 	}
@@ -3989,13 +3970,12 @@ public _ZombieClasses(id, menu, item)
 		static iChoice
 		static iDummy
 		static cBuffer[15]
-		static cHealth[32]
+
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
 		g_zombieclassnext[id] = iChoice
-		AddCommas(g_cZombieClasses[iChoice][Health], cHealth, 14)
 		client_print_color(id, print_team_grey, "%s You will be^4 %s^1 after the next infection!", CHAT_PREFIX, g_cZombieClasses[iChoice][ZombieName])
-		client_print_color(id, print_team_grey, "%s Health:^4 %s^1 | Speed:^4 %0.0f^1 | Gravity:^4 %0.0f^1 | Knockback:^4 %0.0f%", CHAT_PREFIX, cHealth, g_cZombieClasses[iChoice][Speed], floatmul(100.0, g_cZombieClasses[iChoice][Gravity]), floatmul(100.0, g_cZombieClasses[iChoice][Knockback]))
+		client_print_color(id, print_team_grey, "%s Health:^4 %s^1 | Speed:^4 %0.0f^1 | Gravity:^4 %0.0f^1 | Knockback:^4 %0.0f%", CHAT_PREFIX, AddCommas(g_cZombieClasses[iChoice][Health]), g_cZombieClasses[iChoice][Speed], floatmul(100.0, g_cZombieClasses[iChoice][Gravity]), floatmul(100.0, g_cZombieClasses[iChoice][Knockback]))
 	}
 	return PLUGIN_CONTINUE
 }
@@ -4789,23 +4769,18 @@ public logevent_round_end()
 	}
 	if (g_isconnected[iKillsLeader])
 	{
-		static a[15];
-		AddCommas(iMaximumKills, a, 14);
 		if (g_iKillsThisRound[iKillsLeader])
 		{
-			client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playername[iKillsLeader], a, g_iKillsThisRound[iKillsLeader]);
+			client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playername[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader]);
 		}
 		else
 		{
-			client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags!", g_playername[iKillsLeader], a);
+			client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags!", g_playername[iKillsLeader], AddCommas(iMaximumKills))
 		}
 	}
 	if (g_isconnected[iPacksLeader])
 	{
-		static a[15];
-		AddCommas(iMaximumPacks, a, 14);
-		
-		client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 packs!", g_playername[iPacksLeader], a);
+		client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 packs!", g_playername[iPacksLeader], AddCommas(iMaximumPacks))
 	}
 	
 	// Game commencing triggers round end
@@ -4855,10 +4830,7 @@ public event_show_status(id)
 		// Only show friends status ?
 		if (g_zombie[id] == g_zombie[aimid])
 		{
-			static dHealth[32], Packs[32], Points[32], red, green, blue 
-			AddCommas(pev(aimid, pev_health), dHealth, 31)
-			AddCommas(g_ammopacks[aimid], Packs, 31)
-			AddCommas(g_points[aimid], Points, 31)
+			static red, green, blue 
 			
 			// Format the class name according to the player's team
 			if (g_zombie[id])
@@ -4870,7 +4842,7 @@ public event_show_status(id)
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Points: %s ]", \
-				g_playername[aimid], g_cClass[aimid], dHealth, Packs, Points)
+				g_playername[aimid], g_cClass[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(g_points[aimid]))
 			}
 			else
 			{
@@ -4880,32 +4852,26 @@ public event_show_status(id)
 
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Points: %s | Armor: %d ]", \
-				g_playername[aimid], g_cClass[aimid], dHealth, Packs, Points, pev(aimid, pev_armorvalue))
+				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Armor: %d | Points: %s ]", \
+				g_playername[aimid], g_cClass[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(g_points[aimid]))
 			}
 		}
 		else if (!g_zombie[id] && g_zombie[aimid])
 		{
-			static eHealth[32]
-			AddCommas(pev(aimid, pev_health), eHealth, 31)
-			
 			set_hudmessage(255, 50, 0, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-			ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], eHealth)
+			ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)))
 		}
 		else if (g_zombie[id] && !g_zombie[aimid])
 		{
-			static fHealth[32]
-			AddCommas(pev(aimid, pev_health), fHealth, 31)
-			
 			if(g_sniper[aimid] || g_survivor[aimid] || g_samurai[aimid])
 			{
 				set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], fHealth)
+				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)))
 			}
 			else
 			{
 				set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s | Armor: %d ]", g_playername[aimid], fHealth, pev(aimid, pev_armorvalue))
+				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s | Armor: %d ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)), pev(aimid, pev_armorvalue))
 			}
 		}
 	}
@@ -5380,9 +5346,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 				iPosition[attacker] = 0
 			}
 			set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
-			static damage_num[15]
-			AddCommas(floatround(damage), damage_num, charsmax(damage_num))
-			show_hudmessage(attacker, "%s", damage_num)
+			show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))
 		}
 		
 		return HAM_IGNORED
@@ -6321,28 +6285,19 @@ public Rocket_Touch(attacker, iRocket)
 						if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim])
 						{
 							ExecuteHamB(Ham_TakeDamage, victim, iRocket, attacker, fDamage, DMG_BLAST)
-
-							static damage_num[15]
-							AddCommas(floatround(fDamage), damage_num, charsmax(damage_num))
-							client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], damage_num)
+							client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(fDamage)))
 						}
 						else
 						{
 							if (g_survivor[attacker] || g_sniper[attacker] || g_samurai[attacker])
 							{
 								ExecuteHamB(Ham_TakeDamage, victim, iRocket, attacker, fDamage, DMG_BLAST)
-
-								static damage_num[15]
-								AddCommas(floatround(fDamage), damage_num, charsmax(damage_num))
-								client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], damage_num)
+								client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(fDamage)))
 							}
 							else
 							{
 								ExecuteHamB(Ham_TakeDamage, victim, iRocket, attacker, fDamage, DMG_BLAST)
-
-								static damage_num[15]
-								AddCommas(floatround(floatmul(fDamage, 0.75)), damage_num, charsmax(damage_num))
-								client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], damage_num)
+								client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(fDamage)))
 							}
 						}
 
@@ -7207,10 +7162,10 @@ public Client_Say(id)
 			client_print_color(id, print_team_grey,  "%s You cannot send packs to yourself!", CHAT_PREFIX)
 			return PLUGIN_CONTINUE
 		}
-		AddCommas(ammo, cDummy, 14)
+		
 		g_ammopacks[target] += ammo
 		g_ammopacks[id] -= ammo
-		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], cDummy, g_playername[target])
+		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], AddCommas(ammo), g_playername[target])
 		return PLUGIN_CONTINUE
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
@@ -7387,10 +7342,10 @@ public Client_SayTeam(id)
 			client_print_color(id, print_team_grey,  "%s You cannot send packs to yourself!", CHAT_PREFIX)
 			return PLUGIN_CONTINUE
 		}
-		AddCommas(ammo, cDummy, 14)
+		
 		g_ammopacks[target] += ammo
 		g_ammopacks[id] -= ammo
-		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], cDummy, g_playername[target])
+		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], AddCommas(ammo), g_playername[target])
 		return PLUGIN_CONTINUE
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
@@ -10453,9 +10408,7 @@ public cmd_points(id)
 			g_points[target] += points
 			Save_MySql(target)
 			
-			new str[32]
-			AddCommas(points, str, 31)
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playername[id], str, g_playername[target])
+			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playername[id], AddCommas(points), g_playername[target])
 			return PLUGIN_HANDLED
 		}
 	}
@@ -13306,28 +13259,19 @@ public explosion_explode(ent)
 				if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim])
 				{
 					ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-
-					static damage_num[15]
-					AddCommas(floatround(damage), damage_num, charsmax(damage_num))
-					client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], damage_num)
+					client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
 				}
 				else
 				{
 					if (g_survivor[attacker] || g_sniper[attacker] || g_samurai[attacker])
 					{
 						ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-
-						static damage_num[15]
-						AddCommas(floatround(damage), damage_num, charsmax(damage_num))
-						client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], damage_num)
+						client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
 					}
 					else
 					{
 						ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-
-						static damage_num[15]
-						AddCommas(floatround(floatmul(damage, 0.75)), damage_num, charsmax(damage_num))
-						client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], damage_num)
+						client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
 					}
 				}
 			}
@@ -13870,7 +13814,7 @@ public ShowHUD(taskid)
 	}
 	
 	// Format classname
-	static message[128], health[32], armor[32], packs[32], points[32], red, green, blue
+	static message[128], red, green, blue
 	
 	if (g_zombie[id]) // zombies
 	{
@@ -13878,11 +13822,7 @@ public ShowHUD(taskid)
 		green = 50
 		blue  = 0
 		
-		AddCommas(pev(ID_SHOWHUD, pev_health), health, 31)
-		AddCommas(g_ammopacks[ID_SHOWHUD], packs, 31)
-		AddCommas(g_points[ID_SHOWHUD], points, 31)
-		
-		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], health, packs, points)
+		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
 	}	
 	else // humans
 	{
@@ -13890,26 +13830,15 @@ public ShowHUD(taskid)
 		green = 180
 		blue  = 150
 		
-		AddCommas(pev(ID_SHOWHUD, pev_health), health, 31)
-		AddCommas(g_ammopacks[ID_SHOWHUD], packs, 31)
-		AddCommas(g_points[ID_SHOWHUD], points, 31)
-		AddCommas(pev(ID_SHOWHUD, pev_armorvalue), armor, 31)
-		
-		formatex(message, charsmax(message), "%s - Health: %s - Armor: %s - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], health, armor, packs, points)
+		formatex(message, charsmax(message), "%s - Health: %s - Armor: %d - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), pev(ID_SHOWHUD, pev_armorvalue), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
 	}
 	
 	// Spectating someone else?
 	if (id != ID_SHOWHUD)
 	{
-		AddCommas(pev(id, pev_health), health, 31)
-		AddCommas(g_ammopacks[id], packs, 31)
-		AddCommas(g_points[id], points, 31)
-		AddCommas(pev(id, pev_armorvalue), armor, 31)
-		
-
 		set_hudmessage(10, 180, 150, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
-		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %s - Packs: %s - Points: %s^nFrom: %s, %s", \
-		g_bVip[id] ? "(Gold Member ®)" : "", g_playername[id], g_cClass[id], health, armor, packs, points, g_playercountry[id], g_playercity[id])
+		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
+		g_bVip[id] ? "(Gold Member ®)" : "", g_playername[id], g_cClass[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
 	}
 	else
 	{
@@ -15878,36 +15807,23 @@ stock get_user_model(player, model[], len)
 }*/
 
 // Add Commas in number function - added by Abhinash
-public AddCommas(iNumber, szOutput[], iLength)
-{
-	new szTmp[15], iOutputPos, iNumberPos, iNumberLength
-	
-	if (iNumber < 0)
+public AddCommas(number) 
+{ 
+	new count, i, str[29], str2[35], len
+	num_to_str(number, str, charsmax(str))
+	len = strlen(str)
+
+	for(i = 0; i < len; i++) 
 	{
-		szOutput[iOutputPos++] = '-'
-		iNumber = abs(iNumber)
-	}
-	
-	iNumberLength = num_to_str(iNumber, szTmp, charsmax(szTmp ))
-	
-	if (iNumberLength <= 3)
-	{
-		iOutputPos += copy(szOutput[iOutputPos], iLength, szTmp)
-	}
-	else
-	{
-		while ((iNumberPos < iNumberLength) && (iOutputPos < iLength)) 
+		if(i != 0 && ((len - i) %3 == 0)) 
 		{
-			szOutput[iOutputPos++] = szTmp[iNumberPos++]
-			
-			if((iNumberLength - iNumberPos) && !((iNumberLength - iNumberPos)%3)) 
-			szOutput[iOutputPos++ ] = ','
+			add(str2, charsmax(str2), ",", 1)
+			count++
+			add(str2[i+count], 1, str[i], 1)
 		}
-		
-		szOutput[iOutputPos] = EOS
+		else add(str2[i+count], 1, str[i], 1)
 	}
-	
-	return iOutputPos
+	return str2;
 }
 
 public CreateBot(const iBotName[])
