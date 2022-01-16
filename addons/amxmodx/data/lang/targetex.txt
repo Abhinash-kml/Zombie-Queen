@@ -1,0 +1,62 @@
+[en] -- OciXCrom
+TARGETEX_NO_GROUPS = This command cannot be used on groups of players.
+TARGETEX_NO_BOTS = This command cannot be used on bots.
+TARGETEX_NO_ALIVE = Alive players cannot be targeted with this command.
+TARGETEX_NO_DEAD = Dead players cannot be targeted with this command.
+TARGETEX_NO_MATCHES = No players were found matching your criteria.
+TARGETEX_NO_EXCLUDE = You cannot exclude yourself when using @%s
+TARGETEX_EXCEPT_HIMSELF = except him
+TARGETEX_ARG_ALL = all players
+TARGETEX_ARG_ALL_TEAM = all players in team %s
+TARGETEX_ARG_ALIVE = alive players
+TARGETEX_ARG_ALIVE_TEAM = alive players in team %s
+TARGETEX_ARG_BOTS = all bots
+TARGETEX_ARG_BOTS_TEAM = all bots in team %s
+TARGETEX_ARG_DEAD = dead players
+TARGETEX_ARG_DEAD_TEAM = dead players in team %s
+TARGETEX_ARG_HUMANS = all humans
+TARGETEX_ARG_HUMANS_TEAM = all humans in team %s
+TARGETEX_ARG_VIEW = all players in his view
+TARGETEX_ARG_VIEW_TEAM = all %s players in his view
+
+[mk] -- OciXCrom
+TARGETEX_NO_GROUPS = Ovaa komanda ne mozhe da se koristi na grupi od igrachi.
+TARGETEX_NO_BOTS = Ovaa komanda ne mozhe da se koristi na botovi.
+TARGETEX_NO_ALIVE = Zhivi igrachi ne mozhat da bidat targetirani so ovaa komanda.
+TARGETEX_NO_DEAD = Mrtvi igrachi ne mozhat da bidat targetirani so ovaa komanda.
+TARGETEX_NO_MATCHES = Ne bea pronajdeni igrachi koi odgovaraat na postaveniot kriterium.
+TARGETEX_NO_EXCLUDE = Ne mozhesh da se iskluchish sebesi pri koristenje na @%s
+TARGETEX_EXCEPT_HIMSELF = osven nego
+TARGETEX_ARG_ALL = site igrachi
+TARGETEX_ARG_ALL_TEAM = site igrachi vo tim %s
+TARGETEX_ARG_ALIVE = zhivi igrachi
+TARGETEX_ARG_ALIVE_TEAM = zhivi igrachi vo tim %s
+TARGETEX_ARG_BOTS = site botovi
+TARGETEX_ARG_BOTS_TEAM = site botovi vo tim %s
+TARGETEX_ARG_DEAD = mrtvi igrachi
+TARGETEX_ARG_DEAD_TEAM = mrtvi igrachi vo tim %s
+TARGETEX_ARG_HUMANS = site lugje
+TARGETEX_ARG_HUMANS_TEAM = site lugje vo tim %s
+TARGETEX_ARG_VIEW = site igrachi vo negov vidik
+TARGETEX_ARG_VIEW_TEAM = site %s igrachi vo negov vidik
+
+[bg] -- OciXCrom
+TARGETEX_NO_GROUPS = Tazi komanda ne moje da se polzva vurhu grupi.
+TARGETEX_NO_BOTS = Tazi komanda ne moje da se polzva vurhu botove.
+TARGETEX_NO_ALIVE = Tazi komanda ne moje da se polzva vurhu jivi igrachi.
+TARGETEX_NO_DEAD = Tazi komanda ne moje da se polzva vurhu murtvi igrachi.
+TARGETEX_NO_MATCHES = Ne bqha otkriti igrachi koito otgovarqt na dadenite kriterii.
+TARGETEX_NO_EXCLUDE = Ne mojesh da izkluchish sebe si pri polzvane na @%s
+TARGETEX_EXCEPT_HIMSELF = osven nego
+TARGETEX_ARG_ALL = vsichki igrachi
+TARGETEX_ARG_ALL_TEAM = vsichki igrachi v otbora %s
+TARGETEX_ARG_ALIVE = jivi igrachi
+TARGETEX_ARG_ALIVE_TEAM = jivi igrachi v otbora %s
+TARGETEX_ARG_BOTS = vsichki botove
+TARGETEX_ARG_BOTS_TEAM = vsichki botove v otbora %s
+TARGETEX_ARG_DEAD = murtvi igrachi
+TARGETEX_ARG_DEAD_TEAM = murtvi igrachi v otbora %s
+TARGETEX_ARG_HUMANS = vsichki hora
+TARGETEX_ARG_HUMANS_TEAM = vsichki hora v otbora %s
+TARGETEX_ARG_VIEW = vsichki igrachi na negoviq ekran
+TARGETEX_ARG_VIEW_TEAM = vsichki %s igrachi na negoviq ekran

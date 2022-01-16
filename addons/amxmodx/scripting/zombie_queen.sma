@@ -12,6 +12,7 @@
 #include <	 screenfade   >
 #include <      xs        >
 #include <     geoip      >
+#include <    targetex     >
 #include <		sqlx	  >
 
 // Jetapck
@@ -145,19 +146,17 @@ new g_groupNames[MAX_GROUPS][] =
 
 new g_groupFlags[MAX_GROUPS][] = 
 {
-	"ab",
-	"cd",
-	"ef",
-	"gh",
-	"ij",
-	"kl",
-	"mn",
-	"op",
-	"qr",
+	"abcdefghijkl#$!mnopqrstuvwxyz",
+	"abcdefghijkl#$%mnopqrstuvwxyz",
+	"abcdefghijkl#$&mnopqrstuvwxyz",
+	"defghijklmnopqrstuvwxyz",
+	"fghijklmnopqrstuvwxyz",
+	"ghijklmnopqrstuvwxyz",
+	"ghijklmqrstuvwxyz",
+	"ghijklmyz",
+	"ghijklyz",
 	"st"
 }
-
-new g_groupFlagsValue[MAX_GROUPS]
 
 // Old connection queue
 #define OLD_CONNECTION_QUEUE 10
@@ -2522,12 +2521,6 @@ public plugin_init()
 	if (ArraySize(g_Messages))
 	{
 		set_task(15.0, "Advertise_HUD", .flags = "b")
-	}
-
-	//For amx_who
-	for(new i = 0; i < MAX_GROUPS; i++) 
-	{
-		g_groupFlagsValue[i] = read_flags(g_groupFlags[i])
 	}
 
 	//register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
@@ -8599,21 +8592,21 @@ public cmd_toggle(id)
 
 public cmd_who(id)
 {
-	new player, players[32], name[32], inum
+	new player, players[32], inum
 	get_players(players, inum)
 	
 	console_print(id, "===== Admins online =====")
 	for(new i = 0; i < MAX_GROUPS; i++) 
 	{
 		console_print(id, "------ [%d] %s ------", i+1, g_groupNames[i])
+
 		for(new j = 0; j < inum; ++j) 
 		{
 			player = players[j]
-			
-			get_user_name(player, name, 31)
-			if(get_user_flags(player) == g_groupFlagsValue[i]) 
+
+			if (!strcmp(g_groupFlags[i], g_cAdminFlag[player]))
 			{
-				console_print(id, "%s", name)
+				console_print(id, "%s", g_playername[player])
 			}
 		}
 	}
@@ -8628,7 +8621,7 @@ public cmd_slap(id)
 	// Check for access flag depending on the resulting action
 	if (g_bAdmin[id] && AdminHasFlag(id, 'k'))
 	{
-		static command[33], arg[33], target
+		static command[33], arg[33], iPlayers[32], iPlayersnum, target[32]
 		
 		// Retrieve arguments
 		read_argv(0, command, charsmax(command))
@@ -8652,22 +8645,26 @@ public cmd_slap(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		// target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		iPlayersnum = cmd_targetex(id, arg, iPlayers, target, charsmax(target), TARGETEX_OBEY_IMM_GROUP | TARGETEX_NO_DEAD)
 		
 		// Invalid target
-		if (!target) return PLUGIN_HANDLED
+		if (!iPlayersnum) return PLUGIN_HANDLED
 		
-		if (target > 0)
+		if (iPlayersnum > 0)
 		{
-			if (AdminHasFlag(target, 'a'))
+			if (AdminHasFlag(iPlayersnum, 'a'))
 			{
 				console_print(id, "[Zombie Queen] You cannot slap an Admin with immunity!")
 				return PLUGIN_HANDLED
 			}
 			else
 			{
-				user_slap(target, 0, 1)
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
+				for(new i; i < iPlayersnum; i++)
+				{
+					user_slap(iPlayers[i], 0, 1)
+					client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playername[id], target)
+				}
 			}
 		}
 		else
@@ -8677,7 +8674,7 @@ public cmd_slap(id)
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
-		formatex(logdata, charsmax(logdata), "Admin %s slapped %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
+		formatex(logdata, charsmax(logdata), "Admin %s slapped %s  (Players: %d/%d)", g_playername[id], target, fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
 	}
 	else
@@ -8686,6 +8683,29 @@ public cmd_slap(id)
 	}
 	return PLUGIN_CONTINUE
 }
+
+/*public cmd_slap()
+{
+	new arg[32], target[32]
+    read_argv(1, arg, charsmax(arg))
+
+    new players[32], target = cmd_targetex(id, arg, players, target, charsmax(target), TARGETEX_OBEY_IMM_SINGLE)
+
+    if(!target)
+    {
+        return PLUGIN_HANDLED
+    }
+    
+    for(new i; i < target; i++)
+    {
+        user_slap(players[i], 0)
+    }
+
+    new szName[32]
+    get_user_name(id, szName, charsmax(szName))
+    client_print(0, print_chat, "ADMIN %s slapped %s", szName, target)
+    return PLUGIN_HANDLED
+}*/
 
 // zp_slay [target]
 public cmd_slay(id)
@@ -16198,13 +16218,13 @@ public ChangeModels(taskid)
 
 /*public EarthQuake()
 	{
-	new iPlayers[32], iPlayerCount, i, player
+	new players[32], iPlayerCount, i, player
 	new Screen = get_user_msgid("ScreenShake")
 	
-	get_players(iPlayers, iPlayerCount, "a") 
+	get_players(players, iPlayerCount, "a") 
 	for(i = 0; i < iPlayerCount; i++)
 	{
-	player = iPlayers[i]
+	player = players[i]
 	
 	if(zp_get_user_zombie(player) || zp_get_user_nemesis(player))
 	continue
