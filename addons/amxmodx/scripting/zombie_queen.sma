@@ -829,12 +829,10 @@ new g_AdminNames[33][32]
 new g_AdminSkinFlags[33][32]
 new g_AdminPasswords[128][32]
 new g_AdminFlags[33][32]
-new g_WhoFlags[33][32]
 
 new g_cPassword[33][32]
 new g_cAdminFlag[33][32]
 new g_cAdminSkinFlag[33][32]
-new g_cWhoFlags[33][32]
 new g_cIP[33][24]
 
 new g_AdminsCount
@@ -2807,7 +2805,7 @@ public TaskGetAdmins()
 			trim(cLine)
 			if (cLine[0] != 59 && strlen(cLine) > 5)
 			{
-				parse(cLine, g_AdminNames[g_AdminsCount], charsmax(g_AdminNames), g_AdminPasswords[g_AdminsCount], charsmax(g_AdminPasswords), g_AdminFlags[g_AdminsCount], charsmax(g_AdminFlags), g_WhoFlags[g_AdminsCount], charsmax(g_WhoFlags), g_Tag[g_AdminsCount], charsmax(g_Tag), g_AdminSkinFlags[g_AdminsCount], charsmax(g_AdminSkinFlags))
+				parse(cLine, g_AdminNames[g_AdminsCount], charsmax(g_AdminNames), g_AdminPasswords[g_AdminsCount], charsmax(g_AdminPasswords), g_AdminFlags[g_AdminsCount], charsmax(g_AdminFlags), g_Tag[g_AdminsCount], charsmax(g_Tag), g_AdminSkinFlags[g_AdminsCount], charsmax(g_AdminSkinFlags))
 				g_AdminsCount++
 			}		
 		}
@@ -2881,8 +2879,6 @@ public MakeUserAdmin(id)
 			{
 				g_bAdmin[id] = true
 				formatex(g_cAdminFlag[id], 31, "%s", g_AdminFlags[i])
-				formatex(g_cWhoFlags[id], 31, "%s", g_WhoFlags[i])
-				set_user_flags(id, read_flags(g_cWhoFlags[id]))
 				copy(g_cTag[id], 24, g_Tag[i])
 				formatex(g_cAdminSkinFlag[id], 31, "%s", g_AdminSkinFlags[i])
 
@@ -8645,32 +8641,18 @@ public cmd_slap(id)
 		}
 		
 		// Initialize Target
-		// target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		iPlayersnum = cmd_targetex(id, arg, iPlayers, target, charsmax(target), TARGETEX_OBEY_IMM_GROUP | TARGETEX_NO_DEAD)
+		iPlayersnum = cmd_targetex(id, arg, iPlayers, target, charsmax(target), TARGETEX_OBEY_IMM_GROUP|TARGETEX_OBEY_IMM_SINGLE|TARGETEX_NO_DEAD)
 		
 		// Invalid target
 		if (!iPlayersnum) return PLUGIN_HANDLED
 		
-		if (iPlayersnum > 0)
+		for(new i; i < iPlayersnum; i++)
 		{
-			if (AdminHasFlag(iPlayersnum, 'a'))
-			{
-				console_print(id, "[Zombie Queen] You cannot slap an Admin with immunity!")
-				return PLUGIN_HANDLED
-			}
-			else
-			{
-				for(new i; i < iPlayersnum; i++)
-				{
-					user_slap(iPlayers[i], 0, 1)
-					client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playername[id], target)
-				}
-			}
+			user_slap(iPlayers[i], 0, 1)
 		}
-		else
-		{
-			console_print(id, "[Zombie Queen] Player was not found!")
-		}
+		
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playername[id], target)
+		
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
@@ -8683,29 +8665,6 @@ public cmd_slap(id)
 	}
 	return PLUGIN_CONTINUE
 }
-
-/*public cmd_slap()
-{
-	new arg[32], target[32]
-    read_argv(1, arg, charsmax(arg))
-
-    new players[32], target = cmd_targetex(id, arg, players, target, charsmax(target), TARGETEX_OBEY_IMM_SINGLE)
-
-    if(!target)
-    {
-        return PLUGIN_HANDLED
-    }
-    
-    for(new i; i < target; i++)
-    {
-        user_slap(players[i], 0)
-    }
-
-    new szName[32]
-    get_user_name(id, szName, charsmax(szName))
-    client_print(0, print_chat, "ADMIN %s slapped %s", szName, target)
-    return PLUGIN_HANDLED
-}*/
 
 // zp_slay [target]
 public cmd_slay(id)
@@ -13911,7 +13870,7 @@ public ShowHUD(taskid)
 	}
 	
 	// Format classname
-	static message[64], health[32], armor[32], packs[32], points[32], red, green, blue
+	static message[128], health[32], armor[32], packs[32], points[32], red, green, blue
 	
 	if (g_zombie[id]) // zombies
 	{
@@ -13923,7 +13882,7 @@ public ShowHUD(taskid)
 		AddCommas(g_ammopacks[ID_SHOWHUD], packs, 31)
 		AddCommas(g_points[ID_SHOWHUD], points, 31)
 		
-		formatex(message, charsmax(message), "%s, Health: %s  Packs: %s  Points: %s", g_cClass[ID_SHOWHUD], health, packs, points)
+		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], health, packs, points)
 	}	
 	else // humans
 	{
@@ -13936,7 +13895,7 @@ public ShowHUD(taskid)
 		AddCommas(g_points[ID_SHOWHUD], points, 31)
 		AddCommas(pev(ID_SHOWHUD, pev_armorvalue), armor, 31)
 		
-		formatex(message, charsmax(message), "%s, Health: %s  Armor: %s  Packs: %s  Points: %s", g_cClass[ID_SHOWHUD], health, armor, packs, points)
+		formatex(message, charsmax(message), "%s - Health: %s - Armor: %s - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], health, armor, packs, points)
 	}
 	
 	// Spectating someone else?
@@ -13949,7 +13908,7 @@ public ShowHUD(taskid)
 		
 
 		set_hudmessage(10, 180, 150, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
-		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s, Health: %s  Armor: %s  Packs: %s  Points: %s^nFrom: %s, %s", \
+		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %s - Packs: %s - Points: %s^nFrom: %s, %s", \
 		g_bVip[id] ? "(Gold Member ®)" : "", g_playername[id], g_cClass[id], health, armor, packs, points, g_playercountry[id], g_playercity[id])
 	}
 	else

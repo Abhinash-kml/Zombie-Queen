@@ -340,7 +340,7 @@ stock cmd_targetex(id, const arg[], players[MAX_PLAYERS], name[], len, TargetexF
 					continue;
 				}
 			}
-			else if(get_user_flags(iPlayer) & ADMIN_IMMUNITY)
+			else if(AdminHasFlag(iPlayer, 'a'))
 			{
 				if(flags & TARGETEX_OBEY_IMM_GROUP && bIsGroupArg)
 				{
