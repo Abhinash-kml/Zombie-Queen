@@ -1777,24 +1777,38 @@ g_cached_leapzadoc, Float:g_cached_leapzadoccooldown, g_cached_leapbombardier, F
 
 public plugin_natives()
 {
-	register_native("admin_has_flag", "native_admin_has_flag", 1)
+	// Admin related natives
+	register_native("AdminHasFlag", "native_admin_has_flag", 1)
 
-	register_native("zp_get_user_zombie", "native_get_user_zombie", 1)
-	register_native("zp_get_user_ammo_packs", "native_get_user_ammo_packs", 1)
-	register_native("zp_set_user_ammo_packs", "native_set_user_ammo_packs", 1)
-	register_native("zp_get_user_nemesis", "native_get_user_nemesis", 1)
-	register_native("zp_get_user_assassin", "native_get_user_assassin", 1)
-	register_native("zp_get_user_bombardier", "native_get_user_bombardier", 1)
-	register_native("zp_get_user_sniper", "native_get_user_sniper", 1)
-	register_native("zp_get_user_survivor", "native_get_user_survivor", 1)
-	register_native("zp_get_user_samurai", "native_get_user_samurai", 1)
-	//register_native("zp_is_multi_infection_round", "native_is_multi_infection_round", 1)
-	register_native("zp_is_swarm_round", "native_is_swarm_round", 1)
-	register_native("zp_is_plague_round", "native_is_plague_round", 1)
-	register_native("zp_is_armageddon_round", "native_is_armageddon_round", 1)
-	register_native("zp_is_apocalypse_round", "native_is_apocalypse_round", 1)
-	register_native("zp_is_devil_round", "native_is_devil_round", 1)
-	register_native("zp_is_nightmare_round", "native_is_nightmare_round", 1)
+	// Data related natives
+	register_native("GetPacks", "native_get_user_ammo_packs", 1)
+	register_native("SetPacks", "native_set_user_ammo_packs", 1)
+
+	// Class related natives
+	register_native("IsZombie", "native_get_user_zombie", 1)
+	register_native("MakeZombie", "native_make_user_zombie", 1)
+	register_native("MakeHuman", "native_make_user_human", 1)
+	register_native("IsNemesis", "native_get_user_nemesis", 1)
+	register_native("MakeNemesis", "native_make_user_nemesis", 1)
+	register_native("IsAssasin", "native_get_user_assassin", 1)
+	register_native("MakeAssasin", "native_make_user_assasin", 1)
+	register_native("IsBombardier", "native_get_user_bombardier", 1)
+	register_native("Makebombardier", "native_make_user_bombardier", 1)
+	register_native("IsSniper", "native_get_user_sniper", 1)
+	register_native("MakeSniper", "native_make_user_sniper", 1)
+	register_native("IsSurvivor", "native_get_user_survivor", 1)
+	register_native("MakeSurvivor", "native_make_user_survivor", 1)
+	register_native("IsSamurai", "native_get_user_samurai", 1)
+	register_native("MakeSamurai", "native_make_user_samurai", 1)
+
+	// Round related natives
+	register_native("IsMultiInfectionRound", "native_is_multi_infection_round", 1)
+	register_native("IsSwarmRound", "native_is_swarm_round", 1)
+	register_native("IsPlagueRound", "native_is_plague_round", 1)
+	register_native("IsArmageddonRound", "native_is_armageddon_round", 1)
+	register_native("IsApocalypseRound", "native_is_apocalypse_round", 1)
+	register_native("IsDevilRound", "native_is_devil_round", 1)
+	register_native("IsNightmareRound", "native_is_nightmare_round", 1)
 }
 
 public plugin_precache()
@@ -15094,6 +15108,55 @@ public native_get_user_zombie(id)
 	return g_zombie[id]
 }
 
+// Native: MakeZombie
+public native_make_user_zombie(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be zombie
+	if (!allowed_zombie(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		// Set as first zombie
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(infection, id)
+	}
+	else // Just infect
+	zombieme(id, 0, none)
+
+	return true
+}
+
+// Native: MakeHuman
+public native_make_user_human(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be human
+	if (!allowed_human(id)) return false
+
+	// Make him Human
+	humanme(id, none)
+
+	return true
+}
+
 // Native: zp_get_user_ammo_packs
 public native_get_user_ammo_packs(id)
 {
@@ -15112,10 +15175,66 @@ public native_get_user_nemesis(id)
 	return g_nemesis[id]
 }
 
+// Native: MakeNemesis
+public native_make_user_nemesis(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be nemesis
+	if (!allowed_nemesis(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		// Set as first nemesis
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(nemesis, id)
+	}
+	else // Just make him nemesis
+	zombieme(id, 0, nemesis)
+
+	return true
+}
+
 // Native: zp_get_user_assassin
 public native_get_user_assassin(id)
 {
 	return g_assassin[id]
+}
+
+// Native: MakeAssasin
+public native_make_user_assasin(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be assasin
+	if (!allowed_assassin(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		// Set as first assasin
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(assassin, id)
+	}
+	else // Just make him assasin
+	zombieme(id, 0, assassin)
+
+	return true
 }
 
 // Native: zp_get_user_bombardier
@@ -15124,10 +15243,66 @@ public native_get_user_bombardier(id)
 	return g_bombardier[id]
 }
 
+// Native: MakeBombardier
+public native_make_user_bombardier(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be bombardier
+	if (!allowed_bombardier(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		// Set as first bombardier
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(bombardier, id)
+	}
+	else // Just infect
+	zombieme(id, 0, bombardier)
+
+	return true
+}
+
 // Native: zp_get_user_sniper
 public native_get_user_sniper(id)
 {
 	return g_sniper[id];
+}
+
+// Native: MakeSniper
+public native_make_user_sniper(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be bombardier
+	if (!allowed_sniper(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		// Set as first sniper
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(sniper, id)
+	}
+	else // Just make him sniper
+	humanme(id, sniper)
+
+	return true
 }
 
 // Native: zp_get_user_survivor
@@ -15136,10 +15311,66 @@ public native_get_user_survivor(id)
 	return g_survivor[id];
 }
 
+// Native: MakeSurvivor
+public native_make_user_survivor(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be survivor
+	if (!allowed_survivor(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		// Set as first survivor
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(survivor, id)
+	}
+	else // Just make him survivor
+	humanme(id, survivor)
+
+	return true
+}
+
 // Native: zp_get_user_samurai
 public native_get_user_samurai(id)
 {
 	return g_samurai[id];
+}
+
+// Native: MakeSamurai
+public native_make_user_samurai(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be survivor
+	if (!allowed_samurai(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		// Set as first samurai
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(samurai, id)
+	}
+	else // Just make him samurai
+	humanme(id, samurai)
+
+	return true
 }
 
 // Native: zp_is_armageddon_round
@@ -15179,10 +15410,10 @@ public native_is_nightmare_round()
 }
 
 // Native: zp_is_multi_infection_round
-/*public native_is_multi_infection_round()
+public native_is_multi_infection_round()
 {
-	return g_multi_infection_round
-}*/
+	return (g_currentmode == multi)
+}
 
 /*================================================================================
 	[Custom Messages]
