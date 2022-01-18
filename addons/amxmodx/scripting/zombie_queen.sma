@@ -2936,7 +2936,7 @@ public MakeUserAdmin(id)
 				copy(g_cTag[id], 24, g_Tag[i])
 				formatex(g_cAdminSkinFlag[id], 31, "%s", g_AdminSkinFlags[i])
 
-				log_amx("Login: ^"%s^" became an admin. [ %s ] ", g_playername[id], g_cAdminFlag[id], g_cAdminSkinFlag, g_cIP[id])
+				log_amx("Login: ^"%s^" became an admin. [ %s ] [ %s ]", g_playername[id], g_cAdminFlag[id], g_cIP[id])
 				return PLUGIN_CONTINUE
 			}
 			else
@@ -4528,42 +4528,22 @@ public plugin_cfg()
 	// Plugin disabled?
 	if (!g_pluginenabled) return
 
-	// Set lighting
-	engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
-	
-	// Lighting task
-	set_task(5.0, "lighting_effects", _, _, _, "b")
-	
-	// Cache CVARs after configs are loaded / call roundstart manually
-	set_task(0.5, "cache_cvars")
-	set_task(0.5, "event_round_start")
-	set_task(0.5, "logevent_round_start")
-
 	server_cmd("sv_maxspeed 9999")
 	server_cmd("sv_voiceenable 0")
 	server_cmd("sys_ticrate 1000")
 	server_cmd("cl_forwardspeed 9999")
 	server_cmd("cl_backspeed 9999")
 	server_cmd("cl_sidespeed 9999")
-}
 
-// Abhinash
-public client_infochanged(id)
-{
-	if (!is_user_connected(id)) return
-	static newname[64], oldname[64]
-	get_user_name(id, oldname, 63)
-	get_user_info(id, "name", newname ,63)
-	if(!equali(oldname, newname) && strlen(newname) > 0)
-	{
-		new vlt = nvault_open("points")
-		if (vlt != INVALID_HANDLE)
-		{
-			g_points[id] = nvault_get(vlt, newname)
-			nvault_close(vlt)
-			vlt = INVALID_HANDLE
-		}
-	}
+	// Set lighting
+	engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
+	
+	// Cache CVARs after configs are loaded / call roundstart manually
+	set_task(0.5, "cache_cvars")
+	set_task(0.5, "event_round_start")
+	set_task(0.5, "logevent_round_start")
+
+	set_task(5.0, "OnRegeneratorSkill", _, _, _, "b")
 }
 
 public client_disconnected(id)
@@ -5392,14 +5372,27 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		}
 
 		// Bullet damage
-		if (!g_sniper[attacker] && !g_samurai[attacker])
+		if (damage > 1) // Dummy check
 		{
-			if(++ iPosition[attacker] == sizeof(g_flCoords))
+			if(++iPosition[attacker] == sizeof(g_flCoords))
 			{
 				iPosition[attacker] = 0
 			}
-			set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
-			show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))
+
+			if (damage_type & DMG_BLAST) 
+			{
+				client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
+				set_hudmessage(200, 0, 0, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
+
+				// Send Screenfade message
+				UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
+
+				// Send Screenshake message
+				SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
+			}
+			else if (!(g_sniper[attacker] || g_samurai[attacker])) set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
+
+			show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))	
 		}
 		
 		return HAM_IGNORED
@@ -6315,30 +6308,7 @@ public Rocket_Touch(attacker, iRocket)
 				
 					if(float(pev(victim, pev_health)) - fDamage > 0.0)
 					{
-						if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim])
-						{
-							ExecuteHamB(Ham_TakeDamage, victim, iRocket, attacker, fDamage, DMG_BLAST)
-							client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(fDamage)))
-						}
-						else
-						{
-							if (g_survivor[attacker] || g_sniper[attacker] || g_samurai[attacker])
-							{
-								ExecuteHamB(Ham_TakeDamage, victim, iRocket, attacker, fDamage, DMG_BLAST)
-								client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(fDamage)))
-							}
-							else
-							{
-								ExecuteHamB(Ham_TakeDamage, victim, iRocket, attacker, fDamage, DMG_BLAST)
-								client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(fDamage)))
-							}
-						}
-
-						// Send Screenfade message
-						UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
-
-						// Send Screenshake message
-						SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
+						ExecuteHamB(Ham_TakeDamage, victim, iRocket, attacker, fDamage, DMG_BLAST)
 					}
 					else 
 					{
@@ -12958,7 +12928,7 @@ infection_explode(ent)
 		count++
 	}
 
-	client_print_color(attacker, print_team_grey, "%s Players infected with grenade: ^3%i", CHAT_PREFIX, count)
+	client_print_color(attacker, print_team_grey, "%s Players infected with grenade: ^4%i", CHAT_PREFIX, count)
 
 	// Increase infections
 	g_infections[attacker] += count
@@ -13303,24 +13273,7 @@ public explosion_explode(ent)
 			// Checks
 			if(health - floatround(damage) > 0)
 			{
-				if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim])
-				{
-					ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-					client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
-				}
-				else
-				{
-					if (g_survivor[attacker] || g_sniper[attacker] || g_samurai[attacker])
-					{
-						ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-						client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
-					}
-					else
-					{
-						ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-						client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
-					}
-				}
+				ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
 			}
 			else
 			{
