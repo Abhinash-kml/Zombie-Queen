@@ -441,10 +441,17 @@ new Float:g_modelchange_delay = 0.2
 
 // SQLx
 new Handle:g_SqlTuple
-new g_Error[512]
-new g_kills[33]
-new g_deaths[33]
-new g_score[33]
+new g_Error[512]			// Error buffer
+new g_kills[33]				// Kills
+new g_deaths[33]			// Deaths
+new g_score[33]				// Score
+new g_infections[33]		// Infections
+new g_nemesiskills[33]		// Nemesis kills
+new g_assasinkills[33]		// Assasin kills
+new g_bombardierkills[33]	// Bombardier kills
+new g_survivorkills[33]		// Survivor kills
+new g_sniperkills[33]		// Sniper kills
+new g_samuraikills[33]		// Samurai kills
 new g_totalplayers
 
 // GAG
@@ -1781,34 +1788,76 @@ public plugin_natives()
 	register_native("AdminHasFlag", "native_admin_has_flag", 1)
 
 	// Data related natives
-	register_native("GetPacks", "native_get_user_ammo_packs", 1)
-	register_native("SetPacks", "native_set_user_ammo_packs", 1)
+	register_native("GetPacks", 		  "native_get_user_packs", 1) 				// Get
+	register_native("AddPacks",           "native_add_user_packs", 1)				// Add
+	register_native("SetPacks", 		  "native_set_user_packs", 1)				// Set
+	register_native("GetPoints", 		  "native_get_user_points", 1)				// Get
+	register_native("AddPoints",          "native_add_user_points", 1)				// Add
+	register_native("SetPoints", 		  "native_set_user_points", 1)				// Set
+	register_native("GetKills", 		  "native_get_user_kills", 1)				// Get
+	register_native("AddKills",           "native_add_user_kills", 1)				// Add
+	register_native("SetKills", 		  "native_set_user_kills", 1)				// Set
+	register_native("GetInfections", 	  "native_get_user_infections", 1)			// Get
+	register_native("AddInfections",      "native_add_user_infections", 1)			// Add
+	register_native("SetInfections", 	  "native_set_user_infections", 1)			// Set
+	register_native("GetNemesisKills", 	  "native_get_user_nemesis_kills", 1)		// Get
+	register_native("AddNemesisKills",    "native_add_user_nemesis_kills", 1)		// Add
+	register_native("SetNemesisKills", 	  "native_set_user_nemesis_kills", 1)		// Set
+	register_native("GetAssasinKills", 	  "native_get_user_assasin_kills", 1)		// Get
+	register_native("AddAssasinKills",    "native_add_user_assasin_kills", 1)		// Add
+	register_native("SetAssasinKills", 	  "native_set_user_assasin_kills", 1)		// Set
+	register_native("GetBombardierKills", "native_get_user_bombardier_kills", 1)	// Get
+	register_native("AddBombardierKills", "native_add_user_bombardier_kills", 1)	// Add
+	register_native("SetBombardierKills", "native_set_user_bombardier_kills", 1)	// Set
+	register_native("GetSurvivorKills",   "native_get_user_survivor_kills", 1)		// Get
+	register_native("AddSurvivorKills",   "native_add_user_survivor_kills", 1)		// Add
+	register_native("SetSurvivorKills",   "native_set_user_survivor_kills", 1)		// Set
+	register_native("GetSniperKills", 	  "native_get_user_sniper_kills", 1)		// Get
+	register_native("AddSniperKills",     "native_add_user_sniper_kills", 1)		// Add
+	register_native("SetSniperKills", 	  "native_set_user_sniper_kills", 1)		// Set
+	register_native("GetSamuraiKills", 	  "native_get_user_samurai_kills", 1)		// Get
+	register_native("AddSamuraiKills",    "native_add_user_samurai_kills", 1)		// Add
+	register_native("SetSamuraiKills", 	  "native_set_user_samurai_kills", 1)		// Set
 
 	// Class related natives
-	register_native("IsZombie", "native_get_user_zombie", 1)
-	register_native("MakeZombie", "native_make_user_zombie", 1)
-	register_native("MakeHuman", "native_make_user_human", 1)
-	register_native("IsNemesis", "native_get_user_nemesis", 1)
-	register_native("MakeNemesis", "native_make_user_nemesis", 1)
-	register_native("IsAssasin", "native_get_user_assassin", 1)
-	register_native("MakeAssasin", "native_make_user_assasin", 1)
-	register_native("IsBombardier", "native_get_user_bombardier", 1)
+	register_native("IsZombie",       "native_get_user_zombie", 1)
+	register_native("MakeZombie",     "native_make_user_zombie", 1)
+	register_native("MakeHuman",      "native_make_user_human", 1)
+	register_native("IsNemesis",      "native_get_user_nemesis", 1)
+	register_native("MakeNemesis",    "native_make_user_nemesis", 1)
+	register_native("IsAssasin",      "native_get_user_assassin", 1)
+	register_native("MakeAssasin",    "native_make_user_assasin", 1)
+	register_native("IsBombardier",   "native_get_user_bombardier", 1)
 	register_native("Makebombardier", "native_make_user_bombardier", 1)
-	register_native("IsSniper", "native_get_user_sniper", 1)
-	register_native("MakeSniper", "native_make_user_sniper", 1)
-	register_native("IsSurvivor", "native_get_user_survivor", 1)
-	register_native("MakeSurvivor", "native_make_user_survivor", 1)
-	register_native("IsSamurai", "native_get_user_samurai", 1)
-	register_native("MakeSamurai", "native_make_user_samurai", 1)
+	register_native("IsSniper",       "native_get_user_sniper", 1)
+	register_native("MakeSniper",     "native_make_user_sniper", 1)
+	register_native("IsSurvivor",     "native_get_user_survivor", 1)
+	register_native("MakeSurvivor",   "native_make_user_survivor", 1)
+	register_native("IsSamurai",      "native_get_user_samurai", 1)
+	register_native("MakeSamurai",    "native_make_user_samurai", 1)
 
-	// Round related natives
-	register_native("IsMultiInfectionRound", "native_is_multi_infection_round", 1)
-	register_native("IsSwarmRound", "native_is_swarm_round", 1)
-	register_native("IsPlagueRound", "native_is_plague_round", 1)
-	register_native("IsArmageddonRound", "native_is_armageddon_round", 1)
-	register_native("IsApocalypseRound", "native_is_apocalypse_round", 1)
-	register_native("IsDevilRound", "native_is_devil_round", 1)
-	register_native("IsNightmareRound", "native_is_nightmare_round", 1)
+	// --- Round related natives ---
+	// Master natives
+	//register_native("StartMode",				"native_start_mode", 1)
+	//register_native("IsMode", 					"native_is_current_mode", 1)
+
+	// Custom natives specific to modes
+	register_native("IsInfectionRound",      	"native_is_infection_round", 1)
+	//register_native("StartInfectionRound",   	"native_start_infection_round", 1)
+	register_native("IsMultiInfectionRound", 	"native_is_multi_infection_round", 1)
+	//register_native("StartMultiInfectionRound", "native_start_multi_infection_round", 1)
+	register_native("IsSwarmRound",          	"native_is_swarm_round", 1)
+	//register_native("StartSwarmRound", 			"native_start_swarm_round", 1)
+	register_native("IsPlagueRound", 		 	"native_is_plague_round", 1)
+	//register_native("StartPlagueRound", 		"native_start_plague_round", 1)
+	register_native("IsArmageddonRound", 	 	"native_is_armageddon_round", 1)
+	//register_native("StartArmageddonRound", 	"native_start_armageddon_round", 1)
+	register_native("IsApocalypseRound", 	 	"native_is_apocalypse_round", 1)
+	//register_native("StartApocalypseRound", 	"native_start_apocalypse_round", 1)
+	register_native("IsDevilRound", 		 	"native_is_devil_round", 1)
+	//register_native("StartDevilRound", 			"native_start_devil_round", 1)
+	register_native("IsNightmareRound", 	 	"native_is_nightmare_round", 1)
+	//register_native("StartNightmareRound", 		"native_start_nightmare_round", 1)
 }
 
 public plugin_precache()
@@ -2556,16 +2605,17 @@ public MySql_Init()
     g_SqlTuple = SQL_MakeDbTuple("", "", "", "ZombieQueen")
    
     // Ok, we're ready to connect
-    new ErrorCode,Handle:SqlConnection = SQL_Connect(g_SqlTuple,ErrorCode,g_Error,charsmax(g_Error))
-    if(SqlConnection == Empty_Handle)
+    new ErrorCode, Handle:SqlConnection = SQL_Connect(g_SqlTuple, ErrorCode, g_Error, charsmax(g_Error))
+    if (SqlConnection == Empty_Handle)
     {
 		// stop the plugin with an error message
         set_fail_state(g_Error)
     }
 
     new Handle:Queries
-    // we must now prepare some random queries
-    Queries = SQL_PrepareQuery(SqlConnection,"CREATE TABLE IF NOT EXISTS perfectzm (steamid varchar(32), name varchar(32), points INT(11), kills INT(11), deaths INT(11), score INT(11))")
+
+    // We must now prepare some random queries
+    Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS perfectzm (steamid varchar(32), name varchar(32), points INT(11), kills INT(11), deaths INT(11), infections INT(11), nemesiskills INT(11), assasinkills INT(11), bombardierkills INT(11), survivorkills INT(11), sniperkills INT(11), samuraikills INT(11), score INT(11))")
 
     if(!SQL_Execute(Queries))
     {
@@ -2597,29 +2647,36 @@ public register_client(FailState,Handle:Query,Error[],Errcode,Data[],DataSize)
 
 	if(SQL_NumResults(Query) < 1) 
 	{
-	    //.if there are no results found
+	    // If there are no results found
 	    
 	    new szSteamId[32]
 	    get_user_authid(id, szSteamId, charsmax(szSteamId)) // get user's steamid
 	    
-	    //  if its still pending we can't do anything with it
+	    //  If its still pending we can't do anything with it
 	    if (equal(szSteamId,"ID_PENDING"))
-	        return PLUGIN_HANDLED
+	    return PLUGIN_HANDLED
 	        
 	    new szTemp[512]
 	    
-	    // now we will insturt the values into our table.
-	    format(szTemp,charsmax(szTemp),"INSERT INTO `perfectzm` ( `steamid`, `name`, `points`, `kills`, `deaths`, `score`)VALUES ('%s', '%s', '0', '0', '0', '0');", szSteamId, g_playername[id])
-	    SQL_ThreadQuery(g_SqlTuple,"IgnoreHandle", szTemp)
+	    // Now we will insturt the values into our table.
+	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` ( `steamid`, `name`, `points`, `kills`, `deaths`, `infections`, `nemesiskills`, `assasinkills`, `bombardierkills`, `survivorkills`, `sniperkills`, `samuraikills`, `score`)VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", szSteamId, g_playername[id])
+	    SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 	    g_totalplayers++
 	} 
 	else 
 	{
 	    // if there are results found
-	    g_points[id] = SQL_ReadResult(Query, 2)
-	    g_kills[id] = SQL_ReadResult(Query, 3)
-	    g_deaths[id] = SQL_ReadResult(Query, 4)
-	    g_score[id] = SQL_ReadResult(Query, 5)
+	    g_points[id] 		  = SQL_ReadResult(Query, 2)
+	    g_kills[id]  		  = SQL_ReadResult(Query, 3)
+	    g_deaths[id] 		  = SQL_ReadResult(Query, 4)
+		g_infections[id] 	  = SQL_ReadResult(Query, 5)
+		g_nemesiskills[id] 	  = SQL_ReadResult(Query, 6)
+		g_assasinkills[id] 	  = SQL_ReadResult(Query, 7)
+		g_bombardierkills[id] = SQL_ReadResult(Query, 8)
+		g_survivorkills[id]   = SQL_ReadResult(Query, 9)
+		g_sniperkills[id] 	  = SQL_ReadResult(Query, 10)
+		g_samuraikills[id] 	  = SQL_ReadResult(Query, 11)
+	    g_score[id] 		  = SQL_ReadResult(Query, 12)
 
 	    set_dhudmessage(0, 255, 255, 0.03, 0.5, 2, 6.0, 10.0)
 	    show_dhudmessage(id, "You are now ranked!")
@@ -2642,7 +2699,7 @@ public SQLRanksCount(FailState, Handle:Query, Error[], ErrorNum, Data[], DataSiz
 	return PLUGIN_CONTINUE
 } 
 
-public Load_MySql(id)
+public MySQL_LOAD_DATABASE(id)
 {
 	new szSteamId[32], szTemp[512]
 	get_user_authid(id, szSteamId, charsmax(szSteamId))
@@ -2655,13 +2712,13 @@ public Load_MySql(id)
 	SQL_ThreadQuery(g_SqlTuple, "register_client", szTemp, Data, 1)
 }
 
-public Save_MySql(id)
+public MySQL_UPDATE_DATABASE(id)
 {
 	new szSteamId[32], szTemp[512]
 	get_user_authid(id, szSteamId, charsmax(szSteamId))
 
 	// Here we will update the user hes information in the database where the steamid matches.
-	format(szTemp, charsmax(szTemp), "UPDATE `perfectzm` SET `points` = '%i', `kills` = '%i', `deaths` = '%i', `score` = '%i' WHERE `steamid` = '%s';", g_points[id], g_kills[id], g_deaths[id], g_score[id], szSteamId)
+	format(szTemp, charsmax(szTemp), "UPDATE `perfectzm` SET `points` = '%i', `kills` = '%i', `deaths` = '%i', `infections` = '%i', `nemesiskills` = '%i', `assasinkills` = '%i', `bombardierkills` = '%i', `survivorkills` = '%i', `sniperkills` = '%i', `samuraikills` = '%i', `score` = '%i' WHERE `steamid` = '%s';", g_points[id], g_kills[id], g_deaths[id], g_infections[id], g_nemesiskills[id], g_assasinkills[id], g_bombardierkills[id], g_survivorkills[id], g_sniperkills[id], g_samuraikills[id], g_score[id], szSteamId)
 	SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 } 
 
@@ -4049,7 +4106,7 @@ public _AmmoMenu(id, menu, item)
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						ShowSyncHudMsg(0, g_MsgSync6, "%s bought 100 ammo packs!", g_playername[id])
 						client_print_color(0, print_team_grey, "%s %s^1 bought^4 100 ammo packs", CHAT_PREFIX, g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4070,7 +4127,7 @@ public _AmmoMenu(id, menu, item)
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						ShowSyncHudMsg(0, g_MsgSync6, "%s bought 200 ammo packs!", g_playername[id])
 						client_print_color(0, print_team_grey, "%s %s^1 bought^4 200 ammo packs", CHAT_PREFIX, g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4091,7 +4148,7 @@ public _AmmoMenu(id, menu, item)
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						ShowSyncHudMsg(0, g_MsgSync6, "%s bought 300 ammo packs!", g_playername[id])
 						client_print_color(0, print_team_grey, "%s %s^1 bought^4 300 ammo packs", CHAT_PREFIX, g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4112,7 +4169,7 @@ public _AmmoMenu(id, menu, item)
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						ShowSyncHudMsg(0, g_MsgSync6, "%s bought 400 ammo packs!", g_playername[id])
 						client_print_color(0, print_team_grey, "%s %s^1 bought^4 400 ammo packs", CHAT_PREFIX, g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4133,7 +4190,7 @@ public _AmmoMenu(id, menu, item)
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						ShowSyncHudMsg(0, g_MsgSync6, "%s bought 500 ammo packs!", g_playername[id])
 						client_print_color(0, print_team_grey, "%s %s^1 bought^4 500 ammo packs", CHAT_PREFIX, g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4170,7 +4227,7 @@ public _Features(id, menu, item)
 						set_glow(id, 192, 255, 62, 25)
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage( id, "You bought God Mode!")
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4191,7 +4248,7 @@ public _Features(id, menu, item)
 						g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage( id, "You bought Double damage!")
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4212,7 +4269,7 @@ public _Features(id, menu, item)
 						g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage( id, "You bought No Recoil!")
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4232,7 +4289,7 @@ public _Features(id, menu, item)
 						set_user_rendering(id, kRenderFxGlowShell, 0, 0, 0, kRenderTransAlpha, 0)
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage( id, "You bought Invisibility!")
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4254,7 +4311,7 @@ public _Features(id, menu, item)
 						g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage( id, "You bought High Speed!")
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4274,7 +4331,7 @@ public _Features(id, menu, item)
 						g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage( id, "Now you have less gravity!")
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4296,7 +4353,7 @@ public _Features(id, menu, item)
 						g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
 						set_hudmessage( 115, 230, 1, -1.0, 0.80, 1, 0.0, 5.0, 1.0, 1.0, -1 )
 						show_hudmessage( id, "Now all your bullet will connect to head!")
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4336,7 +4393,7 @@ public _Modes(id, menu, item)
 						g_points[id] -= g_cModesMenu[iChoice][MPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage(0, "%s bought Armageddon mode with points!", g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4359,7 +4416,7 @@ public _Modes(id, menu, item)
 						g_points[id] -= g_cModesMenu[iChoice][MPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage(0, "%s bought Nightmare mode with points!", g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4394,7 +4451,7 @@ public _Modes(id, menu, item)
 						g_points[id] -= g_cModesMenu[iChoice][MPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage(0, "%s bought Sniper vs Nemesis mode with points!", g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -4417,7 +4474,7 @@ public _Modes(id, menu, item)
 						g_points[id] -= g_cModesMenu[iChoice][MPoints]
 						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 						show_hudmessage(0, "%s bought Sniper vs Assassin mode with points!", g_playername[id])
-						Save_MySql(id)
+						MySQL_UPDATE_DATABASE(id)
 					}
 					else
 					{
@@ -5111,9 +5168,9 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	spec_nvision(victim)
 	
 	// Disable nightvision when killed (bugfix)
-	if (NightVisionEnabled == 0 && g_nvision[victim])
+	if ((!NightVisionEnabled) && g_nvision[victim])
 	{
-		if (CustomNightVision == 1) remove_task(victim+TASK_NVISION)
+		if (CustomNightVision) remove_task(victim+TASK_NVISION)
 		else if (g_nvisionenabled[victim]) set_user_gnvision(victim, 0)
 		g_nvision[victim] = false
 		g_nvisionenabled[victim] = false
@@ -5122,7 +5179,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	// Turn off nightvision when killed (bugfix)
 	if (NightVisionEnabled == 2 && g_nvision[victim] && g_nvisionenabled[victim])
 	{
-		if (CustomNightVision == 1) remove_task(victim+TASK_NVISION)
+		if (CustomNightVision) remove_task(victim+TASK_NVISION)
 		else set_user_gnvision(victim, 0)
 		g_nvisionenabled[victim] = false
 	}
@@ -5147,23 +5204,28 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 		remove_task(victim+TASK_BURN)
 	}
 	
-	// Nemesis/Assassins explodes!
-	if ((g_nemesis[attacker] || g_nemesis[victim]) || (g_assassin[attacker] || g_assassin[victim]) || (g_samurai[attacker] || g_bombardier[attacker]))
+	// Make Player body explode on kill
 	SetHamParamInteger(3, 2)
 	
-	// When killed by a Sniper victim explodes
-	if (g_sniper[attacker] && (g_currentweapon[attacker] == CSW_AWP) || g_samurai[attacker] && (g_currentweapon[attacker] == CSW_KNIFE))
-	{	
-		SetHamParamInteger(3, 2)			
-		
+	// Special killed functions
+	if (g_nemesis[attacker]) g_nemesiskills[attacker]++
+	else if (g_assassin[attacker]) g_assasinkills[attacker]++
+	else if (g_bombardier[attacker]) g_bombardierkills[attacker]++
+	else if (g_survivor[attacker]) g_survivorkills[attacker]++
+	else if (g_sniper[attacker])
+	{
+		g_sniperkills[attacker]++
+		SendLavaSplash(victim)
+	}
+	else if (g_samurai[attacker])
+	{
+		g_samuraikills[attacker]++
 		SendLavaSplash(victim)
 	}
 
 	// InformerX function
-	static iZombies
-	iZombies = fnGetZombies()
-	static iHumans
-	iHumans = fnGetHumans()
+	static iZombies; iZombies = fnGetZombies()
+	static iHumans; iHumans = fnGetHumans()
 
 	if (!iHumans || !iZombies) return
 
@@ -5196,46 +5258,20 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	// Killed by a non-player entity or self killed
 	if (selfkill) return
 	
-	// Zombie/nemesis/assassin killed human, reward ammo packs
+	// Killed by Zombie Team, reward packs
 	if (g_zombie[attacker])
 	{
-		if(g_nemesis[attacker])
-		{
-			g_ammopacks[attacker] += 2
-		}
-		else if(g_assassin[attacker])
-		{
-			g_ammopacks[attacker] += 1
-		}
-		else if(g_bombardier[attacker])
-		{
-			g_ammopacks[attacker] += 1
-		}
-		else 
-		{
-			g_ammopacks[attacker] += 5
-		}
+		if (g_nemesis[attacker]) g_ammopacks[attacker] += 2
+		else if(g_assassin[attacker]) g_ammopacks[attacker] += 1
+		else if(g_bombardier[attacker]) g_ammopacks[attacker] += 1
+		else g_ammopacks[attacker] += 5
 	}
-	
-	// Human killed Zombie, reward ammo packs
-	if (!g_zombie[attacker])
+	else
 	{
-		if(g_survivor[attacker])
-		{
-			g_ammopacks[attacker] += 2
-		}
-		else if(g_sniper[attacker])
-		{
-			g_ammopacks[attacker] += 3
-		}
-		else if(g_samurai[attacker])
-		{
-			g_ammopacks[attacker] += 4
-		}
-		else 
-		{
-			g_ammopacks[attacker] += 5
-		}
+		if(g_survivor[attacker]) g_ammopacks[attacker] += 2
+		else if(g_sniper[attacker]) g_ammopacks[attacker] += 3
+		else if(g_samurai[attacker]) g_ammopacks[attacker] += 4
+		else g_ammopacks[attacker] += 5
 	}
 
 	// Reset some vars
@@ -5259,12 +5295,15 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	// For Leader
 	g_iKillsThisRound[attacker]++
 
+	// Update player datas
 	g_points[attacker] += 2
 	g_kills[attacker] += 1
 	g_deaths[victim] += 1
 	g_score[attacker] += 10
-	Save_MySql(attacker)
-	Save_MySql(victim)
+
+	// Update SQL Database
+	MySQL_UPDATE_DATABASE(attacker)
+	MySQL_UPDATE_DATABASE(victim)
 }
 
 // Ham Player Killed Post Forward
@@ -5416,7 +5455,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	return HAM_IGNORED // human is killed
 	
 	// Does human armor need to be reduced before infecting?
-	if (HumanArmorProtect == 1)
+	if (HumanArmorProtect)
 	{
 		//if (g_survivor[victim]) return
 		
@@ -5446,8 +5485,9 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	zombieme(victim, attacker, none) // turn into zombie
 	g_points[attacker]++		// Abhinash
 	g_kills[attacker]++
+	g_infections[attacker]++
 	g_score[attacker] += 10
-	Save_MySql(attacker)
+	MySQL_UPDATE_DATABASE(attacker)
 
 	return HAM_SUPERCEDE
 }
@@ -5460,43 +5500,22 @@ public OnTakeDamagePost(victim)
 	// Check if proper CVARs are enabled
 	if (g_zombie[victim])
 	{
-		if (g_nemesis[victim])
-		{
-			if (NemesisPainfree == 0) return
-		}
-		else if (g_assassin[victim])
-		{
-			if (AssassinPainfree == 0) return
-		}
-		else if (g_bombardier[victim])
-		{	
-			if (BombardierPainfree == 0) return
-		}
+		if (g_nemesis[victim]) if (NemesisPainfree == 0) return
+		else if (g_assassin[victim]) if (AssassinPainfree == 0) return
+		else if (g_bombardier[victim]) if (BombardierPainfree == 0) return
 		else
+		switch (ZombiePainfree)
 		{
-			switch (ZombiePainfree)
-			{
-				case 0: return
-				case 1: if (!g_lastzombie[victim]) return
-				case 2: if (!g_firstzombie[victim]) return
-			}
+			case 0: return
+			case 1: if (!g_lastzombie[victim]) return
+			case 2: if (!g_firstzombie[victim]) return
 		}
 	}
 	else
 	{
-		if (g_survivor[victim])
-		{
-			if (SurvivorPainfree == 0) return
-		}
-		else if (g_sniper[victim])
-		{
-			if (SniperPainfree == 0) return
-		}
-		else if (g_samurai[victim])
-		{
-			if (SamuraiPainfree == 0) return
-		}
-		
+		if (g_survivor[victim]) if (SurvivorPainfree == 0) return
+		else if (g_sniper[victim]) if (SniperPainfree == 0) return
+		else if (g_samurai[victim]) if (SamuraiPainfree == 0) return
 		else return
 	}
 	
@@ -5863,7 +5882,7 @@ public client_putinserver(id)
 	g_isconnected[id] = true
 
 	// Load his data
-	Load_MySql(id)
+	MySQL_LOAD_DATABASE(id)
 
 	set_task(5.0, "init_welcome", id)
 	
@@ -10420,7 +10439,7 @@ public cmd_points(id)
 			return PLUGIN_HANDLED
 			
 			g_points[target] += points
-			Save_MySql(target)
+			MySQL_UPDATE_DATABASE(target)
 			
 			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playername[id], AddCommas(points), g_playername[target])
 			return PLUGIN_HANDLED
@@ -10481,7 +10500,7 @@ public cmd_resetpoints(id)
 		if(equal(password, "Abhinash"))
 		{
 			g_points[target] = 0
-			Save_MySql(target)
+			MySQL_UPDATE_DATABASE(target)
 			
 			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1reset ^4%s ^1points to^3 0.", CHAT_PREFIX, g_playername[id], g_playername[target])
 			return PLUGIN_HANDLED
@@ -12905,6 +12924,9 @@ infection_explode(ent)
 	// Collisions
 	static victim
 	victim = -1
+
+	// Count
+	new count
 	
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
@@ -12931,7 +12953,18 @@ infection_explode(ent)
 		
 		// Turn into zombie
 		zombieme(victim, attacker, none)
+
+		// Increase count
+		count++
 	}
+
+	client_print_color(attacker, print_team_grey, "%s Players infected with grenade: ^3%i", CHAT_PREFIX, count)
+
+	// Increase infections
+	g_infections[attacker] += count
+
+	// Update his database
+	MySQL_UPDATE_DATABASE(attacker)
 	
 	// Get rid of the grenade
 	engfunc(EngFunc_RemoveEntity, ent)
@@ -15157,19 +15190,279 @@ public native_make_user_human(id)
 	return true
 }
 
-// Native: zp_get_user_ammo_packs
-public native_get_user_ammo_packs(id)
+// Native: GetPacks
+public native_get_user_packs(id)
 {
 	return g_ammopacks[id]
 }
 
-// Native: zp_set_user_ammo_packs
-public native_set_user_ammo_packs(id, amount)
+// Native: Addpacks
+public native_add_user_packs(id, amount)
+{
+	if (amount < 1) return false
+
+	g_ammopacks[id] += amount
+
+	return true
+}
+
+// Native: SetPacks
+public native_set_user_packs(id, amount)
 {
 	g_ammopacks[id] = amount
 }
 
-// Native: zp_get_user_nemesis
+// Native: GetPoints
+public native_get_user_points(id)
+{
+	return g_points[id]
+}
+
+// Native: AddPoints
+public native_add_user_points(id, amount)
+{
+	if (amount < 1) return false
+
+	g_points[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
+// Native: SetPoints
+public native_set_user_points(id, amount)
+{
+	if (amount < 1) return false
+
+	g_points[id] = amount
+	MySQL_UPDATE_DATABASE(amount)
+
+	return true
+}
+
+// Native: GetKills
+public native_get_user_kills(id)
+{
+	return g_kills[id]
+}
+
+// Native: AddKills
+public native_add_user_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_kills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+}
+
+// Native: SetKills
+public native_set_user_kills(id, amount)
+{
+	if (amount < 0) return false
+
+	g_kills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
+// Native: GetInfections
+public native_get_user_infections(id)
+{
+	return g_infections[id]
+}
+
+// Native: AddInfections
+public native_add_user_infections(id, amount)
+{
+	if (amount < 1) return false
+
+	g_infections[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
+// Native: SetInfections
+public native_set_user_infections(id, amount)
+{
+	if (amount < 1) return false
+
+	g_infections[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
+// Native: GetNemesisKills
+public native_get_user_nemesis_kills(id)
+{
+	return g_nemesiskills[id]
+}
+
+// Native: AddNemesisKills
+public native_add_user_nemesis_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_nemesiskills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: SetNemesisKills
+public native_set_user_nemesis_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_nemesiskills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: GetAssasinKills
+public native_get_user_assasin_kills(id)
+{
+	return g_assasinkills[id]
+}
+
+// Native: AddAssasinKills
+public native_add_user_assasin_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_assasinkills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: SetAssasinkills
+public native_set_user_assasin_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_assasinkills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: GetBombardierKills
+public native_get_user_bombardier_kills(id)
+{
+	return g_bombardierkills[id]
+}
+
+// Native: AddBombardierKills
+public native_add_user_bombardier_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_bombardierkills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: SetBombariderkills
+public native_set_user_bombardier_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_bombardierkills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: GetSurvivorKills
+public native_get_user_survivor_kills(id)
+{
+	return g_survivorkills[id]
+}
+
+// Native: AddSurvivorkills
+public native_add_user_survivor_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_survivorkills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: SetSurvivorkills
+public native_set_user_survivor_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_survivorkills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: GetSniperKills
+public native_get_user_sniper_kills(id)
+{
+	return g_sniperkills[id]
+}
+
+// Native: AddSniperKills
+public native_add_user_sniper_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_sniperkills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: SetSniperKills
+public native_set_user_sniper_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_sniperkills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: GetSmauraiKills
+public native_get_user_samurai_kills(id)
+{
+	return g_samuraikills[id]
+}
+
+// Native: AddSamuraiKills
+public native_add_user_samurai_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_samuraikills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+	
+	return true
+}
+
+// Native: SetSamuraiKills
+public native_set_user_samurai_kills(id, amount)
+{
+	if (amount < 1) return false
+
+	g_samuraikills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
+// Native: GetNemesis
 public native_get_user_nemesis(id)
 {
 	return g_nemesis[id]
@@ -15203,7 +15496,7 @@ public native_make_user_nemesis(id)
 	return true
 }
 
-// Native: zp_get_user_assassin
+// Native: GetAssasin
 public native_get_user_assassin(id)
 {
 	return g_assassin[id]
@@ -15237,7 +15530,7 @@ public native_make_user_assasin(id)
 	return true
 }
 
-// Native: zp_get_user_bombardier
+// Native: GetBombardier
 public native_get_user_bombardier(id)
 {
 	return g_bombardier[id]
@@ -15271,7 +15564,7 @@ public native_make_user_bombardier(id)
 	return true
 }
 
-// Native: zp_get_user_sniper
+// Native: GetSniper
 public native_get_user_sniper(id)
 {
 	return g_sniper[id];
@@ -15305,7 +15598,7 @@ public native_make_user_sniper(id)
 	return true
 }
 
-// Native: zp_get_user_survivor
+// Native: GetSurvivor
 public native_get_user_survivor(id)
 {
 	return g_survivor[id];
@@ -15339,7 +15632,7 @@ public native_make_user_survivor(id)
 	return true
 }
 
-// Native: zp_get_user_samurai
+// Native: GetSamurai
 public native_get_user_samurai(id)
 {
 	return g_samurai[id];
@@ -15373,46 +15666,58 @@ public native_make_user_samurai(id)
 	return true
 }
 
-// Native: zp_is_armageddon_round
-public native_is_armageddon_round()
+// Native: IsInfectionRound
+public native_is_infection_round()
 {
-	return g_armageround
+	return (g_currentmode == infection)
 }
 
-// Native: zp_is_swarm_round
+// Native: StartInfectionRound
+public native_start_infection_round()
+{
+
+}
+
+// Native: IsMultiInfectionRound
+public native_is_multi_infection_round()
+{
+	return (g_currentmode == multi)
+}
+
+// Native: IsSwarmRound
 public native_is_swarm_round()
 {
 	return g_swarmround
 }
 
-// Native: zp_is_plague_round
+// Native: IsPlagueRound
 public native_is_plague_round()
 {
 	return g_plagueround
 }
 
-// Native: zp_is_apocalypse_round
+// Native: IsArmageddonRound
+public native_is_armageddon_round()
+{
+	return g_armageround
+}
+
+// Native: IsApocalypseRound
 public native_is_apocalypse_round()
 {
 	return g_apocround
 }
 
-// Native: zp_is_devil_round
+// Native: IsDevilRound
 public native_is_devil_round()
 {
 	return g_devilround
 }
 
-// Native: zp_is_nightmare_round
+// Native: IsNightmareRound
 public native_is_nightmare_round()
 {
 	return g_nightround
-}
-
-// Native: zp_is_multi_infection_round
-public native_is_multi_infection_round()
-{
-	return (g_currentmode == multi)
 }
 
 /*================================================================================
