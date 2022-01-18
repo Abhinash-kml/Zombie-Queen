@@ -5436,10 +5436,8 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	return HAM_IGNORED // human is killed
 	
 	// Does human armor need to be reduced before infecting?
-	if (HumanArmorProtect)
-	{
-		//if (g_survivor[victim]) return
-		
+	if (HumanArmorProtect && !(g_survivor[victim] || g_sniper[victim] || g_samurai[victim]))
+	{		
 		// Get victim armor
 		static Float:armor
 		pev(victim, pev_armorvalue, armor)
@@ -5447,7 +5445,12 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		// If he has some, block the infection and reduce armor instead
 		if (armor > 0.0)
 		{
+			// Fade screen of kller
+			UTIL_ScreenFade(victim, {200, 0, 0}, 0.5, 0.5, 75, FFADE_IN, true, false)
+
+			// Emit sound
 			emit_sound(victim, CHAN_BODY, sound_armorhit, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
 			if (armor - damage > 0.0)
 			set_pev(victim, pev_armorvalue, armor - damage)
 			else
