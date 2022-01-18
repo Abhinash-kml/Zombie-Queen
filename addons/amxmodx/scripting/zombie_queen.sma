@@ -329,27 +329,27 @@ new LeapNemesisForce = 500
 new Float:LeapNemesisHeight = 300.0
 new Float:LeapNemesisCooldown = 1.0
 
-new LeapAssassin = 0
+new LeapAssassin = 1
 new LeapAssassinForce = 500
 new Float:LeapAssassinHeight = 300.0
 new Float:LeapAssassinCooldown = 1.0
 
-new LeapBombardier = 0
+new LeapBombardier = 1
 new LeapBombardierForce = 500
 new Float:LeapBombardierHeight = 300.0
 new Float:LeapBombardierCooldown = 1.0
 
-new LeapSurvivor = 0
+new LeapSurvivor = 1
 new LeapSurvivorForce = 500
 new Float:LeapSurvivorHeight = 300.0
 new Float:LeapSurvivorCooldown = 1.0
 
-new LeapSniper = 0
+new LeapSniper = 1
 new LeapSniperForce = 500
 new Float:LeapSniperHeight = 300.0
 new Float:LeapSniperCooldown = 1.0
 
-new LeapSamurai = 0
+new LeapSamurai = 1
 new LeapSamuraiForce = 500
 new Float:LeapSamuraiHeight = 300.0
 new Float:LeapSamuraiCooldown = 1.0
@@ -5186,13 +5186,16 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	
 	// Make Player body explode on kill
 	SetHamParamInteger(3, 2)
+
+	// Fade screen of kller
+	UTIL_ScreenFade(attacker, {0, 0, 200}, 0.5, 0.5, 75, FFADE_IN, true, false)
 	
 	// Special killed functions
 	if (g_nemesis[attacker]) g_nemesiskills[attacker]++
 	else if (g_assassin[attacker]) g_assasinkills[attacker]++
 	else if (g_bombardier[attacker]) g_bombardierkills[attacker]++
 	else if (g_survivor[attacker]) g_survivorkills[attacker]++
-	else if (g_sniper[attacker])
+	else if (g_sniper[attacker] && g_currentweapon[attacker] == CSW_AWP)
 	{
 		g_sniperkills[attacker]++
 		SendLavaSplash(victim)
@@ -5328,11 +5331,11 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		}
 
 		// Set Sniper's damage
-		if (g_sniper[attacker] && g_currentweapon[attacker] == CSW_AWP)
+		if ((g_sniper[attacker] && g_currentweapon[attacker] == CSW_AWP) && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
 		SetHamParamFloat(4, SniperDamage)
 		
-		// Set samurai's damage		// Abhinash
-		if (g_samurai[attacker] && g_currentweapon[attacker] == CSW_KNIFE)
+		// Set samurai's damage	
+		if ((g_samurai[attacker] && g_currentweapon[attacker] == CSW_KNIFE) && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
 		SetHamParamFloat(4, SamuraiDamage)
 
 		// Crossbow damage
@@ -5405,36 +5408,21 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		{
 			// Ignore nemesis damage override if damage comes from a 3rd party entity
 			// (to prevent this from affecting a sub-plugin's rockets e.g.)
-			if (inflictor == attacker)
-			{
-				// Set nemesis damage
-				SetHamParamFloat(4, NemesisDamage)
-			}
-			
+			if (inflictor == attacker) SetHamParamFloat(4, NemesisDamage)
 			return HAM_IGNORED
 		}
 		else if (g_assassin[attacker])
 		{
 			// Ignore assassin damage override if damage comes from a 3rd party entity
 			// (to prevent this from affecting a sub-plugin's rockets e.g.)
-			if (inflictor == attacker)
-			{
-				// Set assassin damage
-				SetHamParamFloat(4, AssassinDamage)
-			}
-			
+			if (inflictor == attacker) SetHamParamFloat(4, AssassinDamage)
 			return HAM_IGNORED
 		}
 		else if (g_bombardier[attacker])
 		{
 			// Ignore assassin damage override if damage comes from a 3rd party entity
 			// (to prevent this from affecting a sub-plugin's rockets e.g.)
-			if (inflictor == attacker)
-			{
-				// Set assassin damage
-				SetHamParamFloat(4, BombardierDamage)
-			}
-			
+			if (inflictor == attacker) SetHamParamFloat(4, BombardierDamage)
 			return HAM_IGNORED
 		}
 	}
@@ -6300,6 +6288,7 @@ public Rocket_Touch(attacker, iRocket)
 					if(g_nemesis[victim] && g_assassin[victim] && g_bombardier[victim])
 					fDamage *= 1.50
 				
+					// Throw him away in his current vector
 					static Float: fVelocity[3]
 					pev(victim, pev_velocity, fVelocity)
 					xs_vec_mul_scalar(fVelocity, 2.75, fVelocity)
@@ -6313,6 +6302,7 @@ public Rocket_Touch(attacker, iRocket)
 					else 
 					{
 						ExecuteHamB(Ham_Killed, victim, attacker, 2)
+						SendLavaSplash(victim)
 					}
 				}
 			}
@@ -13252,12 +13242,13 @@ public explosion_explode(ent)
 			damage = 700.0 - distance
 			health = get_user_health(victim)
 			damage = float(floatround(damage))
+
+			// Throw him away in his current vector
 			pev(victim , pev_velocity, clvelocity)
-			clvelocity[0] += random_float(-230.0, 230.0)
-			clvelocity[1] += random_float(-230.0, 230.0)
-			clvelocity[2] += random_float(60.0, 129.0)
+			xs_vec_mul_scalar(clvelocity, 2.75, clvelocity)
+			clvelocity[2] *= 1.75
 			set_pev(victim, pev_velocity, clvelocity)
-			
+
 			// Send Screenfade message
 			UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
 			
@@ -13278,6 +13269,7 @@ public explosion_explode(ent)
 			else
 			{
 				ExecuteHamB(Ham_Killed, victim, attacker, 2)
+				SendLavaSplash(victim)
 			}
 		}
 	}
