@@ -1156,6 +1156,7 @@ new g_iGameMenu
 new g_iZombieClassMenu
 new g_iExtraItemsMenu
 new g_iExtraItems2Menu
+new g_iStatisticsMenu
 new g_iPointShopMenu
 new g_iAmmoMenu
 new g_iFeaturesMenu
@@ -2434,16 +2435,16 @@ public plugin_init()
 	set_cvar_num("sv_skycolor_b", 0)
 	
 	// Create the HUD Sync Objects
-	g_MsgSync = CreateHudSyncObj()
-	g_MsgSync2 = CreateHudSyncObj()
-	g_MsgSync3 = CreateHudSyncObj()
-	g_MsgSync4 = CreateHudSyncObj()
+	g_MsgSync 	  = CreateHudSyncObj()
+	g_MsgSync2 	  = CreateHudSyncObj()
+	g_MsgSync3 	  = CreateHudSyncObj()
+	g_MsgSync4 	  = CreateHudSyncObj()
 	g_MsgSync5[0] = CreateHudSyncObj()
 	g_MsgSync5[1] = CreateHudSyncObj()
 	g_MsgSync5[2] = CreateHudSyncObj()
 	g_MsgSync5[3] = CreateHudSyncObj()
-	g_MsgSync6 = CreateHudSyncObj()
-	g_MsgSync7 = CreateHudSyncObj()
+	g_MsgSync6 	  = CreateHudSyncObj()
+	g_MsgSync7 	  = CreateHudSyncObj()
 
 	
 	// Get Max Players
@@ -2463,6 +2464,7 @@ public plugin_init()
 	g_iZombieClassMenu = menu_create("Zombie Classes", "_ZombieClasses", 0)	// Zombie class menu
 	g_iExtraItemsMenu = menu_create("Extra Items", "_ExtraItems", 0)	// Human Extra items menu
 	g_iExtraItems2Menu = menu_create("Extra Items", "_ExtraItems2", 0)	// Zombie Extra items menu
+	g_iStatisticsMenu = menu_create("Statistics Menu", "_StatisticsMenu", 0) // Statistics Sub - menu
 	g_iPointShopMenu = menu_create("Points Shop", "_PointShop", 0)	// Points shop menu
 	g_iAmmoMenu = menu_create("Buy Ammo Packs", "_AmmoMenu", 0)	// Ammo shop menu
 	g_iFeaturesMenu = menu_create("Buy Features", "_Features", 0)	// Features menu
@@ -2474,7 +2476,7 @@ public plugin_init()
 	menu_additem(g_iGameMenu, "Choose zombie class", "1", 0, -1)
 	menu_additem(g_iGameMenu, "Buy features with points", "2", 0, -1)
 	menu_additem(g_iGameMenu, "Unstuck", "3", 0, -1)
-	menu_additem(g_iGameMenu, "See rank", "4", 0, -1)
+	menu_additem(g_iGameMenu, "Statistics", "4", 0, -1)
 	
 	// Extra Items Human menu
 	for (new i; i < sizeof(g_cExtraItems); i++)
@@ -2499,7 +2501,12 @@ public plugin_init()
 		num_to_str(i, cNumber, 3)
 		menu_additem(g_iZombieClassMenu, cLine, cNumber, 0, -1)
 	}
-	
+
+	// Statistics menu
+	menu_additem(g_iStatisticsMenu, "Your rank", "0", 0, -1)
+	menu_additem(g_iStatisticsMenu, "Global top 15", "1", 0, -1)
+	menu_additem(g_iStatisticsMenu, "Today's top players", "2", 0, -1)
+
 	// Points Shop menu
 	for (new i; i < sizeof(g_cPointsMenu); i++)
 	{
@@ -2722,61 +2729,63 @@ public MySQL_UPDATE_DATABASE(id)
 	SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 } 
 
-public Sql_Rank(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
+public MySQL_GetStatistics(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
 	new id, rank, Float:var1, g_menu, menudata[256]
     rank = SQL_NumResults(Query)
    	id = Data[0]
    
-	if (g_deaths[id])
-	{
-		var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]));
-	}
-	else
-	{
-		var1 = float(g_kills[id]);
-	}
-
-	g_menu = menu_create("Ranking", "EmptyPanel", 0)
-	formatex(menudata, 255, "Rank: %s out of %s  Score: %s", AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]))
+	if (g_deaths[id]) var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]))
+	else var1 = float(g_kills[id])
+	
+	g_menu = menu_create("\yRanking", "EmptyPanel", 0)
+	formatex(menudata, 255, "Rank: \r%s \wout of \r%s  \wScore: \r%s", AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]))
 	menu_additem(g_menu, menudata, "1", 0, -1)
-	formatex(menudata, 255, "Kills: %s  Deaths: %s  KPD: %0.2f", AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
+	formatex(menudata, 255, "Total kills: \r%s  \wDeaths: \r%s  \wInfections: \r%s", AddCommas(g_kills[id]), AddCommas(g_deaths[id]), AddCommas(g_infections[id]))
 	menu_additem(g_menu, menudata, "2", 0, -1)
-	formatex(menudata, 255, "Status: %s", g_bVip[id] ? "Gold Member ®" : "Player")
+	formatex(menudata, 255, "Kill Per Death Ratio: \r%0.2f", var1)
 	menu_additem(g_menu, menudata, "3", 0, -1)
+	formatex(menudata, 255, "Nemesis kills: \r%s", AddCommas(g_nemesiskills[id]))
+	menu_additem(g_menu, menudata, "4", 0, -1)
+	formatex(menudata, 255, "Assasin kills: \r%s", AddCommas(g_assasinkills[id]))
+	menu_additem(g_menu, menudata, "5", 0, -1)
+	formatex(menudata, 255, "Bombardier kills: \r%s", AddCommas(g_bombardierkills[id]))
+	menu_additem(g_menu, menudata, "6", 0, -1)
+	formatex(menudata, 255, "Survivor kills: \r%s", AddCommas(g_survivorkills[id]))
+	menu_additem(g_menu, menudata, "7", 0, -1)
+	formatex(menudata, 255, "Sniper kills: \r%s", AddCommas(g_sniperkills[id]))
+	menu_additem(g_menu, menudata, "8", 0, -1)
+	formatex(menudata, 255, "Samurai kills: \r%s", AddCommas(g_samuraikills[id]))
+	menu_additem(g_menu, menudata, "9", 0, -1)
+
 	menu_setprop(g_menu, 6, -1)
 	menu_display(id, g_menu, 0)
 
+	//formatex(menudata, 255, "")
+	//menu_additem(g_menu, menudata, "", 0, -1)
 
-	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is^4 %s^1 out of^4 %s^1 -- ^3KILLS: ^4%s ^3DEATHS: ^4%s ^3KPD: ^4%0.2f", CHAT_PREFIX, g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
+	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is ^4%s ^1out of ^4%s ^1[ ^3Kills: ^4%s ^1- ^3Deaths: ^4%s ^1- ^3KPD: - ^4%0.2f ^1- ^3Score: ^4%s ^1]", CHAT_PREFIX, g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1, AddCommas(g_score[id]))
     
     return PLUGIN_HANDLED
 } 
 
-public Sql_WelcomeRank(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
+public MySQL_WelcomeMessage(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
 	new id, rank, Float:var1
     rank = SQL_NumResults(Query)
    	id = Data[0]
 
-	if (g_deaths[id])
-	{
-		var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]))
-	}
-	else
-	{
-		var1 = float(g_kills[id])
-	}
+	if (g_deaths[id]) var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]))
+	else var1 = float(g_kills[id])
 
 	new HostName[64]
 	get_cvar_string("hostname", HostName, charsmax(HostName))
 
-	set_dhudmessage(0, 255, 0, 0.02, 0.2, 2, 6.0, 8.0)
+	set_dhudmessage(random(256), random(256), random(256), 0.02, 0.2, 2, 6.0, 8.0)
 	show_dhudmessage(id, "Welcome, %s^nRank: %s of %s Score: %s^nKills: %s Deaths: %s KPD: %0.2f^nEnjoy!",
 	g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
 	
-	
-	set_dhudmessage(157, 103, 200, 0.02, 0.5, 2, 6.0, 8.0)
+	set_dhudmessage(random(256), random(256), random(256), 0.02, 0.5, 2, 6.0, 8.0)
 	show_dhudmessage(id, "%s^nDon't forget to add us to your favourites!", HostName)
     
     return PLUGIN_HANDLED
@@ -2784,7 +2793,7 @@ public Sql_WelcomeRank(FailState, Handle:Query, Error[], Errcode, Data[], DataSi
 
 public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 {
-	static id, Buffer[4096], Place, Name[32], Score, Kills, Deaths, Points, Len
+	static id, Buffer[4096], Place, Name[32], Score, Kills, Deaths, Infections, Points, Len
 
 	Buffer[0] = '^0';
 
@@ -2795,20 +2804,40 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 	if (is_user_connected(id))
 	{
 		formatex(Buffer, charsmax(Buffer), "<meta charset=utf-8><style>body{background:#112233;font-family:Arial}th{background:#2E2E2E;color:#FFF;padding:5px 2px;text-align:left}td{padding:5px 2px}table{width:100%%;background:#EEEECC;font-size:12px;}h2{color:#FFF;font-family:Verdana;text-align:center}#nr{text-align:center}#c{background:#E2E2BC}</style><h2>%s</h2><table border=^"0^" align=^"center^" cellpadding=^"0^" cellspacing=^"1^"><tbody>", "TOP 15")
-		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>Name<th>Kills<th>Deaths<th>Points<th>Score")
+		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>Name<th>Kills<th>Deaths<th>Infections<th>Points<th>Score<th>KPD")
 
 		while (SQL_MoreResults(Query))
 		{
+			new Float:KPD
+
 			SQL_ReadResult(Query, 0, Name, sizeof(Name) - 1)
 
-			Points = SQL_ReadResult(Query, 1)
-			Kills = SQL_ReadResult(Query, 2)
-			Deaths = SQL_ReadResult(Query, 3)
-			Score = SQL_ReadResult(Query, 4)
-			
+			Points     = SQL_ReadResult(Query, 1)
+			Kills 	   = SQL_ReadResult(Query, 2)
+			Deaths 	   = SQL_ReadResult(Query, 3)
+			Infections = SQL_ReadResult(Query, 4)
+			Score 	   = SQL_ReadResult(Query, 5)
+
+			if (Kills) KPD = floatdiv(float(Kills), float(Deaths))
+			else KPD = float(Kills)
+
+			/*
+			g_points[id] 		  = SQL_ReadResult(Query, 2)
+			g_kills[id]  		  = SQL_ReadResult(Query, 3)
+			g_deaths[id] 		  = SQL_ReadResult(Query, 4)
+			g_infections[id] 	  = SQL_ReadResult(Query, 5)
+			g_nemesiskills[id] 	  = SQL_ReadResult(Query, 6)
+			g_assasinkills[id] 	  = SQL_ReadResult(Query, 7)
+			g_bombardierkills[id] = SQL_ReadResult(Query, 8)
+			g_survivorkills[id]   = SQL_ReadResult(Query, 9)
+			g_sniperkills[id] 	  = SQL_ReadResult(Query, 10)
+			g_samuraikills[id] 	  = SQL_ReadResult(Query, 11)
+			g_score[id] 		  = SQL_ReadResult(Query, 12)
+			*/
+
 			++Place
 
-			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%s<td>%s<td>%s<td>%s<td>%s<td>%s", Place % 2 == 0 ? "" : " id=c", AddCommas(Place), Name, AddCommas(Kills), AddCommas(Deaths), AddCommas(Points), AddCommas(Score))
+			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%s<td>%s<td>%s<td>%s<td>%s<td>%s<td>%s<td>%.2f", Place % 2 == 0 ? "" : " id=c", AddCommas(Place), Name, AddCommas(Kills), AddCommas(Deaths), AddCommas(Infections), AddCommas(Points), AddCommas(Score), KPD)
 
 			SQL_NextRow(Query)
 		}
@@ -2816,7 +2845,7 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 		new ServerName[64]
 		get_cvar_string("hostname", ServerName, charsmax(ServerName))
 		
-		formatex(Buffer[Len], charsmax(Buffer), "<tr><th colspan=^"7^" id=nr>%s", ServerName)
+		formatex(Buffer[Len], charsmax(Buffer), "<tr><th colspan=^"10^" id=nr>%s", ServerName)
 		add(Buffer, charsmax(Buffer), "</tbody></table></body>")
 		
 		show_motd(id, Buffer, "Top Players")
@@ -2831,7 +2860,7 @@ public init_welcome(id)
 	new Data[1]
 	Data[0] = id
 	format(szTemp,charsmax(szTemp),"SELECT DISTINCT `score` FROM `perfectzm` WHERE `score` >= %d ORDER BY `score` ASC", g_score[id])
-	SQL_ThreadQuery(g_SqlTuple, "Sql_WelcomeRank", szTemp, Data, 1)
+	SQL_ThreadQuery(g_SqlTuple, "MySQL_WelcomeMessage", szTemp, Data, 1)
 }
 
 public EmptyPanel(id, iMenu, iItem)
@@ -2844,6 +2873,24 @@ public IgnoreHandle(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 	SQL_FreeHandle(Query)
 
 	return PLUGIN_HANDLED
+}
+
+public ShowPlayerStatistics(id)
+{
+	new szTemp[512]
+	new Data[1]
+	Data[0] = id
+	format(szTemp, charsmax(szTemp), "SELECT DISTINCT `score` FROM `perfectzm` WHERE `score` >= %d ORDER BY `score` ASC", g_score[id])
+	SQL_ThreadQuery(g_SqlTuple, "MySQL_GetStatistics", szTemp, Data, 1)
+}
+
+public ShowGlobalTop15(id)
+{
+	new szTemp[512]
+	new Data[1]
+	Data[0] = id
+	format(szTemp, charsmax(szTemp), "SELECT `name`, `points`, `kills`, `deaths`, `infections`, `score` FROM `perfectzm` ORDER BY `score` DESC LIMIT 15")
+	SQL_ThreadQuery(g_SqlTuple, "TopFunction", szTemp, Data, 1)
 }
 
 public TaskGetAdmins()
@@ -3143,6 +3190,7 @@ public _GameMenu(id, menu, item)
 		static cBuffer[3]
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
+
 		switch (iChoice)
 		{
 		case 0:
@@ -3157,26 +3205,17 @@ public _GameMenu(id, menu, item)
 					{
 						menu_display(id, g_iExtraItems2Menu, 0)
 					}
-					else
-					{
-						client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
-					}
+					else client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
 				}
 			}
-		case 1:
-			{
-				menu_display(id, g_iZombieClassMenu, 0)
-			}
+		case 1: menu_display(id, g_iZombieClassMenu, 0)
 		case 2:
 			{
 				if(g_isalive[id] && !g_sniper[id] || !g_samurai[id] || !g_nemesis[id] || !g_assassin[id] || !g_bombardier[id])
 				{
 					menu_display(id, g_iPointShopMenu, 0)
 				}
-				else
-				{
-					client_print_color(id, print_team_grey, "%s Points shop is unavailbale right now.", CHAT_PREFIX)
-				}
+				else client_print_color(id, print_team_grey, "%s Points shop is unavailbale right now.", CHAT_PREFIX)
 			}
 		case 3:
 			{
@@ -3194,6 +3233,7 @@ public _GameMenu(id, menu, item)
 						fVector[0] = floatsub(fOrigin[0], floatmul(fMins[0], g_fSizes[i][0]))
 						fVector[1] = floatsub(fOrigin[1], floatmul(fMins[1], g_fSizes[i][1]))
 						fVector[2] = floatsub(fOrigin[2], floatmul(fMins[2], g_fSizes[i][2]))
+
 						if (is_origin_vacant(fVector, id))
 						{
 							engfunc(EngFunc_SetOrigin, id, fVector)
@@ -3207,19 +3247,9 @@ public _GameMenu(id, menu, item)
 					}
 					client_print_color(id, print_team_grey, "%s You have been unstucked!", CHAT_PREFIX)
 				}
-				else
-				{
-					client_print_color(id, print_team_grey, "%s You are not stuck!", CHAT_PREFIX)
-				}
+				else client_print_color(id, print_team_grey, "%s You are not stuck!", CHAT_PREFIX)
 			}
-		case 4:
-			{
-				new szTemp[512]
-				new Data[1]
-    			Data[0] = id
-				format(szTemp,charsmax(szTemp),"SELECT DISTINCT `score` FROM `perfectzm` WHERE `score` >= %d ORDER BY `score` ASC", g_score[id])
-			    SQL_ThreadQuery(g_SqlTuple, "Sql_Rank", szTemp, Data, 1)
-			}
+		case 4: menu_display(id, g_iStatisticsMenu, 0)
 		}
 	}
 	return  PLUGIN_CONTINUE
@@ -3255,16 +3285,14 @@ public _ExtraItems(id, menu, item)
 								g_nvisionenabled[id] = true
 								
 								// Custom nvg?
-								if (CustomNightVision == 1)
+								if (CustomNightVision)
 								{
-									remove_task(id+TASK_NVISION)
+									remove_task(id + TASK_NVISION)
 									set_task(0.1, "set_user_nvision", id+TASK_NVISION, _, _, "b")
 								}
-								else
-								set_user_gnvision(id, 1)
+								else set_user_gnvision(id, 1)
 							}
-							else
-							cs_set_user_nvg(id, 1)
+							else cs_set_user_nvg(id, 1)
 
 							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 						}
@@ -4049,6 +4077,26 @@ public _ZombieClasses(id, menu, item)
 		client_print_color(id, print_team_grey, "%s Health:^4 %s^1 | Speed:^4 %0.0f^1 | Gravity:^4 %0.0f^1 | Knockback:^4 %0.0f%", CHAT_PREFIX, AddCommas(g_cZombieClasses[iChoice][Health]), g_cZombieClasses[iChoice][Speed], floatmul(100.0, g_cZombieClasses[iChoice][Gravity]), floatmul(100.0, g_cZombieClasses[iChoice][Knockback]))
 	}
 	return PLUGIN_CONTINUE
+}
+
+public _StatisticsMenu(id, menu, item)
+{
+	if (item != -3 && g_isconnected[id])
+	{
+		static iChoice
+		static iDummy
+		static cBuffer[15]
+
+		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		iChoice = str_to_num(cBuffer)
+
+		switch (iChoice)
+		{
+			case 0: ShowPlayerStatistics(id)
+			case 1: ShowGlobalTop15(id)
+			case 2:  { /* Comming soon */ }
+		}
+	}
 }
 
 public _PointShop(id, menu, item)
@@ -4880,54 +4928,47 @@ public logevent_round_end()
 		}
 	}
 
-	static iFrags;
-	static iMaximumPacks;
-	static iMaximumKills;
-	static iPacksLeader;
-	static iKillsLeader;
-	iMaximumPacks = 0;
-	iMaximumKills = 0;
-	iPacksLeader = 0;
-	iKillsLeader = 0;
-	g_iVariable = 1;
+	static iFrags
+	static iMaximumPacks
+	static iMaximumKills
+	static iPacksLeader
+	static iKillsLeader
+	iMaximumPacks = 0
+	iMaximumKills = 0
+	iPacksLeader = 0
+	iKillsLeader = 0
+	g_iVariable = 1
+
 	while (g_maxplayers + 1 > g_iVariable)
 	{
 		if (g_isconnected[g_iVariable])
 		{
-			iFrags = get_user_frags(g_iVariable);
+			iFrags = get_user_frags(g_iVariable)
 			if (iFrags > iMaximumKills)
 			{
-				iMaximumKills = iFrags;
-				iKillsLeader = g_iVariable;
+				iMaximumKills = iFrags
+				iKillsLeader = g_iVariable
 			}
 		}
-		g_iVariable += 1;
+		g_iVariable += 1
 	}
-	g_iVariable = 1;
+	g_iVariable = 1
 	while (g_maxplayers + 1 > g_iVariable)
 	{
 		if (g_isconnected[g_iVariable] && g_ammopacks[g_iVariable] > iMaximumPacks)
 		{
-			iMaximumPacks = g_ammopacks[g_iVariable];
-			iPacksLeader = g_iVariable;
+			iMaximumPacks = g_ammopacks[g_iVariable]
+			iPacksLeader = g_iVariable
 		}
-		g_iVariable += 1;
+		g_iVariable += 1
 	}
 	if (g_isconnected[iKillsLeader])
 	{
-		if (g_iKillsThisRound[iKillsLeader])
-		{
-			client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playername[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader]);
-		}
-		else
-		{
-			client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags!", g_playername[iKillsLeader], AddCommas(iMaximumKills))
-		}
+		if (g_iKillsThisRound[iKillsLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playername[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader])
+		else client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags!", g_playername[iKillsLeader], AddCommas(iMaximumKills))
 	}
-	if (g_isconnected[iPacksLeader])
-	{
-		client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 packs!", g_playername[iPacksLeader], AddCommas(iMaximumPacks))
-	}
+
+	if (g_isconnected[iPacksLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 packs!", g_playername[iPacksLeader], AddCommas(iMaximumPacks))
 	
 	// Game commencing triggers round end
 	g_gamecommencing = false
@@ -5104,7 +5145,6 @@ public OnPlayerSpawn(id)
 	g_specialclass[id] = false
 	g_cClass[id] = "Human"
 	g_jumpnum[id] = 1
-
 	
 	// Remove previous tasks
 	remove_task(id+TASK_SPAWN)
@@ -7155,30 +7195,17 @@ public Client_Say(id)
 	{
 		static cMap[32]
 		get_cvar_string("amx_nextmap", cMap, 32)
-		if (cMap[0])
-		{
-			client_print_color(id, print_team_grey, "^1Next map:^4 %s", cMap)
-		}
-		else
-		{
-			client_print_color(id, print_team_grey, "^1Next map:^4 [not yet voted on]")
-		}
+
+		if (cMap[0]) client_print_color(id, print_team_grey, "^1Next map:^4 %s", cMap)
+		else client_print_color(id, print_team_grey, "^1Next map:^4 [not yet voted on]")
 	}
 	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4))
 	{
-		new szTemp[512]
-		new Data[1]
-		Data[0] = id
-		format(szTemp,charsmax(szTemp),"SELECT DISTINCT `score` FROM `perfectzm` WHERE `score` >= %d ORDER BY `score` ASC", g_score[id])
-	    SQL_ThreadQuery(g_SqlTuple, "Sql_Rank", szTemp, Data, 1)
+		ShowPlayerStatistics(id)
 	}
 	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3))
 	{
-		new szTemp[512]
-		new Data[1]
-		Data[0] = id
-		format(szTemp, charsmax(szTemp), "SELECT `name`, `points`, `kills`, `deaths`, `score` FROM `perfectzm` ORDER BY `score` DESC LIMIT 15")
-		SQL_ThreadQuery(g_SqlTuple, "TopFunction", szTemp, Data, 1)
+		ShowGlobalTop15(id)
 	}
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
@@ -7199,10 +7226,7 @@ public Client_Say(id)
 			    cs_set_user_team(id, CS_TEAM_SPECTATOR)
 			    user_kill(id)
 			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You are already a spectator", CHAT_PREFIX);
-			}
+			else client_print_color(id, print_team_grey, "%s You are already a spectator", CHAT_PREFIX);
 		}
 	}
 	else if (equali(cMessage, "/back", 5) || equali(cMessage, "back", 4))
@@ -7214,15 +7238,9 @@ public Client_Say(id)
 	    		cs_set_user_team(id, CS_TEAM_CT)
 	    		ExecuteHamB(Ham_CS_RoundRespawn, id)
 	    	}
-	    	else
-	    	{
-	    		cs_set_user_team(id, CS_TEAM_CT)
-	    	}  
+	    	else cs_set_user_team(id, CS_TEAM_CT)  
 	    }
-	    else
-	    {
-	    	client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
-	    }
+	    else client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
 	}
 	else if (equali(cMessage, "/donate", 7) || equali(cMessage, "donate", 6))
 	{
@@ -7234,6 +7252,7 @@ public Client_Say(id)
 		parse(cMessage, cDummy, 14, cTarget, 32, cAmmo, 5)
 		target = cmd_target(id, cTarget, 0)
 		ammo = str_to_num(cAmmo)
+
 		if (!target)
 		{
 			client_print_color(id, print_team_grey,  "%s Invalid player or matching multiple targets!", CHAT_PREFIX)
@@ -7276,6 +7295,7 @@ public Client_Say(id)
 	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
 	}
+
 	return PLUGIN_CONTINUE
 }
 
@@ -7346,19 +7366,11 @@ public Client_SayTeam(id)
 	}
 	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4))
 	{
-		new szTemp[512]
-		new Data[1]
-		Data[0] = id
-		format(szTemp,charsmax(szTemp),"SELECT DISTINCT `score` FROM `perfectzm` WHERE `score` >= %d ORDER BY `score` ASC", g_score[id])
-	    SQL_ThreadQuery(g_SqlTuple, "Sql_Rank", szTemp, Data, 1)
+		ShowPlayerStatistics(id)
 	}
 	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3))
 	{
-		new szTemp[512]
-		new Data[1]
-		Data[0] = id
-		format(szTemp, charsmax(szTemp), "SELECT `name`, `points`, `kills`, `deaths`, `score` FROM `perfectzm` ORDER BY `score` DESC LIMIT 15")
-		SQL_ThreadQuery(g_SqlTuple, "TopFunction", szTemp, Data, 1)
+		ShowGlobalTop15(id)
 	}
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
@@ -7379,10 +7391,7 @@ public Client_SayTeam(id)
 			    cs_set_user_team(id, CS_TEAM_SPECTATOR)
 			    user_kill(id)
 			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You are already a spectator", CHAT_PREFIX);
-			}
+			else client_print_color(id, print_team_grey, "%s You are already a spectator", CHAT_PREFIX)
 		}
 	}
 	else if (equali(cMessage, "/back", 5) || equali(cMessage, "back", 4))
@@ -7394,15 +7403,9 @@ public Client_SayTeam(id)
 	    		cs_set_user_team(id, CS_TEAM_CT)
 	    		ExecuteHamB(Ham_CS_RoundRespawn, id)
 	    	}
-	    	else
-	    	{
-	    		cs_set_user_team(id, CS_TEAM_CT)
-	    	}  
+	    	else cs_set_user_team(id, CS_TEAM_CT)
 	    }
-	    else
-	    {
-	    	client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
-	    }
+	    else client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
 	}
 	else if (equali(cMessage, "/donate", 7) || equali(cMessage, "donate", 6))
 	{
@@ -7414,6 +7417,7 @@ public Client_SayTeam(id)
 		parse(cMessage, cDummy, 14, cTarget, 32, cAmmo, 5)
 		target = cmd_target(id, cTarget, 0)
 		ammo = str_to_num(cAmmo)
+
 		if (!target)
 		{
 			client_print_color(id, print_team_grey,  "%s Invalid player or matching multiple targets!", CHAT_PREFIX)
@@ -7438,6 +7442,7 @@ public Client_SayTeam(id)
 		g_ammopacks[target] += ammo
 		g_ammopacks[id] -= ammo
 		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], AddCommas(ammo), g_playername[target])
+
 		return PLUGIN_CONTINUE
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
@@ -7461,14 +7466,9 @@ public Client_SayTeam(id)
 
 public Admin_menu(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
-	{
-		show_menu_admin(id)
-	}
-	else
-	{
-		return PLUGIN_HANDLED
-	}
+	if (g_bAdmin[id] && AdminHasFlag(id, 'a')) show_menu_admin(id)
+	else return PLUGIN_HANDLED
+
 	return PLUGIN_HANDLED
 }
 
@@ -7480,14 +7480,8 @@ public show_menu_buy1(taskid)
 {
 	// Get player's id.
 	static id
-	if (taskid > g_maxplayers)
-	{
-		id = taskid - TASK_SPAWN
-	}
-	else
-	{
-		id = taskid
-	}
+	if (taskid > g_maxplayers) id = taskid - TASK_SPAWN
+	else id = taskid
 	
 	// Zombies, Survivors and Snipers get no guns.
 	if (!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
