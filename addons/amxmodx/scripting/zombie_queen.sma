@@ -4680,14 +4680,13 @@ public logevent_round_end()
 	lastendtime = current_time
 	
 	// Temporarily save player stats?
-	if (SaveStats == 1)
+	if (SaveStats)
 	{
 		static id, team
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Not connected
-			if (!g_isconnected[id])
-			continue
+			if (!g_isconnected[id]) continue
 			
 			team = fm_cs_get_user_team(id)
 			
@@ -4708,14 +4707,8 @@ public logevent_round_end()
 			g_jumpnum[id] = 0
 			g_multijump[id] = false
 		}
-		if (g_norecoil[id])
-		{
-			g_norecoil[id] = false
-		}
-		if (g_blinks[id])
-		{
-			g_blinks[id] = 0
-		}
+		if (g_norecoil[id]) g_norecoil[id] = false
+		if (g_blinks[id]) g_blinks[id] = 0
 
 		LIMIT[id][TRYDER] = 0
 		/*else if (g_allheadshots[id])
@@ -4821,8 +4814,71 @@ public logevent_round_end()
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
 			}
 		}
+		case armageddon, devil, apocalypse:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This victory is very precious^nCheers to all the survivors")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "We got defeated by the bad ones^nGet ready to be enslaved")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "The suffering has just began...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case nightmare:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "We rise from the ashes...")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nCant feel the same pain again...")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
 	}
-	
 
 	static iFrags;
 	static iMaximumPacks;
