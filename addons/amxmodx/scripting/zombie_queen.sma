@@ -4753,37 +4753,76 @@ public logevent_round_end()
 		remove_task(TASK_AMBIENCESOUNDS)
 		ambience_sound_stop()
 	}
-	
+
 	// Show HUD notice, play win sound, update team scores...
-	if (!fnGetZombies())
+	switch (g_lastmode)
 	{
-		// Human team wins
-		set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "Humans have defeated the plague!")
-		
-		// Play win sound and increase score, unless game commencing
-		PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
-		if (!g_gamecommencing) g_scorehumans++
+		case infection, multi:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Humans have defeated the plague!")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Zombies have taken over the world!")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "No one won...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case swarm, plague:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Thats how we go it soldiers^nI bet the hoard will remember this defeat")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This is the begenning of the end...")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "The suffering has just began...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
 	}
-	else if (!fnGetHumans())
-	{
-		// Zombie team wins
-		set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "Zombies have taken over the world!")
-		
-		// Play win sound and increase score, unless game commencing
-		PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
-		if (!g_gamecommencing) g_scorezombies++
-	}
-	else
-	{
-		// No one wins
-		set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "No one won...")
-		
-		// Play win sound
-		PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
-	}
+	
 
 	static iFrags;
 	static iMaximumPacks;
@@ -5331,11 +5370,11 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		}
 
 		// Set Sniper's damage
-		if ((g_sniper[attacker] && g_currentweapon[attacker] == CSW_AWP) && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
+		if ((g_sniper[attacker] && g_currentweapon[attacker] == CSW_AWP) && (damage_type & DMG_BULLET))
 		SetHamParamFloat(4, SniperDamage)
 		
 		// Set samurai's damage	
-		if ((g_samurai[attacker] && g_currentweapon[attacker] == CSW_KNIFE) && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
+		if ((g_samurai[attacker] && g_currentweapon[attacker] == CSW_KNIFE) && (damage_type & DMG_BULLET))
 		SetHamParamFloat(4, SamuraiDamage)
 
 		// Crossbow damage
@@ -5346,15 +5385,16 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		}
 
 		// Double damage
-		if (!g_bVip[attacker] && g_doubledamage[attacker] && !g_sniper[attacker] && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
+		if (!g_bVip[attacker] && g_doubledamage[attacker] && !g_sniper[attacker] && !(damage_type & DMG_BULLET))
 		{
 			damage *= 2.0
 			SetHamParamFloat(4, damage)
 		}
 
-		if (VipHasFlag(attacker, 'g') && !g_zombie[attacker] && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
+		if (VipHasFlag(attacker, 'g') && (!g_zombie[attacker] && !g_sniper[attacker] && !g_samurai[attacker]) && (damage_type & DMG_BULLET))
 		{
 			damage *= 1.5
+			SetHamParamFloat(4, damage)
 		}
 
 		if (((g_goldenak47[attacker] && g_currentweapon[attacker] == CSW_AK47) || (g_goldenm4a1[attacker] && g_currentweapon[attacker] == CSW_M4A1) || (g_goldenxm1014[attacker] && g_currentweapon[attacker] == CSW_XM1014) || (g_goldendeagle[attacker] && g_currentweapon[attacker] == CSW_DEAGLE)) && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
@@ -5385,7 +5425,9 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 			if (damage_type & DMG_BLAST) 
 			{
 				client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
+
 				set_hudmessage(200, 0, 0, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
+				show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))
 
 				// Send Screenfade message
 				UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
@@ -5393,9 +5435,11 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 				// Send Screenshake message
 				SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
 			}
-			else if (!(g_sniper[attacker] || g_samurai[attacker])) set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
-
-			show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))	
+			else if (!(g_sniper[attacker] || g_samurai[attacker]) && (damage_type & DMG_BULLET))
+			{
+				set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
+				show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))	
+			} 
 		}
 		
 		return HAM_IGNORED
@@ -5471,6 +5515,8 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	g_kills[attacker]++
 	g_infections[attacker]++
 	g_score[attacker] += 10
+
+	// Update database
 	MySQL_UPDATE_DATABASE(attacker)
 
 	return HAM_SUPERCEDE
@@ -5484,9 +5530,9 @@ public OnTakeDamagePost(victim)
 	// Check if proper CVARs are enabled
 	if (g_zombie[victim])
 	{
-		if (g_nemesis[victim]) if (NemesisPainfree == 0) return
-		else if (g_assassin[victim]) if (AssassinPainfree == 0) return
-		else if (g_bombardier[victim]) if (BombardierPainfree == 0) return
+		if (g_nemesis[victim]) if (!NemesisPainfree) return
+		else if (g_assassin[victim]) if (!AssassinPainfree) return
+		else if (g_bombardier[victim]) if (!BombardierPainfree) return
 		else
 		switch (ZombiePainfree)
 		{
@@ -5497,9 +5543,9 @@ public OnTakeDamagePost(victim)
 	}
 	else
 	{
-		if (g_survivor[victim]) if (SurvivorPainfree == 0) return
-		else if (g_sniper[victim]) if (SniperPainfree == 0) return
-		else if (g_samurai[victim]) if (SamuraiPainfree == 0) return
+		if (g_survivor[victim]) if (!SurvivorPainfree) return
+		else if (g_sniper[victim]) if (!SniperPainfree) return
+		else if (g_samurai[victim]) if (!SamuraiPainfree) return
 		else return
 	}
 	
@@ -5649,13 +5695,7 @@ public OnPlayerDuck(id)
 			if (!g_cached_leapbombardier) return
 			cooldown = g_cached_leapbombardiercooldown
 		}
-		else
-		{
-			if (LeapZombies == 1)
-			{
-				cooldown = g_cached_leapzombiescooldown
-			}
-		}
+		else if (LeapZombies == 1) cooldown = g_cached_leapzombiescooldown	
 	}
 	else
 	{
