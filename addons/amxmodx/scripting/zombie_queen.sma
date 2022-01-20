@@ -128,6 +128,7 @@ enum (+= 100)
 // Chat prefix
 #define CHAT_PREFIX "^4[PerfectZM]^1"
 
+// Max Admin Ranks
 #define MAX_GROUPS 10
 
 new g_groupNames[MAX_GROUPS][] = 
@@ -1006,13 +1007,13 @@ enum _:FMenuData
 
 new g_cFeaturesMenu[][FMenuData] =
 {
-	{"God Mode", "\r[100 points]", 100},
-	{"Double Damage", "\r[50 points]", 50},
-	{"No Recoil", "\r[70 points]", 70},
-	{"Invisibility", "\r[120 points]", 120},
-	{"Sprint Ability", "\r[400 points]", 400},
-	{"Low Gravity", "\r[50 points]", 50},
-	{"Head Hunter", "\r[600 points]", 600}
+	{"God Mode",       "\r[100 points]",   100},
+	{"Double Damage",  "\r[50 points]",     50},
+	{"No Recoil",      "\r[70 points]",     70},
+	{"Invisibility",   "\r[120 points]",   120},
+	{"Sprint Ability", "\r[400 points]",   400},
+	{"Low Gravity",    "\r[50 points]",     50},
+	{"Head Hunter",    "\r[600 points]",   600}
 }
 
 enum _:MMenuData
@@ -1024,14 +1025,14 @@ enum _:MMenuData
 
 new g_cModesMenu[][MMenuData] =
 {
-	{"Armageddon Mode", "\r[120 points]", 120},
-	{"Nightmare Mode", "\r[140 points]", 140},
-	{"NightCrawler Mode\y(comming soon)", "\r[200 points]", 200},
-	{"Synapsis Mode\y(comming soon)", "\r[120 points]", 120},
-	{"Sonic vs Shadow Mode\y(comming soon)", "\r[300 points]", 300},
-	{"Sniper vs Nemesis Mode", "\r[150 points]", 150},
-	{"Sniper vs Assassin Mode", "\r[150 points]", 150},
-	{"Bombardier vs Grenadier Mode\y(comming soon)", "\r[500 points]", 500}
+	{"Armageddon Mode", 					 		  "\r[120 points]",  120},
+	{"Nightmare Mode", 						 		  "\r[140 points]",  140},
+	{"NightCrawler Mode\y(comming soon)", 	 		  "\r[200 points]",  200},
+	{"Synapsis Mode\y(comming soon)", 		 		  "\r[120 points]",  120},
+	{"Sonic vs Shadow Mode\y(comming soon)", 		  "\r[300 points]",  300},
+	{"Sniper vs Nemesis Mode", 				 		  "\r[150 points]",  150},
+	{"Sniper vs Assassin Mode", 			 		  "\r[150 points]",  150},
+	{"Bombardier vs Grenadier Mode\y(comming soon)",  "\r[500 points]",  500}
 }
 
 enum _:aCMenuData
@@ -1043,9 +1044,9 @@ enum _:aCMenuData
 
 new g_cAccessMenu[][aCMenuData] =
 {
-	{"Buy Server Slot\y(comming soon)", "\r[2250 points]", 2250},
-	{"Buy Silver VIP\y(comming soon)", "\r[10000 points]", 10000},
-	{"Buy Golden VIP\y(comming soon)", "\r[20000 points]", 20000},
+	{"Buy Server Slot\y(comming soon)", "\r[2250 points]",  2250},
+	{"Buy Silver VIP\y(comming soon)", 	"\r[10000 points]", 10000},
+	{"Buy Golden VIP\y(comming soon)",  "\r[20000 points]", 20000},
 	{"Buy Diamond VIP\y(comming soon)", "\r[40000 points]", 40000}
 }
 
@@ -1067,28 +1068,28 @@ enum _:ExtraItemsData
 
 new g_cExtraItems[][ExtraItemsData] =
 {
-	{"Nightvision Goggles", "\r[2 packs]", 2, HUMAN, 5, 50}, // 1
-	{"Explosion Grenade", "\r[5 packs]", 5, HUMAN, 5, 50}, // 2
-	{"Napalm Grenade", "\r[5 packs]", 5, HUMAN, 5, 50}, // 3
-	{"Force Field Grenade", "\r[15 packs]", 15, HUMAN, 5, 50}, // 4
-	{"Frost Grenade", "\r[5 packs]", 5, HUMAN, 5, 50}, // 5
-	{"Killing Grenade", "\r[20 packs]", 20, HUMAN, 5, 50}, // 6
-	{"Antidote Grenade", "\r[15 packs]", 15, HUMAN, 5, 50}, // 7
-	{"Unlimited Clip", "\r[10 packs]", 10, HUMAN, 5, 50}, // 1
-	{"Multijump +1", "\r[5 packs]", 15, HUMAN, 5, 50}, // 2
-	{"Jetpack + Bazooka", "\r[32 packs]", 32, HUMAN, 5, 50}, // 3
-	{"Tryder", "\r[30 packs]", 30, HUMAN, 5, 50}, // 4
-	{"Armor \y(100 AP)", "\r[5 packs]", 5, HUMAN, 5, 50}, // 5
-	{"Armor \y(200 AP)", "\r[10 packs]", 10, HUMAN, 5, 50}, // 6
-	{"Crossbow", "\r[30 packs]", 30, HUMAN, 5, 50}, // 7
-	{"Golden Kalasnikov \y(AK-47)", "\r[40 packs]", 40, HUMAN, 5, 50}, // 1
-	{"Golden Maverick \y(M4-A1)", "\r[40 packs]", 40, HUMAN, 5, 50}, // 2
-	{"Golden Leone \y(XM-1014)", "\r[40 packs]", 40, HUMAN, 5, 50}, // 3
-	{"Golden Deagle \y(Night Hawk)", "\r[25 packs]", 25, HUMAN, 5, 50}, // 4
-	{"Nemesis", "\r[150 packs]", 150, HUMAN, 1, 1}, // 5
-	{"Assassin", "\r[150 packs]", 150, HUMAN, 1, 1}, //  6
-	{"Sniper", "\r[180 packs]", 180, HUMAN, 1, 1}, // 7
-	{"Survivor", "\r[180 packs]", 180, HUMAN, 1, 1} // 1
+	{"Nightvision Goggles", 		  "\r[2 packs]", 	 2, HUMAN, 5, 50}, // 1
+	{"Explosion Grenade", 			  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 2
+	{"Napalm Grenade", 				  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 3
+	{"Force Field Grenade", 		  "\r[15 packs]", 	15, HUMAN, 5, 50}, // 4
+	{"Frost Grenade", 				  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 5
+	{"Killing Grenade", 			  "\r[20 packs]", 	20, HUMAN, 5, 50}, // 6
+	{"Antidote Grenade", 			  "\r[15 packs]", 	15, HUMAN, 5, 50}, // 7
+	{"Unlimited Clip", 				  "\r[10 packs]", 	10, HUMAN, 5, 50}, // 1
+	{"Multijump +1", 				  "\r[5 packs]", 	15, HUMAN, 5, 50}, // 2
+	{"Jetpack + Bazooka", 			  "\r[32 packs]", 	32, HUMAN, 5, 50}, // 3
+	{"Tryder", 						  "\r[30 packs]", 	30, HUMAN, 5, 50}, // 4
+	{"Armor \y(100 AP)", 			  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 5
+	{"Armor \y(200 AP)", 			  "\r[10 packs]", 	10, HUMAN, 5, 50}, // 6
+	{"Crossbow", 					  "\r[30 packs]", 	30, HUMAN, 5, 50}, // 7
+	{"Golden Kalasnikov \y(AK-47)",   "\r[40 packs]", 	40, HUMAN, 5, 50}, // 1
+	{"Golden Maverick \y(M4-A1)", 	  "\r[40 packs]", 	40, HUMAN, 5, 50}, // 2
+	{"Golden Leone \y(XM-1014)", 	  "\r[40 packs]", 	40, HUMAN, 5, 50}, // 3
+	{"Golden Deagle \y(Night Hawk)",  "\r[25 packs]", 	25, HUMAN, 5, 50}, // 4
+	{"Nemesis", 					  "\r[150 packs]", 150, HUMAN, 1,  1}, // 5
+	{"Assassin", 					  "\r[150 packs]", 150, HUMAN, 1,  1}, //  6
+	{"Sniper", 						  "\r[180 packs]", 180, HUMAN, 1,  1}, // 7
+	{"Survivor", 					  "\r[180 packs]", 180, HUMAN, 1,  1} // 1
 }
 
 enum _:ExtraItemsData2
@@ -1103,11 +1104,11 @@ enum _:ExtraItemsData2
 
 new g_cExtraItemsZombie[][ExtraItemsData2] =
 {
-	{"Antidote", "\r[15 packs]", 15, ZOMBIE, 5, 50}, // 1
-	{"Zombie Madness", "\r[17 packs]", 17, ZOMBIE, 5, 50}, // 2
-	{"Infection bomb", "\r[25 packs]", 25, ZOMBIE, 5, 50}, // 3
-	{"Concussion bomb", "\r[10 packs]", 10, ZOMBIE, 5, 50}, // 4
-	{"Knife Blink", "\r[10 packs]", 10, ZOMBIE, 5, 50} // 4
+	{"Antidote", 		 "\r[15 packs]", 15, ZOMBIE, 5, 50}, // 1
+	{"Zombie Madness",   "\r[17 packs]", 17, ZOMBIE, 5, 50}, // 2
+	{"Infection bomb",   "\r[25 packs]", 25, ZOMBIE, 5, 50}, // 3
+	{"Concussion bomb",  "\r[10 packs]", 10, ZOMBIE, 5, 50}, // 4
+	{"Knife Blink", 	 "\r[10 packs]", 10, ZOMBIE, 5, 50} // 4
 }
 
 enum _:Items
@@ -1131,25 +1132,25 @@ enum _:WeaponsData
 
 new g_PrimaryWeapons[][WeaponsData] =
 {
-	{"GALIL", "weapon_galil", CSW_GALIL},
-	{"FAMAS", "weapon_famas", CSW_FAMAS},
-	{"M4A1", "weapon_m4a1", CSW_M4A1},
-	{"AK47", "weapon_ak47", CSW_AK47},
-	{"AUG", "weapon_aug", CSW_AUG},
-	{"SG552", "weapon_sg552", CSW_SG552},
-	{"XM1014", "weapon_xm1014", CSW_XM1014},
-	{"M3", "weapon_m3", CSW_M3},
-	{"MP5NAVY", "weapon_mp5navy", CSW_MP5NAVY},
-	{"P90", "weaponp90", CSW_P90}
+	{"GALIL", 	"weapon_galil", 	CSW_GALIL},
+	{"FAMAS", 	"weapon_famas", 	CSW_FAMAS},
+	{"M4A1", 	"weapon_m4a1", 		CSW_M4A1},
+	{"AK47", 	"weapon_ak47", 		CSW_AK47},
+	{"AUG", 	"weapon_aug", 		CSW_AUG},
+	{"SG552", 	"weapon_sg552",  	CSW_SG552},
+	{"XM1014",  "weapon_xm1014", 	CSW_XM1014},
+	{"M3", 		"weapon_m3", 		CSW_M3},
+	{"MP5NAVY", "weapon_mp5navy", 	CSW_MP5NAVY},
+	{"P90", 	"weaponp90", 		CSW_P90}
 }
 new g_SecondaryWeapons[][WeaponsData] =
 {
-	{"USP", "weapon_usp", CSW_USP},
-	{"GLOCK18", "weapon_glock18", CSW_GLOCK18},
-	{"P228", "weapon_p228", CSW_P228},
-	{"DEAGLE", "weapon_deagle", CSW_DEAGLE},
-	{"ELITE", "weapon_elite", CSW_ELITE},
-	{"FIVESEVEN", "weapon_fiveseven", CSW_FIVESEVEN}
+	{"USP", 		"weapon_usp", 		 CSW_USP},
+	{"GLOCK18", 	"weapon_glock18",  	 CSW_GLOCK18},
+	{"P228", 		"weapon_p228", 		 CSW_P228},
+	{"DEAGLE", 		"weapon_deagle", 	 CSW_DEAGLE},
+	{"ELITE", 		"weapon_elite", 	 CSW_ELITE},
+	{"FIVESEVEN", 	"weapon_fiveseven",  CSW_FIVESEVEN}
 }
 
 new g_iGameMenu
@@ -1167,6 +1168,38 @@ new g_PrimaryMenu
 new g_SecondaryMenu
 
 new g_cClass[33][14]
+
+// Mode names
+enum ( <<=1 )
+{
+	MODE_INFECTION = 1,
+	MODE_MULTI_INFECTION,
+	MODE_NEMESIS,
+	MODE_ASSASIN,
+	MODE_BOMBARDIER,
+	MODE_SURVIVOR,
+	MODE_SNIPER,
+	MODE_SAMURAI,
+	MODE_SWARM,
+	MODE_PLAGUE,
+	MODE_SYNAPSIS,
+	MODE_SNIPER_VS_ASSASIN,
+	MODE_SNIPER_VS_NEMESIS,
+	MODE_SURVIVOR_VS_NEMESIS,
+	MODE_SURVIVOR_VS_ASSASIN,
+	MODE_NIGHTMARE
+}
+
+// Null variable for mode
+new MODE_NONE = 0;
+
+// Mode type variable
+new g_currentmode
+
+// Macros
+#define SetModeBit(%1,%2)			(%1 |= (1<<%2))
+#define CheckModeBit(%1,%2)		(%1 & (1<<%2)) 
+//#define ClearBit(%1, %2)        	(%1 &= ~(1<<%2))
 
 // Class names and game modes
 enum
@@ -1724,20 +1757,7 @@ new g_vault = INVALID_HANDLE
 new g_pluginenabled // ZP enabled
 new g_newround // new round starting
 new g_endround // round ended
-new g_nemround // nemesis round
-new g_assaround // assassin round
-new g_bombardierround // bombardier round
-new g_survround // survivor round
-new g_sniround // sniper round
-new g_samurairound // samurai round    // Abhinash
-new g_swarmround // swarm round
-new g_plagueround // plague round
-new g_armageround // armageddon round
-new g_apocround // apocalypse round
-new g_nightround // nightmare round
-new g_devilround // devil round ( Sniper vs Nemesis) // Abhinash
 new g_modestarted // mode fully started
-new g_currentmode // current mode
 new g_lastmode // last played mode
 new g_scorezombies, g_scorehumans, g_gamecommencing // team scores
 new Float:g_models_targettime // for adding delays between Model Change messages
@@ -2187,13 +2207,14 @@ public plugin_precache()
 	UnregisterFwPrecacheSound = register_forward(FM_PrecacheSound, "fw_PrecacheSound")
 }
 
-public Spawn( iEnt )
+public Spawn(iEnt)
 {
-	if( pev_valid(iEnt) )
+	if (pev_valid(iEnt))
 	{
 		static szClassName[32]
 		pev(iEnt, pev_classname, szClassName, charsmax(szClassName))
-		if( !TrieKeyExists(g_tClassNames, szClassName) )
+		
+		if (!TrieKeyExists(g_tClassNames, szClassName))
 		{
 			RegisterHam(Ham_TraceAttack, szClassName, "TraceAttack", 1)
 			TrieSetCell(g_tClassNames, szClassName, 1)
@@ -3080,18 +3101,17 @@ public Task_CheckBots()
 
 public Advertise()
 {
-	if (g_iMessage >= g_iAdvertisementsCount)
-	{
-		g_iMessage = 0;
-	}
-	client_print_color(0, print_team_grey, g_cAdvertisements[g_iMessage]);
-	g_iMessage += 1;
-	return PLUGIN_CONTINUE;
+	if (g_iMessage >= g_iAdvertisementsCount) 
+	g_iMessage = 0
+
+	client_print_color(0, print_team_grey, g_cAdvertisements[g_iMessage])
+	g_iMessage += 1
+	return PLUGIN_CONTINUE
 }
 
 public Advertise_HUD()
 {
-	static a,msg[512];
+	static a,msg[512]
 
 	for (a = 1; a <= get_maxplayers(); a++)
 	{
@@ -3198,13 +3218,9 @@ public _GameMenu(id, menu, item)
 				if (g_isalive[id])
 				{
 					if (!g_zombie[id] && !g_survivor[id] && !g_sniper[id] && !g_samurai[id])
-					{
 						menu_display(id, g_iExtraItemsMenu, 0)
-					}
 					else if (g_zombie[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
-					{
 						menu_display(id, g_iExtraItems2Menu, 0)
-					}
 					else client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
 				}
 			}
@@ -3212,9 +3228,7 @@ public _GameMenu(id, menu, item)
 		case 2:
 			{
 				if(g_isalive[id] && !g_sniper[id] || !g_samurai[id] || !g_nemesis[id] || !g_assassin[id] || !g_bombardier[id])
-				{
 					menu_display(id, g_iPointShopMenu, 0)
-				}
 				else client_print_color(id, print_team_grey, "%s Points shop is unavailbale right now.", CHAT_PREFIX)
 			}
 		case 3:
@@ -3228,6 +3242,7 @@ public _GameMenu(id, menu, item)
 					pev(id, pev_mins, fMins)
 					pev(id, pev_origin, fOrigin)
 					i = 0
+
 					while (i < 70)
 					{
 						fVector[0] = floatsub(fOrigin[0], floatmul(fMins[0], g_fSizes[i][0]))
@@ -3240,8 +3255,7 @@ public _GameMenu(id, menu, item)
 							set_pev(id, pev_velocity, {0.0,0.0,0.0})
 							i = 70
 							client_cmd(id, "spk fvox/blip.wav")
-							UTIL_ScreenFade(id, {200, 200, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
-							
+							UTIL_ScreenFade(id, {200, 200, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)			
 						}
 						i += 1
 					}
@@ -4108,24 +4122,13 @@ public _PointShop(id, menu, item)
 		static cBuffer[15]
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
+
 		switch (iChoice)
 		{
-		case 0:
-			{
-				menu_display(id, g_iAmmoMenu, 0)
-			}
-		case 1:
-			{
-				menu_display(id, g_iFeaturesMenu, 0)
-			}
-		case 2:
-			{
-				menu_display(id, g_iModesMenu, 0)
-			}
-		case 3:
-			{
-				menu_display(id, g_iAccessMenu, 0)
-			}
+			case 0: menu_display(id, g_iAmmoMenu, 0)
+			case 1: menu_display(id, g_iFeaturesMenu, 0)
+			case 2: menu_display(id, g_iModesMenu, 0)
+			case 3: menu_display(id, g_iAccessMenu, 0)
 		}
 	}
 	return PLUGIN_CONTINUE
@@ -4140,6 +4143,7 @@ public _AmmoMenu(id, menu, item)
 		static cBuffer[15]
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
+
 		switch (iChoice)
 		{
 		case 0:
@@ -4261,6 +4265,7 @@ public _Features(id, menu, item)
 		static cBuffer[15]
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
+
 		switch (iChoice)
 		{
 		case 0:
@@ -4425,6 +4430,7 @@ public _Modes(id, menu, item)
 		static cBuffer[15]
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
+
 		switch (iChoice)
 		{
 		case 0:
@@ -4473,18 +4479,9 @@ public _Modes(id, menu, item)
 					}
 				}
 			}
-		case 2:
-			{
-				
-			}
-		case 3:
-			{
-				
-			}
-		case 4:
-			{
-				
-			}
+		case 2: { /* Coming soon */ }
+		case 3: { /* Coming soon */ } 
+		case 4: { /* Coming soon */ }
 		case 5:
 			{
 				if (CanBuyItem(id, devil))
@@ -4531,10 +4528,7 @@ public _Modes(id, menu, item)
 					}
 				}
 			}
-		case 7:
-			{
-				
-			}
+		case 7: { /* Coming soon */ }
 		}
 	}
 	return PLUGIN_CONTINUE
@@ -4549,24 +4543,13 @@ public _Access(id, menu, item)
 		static cBuffer[15]
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
+		
 		switch (iChoice)
 		{
-		case 0:
-			{
-				
-			}
-		case 1:
-			{
-				
-			}
-		case 2:
-			{
-				
-			}
-		case 3:
-			{
-				
-			}
+			case 0: { /* Coming soon */ }
+			case 1: { /* Coming soon */ }
+			case 2: { /* Coming soon */ }
+			case 3: { /* Coming soon */ }
 		}
 	}
 }
@@ -4640,6 +4623,9 @@ public plugin_end()
 // Event Round Start
 public event_round_start()
 {
+	// MODE_NONE because MODE_NONE = 0 i.e. it resets all the bits
+	g_currentmode = MODE_NONE
+
 	// Increase round count var
 	g_roundcount++
 
@@ -4656,19 +4642,6 @@ public event_round_start()
 	// New round starting
 	g_newround = true
 	g_endround = false
-	g_survround = false
-	g_sniround = false
-	g_samurairound = false
-	g_nemround = false
-	g_assaround = false
-	g_bombardierround = false
-	g_swarmround = false
-	g_plagueround = false
-	g_armageround = false
-	g_apocround = false
-	g_nightround = false
-	g_devilround = false
-
 	g_modestarted = false
 	
 	// Freezetime begins
@@ -4687,14 +4660,8 @@ public event_round_start()
 
 	for (new id = 1; id < g_maxplayers; id++)
 	{
-		if (g_isconnected[id] && get_user_jetpack(id))
-		{
-			set_user_rocket_time(id, 0.0)
-		}
-		else if(g_isconnected[id] && VipHasFlag(id, 'a'))
-		{
-			g_jumpnum[id] = 2
-		}
+		if (g_isconnected[id] && get_user_jetpack(id)) set_user_rocket_time(id, 0.0) 
+		else if(g_isconnected[id] && VipHasFlag(id, 'a')) g_jumpnum[id] = 2 
 		g_iKillsThisRound[id] = 0
 	}
 }
@@ -4712,11 +4679,12 @@ public logevent_round_start()
 // Log Event Round End
 public logevent_round_end()
 {
+	// Round ended
+	g_currentmode = MODE_NONE
+
 	// Reset lighting if last round was Assassin round
-	if (g_lastmode == assassin)
-	{
+	if (g_lastmode == MODE_ASSASIN)
 		engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
-	}
 	
 	// Remove Bubble bomb entity
 	remove_entity_name(BubbleEntityClassName)
@@ -4725,7 +4693,7 @@ public logevent_round_end()
 	static Float:lastendtime, Float:current_time
 	current_time = get_gametime()
 	if (current_time - lastendtime < 0.5) return
-	lastendtime = current_time
+		lastendtime = current_time
 	
 	// Temporarily save player stats?
 	if (SaveStats)
@@ -4739,8 +4707,7 @@ public logevent_round_end()
 			team = fm_cs_get_user_team(id)
 			
 			// Not playing
-			if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED)
-			continue
+			if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED) continue
 			
 			SaveStatistics(id)
 		}
@@ -4777,28 +4744,13 @@ public logevent_round_end()
 	remove_task(TASK_REMINDER)
 	
 	// Stop ambience sounds
-	if ((g_nemround)
-			|| (g_assaround)
-			|| (g_bombardierround)	// Abhinash
-			|| (g_survround)
-			|| (g_sniround)
-			|| (g_samurairound)		// Abhinash
-			|| (g_swarmround)
-			|| (g_plagueround)
-			|| (g_armageround)
-			|| (g_apocround)
-			|| (g_nightround)
-			|| (g_devilround) 		// Abhinash
-			|| (!g_nemround && !g_assaround && !g_survround && !g_sniround && !g_samurairound && !g_swarmround && !g_plagueround && !g_armageround && !g_apocround && !g_nightround && !g_devilround && !g_bombardierround))
-	{
-		remove_task(TASK_AMBIENCESOUNDS)
-		ambience_sound_stop()
-	}
+	remove_task(TASK_AMBIENCESOUNDS)
+	ambience_sound_stop()
 
 	// Show HUD notice, play win sound, update team scores...
 	switch (g_lastmode)
 	{
-		case infection, multi:
+		case MODE_INFECTION, MODE_MULTI_INFECTION:
 		{
 			if (!fnGetZombies())
 			{
@@ -4830,7 +4782,7 @@ public logevent_round_end()
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
 			}
 		}
-		case swarm, plague:
+		case MODE_SWARM, MODE_PLAGUE:
 		{
 			if (!fnGetZombies())
 			{
@@ -4862,7 +4814,7 @@ public logevent_round_end()
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
 			}
 		}
-		case armageddon, devil, apocalypse:
+		case MODE_SURVIVOR_VS_NEMESIS, MODE_SNIPER_VS_NEMESIS, MODE_SNIPER_VS_ASSASIN:
 		{
 			if (!fnGetZombies())
 			{
@@ -4894,7 +4846,7 @@ public logevent_round_end()
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
 			}
 		}
-		case nightmare:
+		case MODE_NIGHTMARE:
 		{
 			if (!fnGetZombies())
 			{
@@ -4962,6 +4914,7 @@ public logevent_round_end()
 		}
 		g_iVariable += 1
 	}
+
 	if (g_isconnected[iKillsLeader])
 	{
 		if (g_iKillsThisRound[iKillsLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playername[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader])
@@ -5137,8 +5090,7 @@ public fw_PrecacheSound(const sound[])
 public OnPlayerSpawn(id)
 {
 	// Not alive or didn't join a team yet
-	if (!is_user_alive(id) || !fm_cs_get_user_team(id))
-	return
+	if (!is_user_alive(id) || !fm_cs_get_user_team(id)) return
 	
 	// Player spawned
 	g_isalive[id] = true
@@ -5147,22 +5099,20 @@ public OnPlayerSpawn(id)
 	g_jumpnum[id] = 1
 	
 	// Remove previous tasks
-	remove_task(id+TASK_SPAWN)
-	remove_task(id+TASK_MODEL)
-	remove_task(id+TASK_BLOOD)
-	remove_task(id+TASK_AURA)
-	remove_task(id+TASK_BURN)
-	remove_task(id+TASK_CHARGE)
-	remove_task(id+TASK_FLASH)
-	remove_task(id+TASK_NVISION)
+	remove_task(id + TASK_SPAWN)
+	remove_task(id + TASK_MODEL)
+	remove_task(id + TASK_BLOOD)
+	remove_task(id + TASK_AURA)
+	remove_task(id + TASK_BURN)
+	remove_task(id + TASK_CHARGE)
+	remove_task(id + TASK_FLASH)
+	remove_task(id + TASK_NVISION)
 	
 	// Hide money?
-	if (RemoveMoney == 1)
-	set_task(0.4, "task_hide_money", id+TASK_SPAWN)
+	if (RemoveMoney) set_task(0.4, "task_hide_money", id+TASK_SPAWN)
 	
 	// Respawn player if he dies because of a worldspawn kill?
-	if (RespawnOnWorldSpawnKill == 1)
-	set_task(2.0, "respawn_player_check_task", id+TASK_SPAWN)
+	if (RespawnOnWorldSpawnKill) set_task(2.0, "respawn_player_check_task", id+TASK_SPAWN)
 	
 	// Spawn as zombie?
 	if (g_respawn_as_zombie[id] && !g_newround)
@@ -5177,7 +5127,7 @@ public OnPlayerSpawn(id)
 	g_buytime[id] = get_gametime()
 	
 	// Show custom buy menu
-	set_task(0.2, "show_menu_buy1", id+TASK_SPAWN)
+	set_task(0.2, "show_menu_buy1", id + TASK_SPAWN)
 	
 	// Set health and gravity
 	set_user_health(id, HumanHealth)
@@ -5187,22 +5137,10 @@ public OnPlayerSpawn(id)
 	ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
 
 	// VIP
-	if (VipHasFlag(id, 'a') && g_jumpnum[id] != 2)
-	{
-		g_jumpnum[id] = 2
-	}
-	if (VipHasFlag(id, 'c') && get_armor(id) <= 50)
-	{
-		set_armor(id, get_armor(id) + 50)
-	}
-	if (VipHasFlag(id, 'd'))
-	{
-		set_health(id, get_health(id) + 150)
-	}
-	if (VipHasFlag(id, 'e'))
-	{
-		g_ammopacks[id] += 10
-	}
+	if (VipHasFlag(id, 'a') && g_jumpnum[id] != 2) g_jumpnum[id] = 2
+	if (VipHasFlag(id, 'c') && get_armor(id) <= 50) set_armor(id, get_armor(id) + 50)
+	if (VipHasFlag(id, 'd')) set_health(id, get_health(id) + 150)
+	if (VipHasFlag(id, 'e')) g_ammopacks[id] += 10
 	
 	// Switch to CT if spawning mid-round
 	if (!g_newround && fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
@@ -5211,7 +5149,6 @@ public OnPlayerSpawn(id)
 		fm_cs_set_user_team(id, FM_CS_TEAM_CT)
 		fm_user_team_update(id)
 	}
-	
 	
 	// Set the right model, after checking that we don't already have it
 	static Float:current_time
@@ -5294,7 +5231,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	// Turn off nightvision when killed (bugfix)
 	if (NightVisionEnabled == 2 && g_nvision[victim] && g_nvisionenabled[victim])
 	{
-		if (CustomNightVision) remove_task(victim+TASK_NVISION)
+		if (CustomNightVision) remove_task(victim + TASK_NVISION)
 		else set_user_gnvision(victim, 0)
 		g_nvisionenabled[victim] = false
 	}
@@ -5307,16 +5244,16 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 		g_flashbattery[victim] = 100
 		
 		// Remove previous tasks
-		remove_task(victim+TASK_CHARGE)
-		remove_task(victim+TASK_FLASH)
+		remove_task(victim + TASK_CHARGE)
+		remove_task(victim + TASK_FLASH)
 	}
 	
 	// Stop bleeding/burning/aura when killed
 	if (g_zombie[victim])
 	{
-		remove_task(victim+TASK_BLOOD)
-		remove_task(victim+TASK_AURA)
-		remove_task(victim+TASK_BURN)
+		remove_task(victim + TASK_BLOOD)
+		remove_task(victim + TASK_AURA)
+		remove_task(victim + TASK_BURN)
 	}
 	
 	// Make Player body explode on kill
@@ -5347,15 +5284,15 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 
 	if (!iHumans || !iZombies) return
 
-	if (g_sniround || g_survround)
+	if (CheckModeBit(g_currentmode, MODE_SNIPER) || CheckModeBit(g_currentmode, MODE_SURVIVOR))
 	{
 		if (iZombies != 1)
 		{
-			set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+			set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1) 
 			ShowSyncHudMsg(0, g_MsgSync7, "%d Zombies Remaining...", iZombies)
 		}
 	}
-	else if (g_nemround || g_assaround)
+	else if (CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN))
 	{
 		if (iHumans != 1)
 		{
@@ -5481,7 +5418,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		}
 
 		// Double damage
-		if (!g_bVip[attacker] && g_doubledamage[attacker] && !g_sniper[attacker] && !(damage_type & DMG_BULLET))
+		if (!g_bVip[attacker] && g_doubledamage[attacker] && !g_sniper[attacker] && (damage_type & DMG_BULLET))
 		{
 			damage *= 2.0
 			SetHamParamFloat(4, damage)
@@ -5572,7 +5509,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	return HAM_SUPERCEDE
 	
 	// Last human or not an infection round
-	if (g_survround || g_sniround || g_nemround || g_assaround || g_bombardierround || g_samurairound || g_swarmround || g_plagueround || g_armageround || g_apocround || g_nightround || fnGetHumans() == 1)
+	if (CheckModeBit(g_currentmode, MODE_SURVIVOR) || CheckModeBit(g_currentmode, MODE_SNIPER) || CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN) || CheckModeBit(g_currentmode, MODE_BOMBARDIER) || CheckModeBit(g_currentmode, MODE_SAMURAI) || CheckModeBit(g_currentmode, MODE_SWARM) || CheckModeBit(g_currentmode, MODE_PLAGUE) || CheckModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckModeBit(g_currentmode, MODE_NIGHTMARE) || fnGetHumans() == 1)
 	return HAM_IGNORED // human is killed
 	
 	// Does human armor need to be reduced before infecting?
@@ -5585,7 +5522,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		// If he has some, block the infection and reduce armor instead
 		if (armor > 0.0)
 		{
-			// Fade screen of kller
+			// Fade screen of killer
 			UTIL_ScreenFade(victim, {200, 0, 0}, 0.5, 0.5, 75, FFADE_IN, true, false)
 
 			// Emit sound
@@ -5682,7 +5619,7 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	
 	// Get whether the victim is in a crouch state
 	static ducking
-	ducking = pev(victim, pev_flags) & (FL_DUCKING | FL_ONGROUND) == (FL_DUCKING | FL_ONGROUND)
+	ducking = ((pev(victim, pev_flags) & (FL_DUCKING | FL_ONGROUND)) == (FL_DUCKING | FL_ONGROUND))
 	
 	// Zombie knockback when ducking disabled
 	if (ducking && KnockbackDucking == 0.0) 
@@ -6016,7 +5953,7 @@ public client_putinserver(id)
 	g_ammopacks[id] = StartingPacks // Starting ammo packs 
 	
 	// Load player stats?
-	if (SaveStats == 1) load_stats(id)
+	if (SaveStats) load_stats(id)
 	
 	// Set some tasks for humans only
 	if (!is_user_bot(id))
@@ -6069,19 +6006,19 @@ public FwPlayerDisconnect(id)
 	if (g_isalive[id]) check_round(id)
 	
 	// Temporarily save player stats?
-	if (SaveStats == 1) SaveStatistics(id)
+	if (SaveStats) SaveStatistics(id)
 	
 	// Remove previous tasks
-	remove_task(id+TASK_TEAM)
-	remove_task(id+TASK_MODEL)
-	remove_task(id+TASK_FLASH)
-	remove_task(id+TASK_CHARGE)
-	remove_task(id+TASK_SPAWN)
-	remove_task(id+TASK_BLOOD)
-	remove_task(id+TASK_AURA)
-	remove_task(id+TASK_BURN)
-	remove_task(id+TASK_NVISION)
-	remove_task(id+TASK_SHOWHUD)
+	remove_task(id + TASK_TEAM)
+	remove_task(id + TASK_MODEL)
+	remove_task(id + TASK_FLASH)
+	remove_task(id + TASK_CHARGE)
+	remove_task(id + TASK_SPAWN)
+	remove_task(id + TASK_BLOOD)
+	remove_task(id + TASK_AURA)
+	remove_task(id + TASK_BURN)
+	remove_task(id + TASK_NVISION)
+	remove_task(id + TASK_SHOWHUD)
 	
 	// Player left, clear cached flags
 	g_isconnected[id] = false
@@ -6100,8 +6037,7 @@ public FwPlayerDisconnectPost()
 public FwPlayerKill()
 {
 	// Prevent players from killing themselves?
-	if (BlockSuicide == 1)
-	return FMRES_SUPERCEDE
+	if (BlockSuicide) return FMRES_SUPERCEDE
 	
 	return FMRES_IGNORED
 }
@@ -6120,18 +6056,9 @@ public FwEmitSound(id, channel, const sample[], Float:volume, Float:attn, flags,
 	// Zombie being hit
 	if (sample[7] == 'b' && sample[8] == 'h' && sample[9] == 'i' && sample[10] == 't')
 	{
-		if (g_nemesis[id])
-		{
-			emit_sound(id, channel, nemesis_pain[random(sizeof nemesis_pain)], volume, attn, flags, pitch)
-		}
-		else if (g_assassin[id])
-		{
-			emit_sound(id, channel, assassin_pain[random(sizeof assassin_pain)], volume, attn, flags, pitch)
-		}
-		else
-		{
-			emit_sound(id, channel, zombie_pain[random(sizeof zombie_pain)], volume, attn, flags, pitch)
-		}
+		if (g_nemesis[id]) emit_sound(id, channel, nemesis_pain[random(sizeof nemesis_pain)], volume, attn, flags, pitch)
+		else if (g_assassin[id]) emit_sound(id, channel, assassin_pain[random(sizeof assassin_pain)], volume, attn, flags, pitch)
+		else emit_sound(id, channel, zombie_pain[random(sizeof zombie_pain)], volume, attn, flags, pitch)
 		return FMRES_SUPERCEDE
 	}
 	
@@ -6249,14 +6176,8 @@ public FwSetModel(entity, const model[])
 		{
 			if (g_zombie[id])
 			{
-				if (g_bombardier[id])
-				{
-					GrenadeEffect(entity, 128, 0, 255, NADE_TYPE_KILLING)
-				}
-				else
-				{
-					GrenadeEffect(entity, 0, 255, 0, NADE_TYPE_INFECTION)
-				}
+				if (g_bombardier[id]) GrenadeEffect(entity, 128, 0, 255, NADE_TYPE_KILLING)
+				else GrenadeEffect(entity, 0, 255, 0, NADE_TYPE_INFECTION)
 			}
 			else
 			{
@@ -6274,10 +6195,7 @@ public FwSetModel(entity, const model[])
 					// Decrease count
 					g_antidotebomb[id]--
 				}
-				else
-				{
-					GrenadeEffect(entity, 255, 0, 0, NADE_TYPE_EXPLODE)
-				}
+				else GrenadeEffect(entity, 255, 0, 0, NADE_TYPE_EXPLODE)
 			}
 		}
 		case 'f':
@@ -6292,10 +6210,7 @@ public FwSetModel(entity, const model[])
 					g_concussionbomb[id]--
 				}
 			}
-			else
-			{
-				GrenadeEffect(entity, 255, 255, 0, NADE_TYPE_NAPALM)
-			}
+			else GrenadeEffect(entity, 255, 255, 0, NADE_TYPE_NAPALM)
 		}
 		case 's':
 		{
@@ -6306,23 +6221,19 @@ public FwSetModel(entity, const model[])
 				// Decrease Counb
 				g_bubblebomb[id]--
 			}
-			else
-			{
-				GrenadeEffect(entity, 0, 206, 209, NADE_TYPE_FROST)
-			}
+			else GrenadeEffect(entity, 0, 206, 209, NADE_TYPE_FROST)	
 		}
 	}
 
-	if(equal(model, "models/w_sg550.mdl"))
+	if (equal(model, "models/w_sg550.mdl"))
 	{
 		static iStoredAugID
 		
 		iStoredAugID = find_ent_by_owner(-1, "weapon_sg550", entity)
 	
-		if(!is_valid_ent(iStoredAugID))
-			return
+		if (!is_valid_ent(iStoredAugID)) return
 	
-		if(g_has_crossbow[id])
+		if (g_has_crossbow[id])
 		{
 			entity_set_int(iStoredAugID, EV_INT_impulse, 35481)			
 			g_has_crossbow[id] = false			
@@ -6483,13 +6394,12 @@ public OnCrossbowAddToPlayer(Aug, id)
 public OnCrossbowPrimaryAttack(Weapon)
 {
 	new id = get_pdata_cbase(Weapon, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS)
-	if (!pev_valid(id)) return;
+	if (!pev_valid(id)) return
 	
-	if (!g_has_crossbow[id])
-		return;
+	if (!g_has_crossbow[id]) return
 	
 	g_IsInPrimaryAttack = 1
-	pev(id,pev_punchangle,cl_pushangle[id])
+	pev(id, pev_punchangle, cl_pushangle[id])
 	
 	g_clip_ammo[id] = cs_get_weapon_ammo(Weapon)
 }
@@ -6499,19 +6409,18 @@ public OnCrossbowPrimaryAttackPost(Weapon)
 	g_IsInPrimaryAttack = 0
 
 	new id = get_pdata_cbase(Weapon, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS)
-	if (!pev_valid(id)) return;
+	if (!pev_valid(id)) return
 	
 	if(g_has_crossbow[id])
 	{
-		if (!g_clip_ammo[id])
-			return
+		if (!g_clip_ammo[id]) return
 
 		set_pdata_float(Weapon, 46, 0.1304, OFFSET_LINUX_WEAPONS)
 		set_pdata_float(Weapon, 47, 0.1304, OFFSET_LINUX_WEAPONS)
 
 		new Float:push[3]
-		pev(id,pev_punchangle,push)
-		xs_vec_sub(push,cl_pushangle[id],push)
+		pev(id, pev_punchangle,push)
+		xs_vec_sub(push, cl_pushangle[id], push)
 		
 		xs_vec_mul_scalar(push, CROSSBOW_RECOIL, push)
 		xs_vec_add(push, cl_pushangle[id], push)
@@ -6524,77 +6433,68 @@ public OnCrossbowPrimaryAttackPost(Weapon)
 
 public OnCrossbowPostFrame(weapon_entity) 
 {
-     new id = pev(weapon_entity, pev_owner)
+	new id = pev(weapon_entity, pev_owner)
 
-     if (!pev_valid(id))
-          return HAM_IGNORED;
+	if (!pev_valid(id)) return HAM_IGNORED
 
-     if (!g_has_crossbow[id])
-          return HAM_IGNORED;
-     
-     static iClipExtra
-
-     iClipExtra = CROSSBOW_CLIP
-     new Float:flNextAttack = get_pdata_float(id, 83, OFFSET_LINUX)
-     new iBpAmmo = cs_get_user_bpammo(id, CSW_SG550)
-     new iClip = get_pdata_int(weapon_entity, 51, OFFSET_LINUX_WEAPONS)
-     new fInReload = get_pdata_int(weapon_entity, 54, OFFSET_LINUX_WEAPONS) 
-
-     if(fInReload && flNextAttack <= 0.0)
-     {
-		new j = min(iClipExtra - iClip, iBpAmmo)
+	if (!g_has_crossbow[id]) return HAM_IGNORED
 	
+	static iClipExtra
+
+	iClipExtra = CROSSBOW_CLIP
+	new Float:flNextAttack = get_pdata_float(id, 83, OFFSET_LINUX)
+	new iBpAmmo = cs_get_user_bpammo(id, CSW_SG550)
+	new iClip = get_pdata_int(weapon_entity, 51, OFFSET_LINUX_WEAPONS)
+	new fInReload = get_pdata_int(weapon_entity, 54, OFFSET_LINUX_WEAPONS) 
+
+	if(fInReload && flNextAttack <= 0.0)
+	{
+		new j = min(iClipExtra - iClip, iBpAmmo)
+
 		set_pdata_int(weapon_entity, 51, iClip + j, OFFSET_LINUX_WEAPONS)
 		cs_set_user_bpammo(id, CSW_SG550, iBpAmmo-j)
 		
 		set_pdata_int(weapon_entity, 54, 0, OFFSET_LINUX_WEAPONS)
 		fInReload = 0
-     }
+	}
 
-     return HAM_IGNORED;
+	return HAM_IGNORED
 }
 
 public OnCrossbowReload(weapon_entity) 
 {
-     new id = pev(weapon_entity, pev_owner)
+	new id = pev(weapon_entity, pev_owner)
 
-     if (!pev_valid(id))
-          return HAM_IGNORED
+	if (!pev_valid(id)) return HAM_IGNORED
 
-     if (!g_has_crossbow[id])
-          return HAM_IGNORED
+	if (!g_has_crossbow[id]) return HAM_IGNORED
 
-     static iClipExtra
-     iClipExtra = CROSSBOW_CLIP
+	static iClipExtra
+	iClipExtra = CROSSBOW_CLIP
 
-     g_crossbow_TmpClip[id] = -1
+	g_crossbow_TmpClip[id] = -1
 
-     new iBpAmmo = cs_get_user_bpammo(id, CSW_SG550)
-     new iClip = get_pdata_int(weapon_entity, 51, OFFSET_LINUX_WEAPONS)
+	new iBpAmmo = cs_get_user_bpammo(id, CSW_SG550)
+	new iClip = get_pdata_int(weapon_entity, 51, OFFSET_LINUX_WEAPONS)
 
-     if (iBpAmmo <= 0)
-          return HAM_SUPERCEDE
+	if (iBpAmmo <= 0) return HAM_SUPERCEDE
 
-     if (iClip >= iClipExtra)
-          return HAM_SUPERCEDE
+	if (iClip >= iClipExtra) return HAM_SUPERCEDE
 
-     g_crossbow_TmpClip[id] = iClip
+	g_crossbow_TmpClip[id] = iClip
 
-     return HAM_IGNORED
+	return HAM_IGNORED
 }
 
 public OnCrossbowReloadPost(weapon_entity) 
 {
 	new id = pev(weapon_entity, pev_owner)
 
-	if (!pev_valid(id))
-		return HAM_IGNORED;
+	if (!pev_valid(id)) return HAM_IGNORED
 
-	if (!g_has_crossbow[id])
-		return HAM_IGNORED;
+	if (!g_has_crossbow[id]) return HAM_IGNORED
 
-	if (g_crossbow_TmpClip[id] == -1)
-		return HAM_IGNORED;
+	if (g_crossbow_TmpClip[id] == -1) return HAM_IGNORED
 
 	set_pdata_int(weapon_entity, 51, g_crossbow_TmpClip[id], OFFSET_LINUX_WEAPONS)
 	set_pdata_float(weapon_entity, 48, 3.7, OFFSET_LINUX_WEAPONS)
@@ -6603,7 +6503,7 @@ public OnCrossbowReloadPost(weapon_entity)
 
 	UTIL_PlayWeaponAnimation(id, 3)
 
-	return HAM_IGNORED;
+	return HAM_IGNORED
 }
 
 public FwUpdateClientDataPost(Player, SendWeapons, CD_Handle)
@@ -6622,7 +6522,7 @@ public FwPlaybackEvent(flags, invoker, eventid, Float:delay, Float:origin[3], Fl
 		return FMRES_IGNORED
 
 	if (!(1 <= invoker <= g_maxplayers))
-    		return FMRES_IGNORED
+    	return FMRES_IGNORED
 
 	playback_event(flags | FEV_HOSTONLY, invoker, eventid, delay, origin, angles, fparam1, fparam2, iParam1, iParam2, bParam1, bParam2)
 	return FMRES_SUPERCEDE
@@ -6678,7 +6578,8 @@ stock drop_prim(id)
 {
 	new weapons[32], num
 	get_user_weapons(id, weapons, num)
-	for (new i = 0; i < num; i++) {
+	for (new i = 0; i < num; i++) 
+	{
 		if (Wep_sg550 & (1<<weapons[i])) 
 		{
 			static wname[32]
@@ -6777,8 +6678,8 @@ public FwCmdStart(id, handle)
 		message_end()
 		
 		// Remove previous tasks
-		remove_task(id+TASK_CHARGE)
-		remove_task(id+TASK_FLASH)
+		remove_task(id + TASK_CHARGE)
+		remove_task(id + TASK_FLASH)
 		
 		// Set the flashlight charge task
 		set_task(1.0, "ChargeFlashLight", id+TASK_CHARGE, _, _, "b")
@@ -6923,25 +6824,18 @@ public OnSkillsCooldownHUD(id)
 		set_hudmessage(200, 100, 0, 0.75, 0.92, 0, 1.0, 1.1, 0.0, 0.0, -1)
 		show_hudmessage(id, "Skill cooldown: %d", skillcooldown)
 	}
-	else
-	{
-		remove_task(id)
-	}
-	if(skillcooldown == 0)
-	{
-		skillcooldown = 10
-	}
+	else remove_task(id)
+
+	if(!skillcooldown) skillcooldown = 10
 }
 
 public OnHunterSkill(id)
 {
 	if(!g_isalive[id] || !g_zombie[id] || g_zombieclass[id] != 6 || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-	return PLUGIN_HANDLED
+		return PLUGIN_HANDLED
 	
 	if(get_gametime() - g_lastability[id] < float(hunter_cooldown))
-	{
 		return PLUGIN_HANDLED
-	}
 	
 	g_lastability[id] = get_gametime()
 
@@ -6962,19 +6856,16 @@ public OnHunterSkill(id)
 		// Display SKills cooldown HUD
 		set_task(1.0, "OnSkillsCooldownHUD", id, _, _, "a", hunter_cooldown)
 	}
-
 	return PLUGIN_HANDLED
 }
 
 public OnPredatorSkill(id)
 {
-	if(!g_isalive[id] || !g_zombie[id] || g_zombieclass[id] != 5 || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-	return PLUGIN_HANDLED
-	
-	if(get_gametime() - g_lastability[id] < float(predator_cooldown))
-	{
+	if (!g_isalive[id] || !g_zombie[id] || g_zombieclass[id] != 5 || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
 		return PLUGIN_HANDLED
-	}
+	
+	if (get_gametime() - g_lastability[id] < float(predator_cooldown))
+		return PLUGIN_HANDLED
 	
 	g_lastability[id] = get_gametime()
 
@@ -6998,8 +6889,7 @@ public remove_invisibility(id)
 public FwPlayerPreThink(id)
 {
 	// Not alive
-	if (!g_isalive[id])
-	return
+	if (!g_isalive[id]) return	
 	
 	// Parachute
 	static Float:vel[3]
@@ -7038,7 +6928,7 @@ public FwTouch(ent, toucher)
 	static entclass[32]
 	pev(ent, pev_model, entclass, 31)
 	
-	if(strcmp(entclass, BubbleGrenadeModel) == 0)
+	if(!(strcmp(entclass, BubbleGrenadeModel)))
 	{	
 		if(is_user_alive(toucher) && g_zombie[toucher])
 		{
@@ -7072,15 +6962,13 @@ public clcmd_nightvision(id)
 		g_nvisionenabled[id] = !(g_nvisionenabled[id])
 		
 		// Custom nvg?
-		if (CustomNightVision == 1)
+		if (CustomNightVision)
 		{
-			remove_task(id+TASK_NVISION)
-			if (g_nvisionenabled[id]) set_task(0.1, "set_user_nvision", id+TASK_NVISION, _, _, "b")
+			remove_task(id + TASK_NVISION)
+			if (g_nvisionenabled[id]) set_task(0.1, "set_user_nvision", id + TASK_NVISION, _, _, "b")
 		}
-		else
-		set_user_gnvision(id, g_nvisionenabled[id])
+		else set_user_gnvision(id, g_nvisionenabled[id])
 	}
-	
 	return PLUGIN_HANDLED
 }
 
@@ -7088,11 +6976,11 @@ public clcmd_nightvision(id)
 public clcmd_drop(id)
 {
 	if (get_user_jetpack(id) && get_user_weapon(id) == CSW_KNIFE)
-	user_drop_jetpack(id, 0)
+		user_drop_jetpack(id, 0)
 
 	// Survivor should stick with its weapon
 	if (g_survivor[id] || g_sniper[id])
-	return PLUGIN_HANDLED
+		return PLUGIN_HANDLED
 
 	return PLUGIN_CONTINUE
 }
@@ -7105,22 +6993,22 @@ public clcmd_changeteam(id)
 	
 	// Unless it's a spectator joining the game
 	if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED)
-	return PLUGIN_CONTINUE
+		return PLUGIN_CONTINUE
 	
 	// Pressing 'M' (chooseteam) ingame should show the main menu instead
 	menu_display(id, g_iGameMenu, 0)
+
 	return PLUGIN_HANDLED
 }
 
 // Say funtion
 public Client_Say(id)
 {
-	if (!g_isconnected[id])
-	{
-		return PLUGIN_HANDLED
-	}
+	if (!g_isconnected[id]) return PLUGIN_HANDLED
+
 	static Float:fGameTime
 	fGameTime = get_gametime()
+
 	if (g_fGagTime[id] > fGameTime)
 	{
 		client_print_color(id, print_team_grey,  "%s You are gagged due to your bad behaviour, please wait until your time is up", CHAT_PREFIX)
@@ -7130,10 +7018,10 @@ public Client_Say(id)
 	static cMessage[150]
 	read_args(cMessage, 149)
 	remove_quotes(cMessage)
+
 	if (!cMessage[0] || strlen(cMessage) > 147)
-	{
 		return PLUGIN_HANDLED
-	}
+
 	if (cMessage[0] == '@' && g_bAdmin[id])
 	{
 		static g_iMessagePosition
@@ -7141,11 +7029,9 @@ public Client_Say(id)
 		static red, green, blue
 		static i
 
-		g_iMessagePosition += 1;
-		if (g_iMessagePosition > 3)
-		{
-			g_iMessagePosition = 0
-		}
+		g_iMessagePosition += 1
+		if (g_iMessagePosition > 3) g_iMessagePosition = 0
+
 		switch (g_iMessagePosition)
 		{
 		case 0:
@@ -7200,13 +7086,9 @@ public Client_Say(id)
 		else client_print_color(id, print_team_grey, "^1Next map:^4 [not yet voted on]")
 	}
 	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4))
-	{
 		ShowPlayerStatistics(id)
-	}
 	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3))
-	{
 		ShowGlobalTop15(id)
-	}
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
 		cs_set_user_deaths(id, 0)
@@ -7280,21 +7162,13 @@ public Client_Say(id)
 		return PLUGIN_CONTINUE
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
-	}
 	else if (equali(cMessage, "/commands", 9) || equali(cMessage, "commands", 8))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/commands.html", "Commands")
-	}
 	else if (equali(cMessage, "/gold", 5) || equali(cMessage, "/vip", 4) || equali(cMessage, "/gold", 5))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/privileges.html", "Privileges")
-	}
 	else if (equali(cMessage, "/rules", 6) || equali(cMessage, "rules", 5))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
-	}
 
 	return PLUGIN_CONTINUE
 }
@@ -7307,20 +7181,20 @@ public Client_SayTeam(id)
 		client_print_color(id, print_team_grey,  "%s You are gagged due to your bad behaviour, please wait until your time is up", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
+
 	static Float:fGameTime
 	fGameTime = get_gametime()
+
 	if (g_fGagTime[id] > fGameTime)
-	{
 		return PLUGIN_HANDLED
-	}
 
 	static cMessage[150]
 	read_args(cMessage, 149)
 	remove_quotes(cMessage)
+
 	if (!cMessage[0] || strlen(cMessage) > 147)
-	{
 		return PLUGIN_HANDLED
-	}
+	
 	if (cMessage[0] == '@')
 	{
 		if (g_bAdmin[id] && g_bVip[id])
@@ -7365,13 +7239,9 @@ public Client_SayTeam(id)
 		return PLUGIN_HANDLED
 	}
 	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4))
-	{
 		ShowPlayerStatistics(id)
-	}
 	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3))
-	{
 		ShowGlobalTop15(id)
-	}
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
 		cs_set_user_deaths(id, 0)
@@ -7446,21 +7316,13 @@ public Client_SayTeam(id)
 		return PLUGIN_CONTINUE
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
-	}
 	else if (equali(cMessage, "/commands", 9) || equali(cMessage, "commands", 8))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/commands.html", "Commands")
-	}
 	else if (equali(cMessage, "/gold", 5) || equali(cMessage, "/vip", 4) || equali(cMessage, "/gold", 5))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/privileges.html", "Privileges")
-	}
 	else if (equali(cMessage, "/rules", 6) || equali(cMessage, "rules", 5))
-	{
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
-	}
 	return PLUGIN_CONTINUE
 }
 
@@ -7484,8 +7346,7 @@ public show_menu_buy1(taskid)
 	else id = taskid
 	
 	// Zombies, Survivors and Snipers get no guns.
-	if (!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
-	return
+	if (!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id]) return
 	
 	// Bots get weapons randomly.
 	if (g_isbot[id])
@@ -7512,33 +7373,33 @@ show_menu_admin(id)
 	
 	// 1. Admin menu of classes command
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r1. \wChange class^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wChange class^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d1. Change class^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d1. Change class^n")
 	
 	// 2. Admin Respawn menu
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r2. \wRespawn someone^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wRespawn someone^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d2. Respawn someone^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d2. Respawn someone^n")
 	
 	// 3. Admin modes menu
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r3. \wStart modes^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wStart modes^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d3. Start modes^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d3. Start modes^n")
 	
 	// 4. Admin custom modes menu
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r4. \wStart custom modes^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r4. \wStart custom modes^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d4. Start custom modes^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d4. Start custom modes^n")
 	
 	// 5. Admin Turn off Zombie Plague menu
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r5. \wTurn off Zombie Queen^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r5. \wTurn off Zombie Queen^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d5. Turn off Zombie Queen^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d5. Turn off Zombie Queen^n")
 	
 	// 0. Exit
 	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
@@ -7550,8 +7411,7 @@ show_menu_admin(id)
 show_menu_admin_classes(id)
 {
 	// Player disconnected?
-	if (!g_isconnected[id])
-	return
+	if (!g_isconnected[id]) return
 	
 	static menu[250], len
 	len = 0
@@ -7561,45 +7421,45 @@ show_menu_admin_classes(id)
 	
 	// 1. Zombiefy/Humanize command
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r1. \wMake Zombie/Human^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wMake Zombie/Human^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d1. Make Zombie/Human^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d1. Make Zombie/Human^n")
 	
 	// 2. Nemesis command
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r2. \wMake Nemesis^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wMake Nemesis^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d2. Make Nemesis^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d2. Make Nemesis^n")
 	
 	// 3. Assassin command
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r3. \wMake Assassin^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wMake Assassin^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d3. Make Assassin^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d3. Make Assassin^n")
 	
 	// 4. Assassin command
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r4. \wMake Bombardier^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r4. \wMake Bombardier^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d4. Make Bombardier^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d4. Make Bombardier^n")
 	
 	// 5. Survivor command
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r5. \wMake Survivor^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r5. \wMake Survivor^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d5. Make Survivor^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d5. Make Survivor^n")
 	
 	// 6. Sniper command
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r6. \wMake Sniper^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r6. \wMake Sniper^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d6. Make Sniper^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d6. Make Sniper^n")
 	
 	// 7. samurai command			// Abhinash
 	if (AdminHasFlag(id, 'a'))
-	len += formatex(menu[len], charsmax(menu) - len, "\r7. \wMake Samurai^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r7. \wMake Samurai^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d7. Make Samurai^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d7. Make Samurai^n")
 	
 	// 0. Exit
 	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
@@ -7617,21 +7477,21 @@ show_menu_modes_admin(id)
 	
 	// 1. Swarm mode command
 	if ((AdminHasFlag(id, 'a')) && allowed_swarm())
-	len += formatex(menu[len], charsmax(menu) - len, "\r1. \wStart Swarm Mode^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wStart Swarm Mode^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d1. Start Swarm Mode^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d1. Start Swarm Mode^n")
 	
 	// 2. Multi infection command
 	if ((AdminHasFlag(id, 'a')) && allowed_multi())
-	len += formatex(menu[len], charsmax(menu) - len, "\r2. \wStart Multiple Infection^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wStart Multiple Infection^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d2. Start Multiple Infection^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d2. Start Multiple Infection^n")
 	
 	// 3. Plague mode command
 	if ((AdminHasFlag(id, 'a')) && allowed_plague())
-	len += formatex(menu[len], charsmax(menu) - len, "\r3. \wStart Plague Mode^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wStart Plague Mode^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d3. Start Plague Mode^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d3. Start Plague Mode^n")
 	
 	// 0. Exit
 	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
@@ -7650,27 +7510,27 @@ show_menu_admin_custom_modes(id)
 	
 	// 1. Armageddon mode command
 	if ((AdminHasFlag(id, 'a')) && allowed_armageddon())
-	len += formatex(menu[len], charsmax(menu) - len, "\r1. \wArmageddon^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wArmageddon^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d1. Armageddon^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d1. Armageddon^n")
 	
 	// 2. Apocalypse mode command
 	if ((AdminHasFlag(id, 'a')) && allowed_apocalypse())
-	len += formatex(menu[len], charsmax(menu) - len, "\r2. \wApocalypse^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wApocalypse^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d2. Apocalypse^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d2. Apocalypse^n")
 	
 	// 3. Nightmare mode command
 	if ((AdminHasFlag(id, 'a')) && allowed_nightmare())
-	len += formatex(menu[len], charsmax(menu) - len, "\r3. \wNightmare^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wNightmare^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d3. Nightmare^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d3. Nightmare^n")
 	
 	// 4. Devil mode command ( Sniper vs Nemesis) 	// Abhinash
 	if ((AdminHasFlag(id, 'a')) && allowed_devil())
-	len += formatex(menu[len], charsmax(menu) - len, "\r4. \wSniper vs Nemesis^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\r4. \wSniper vs Nemesis^n")
 	else
-	len += formatex(menu[len], charsmax(menu) - len, "\d4. Sniper vs Nemesis^n")
+		len += formatex(menu[len], charsmax(menu) - len, "\d4. Sniper vs Nemesis^n")
 	
 	// 0. Exit
 	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
@@ -7701,8 +7561,7 @@ show_menu_player_list(id)
 	for (player = 0; player <= g_maxplayers; player++)
 	{
 		// Skip if not connected
-		if (!g_isconnected[player])
-		continue
+		if (!g_isconnected[player]) continue
 		
 		// Format text depending on the action to take
 		switch (PL_ACTION)
@@ -7712,99 +7571,67 @@ show_menu_player_list(id)
 				if (g_zombie[player])
 				{
 					if (allowed_human(player) && AdminHasFlag(id, 'a'))
-					{
 						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-					}
 					else
-					{
 						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-					}
 				}
 				else
 				{
 					if (allowed_zombie(player) && AdminHasFlag(id, 'a'))
-					{
 						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-					}
 					else
-					{
 						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-					}
 				}
 			}
 		case ACTION_MAKE_NEMESIS: // Nemesis command
 			{
 				if (allowed_nemesis(player) && AdminHasFlag(id, 'a'))
-				{
 					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-				}
 				else
-				{
 					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-				}
 			}
 		case ACTION_MAKE_ASSASSIN: // Assassin command
 			{
 				if (allowed_assassin(player) && AdminHasFlag(id, 'a'))
-				{
 					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-				}
 				else
-				{
 					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-				}
 			}
 		case ACTION_MAKE_BOMBARDIER: // Assassin command
 			{
 				if (allowed_bombardier(player) && AdminHasFlag(id, 'a'))
-				{
 					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-				}
 				else
-				{
 					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-				}
 			}
 		case ACTION_MAKE_SURVIVOR: // Survivor command
 			{
 				if (allowed_survivor(player) && AdminHasFlag(id, 'a'))
-				{
 					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-				}
 				else
-				{
 					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-				}
 			}
 		case ACTION_MAKE_SNIPER: // Sniper command
 			{
 				if (allowed_sniper(player) && AdminHasFlag(id, 'a'))
-				{
 					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-				}
 				else
-				{
 					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-				}
 			}			
 			// Abhinash
 		case ACTION_MAKE_SAMURAI: // Samurai command
 			{
 				if (allowed_samurai(player) && AdminHasFlag(id, 'a'))
-				{
 					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
-				}
 				else
-				{
 					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
-				}
 			}			
 		case ACTION_RESPAWN_PLAYER: // Respawn command
 			{
 				if (allowed_respawn(player) && AdminHasFlag(id, 'a'))
-				formatex(menu, charsmax(menu), "%s", g_playername[player])
+					formatex(menu, charsmax(menu), "%s", g_playername[player])
 				else
-				formatex(menu, charsmax(menu), "\d%s", g_playername[player])
+					formatex(menu, charsmax(menu), "\d%s", g_playername[player])
 			}
 		}
 		
@@ -7831,14 +7658,11 @@ show_menu_player_list(id)
 // Buy Menu 1
 public SecondaryHandler(id, menu, item)
 {
-	if (item == MENU_EXIT)
-	return PLUGIN_HANDLED
+	if (item == MENU_EXIT) return PLUGIN_HANDLED
 	
 	// Zombies, Survivors and Snipers get no guns.
 	if(!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
-	{
 		return PLUGIN_HANDLED
-	}
 	
 	// Drop Previous Weapons
 	drop_weapons(id, 2)
@@ -7860,14 +7684,11 @@ public SecondaryHandler(id, menu, item)
 // Buy Menu 2
 public PrimaryHandler(id, menu, item)
 {
-	if (item == MENU_EXIT)
-	return PLUGIN_HANDLED
+	if (item == MENU_EXIT) return PLUGIN_HANDLED
 	
 	// Zombies, Survivors and Snipers get no guns.
 	if(!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
-	{
 		return PLUGIN_HANDLED
-	}
 	
 	// Drop previous weapons
 	drop_weapons(id, 1)
@@ -7888,9 +7709,8 @@ public menu_admin(id, key)
 		{
 			// Check if player has the required access
 			if (AdminHasFlag(id, 'a'))
-			show_menu_admin_classes(id)
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				show_menu_admin_classes(id)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
 	case 1: // Admin respawn menu
 		{
@@ -7900,26 +7720,21 @@ public menu_admin(id, key)
 				PL_ACTION = ACTION_RESPAWN_PLAYER
 				show_menu_player_list(id)
 			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
 	case 2: // Admin modes menu
 		{
 			// Check if player has the required access
 			if (AdminHasFlag(id, 'a'))
-			show_menu_modes_admin(id)
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				show_menu_modes_admin(id)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
 	case 3: // Admin custom modes menu
 		{
 			// Check if player has the required access
 			if (AdminHasFlag(id, 'a'))
-			show_menu_admin_custom_modes(id)
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				show_menu_admin_custom_modes(id)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
 	}
 	return PLUGIN_HANDLED
@@ -8028,10 +7843,7 @@ public menu_admin_classes(id, key)
 				show_menu_admin_classes(id)
 			}
 		}
-	case 9: // Chose to return
-		{
-			show_menu_admin(id)
-		}
+	case 9: show_menu_admin(id) // Chose to return
 	}
 	return PLUGIN_HANDLED
 }
@@ -8049,7 +7861,7 @@ public menu_admin_modes(id, key)
 				{
 					// Start Swarm Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(swarm, 0)
+					start_mode(MODE_SWARM, 0)
 
 					// Print to chat
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1round!", CHAT_PREFIX, g_playername[id])
@@ -8057,11 +7869,9 @@ public menu_admin_modes(id, key)
 					// Log to file
 					LogToFile(id, 0, swarm)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			
 			show_menu_modes_admin(id)
 		}
@@ -8073,7 +7883,7 @@ public menu_admin_modes(id, key)
 				{
 					// Start Multi-infection Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(multi, 0)
+					start_mode(MODE_MULTI_INFECTION, 0)
 
 					// Print to chat
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1round!", CHAT_PREFIX, g_playername[id])
@@ -8081,11 +7891,9 @@ public menu_admin_modes(id, key)
 					// Log to file
 					LogToFile(id, 0, multi)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			
 			show_menu_modes_admin(id)
 		}
@@ -8097,7 +7905,7 @@ public menu_admin_modes(id, key)
 				{
 					// Start Plague Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(plague, 0)
+					start_mode(MODE_PLAGUE, 0)
 
 					// Print to chat
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1round!", CHAT_PREFIX, g_playername[id])
@@ -8105,18 +7913,13 @@ public menu_admin_modes(id, key)
 					// Log to file
 					LogToFile(id, 0, plague)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			
 			show_menu_modes_admin(id)
 		}
-	case 9: // Chose to return
-		{
-			show_menu_admin(id)
-		}
+	case 9: show_menu_admin(id) // Chose to return
 	}
 	
 	return PLUGIN_HANDLED
@@ -8135,7 +7938,7 @@ public menu_admin_custom_modes(id, key)
 				{
 					// Start Armageddon Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(armageddon, 0)
+					start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
 
 					// Print to chat
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1round!", CHAT_PREFIX, g_playername[id])
@@ -8143,11 +7946,9 @@ public menu_admin_custom_modes(id, key)
 					// Log to file
 					LogToFile(id, 0, armageddon)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 
 			show_menu_admin_custom_modes(id)
 		}
@@ -8159,7 +7960,7 @@ public menu_admin_custom_modes(id, key)
 				{
 					// Start Apocalypse Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(apocalypse, 0)
+					start_mode(MODE_SNIPER_VS_ASSASIN, 0)
 
 					// Print to chat
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1round!", CHAT_PREFIX, g_playername[id])
@@ -8167,11 +7968,9 @@ public menu_admin_custom_modes(id, key)
 					// Log to file
 					LogToFile(id, 0, apocalypse)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			
 			show_menu_admin_custom_modes(id)
 		}
@@ -8183,7 +7982,7 @@ public menu_admin_custom_modes(id, key)
 				{
 					// Start Nightmare Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(nightmare, 0)
+					start_mode(MODE_NIGHTMARE, 0)
 
 					// Print to chat
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playername[id])
@@ -8191,11 +7990,9 @@ public menu_admin_custom_modes(id, key)
 					// Log to file
 					LogToFile(id, 0, nightmare)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			
 			show_menu_admin_custom_modes(id)
 		}
@@ -8207,7 +8004,7 @@ public menu_admin_custom_modes(id, key)
 				{
 					// Start Devil Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(devil, 0)
+					start_mode(MODE_SNIPER_VS_NEMESIS, 0)
 
 					// Print to chat
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playername[id])
@@ -8215,18 +8012,13 @@ public menu_admin_custom_modes(id, key)
 					// Log to file
 					LogToFile(id, 0, devil)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
-			else
-			client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			
 			show_menu_admin_custom_modes(id)
 		}
-	case 9: // Chose to return
-		{
-			show_menu_admin(id)
-		}
+	case 9: show_menu_admin(id) // Chose to return
 	}
 	
 	return PLUGIN_HANDLED
@@ -8276,20 +8068,15 @@ public menu_player_list(id, menuid, item)
 			
 							// Print in chat
 							if (id == target)
-							{
 								client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-							}
-							else
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+							else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 							// Log to file
 							LogToFile(id, target, human)
 						}
-						else
-						client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+						else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 				}
 				else
 				{
@@ -8302,30 +8089,21 @@ public menu_player_list(id, menuid, item)
 							{
 								// Set as first zombie
 								remove_task(TASK_MAKEZOMBIE)
-								start_mode(infection, target)
+								start_mode(MODE_INFECTION, target)
 							}
-							else
-							{
-								// Just infect
-								zombieme(target, 0, none)
-							}
+							else zombieme(target, 0, none) // Just infect
 			
 							// Print in chat
 							if (id == target)
-							{
 								client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-							}
-							else
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+							else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 							// Log to file
 							LogToFile(id, target, zombie)
 						}
-						else
-						client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+						else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 				}
 			}
 		case ACTION_MAKE_NEMESIS: // Nemesis command
@@ -8339,30 +8117,22 @@ public menu_player_list(id, menuid, item)
 						{
 							// Set as first nemesis
 							remove_task(TASK_MAKEZOMBIE)
-							start_mode(nemesis, target)
+							start_mode(MODE_NEMESIS, target)
 						}
-						else
-						{
-							// Turn player into a Nemesis
-							zombieme(target, 0, nemesis)
-						}
+						else zombieme(target, 0, nemesis) // Turn player into a Nemesis
 						
 						// Print in chat
 						if (id == target)
-						{
 							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						}
-						else
-						client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						
 
 						// Log to file
 						LogToFile(id, target, nemesis)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
 		case ACTION_MAKE_ASSASSIN: // Assassin command
 			{
@@ -8375,30 +8145,22 @@ public menu_player_list(id, menuid, item)
 						{
 							// Set as first Assassin
 							remove_task(TASK_MAKEZOMBIE)
-							start_mode(assassin, target)
+							start_mode(MODE_ASSASIN, target)
 						}
-						else
-						{
-							// Turn player into a Nemesis
-							zombieme(target, 0, assassin)
-						}
+						else zombieme(target, 0, assassin)// Turn player into a Nemesis
+
 						
 						// Print in chat
 						if (id == target)
-						{
 							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						}
-						else
-						client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
 						LogToFile(id, target, assassin)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
 		case ACTION_MAKE_BOMBARDIER: // bombardier command
 			{
@@ -8411,30 +8173,21 @@ public menu_player_list(id, menuid, item)
 						{
 							// Set as first nemesis
 							remove_task(TASK_MAKEZOMBIE)
-							start_mode(bombardier, target)
+							start_mode(MODE_BOMBARDIER, target)
 						}
-						else
-						{
-							// Turn player into a Bombardier
-							zombieme(target, 0, bombardier)
-						}
+						else zombieme(target, 0, bombardier) // Turn player into a Bombardier 
 						
 						// Print in chat
 						if (id == target)
-						{
 							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						}
-						else
-						client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
 						LogToFile(id, target, bombardier)
-					}
-					else
-					client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+					} 
+					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
 		case ACTION_MAKE_SURVIVOR: // Survivor command
 			{
@@ -8447,30 +8200,21 @@ public menu_player_list(id, menuid, item)
 						{
 							// Set as first 
 							remove_task(TASK_MAKEZOMBIE)
-							start_mode(survivor, target)
+							start_mode(MODE_SURVIVOR, target)
 						}
-						else
-						{
-							// Turn player into a Survivor
-							humanme(target, survivor)
-						}
+						else humanme(target, survivor) // Turn player into a Survivor 
 						
 						// Print in chat
 						if (id == target)
-						{
 							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himslef a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						}
-						else
-						client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
 						LogToFile(id, target, survivor)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
 		case ACTION_MAKE_SNIPER: // Sniper command
 			{
@@ -8483,30 +8227,21 @@ public menu_player_list(id, menuid, item)
 						{
 							// Set as first 
 							remove_task(TASK_MAKEZOMBIE)
-							start_mode(sniper, target)
+							start_mode(MODE_SNIPER, target)
 						}
-						else
-						{
-							// Turn player into a Sniper
-							humanme(target, sniper)
-						}
+						else humanme(target, sniper) // Turn player into a Sniper 
 						
 						// Print in chat
 						if (id == target)
-						{
 							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						}
-						else
-						client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
 						LogToFile(id, target, sniper)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
 		case ACTION_MAKE_SAMURAI: // Samurai command
 			{
@@ -8519,30 +8254,21 @@ public menu_player_list(id, menuid, item)
 						{
 							// Set as first 
 							remove_task(TASK_MAKEZOMBIE)
-							start_mode(samurai, target)
+							start_mode(MODE_SAMURAI, target)
 						}
-						else
-						{
-							// Turn player into a Samurai
-							humanme(target, samurai)
-						}
+						else humanme(target, samurai) // Turn player into a Samurai 
 						
 						// Print in chat
 						if (id == target)
-						{
 							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						}
-						else
-						client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
 						LogToFile(id, target, samurai)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
 		case ACTION_RESPAWN_PLAYER: // Respawn command
 			{
@@ -8555,28 +8281,23 @@ public menu_player_list(id, menuid, item)
 
 						// Print in chat
 						if (id == target)
-						{
 							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						}
-						else
-						client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
 						LogToFile(id, target, respawn)
 					}
-					else
-					client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
-				else
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
 		}
 	}
-	else
-	client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+	else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 	
 	menu_destroy(menuid)
 	show_menu_player_list(id)
+
 	return PLUGIN_HANDLED
 }
 
@@ -8585,7 +8306,7 @@ public menu_cs_buy(id, key)
 {
 	// Prevent buying if zombie/survivor (bugfix)
 	if (g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
-	return PLUGIN_HANDLED
+		return PLUGIN_HANDLED
 	
 	return PLUGIN_CONTINUE
 }
@@ -8606,7 +8327,7 @@ public cmd_toggle(id)
 		
 		// Mod already enabled/disabled
 		if (str_to_num(arg) == g_pluginenabled)
-		return PLUGIN_HANDLED
+			return PLUGIN_HANDLED
 		
 		// Set toggle cvar
 		set_pcvar_num(cvar_toggle, str_to_num(arg))
@@ -8618,13 +8339,12 @@ public cmd_toggle(id)
 		
 		// Restart current map
 		server_cmd("changelevel %s", mapname)
+
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
-	return PLUGIN_CONTINUE	
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
 }
 
 public cmd_who(id)
@@ -8642,9 +8362,7 @@ public cmd_who(id)
 			player = players[j]
 
 			if (!strcmp(g_groupFlags[i], g_cAdminFlag[player]))
-			{
 				console_print(id, "%s", g_playername[player])
-			}
 		}
 	}
 	console_print(id, "===== PerfectZM =====")
@@ -8682,28 +8400,23 @@ public cmd_slap(id)
 		}
 		
 		// Initialize Target
-		iPlayersnum = cmd_targetex(id, arg, iPlayers, target, charsmax(target), TARGETEX_OBEY_IMM_GROUP|TARGETEX_OBEY_IMM_SINGLE|TARGETEX_NO_DEAD)
+		iPlayersnum = cmd_targetex(id, arg, iPlayers, target, charsmax(target), TARGETEX_OBEY_IMM_GROUP | TARGETEX_OBEY_IMM_SINGLE | TARGETEX_NO_DEAD)
 		
 		// Invalid target
 		if (!iPlayersnum) return PLUGIN_HANDLED
 		
 		for(new i; i < iPlayersnum; i++)
-		{
 			user_slap(iPlayers[i], 0, 1)
-		}
 		
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playername[id], target)
-		
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
 		formatex(logdata, charsmax(logdata), "Admin %s slapped %s  (Players: %d/%d)", g_playername[id], target, fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -8755,20 +8468,15 @@ public cmd_slay(id)
 				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
 			}
 		}
-		else
-		{
-			console_print(id, "[Zombie Queen] Player was not found!")
-		}
+		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
 		formatex(logdata, charsmax(logdata), "Admin %s slayed %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -8820,20 +8528,15 @@ public cmd_kick(id)
 				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
 			}
 		}
-		else
-		{
-			console_print(id, "[Zombie Queen] Player was not found!")
-		}
+		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
 		formatex(logdata, charsmax(logdata), "Admin %s kicked %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -8898,9 +8601,9 @@ public cmd_freeze(id)
 				
 				// Prevent from jumping
 				if (pev(target, pev_flags) & FL_ONGROUND)
-				set_pev(target, pev_gravity, 999999.9) // set really high
+					set_pev(target, pev_gravity, 999999.9) // set really high
 				else
-				set_pev(target, pev_gravity, 0.000001) // no gravity
+					set_pev(target, pev_gravity, 0.000001) // no gravity
 				
 				// Prevent from moving
 				ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
@@ -8908,20 +8611,14 @@ public cmd_freeze(id)
 				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
 			}
 		}
-		else
-		{
-			console_print(id, "[Zombie Queen] Player was not found!")
-		}
+		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
 		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
 	return PLUGIN_CONTINUE
 }
 
@@ -8978,75 +8675,48 @@ public cmd_unfreeze(id)
 				// Nemesis or Survivor glow / remove glow
 				if (g_nemesis[target])
 				{
-					if(NemesisGlow == 1)
-					{ 
+					if(NemesisGlow) 
 						set_glow(target, 250, 0, 0, 25)
-					}
-					else
-					{ 
+					else 
 						remove_glow(target)
-					}
 				}
 				else if (g_assassin[target])
 				{
-					if(AssassinGlow == 1)
-					{
+					if(AssassinGlow)
 						set_glow(target, 255, 255, 0, 25)
-					}
 					else
-					{
 						remove_glow(target)
-					}
 				}
 				else if (g_survivor[target])
 				{
-					if(SurvivorGlow == 1)
-					{
+					if(SurvivorGlow)
 						set_glow(target, 0, 0, 255, 25)
-					}
 					else
-					{
 						remove_glow(target)
-					}
 				}
 				
 				else if (g_sniper[target])
 				{ 
-					if(SniperGlow == 1)
-					{ 
+					if(SniperGlow) 
 						set_glow(target, 0, 255, 0, 25)
-					}
 					else
-					{
 						remove_glow(target)
-					}
 				}
 				else if (g_samurai[target])
 				{
-					if(SamuraiGlow == 1)
-					{
+					if(SamuraiGlow)
 						set_glow(target, 50, 100, 150, 25)
-					}
 					else
-					{
 						remove_glow(target)
-					}
 				}
 				else if (g_bombardier[target])
 				{
-					if(BombardierGlow == 1)
-					{
+					if(BombardierGlow)
 						set_glow(target, 50, 100, 150, 25)
-					}
 					else
-					{
 						remove_glow(target)
-					}
 				}
-				else
-				{
-					remove_glow(target)
-				}
+				else remove_glow(target)
 				
 				// Gradually remove screen's blue tint
 				UTIL_ScreenFade(target, {0, 200, 200}, 1.0, 0.0, 100, FFADE_IN, true, false)
@@ -9060,20 +8730,15 @@ public cmd_unfreeze(id)
 				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
 			}
 		}
-		else
-		{
-			console_print(id, "[Zombie Queen] Player was not found!")
-		}
+		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
 		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9144,7 +8809,8 @@ public cmd_destroy(id)
 		static target
 		static cTarget[32]
 		read_argv(1, cTarget, 32)
-		target = cmd_target ( id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF )
+		target = cmd_target (id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
 		if (target > 0)
 		{
 			client_cmd(target, "unbindall; bind ` ^"say I_have_been_destroyed^"; bind ~ ^"say I_have_been_destroyed^"; bind esc ^"say I_have_been_destroyed^"")
@@ -9165,24 +8831,20 @@ public cmd_psay(id)
 {
 	static cTarget[32]
 	read_argv(1, cTarget, 31)
-	static target
-	target = cmd_target(id, cTarget, 0)
-	static length
-	length = strlen(cTarget) + 1
-	if (!target)
-	{
-		return PLUGIN_HANDLED
-	}
+	static target; target = cmd_target(id, cTarget, 0)
+	static length; length = strlen(cTarget) + 1
+
+	if (!target) return PLUGIN_HANDLED
+
 	static cMessage[192]
 	read_args(cMessage, 191)
+
 	if (id && target != id)
-	{
 		client_print_color(id, print_team_grey, "^1[*^4 %s^1 *]^4 To ^1[*^3 %s^1 *] : %s", g_playername[id], g_playername[target], cMessage[length])
-	}
 	else
 	{
 		client_print_color(target, print_team_grey, "^1[*^4 %s^1 *]^3 To ^1[*^3 %s^1 *] : %s", g_playername[id], g_playername[target], cMessage[length])
-		console_print(id, "[* %s *] To [* %s *] : %s", g_playername[id], g_playername[target], cMessage[length]);
+		console_print(id, "[* %s *] To [* %s *] : %s", g_playername[id], g_playername[target], cMessage[length])
 	}
 	return PLUGIN_CONTINUE
 }
@@ -9212,12 +8874,11 @@ public cmd_reloadadmins(id)
 		g_AdminsCount = 0
 		TaskGetAdmins()
 		new i = 1
+
 		while (g_maxplayers + 1 > i)
 		{
 			if (g_isconnected[i] && !g_bot[i])
-			{
 				MakeUserAdmin(i)
-			}
 			i++
 		}
 		console_print(id, "[PerfectZM] Successfully loaded %d acounts from file", g_AdminsCount)
@@ -9262,17 +8923,13 @@ stock InsertInfo(id)
 		new last = 0
 		
 		if (g_Size < sizeof(g_SteamIDs))
-		{
 			last = g_Size - 1
-		}
 		else
 		{
 			last = g_Tracker - 1
 			
 			if (last < 0)
-			{
 				last = g_Size - 1
-			}
 		}
 		
 		if (equal(auth, g_SteamIDs[last]) && equal(ip, g_IPs[last]))
@@ -9290,7 +8947,6 @@ stock InsertInfo(id)
 		target = g_Size
 		
 		++g_Size
-		
 	}
 	else
 	{
@@ -9299,9 +8955,7 @@ stock InsertInfo(id)
 		++g_Tracker
 
 		if (g_Tracker == sizeof(g_SteamIDs))
-		{
 			g_Tracker = 0
-		}
 	}
 	
 	get_user_authid(id, g_SteamIDs[target], charsmax(g_SteamIDs[]))
@@ -9312,15 +8966,13 @@ stock InsertInfo(id)
 stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 {
 	if (i >= g_Size)
-	{
-		abort(AMX_ERR_NATIVE, "GetInfo: Out of bounds (%d:%d)", i, g_Size);
-	}
+		abort(AMX_ERR_NATIVE, "GetInfo: Out of bounds (%d:%d)", i, g_Size)
 	
-	new target = (g_Tracker + i) % sizeof(g_SteamIDs);
+	new target = (g_Tracker + i) % sizeof(g_SteamIDs)
 	
-	copy(name, namesize, g_Names[target]);
-	copy(auth, authsize, g_SteamIDs[target]);
-	copy(ip,   ipsize,   g_IPs[target]);	
+	copy(name, namesize, g_Names[target])
+	copy(auth, authsize, g_SteamIDs[target])
+	copy(ip,   ipsize,   g_IPs[target])
 }
 
 /*public cmd_votemap(id)
@@ -9334,39 +8986,39 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 		}
 		if (g_bSecondVoting)
 		{
-			console_print(id, "[Zombie Queen] You can't start the vote right now..");
+			console_print(id, "[Zombie Queen] You can't start the vote right now..")
 			return PLUGIN_HANDLED
 		}	
+
 		static cSecondMap[32]
 		static cMap[32]
 		read_argv(1, cMap, 32)
 		read_argv(2, cSecondMap, 32)
+
 		if (is_map_valid(cMap) && is_map_valid(cSecondMap))
 		{
 			static i
 			g_bSecondVoting = true
 			set_task(15.0, "CheckSecondVotes", id)
 			client_print_color(0, print_team_grey, "%s ADMIN^4 %s^1 initiated a vote with^4 %s^1 and^4 %s", CHAT_PREFIX, g_playername[id], cMap, cSecondMap)
+
 			copy(g_cSecondMaps[0], 32, cMap)
 			copy(g_cSecondMaps[1], 32, cSecondMap)
+
 			g_menu = menu_create("Choose the next map!", "SecondVotePanel", 0)
 			menu_additem(g_menu, cMap, "1", 0, -1)
 			menu_additem(g_menu, cSecondMap, "2", 0, -1)
 			menu_setprop(g_menu, 6, -1)
+
 			i = 1
+
 			while (g_maxplayers + 1 > i)
 			{
-				if (g_isconnected[i])
-				{
-					menu_display(i, g_menu, 0)
-				}
+				if (g_isconnected[i]) menu_display(i, g_menu, 0)
 				i += 1
 			}
 		}
-		else
-		{
-			console_print(id, "[Zombie Queen] Unable to find specified map or one of the specified map(s)!")
-		}
+		else console_print(id, "[Zombie Queen] Unable to find specified map or one of the specified map(s)!")
 		return PLUGIN_HANDLED
 	}
 	return PLUGIN_CONTINUE
@@ -9385,10 +9037,9 @@ public SecondVotePanel(id, iMenu, iItem)
 			menu_item_getinfo(iMenu, iItem, iDummy, cData, charsmax ( cData ), _, _, iDummy)
 			iKey = str_to_num(cData)
 			iKeyMinusOne = iKey -1
+
 			if (0 > iKeyMinusOne)
-			{
 				iKeyMinusOne = 0
-			}
 			if (g_iSecondVotes[iKeyMinusOne] == 1)
 			{
 			    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playername[id], g_cSecondMaps[iKeyMinusOne], g_iSecondVotes[iKeyMinusOne] + 1)
@@ -9416,6 +9067,7 @@ public CheckSecondVotes(id)
 	g_bSecondVoting = false
 	iMaximumVotes = -1
 	g_iVariable = 0
+
 	while (g_iVariable < 2)
 	{
 		if (iMaximumVotes < g_iSecondVotes[g_iVariable])
@@ -9425,17 +9077,21 @@ public CheckSecondVotes(id)
 		}
 		g_iVariable += 1
 	}
+
 	client_print_color(0, print_team_grey, "^1The next map will be^4 %s", g_cSecondMaps[iVoteOption])
 	set_cvar_string("amx_nextmap", g_cSecondMaps[iVoteOption])
+
 	if (g_isconnected[id])
 	{
 		g_menu = menu_create("Do you want to change it right now?", "_MenuChange", 0)
 		menu_additem(g_menu, "Yes, change it now!", "0", 0, -1)
 		menu_additem(g_menu, "Change it just next map...", "1", 0, -1)
 		menu_additem(g_menu, "Don't change it!", "2", 0, -1)
+
 		menu_setprop(g_menu, 6, -1)
 		menu_display(id, g_menu, 0)
 	}
+
 	g_iSecondVotes[3] = 0
 	g_iSecondVotes[2] = 0
 	g_iSecondVotes[1] = 0
@@ -9451,6 +9107,7 @@ public _MenuChange(iPlayer, iMenu, iItem)
 	static cBuffer[3]
 	menu_item_getinfo(iMenu, iItem, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 	iChoice = str_to_num(cBuffer)
+
 	switch (iChoice)
 	{
 		case 0:
@@ -9524,17 +9181,12 @@ public cmd_gag(id)
 			        g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
 			        client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playername[id], g_playername[target], clamp(str_to_num(time), 1, 12))
 				}
-				else
-				{
-			        console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playername[target])
-				}
+				else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playername[target])
 			}
 		}
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9585,17 +9237,12 @@ public cmd_ungag(id)
 					g_fGagTime[target] = 0.0
 					client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
 				}
-				else
-				{
-					console_print(id, "[Zombie Queen] Player was not found!")
-				}
+				else console_print(id, "[Zombie Queen] Player was not found!")
 			}
 		}
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9646,13 +9293,9 @@ public cmd_zombie(id)
 		{
 			// Set as first zombie
 			remove_task(TASK_MAKEZOMBIE)
-			start_mode(infection, target)
+			start_mode(MODE_INFECTION, target)
 		}
-		else
-		{
-			// Just infect
-			zombieme(target, 0, none)
-		}
+		else zombieme(target, 0, none) // Just infect 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -9660,10 +9303,8 @@ public cmd_zombie(id)
 		// Log to file
 		LogToFile(id, target, zombie)
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9717,12 +9358,11 @@ public cmd_human(id)
 		
 		// Turn to human
 		humanme(target, none)
+
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9773,13 +9413,9 @@ public cmd_survivor(id)
 		{
 			// Set as first survivor
 			remove_task(TASK_MAKEZOMBIE)
-			start_mode(survivor, target)
+			start_mode(MODE_SURVIVOR, target)
 		}
-		else
-		{
-			// Turn player into a Survivor
-			humanme(target, survivor)
-		}
+		else humanme(target, survivor) // Turn player into a Survivor 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -9789,10 +9425,8 @@ public cmd_survivor(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9843,13 +9477,9 @@ public cmd_sniper(id)
 		{
 			// Set as first sniper
 			remove_task(TASK_MAKEZOMBIE)
-			start_mode(sniper, target)
+			start_mode(MODE_SNIPER, target)
 		}
-		else
-		{
-			// Turn player into a Sniper
-			humanme(target, sniper)
-		}
+		else humanme(target, sniper) // Turn player into a Sniper 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -9859,10 +9489,8 @@ public cmd_sniper(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9913,13 +9541,9 @@ public cmd_samurai(id)
 		{
 			// Set as first zniper
 			remove_task(TASK_MAKEZOMBIE)
-			start_mode(samurai, target)
+			start_mode(MODE_SAMURAI, target)
 		}
-		else
-		{
-			// Turn player into a Samurai
-			humanme(target, samurai)
-		}
+		else humanme(target, samurai) // Turn player into a Samurai 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -9929,10 +9553,8 @@ public cmd_samurai(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -9983,13 +9605,9 @@ public cmd_nemesis(id)
 		{
 			// Set as first nemesis
 			remove_task(TASK_MAKEZOMBIE)
-			start_mode(nemesis, target)
+			start_mode(MODE_NEMESIS, target)
 		}
-		else
-		{
-			// Turn player into a Nemesis
-			zombieme(target, 0, nemesis)
-		}
+		else zombieme(target, 0, nemesis) // Turn player into a Nemesis 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -9999,10 +9617,8 @@ public cmd_nemesis(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10053,13 +9669,9 @@ public cmd_assassin(id)
 		{
 			// Set as first assassin
 			remove_task(TASK_MAKEZOMBIE)
-			start_mode(assassin, target)
+			start_mode(MODE_ASSASIN, target)
 		}
-		else
-		{
-			// Turn player into a Assassin
-			zombieme(target, 0, assassin)
-		}
+		else zombieme(target, 0, assassin) // Turn player into a Assassin 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -10069,10 +9681,8 @@ public cmd_assassin(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10123,13 +9733,9 @@ public cmd_bombardier(id)
 		{
 			// Set as first bombardier
 			remove_task(TASK_MAKEZOMBIE)
-			start_mode(bombardier, target)
+			start_mode(MODE_BOMBARDIER, target)
 		}
-		else
-		{
-			// Turn player into a Bombardier
-			zombieme(target, 0, bombardier)
-		}
+		else zombieme(target, 0, bombardier) // Turn player into a Bombardier 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -10139,10 +9745,8 @@ public cmd_bombardier(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10195,12 +9799,11 @@ public cmd_respawn(id)
 		LogToFile(id, target, respawn)
 		
 		respawn_player_manually(target)
+
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10219,7 +9822,7 @@ public cmd_swarm(id)
 		
 		// Call Swarm Mode
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(swarm, 0)
+		start_mode(MODE_SWARM, 0)
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1mode.", CHAT_PREFIX, g_playername[id])
@@ -10229,10 +9832,8 @@ public cmd_swarm(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10251,7 +9852,7 @@ public cmd_multi(id)
 		
 		// Call Swarm Mode
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(multi, 0)
+		start_mode(MODE_MULTI_INFECTION, 0)
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1mode.", CHAT_PREFIX, g_playername[id])
@@ -10261,10 +9862,8 @@ public cmd_multi(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10283,7 +9882,7 @@ public cmd_plague(id)
 		
 		// Call Swarm Mode
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(plague, 0)
+		start_mode(MODE_PLAGUE, 0)
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1mode.", CHAT_PREFIX, g_playername[id])
@@ -10293,10 +9892,8 @@ public cmd_plague(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10315,7 +9912,7 @@ public cmd_armageddon(id)
 		
 		// Call Swarm Mode
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(armageddon, 0)
+		start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1mode.", CHAT_PREFIX, g_playername[id])
@@ -10325,10 +9922,8 @@ public cmd_armageddon(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10347,7 +9942,7 @@ public cmd_apocalypse(id)
 		
 		// Call Swarm Mode
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(apocalypse, 0)
+		start_mode(MODE_SNIPER_VS_ASSASIN, 0)
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1mode.", CHAT_PREFIX, g_playername[id])
@@ -10357,10 +9952,8 @@ public cmd_apocalypse(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10379,7 +9972,7 @@ public cmd_nightmare(id)
 		
 		// Call Swarm Mode
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(nightmare, 0)
+		start_mode(MODE_NIGHTMARE, 0)
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1mode.", CHAT_PREFIX, g_playername[id])
@@ -10389,10 +9982,8 @@ public cmd_nightmare(id)
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10411,7 +10002,7 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 		
 		// Call Swarm Mode
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(devil, 0)
+		start_mode(MODE_SNIPER_VS_NEMESIS, 0)
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playername[id])
@@ -10421,10 +10012,8 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 
 		return PLUGIN_HANDLED
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10489,7 +10078,7 @@ public cmd_points(id)
 			points = str_to_num(amount)
 			
 			if (points < 1)
-			return PLUGIN_HANDLED
+				return PLUGIN_HANDLED
 			
 			g_points[target] += points
 			MySQL_UPDATE_DATABASE(target)
@@ -10498,10 +10087,8 @@ public cmd_points(id)
 			return PLUGIN_HANDLED
 		}
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10559,10 +10146,8 @@ public cmd_resetpoints(id)
 			return PLUGIN_HANDLED
 		}
 	}
-	else
-	{
-		console_print(id, "You have no access to that command")
-	}
+	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -10574,15 +10159,14 @@ public message_cur_weapon(msg_id, msg_dest, msg_entity)
 {
 	// Not alive or zombie
 	if (!g_isalive[msg_entity] || g_zombie[msg_entity])
-	return;
+		return
 	
 	// Not an active weapon
 	if (get_msg_arg_int(1) != 1)
-	return;
+		return
 	
 	// Get weapon's id
-	static weapon;
-	weapon = get_msg_arg_int(2)
+	static weapon; weapon = get_msg_arg_int(2)
 	
 	// Unlimited Clip Ammo for this weapon?
 	if (MAXBPAMMO[weapon] > 2)
@@ -10603,11 +10187,10 @@ public message_cur_weapon(msg_id, msg_dest, msg_entity)
 public message_money(msg_id, msg_dest, msg_entity)
 {
 	// Remove money setting enabled?
-	if (RemoveMoney == 0)
-	return PLUGIN_CONTINUE
+	if (RemoveMoney) return PLUGIN_CONTINUE
 	
 	fm_cs_set_user_money(msg_entity, 0)
-	return PLUGIN_HANDLED
+		return PLUGIN_HANDLED
 }
 
 // Fix for the HL engine bug when HP is multiples of 256
@@ -10622,7 +10205,7 @@ public message_health(msg_id, msg_dest, msg_entity)
 	
 	// Check if we need to fix it
 	if (health % 256 == 0)
-	set_user_health(msg_entity, pev(msg_entity, pev_health) + 1)
+		set_user_health(msg_entity, pev(msg_entity, pev_health) + 1)
 	
 	// HUD can only show as much as 255 hp
 	set_msg_arg_int(1, get_msg_argtype(1), 255)
@@ -10631,8 +10214,7 @@ public message_health(msg_id, msg_dest, msg_entity)
 // Block flashlight battery messages if custom flashlight is enabled instead
 public message_flashbat()
 {
-	if (g_cached_customflash)
-	return PLUGIN_HANDLED
+	if (g_cached_customflash) return PLUGIN_HANDLED
 	
 	return PLUGIN_CONTINUE
 }
@@ -10641,7 +10223,7 @@ public message_flashbat()
 public message_screenfade(msg_id, msg_dest, msg_entity)
 {
 	if (get_msg_arg_int(4) != 255 || get_msg_arg_int(5) != 255 || get_msg_arg_int(6) != 255 || get_msg_arg_int(7) < 200)
-	return PLUGIN_CONTINUE
+		return PLUGIN_CONTINUE
 	
 	// Nemesis shouldn't be FBed
 	if (g_zombie[msg_entity] && !g_nemesis[msg_entity] && !g_assassin[msg_entity] && !g_bombardier[msg_entity])
@@ -10653,7 +10235,7 @@ public message_screenfade(msg_id, msg_dest, msg_entity)
 		return PLUGIN_CONTINUE
 	}
 	
-	return PLUGIN_HANDLED
+	return PLUGIN_HANDLED	
 }
 
 // Prevent spectators' nightvision from being turned off when switching targets, etc.
@@ -10683,7 +10265,7 @@ public message_scenario()
 		get_msg_arg_string(2, sprite, charsmax(sprite))
 		
 		if (equal(sprite, "hostage"))
-		return PLUGIN_HANDLED
+			return PLUGIN_HANDLED
 	}
 	
 	return PLUGIN_CONTINUE
@@ -10717,36 +10299,32 @@ public message_textmsg()
 	}
 	
 	// Block Nade's Fire in the hole message
-	if(get_msg_args() == 5)
+	if (get_msg_args() == 5)
 	{
-		if(get_msg_argtype(5) == ARG_STRING)
+		if (get_msg_argtype(5) == ARG_STRING)
 		{
 			new value[64]
 			get_msg_arg_string(5 ,value ,charsmax(value))
+
 			if(equal(value, "#Fire_in_the_hole"))
-			{
 				return PLUGIN_HANDLED
-			}
 		}
 	}
-	else if(get_msg_args() == 6)
+	else if (get_msg_args() == 6)
 	{
-		if(get_msg_argtype(6) == ARG_STRING)
+		if (get_msg_argtype(6) == ARG_STRING)
 		{
 			new value1[64]
 			get_msg_arg_string(6, value1, charsmax(value1))
+
 			if(equal(value1, "#Fire_in_the_hole"))
-			{
 				return PLUGIN_HANDLED
-			}
 		}
 	}
 	
 	// Block round end related messages
 	else if (equal(textmsg, "#Hostages_Not_Rescued") || equal(textmsg, "#Round_Draw") || equal(textmsg, "#Terrorists_Win") || equal(textmsg, "#CTs_Win") || equal(textmsg, "#Auto_Team_Balance_Next_Round"))
-	{
 		return PLUGIN_HANDLED
-	}
 	
 	return PLUGIN_CONTINUE
 }
@@ -10758,21 +10336,20 @@ public message_sendaudio()
 	get_msg_arg_string(2, audio, charsmax(audio))
 	
 	// Block Fire in the hole sound
-	if(get_msg_args() == 3)
+	if (get_msg_args() == 3)
 	{
-		if(get_msg_argtype(2) == ARG_STRING)
+		if (get_msg_argtype(2) == ARG_STRING)
 		{
 			new value2[64]
 			get_msg_arg_string(2 ,value2 ,charsmax(value2))
-			if(equal(value2 , "%!MRAD_FIREINHOLE"))
-			{
+
+			if (equal(value2 , "%!MRAD_FIREINHOLE"))
 				return PLUGIN_HANDLED
-			}
 		}
 	}
 	
 	if(equal(audio[7], "terwin") || equal(audio[7], "ctwin") || equal(audio[7], "rounddraw"))
-	return PLUGIN_HANDLED
+		return PLUGIN_HANDLED
 	
 	return PLUGIN_CONTINUE
 }
@@ -10785,10 +10362,8 @@ public message_teamscore()
 	
 	switch (team[0])
 	{
-		// CT
-	case 'C': set_msg_arg_int(2, get_msg_argtype(2), g_scorehumans)
-		// Terrorist
-	case 'T': set_msg_arg_int(2, get_msg_argtype(2), g_scorezombies)
+		case 'C': set_msg_arg_int(2, get_msg_argtype(2), g_scorehumans) // CT
+		case 'T': set_msg_arg_int(2, get_msg_argtype(2), g_scorezombies) // Terrorist
 	}
 }
 
@@ -10796,11 +10371,11 @@ public message_teamscore()
 public message_hudtextargs(message_index, message_destination, message_entity)
 {
 	static szHints[64]
-	get_msg_arg_string( 1, szHints, 64 )
+	get_msg_arg_string(1, szHints, 64)
 	
-	for( new i = 0; i < sizeof( g_BlockedMessages ); i++ )
+	for (new i = 0; i < sizeof(g_BlockedMessages); i++)
 	{
-		if( equali( szHints, g_BlockedMessages[i] ) )
+		if (equali(szHints, g_BlockedMessages[i]))
 		{
 			set_pdata_float( message_entity, 198, 0.0 )	
 			return PLUGIN_HANDLED
@@ -10846,7 +10421,7 @@ public message_teaminfo(msg_id, msg_dest)
 	{
 	case 'C': // CT
 		{
-			if ((g_survround && fnGetHumans()) || (g_sniround && fnGetHumans()) || (g_samurairound && fnGetHumans())) // survivor/sniper/samurai alive --> switch to T and spawn as zombie
+			if ((CheckModeBit(g_currentmode, MODE_SURVIVOR) && fnGetHumans()) || (CheckModeBit(g_currentmode, MODE_SNIPER) && fnGetHumans()) || (CheckModeBit(g_currentmode, MODE_SAMURAI) && fnGetHumans())) // survivor/sniper/samurai alive --> switch to T and spawn as zombie
 			{
 				g_respawn_as_zombie[id] = true
 				remove_task(id+TASK_TEAM)
@@ -10863,10 +10438,8 @@ public message_teaminfo(msg_id, msg_dest)
 		}
 	case 'T': // Terrorist
 		{
-			if ((g_swarmround || g_survround || g_sniround) && fnGetHumans()) // survivor alive or swarm round w/ humans --> spawn as zombie
-			{
+			if ((CheckModeBit(g_currentmode, MODE_SWARM) || CheckModeBit(g_currentmode, MODE_SURVIVOR) || CheckModeBit(g_currentmode, MODE_SNIPER)) && fnGetHumans()) // survivor alive or swarm round w/ humans --> spawn as zombie
 				g_respawn_as_zombie[id] = true
-			}
 			else if (fnGetZombies()) // zombies alive --> switch to CT
 			{
 				remove_task(id+TASK_TEAM)
@@ -10892,8 +10465,7 @@ public make_zombie_task()
 start_mode(mode, id)
 {
 	// Get alive players count
-	static iPlayersnum
-	iPlayersnum = fnGetAlive()
+	static iPlayersnum; iPlayersnum = fnGetAlive()
 	
 	// Not enough players, come back later!
 	if (iPlayersnum < 1)
@@ -10908,15 +10480,14 @@ start_mode(mode, id)
 	// Set up some common vars
 	static forward_id, iZombies, iMaxZombies
 	
-	if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, SurvivorChance) == SurvivorEnabled && iPlayersnum >= SurvivorMinPlayers) || mode == survivor)
+	if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SurvivorChance) == SurvivorEnabled && iPlayersnum >= SurvivorMinPlayers) || mode == MODE_SURVIVOR)
 	{
 		// Survivor Mode
-		g_survround = true
-		g_currentmode = survivor
-		g_lastmode = survivor
+		SetModeBit(g_currentmode, MODE_SURVIVOR)
+		g_lastmode = MODE_SURVIVOR
 		
 		// Choose player randomly?
-		if (mode == none)
+		if (mode == MODE_NONE)
 		id = fnGetRandomAlive(random_num(1, iPlayersnum))
 		
 		// Remember id for calling our forward later
@@ -10929,12 +10500,11 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Not alive
-			if (!g_isalive[id])
-			continue
+			if (!g_isalive[id]) continue
 			
 			// Survivor or already a zombie
 			if (g_survivor[id] || g_zombie[id])
-			continue
+				continue
 			
 			// Turn into a zombie
 			zombieme(id, 0, none)
@@ -10957,17 +10527,16 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, SniperChance) == SniperEnabled && iPlayersnum >= SniperMinPlayers) || mode == sniper)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SniperChance) == SniperEnabled && iPlayersnum >= SniperMinPlayers) || mode == MODE_SNIPER)
 	{
 		// Sniper Mode
-		g_sniround = true
-		g_currentmode = sniper
-		g_lastmode = sniper
+		SetModeBit(g_currentmode, MODE_SNIPER)
+		g_lastmode = MODE_SNIPER
 		
 		// Choose player randomly?
-		if (mode == none)
+		if (mode == MODE_NONE)
 		id = fnGetRandomAlive(random_num(1, iPlayersnum))
 		
 		// Remember id for calling our forward later
@@ -10980,12 +10549,11 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Not alive
-			if (!g_isalive[id])
-			continue
+			if (!g_isalive[id]) continue
 			
 			// Sniper or already a zombie
 			if (g_sniper[id] || g_zombie[id])
-			continue
+				continue
 			
 			// Turn into a zombie
 			zombieme(id, 0, none)
@@ -11008,18 +10576,17 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
 	// Abhinash
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, SamuraiChance) == SamuraiEnabled && iPlayersnum >= SamuraiMinPlayers) || mode == samurai)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SamuraiChance) == SamuraiEnabled && iPlayersnum >= SamuraiMinPlayers) || mode == MODE_SAMURAI)
 	{
 		// Samurai Mode
-		g_samurairound = true
-		g_currentmode = samurai
-		g_lastmode = samurai
+		SetModeBit(g_currentmode, MODE_SAMURAI)
+		g_lastmode = MODE_SAMURAI
 		
 		// Choose player randomly?
-		if (mode == none)
+		if (mode == MODE_NONE)
 		id = fnGetRandomAlive(random_num(1, iPlayersnum))
 		
 		// Remember id for calling our forward later
@@ -11032,12 +10599,11 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Not alive
-			if (!g_isalive[id])
-			continue
+			if (!g_isalive[id]) continue
 			
 			// Samurai or already a zombie
 			if (g_samurai[id] || g_zombie[id])
-			continue
+				continue
 			
 			// Turn into a zombie
 			zombieme(id, 0, none)
@@ -11060,15 +10626,13 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
-	
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, SwarmChance) == SwarmEnable && iPlayersnum >= SwarmMinPlayers) || mode == swarm)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SwarmChance) == SwarmEnable && iPlayersnum >= SwarmMinPlayers) || mode == MODE_SWARM)
 	{		
 		// Swarm Mode
-		g_swarmround = true
-		g_currentmode = swarm
-		g_lastmode = swarm
+		SetModeBit(g_currentmode, MODE_SWARM)
+		g_lastmode = MODE_SWARM
 		
 		// Make sure there are alive players on both teams (BUGFIX)
 		if (!fnGetAliveTs())
@@ -11092,12 +10656,11 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Not alive
-			if (!g_isalive[id])
-			continue
+			if (!g_isalive[id]) continue
 			
 			// Not a Terrorist
 			if (fm_cs_get_user_team(id) != FM_CS_TEAM_T)
-			continue
+				continue
 			
 			// Turn into a zombie
 			zombieme(id, 0, none)
@@ -11117,16 +10680,16 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
-	else if ((mode == none && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, MultiInfectionChance) == MultiInfectionEnable && floatround(iPlayersnum*MultiInfectionRatio, floatround_ceil) >= 2 && floatround(iPlayersnum*MultiInfectionRatio, floatround_ceil) < iPlayersnum && iPlayersnum >= MultiInfectionMinPlayers) || mode == multi)
+	else if ((mode == MODE_NONE && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, MultiInfectionChance) == MultiInfectionEnable && floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil) >= 2 && floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil) < iPlayersnum && iPlayersnum >= MultiInfectionMinPlayers) || mode == MODE_MULTI_INFECTION)
 	{
 		// Multi Infection Mode
-		g_currentmode = multi
-		g_lastmode = multi
+		SetModeBit(g_currentmode, MODE_MULTI_INFECTION)
+		g_lastmode = MODE_MULTI_INFECTION
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround(iPlayersnum*MultiInfectionRatio, floatround_ceil)
+		iMaxZombies = floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into zombies
@@ -11137,7 +10700,7 @@ start_mode(mode, id)
 			
 			// Dead or already a zombie
 			if (!g_isalive[id] || g_zombie[id])
-			continue
+				continue
 			
 			// Random chance
 			if (random_num(0, 1))
@@ -11153,7 +10716,7 @@ start_mode(mode, id)
 		{
 			// Only those of them who aren't zombies
 			if (!g_isalive[id] || g_zombie[id])
-			continue
+				continue
 			
 			// Switch to CT
 			if (fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
@@ -11178,15 +10741,14 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, PlagueChance) == PlagueEnable && floatround((iPlayersnum-(PlagueNemesisCount+PlagueSurvivorCount))*PlagueRatio, floatround_ceil) >= 1
-	&& iPlayersnum-(PlagueSurvivorCount+PlagueNemesisCount+floatround((iPlayersnum-(PlagueNemesisCount+PlagueSurvivorCount))*PlagueRatio, floatround_ceil)) >= 1 && iPlayersnum >= PlagueMinPlayers) || mode == plague)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, PlagueChance) == PlagueEnable && floatround((iPlayersnum - (PlagueNemesisCount+PlagueSurvivorCount)) * PlagueRatio, floatround_ceil) >= 1
+	&& iPlayersnum - (PlagueSurvivorCount + PlagueNemesisCount + floatround((iPlayersnum - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil)) >= 1 && iPlayersnum >= PlagueMinPlayers) || mode == MODE_PLAGUE)
 	{
 		// Plague Mode
-		g_plagueround = true
-		g_currentmode = plague
-		g_lastmode = plague
+		SetModeBit(g_currentmode, MODE_PLAGUE)
+		g_lastmode = MODE_PLAGUE
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
@@ -11199,8 +10761,7 @@ start_mode(mode, id)
 			id = fnGetRandomAlive(random_num(1, iPlayersnum))
 			
 			// Already a survivor?
-			if (g_survivor[id])
-			continue
+			if (g_survivor[id]) continue
 			
 			// If not, turn him into one
 			humanme(id, survivor)
@@ -11233,7 +10794,7 @@ start_mode(mode, id)
 		}
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum-(PlagueNemesisCount+PlagueSurvivorCount))*PlagueRatio, floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum - (PlagueNemesisCount+PlagueSurvivorCount)) * PlagueRatio, floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into zombies
@@ -11244,7 +10805,7 @@ start_mode(mode, id)
 			
 			// Dead or already a zombie or survivor
 			if (!g_isalive[id] || g_zombie[id] || g_survivor[id])
-			continue
+				continue
 			
 			// Random chance
 			if (random_num(0, 1))
@@ -11260,7 +10821,7 @@ start_mode(mode, id)
 		{
 			// Only those of them who arent zombies or survivor
 			if (!g_isalive[id] || g_zombie[id] || g_survivor[id])
-			continue
+				continue
 			
 			// Switch to CT
 			if (fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
@@ -11285,14 +10846,13 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, ArmageddonChance) == ArmageddonEnable && iPlayersnum >= ArmageddonMinPlayers && iPlayersnum >= 2) || mode == armageddon)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, ArmageddonChance) == ArmageddonEnable && iPlayersnum >= ArmageddonMinPlayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
 	{
 		// Armageddon Mode
-		g_armageround = true
-		g_currentmode = armageddon
-		g_lastmode = armageddon
+		SetModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
+		g_lastmode = MODE_SURVIVOR_VS_NEMESIS
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * ArmageddonRatio), floatround_ceil)
@@ -11306,7 +10866,7 @@ start_mode(mode, id)
 			
 			// Dead or already a zombie or survivor
 			if (!g_isalive[id] || g_zombie[id] || g_survivor[id])
-			continue
+				continue
 			
 			// Random chance
 			if (random_num(0, 1))
@@ -11323,7 +10883,7 @@ start_mode(mode, id)
 		{
 			// Only those of them who arent zombies or survivor
 			if (!g_isalive[id] || g_zombie[id]|| g_survivor[id])
-			continue
+				continue
 			
 			// Turn into a Survivor
 			humanme(id, survivor)
@@ -11344,14 +10904,13 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, ApocalypseChance) == ApocalypseEnable && iPlayersnum >= ApocalypseMinPlayers && iPlayersnum >= 2) || mode == apocalypse)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, ApocalypseChance) == ApocalypseEnable && iPlayersnum >= ApocalypseMinPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
 	{
 		// Apocalypse Mode
-		g_apocround = true
-		g_currentmode = apocalypse
-		g_lastmode = apocalypse
+		SetModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
+		g_lastmode = MODE_SNIPER_VS_ASSASIN
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * ApocalypseRatio), floatround_ceil)
@@ -11365,7 +10924,7 @@ start_mode(mode, id)
 			
 			// Dead or already a zombie or sniper
 			if (!g_isalive[id] || g_zombie[id] || g_sniper[id])
-			continue
+				continue
 			
 			// Random chance
 			if (random_num(0, 1))
@@ -11382,7 +10941,7 @@ start_mode(mode, id)
 		{
 			// Only those of them who arent zombies or sniper
 			if (!g_isalive[id] || g_zombie[id]|| g_sniper[id])
-			continue
+				continue
 			
 			// Turn into a Sniper
 			humanme(id, sniper)
@@ -11403,14 +10962,13 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, NightmareChance) == NightmareEnable && iPlayersnum >= NightmareMinPlayers && iPlayersnum >= 4) || mode == nightmare)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, NightmareChance) == NightmareEnable && iPlayersnum >= NightmareMinPlayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
 	{
 		// Nightmare mode
-		g_nightround = true
-		g_currentmode = nightmare
-		g_lastmode = nightmare
+		SetModeBit(g_currentmode, MODE_NIGHTMARE)
+		g_lastmode = MODE_NIGHTMARE
 		
 		iMaxZombies = floatround((iPlayersnum * 0.25), floatround_ceil)
 		iZombies = 0
@@ -11419,8 +10977,7 @@ start_mode(mode, id)
 		{
 			if ((++id) > g_maxplayers) id = 1
 			
-			if (!g_isalive[id])
-			continue
+			if (!g_isalive[id]) continue
 			
 			if (random_num(1, 5) == 1)
 			{
@@ -11437,7 +10994,7 @@ start_mode(mode, id)
 			if ((++id) > g_maxplayers) id = 1
 			
 			if (!g_isalive[id] || g_assassin[id])
-			continue
+				continue
 			
 			if (random_num(1, 5) == 1)
 			{
@@ -11454,7 +11011,7 @@ start_mode(mode, id)
 			if ((++id) > g_maxplayers) id = 1
 			
 			if (!g_isalive[id] || g_assassin[id] || g_nemesis[id])
-			continue
+				continue
 			
 			if (random_num(1, 5) == 1)
 			{
@@ -11467,8 +11024,8 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			if (!g_isalive[id] || g_assassin[id] || g_nemesis[id] || g_survivor[id])
-			continue
-			
+				continue
+
 			humanme(id, sniper)
 			set_user_health(id, floatround(float(pev(id, pev_health)) * NightmareSniperHealthMultiply))
 		}
@@ -11487,15 +11044,14 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
 	// Abhinash
-	else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, DevilChance) == DevilEnable && iPlayersnum >= DevilMinPlayers && iPlayersnum >= 2) || mode == devil)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, DevilChance) == DevilEnable && iPlayersnum >= DevilMinPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
 	{
 		// Devil Mode ( Sniper vs Nemesis)
-		g_devilround = true
-		g_currentmode = devil
-		g_lastmode = devil
+		SetModeBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
+		g_lastmode = MODE_SNIPER_VS_NEMESIS
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * DevilRatio), floatround_ceil)
@@ -11509,7 +11065,7 @@ start_mode(mode, id)
 			
 			// Dead or already a zombie or sniper
 			if (!g_isalive[id] || g_zombie[id] || g_sniper[id])
-			continue
+				continue
 			
 			// Random chance
 			if (random_num(0, 1))
@@ -11526,7 +11082,7 @@ start_mode(mode, id)
 		{
 			// Only those of them who arent zombies or sniper
 			if (!g_isalive[id] || g_zombie[id]|| g_sniper[id])
-			continue
+				continue
 			
 			// Turn into a Sniper
 			humanme(id, sniper)
@@ -11547,25 +11103,24 @@ start_mode(mode, id)
 		g_modestarted = true
 
 		if (task_exists(TASK_COUNTDOWN))
-		remove_task(TASK_COUNTDOWN)
+			remove_task(TASK_COUNTDOWN)
 	}
 	else
 	{
 		// Single Infection Mode or Nemesis Mode
 		
 		// Choose player randomly?
-		if (mode == none)
+		if (mode == MODE_NONE)
 		id = fnGetRandomAlive(random_num(1, iPlayersnum))
 		
 		// Remember id for calling our forward later
 		forward_id = id
 		
-		if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, NemesisChance) == NemesisEnabled && iPlayersnum >= NemesisMinPlayers) || mode == nemesis)
+		if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, NemesisChance) == NemesisEnabled && iPlayersnum >= NemesisMinPlayers) || mode == MODE_NEMESIS)
 		{
 			// Nemesis Mode
-			g_nemround = true
-			g_currentmode = nemesis
-			g_lastmode = nemesis
+			SetModeBit(g_currentmode, MODE_NEMESIS)
+			g_lastmode = MODE_NEMESIS
 
 			// Turn player into nemesis
 			zombieme(id, 0, nemesis)
@@ -11589,12 +11144,11 @@ start_mode(mode, id)
 			// Create Fog 
 			//CreateFog(0, 200, 200, 100, 0.0008)
 		}
-		else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, AssassinChance) == AssassinEnabled && iPlayersnum >= AssassinMinPlayers) || mode == assassin)
+		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, AssassinChance) == AssassinEnabled && iPlayersnum >= AssassinMinPlayers) || mode == MODE_ASSASIN)
 		{
 			// Assassin Mode
-			g_assaround = true
-			g_currentmode = assassin
-			g_lastmode = assassin
+			SetModeBit(g_currentmode, MODE_ASSASIN)
+			g_lastmode = MODE_ASSASIN
 
 			// Set lighting for Assassin mode
 			engfunc(EngFunc_LightStyle, 0, "a") // Set lighting
@@ -11616,18 +11170,17 @@ start_mode(mode, id)
 			//CreateFog(0, 200, 200, 100, 0.0008)
 
 			if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+				remove_task(TASK_COUNTDOWN)
 			
 			// Mode fully started!
 			g_modestarted = true
 		}
 		// Bombardier -- Abhinash
-		else if ((mode == none && (g_roundcount > 8) && (PreventConsecutiveRounds == 0 || g_lastmode == infection) && random_num(1, BombardierChance) == BombardierEnabled && iPlayersnum >= BombardierMinPlayers) || mode == bombardier)
+		else if ((mode == MODE_BOMBARDIER && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, BombardierChance) == BombardierEnabled && iPlayersnum >= BombardierMinPlayers) || mode == MODE_BOMBARDIER)
 		{
 			// Bombardier Mode
-			g_bombardierround = true
-			g_currentmode = bombardier
-			g_lastmode = bombardier
+			SetModeBit(g_currentmode, MODE_BOMBARDIER)
+			g_lastmode = MODE_BOMBARDIER
 			
 			// Turn player into bombardier
 			zombieme(id, 0, bombardier)
@@ -11646,7 +11199,7 @@ start_mode(mode, id)
 			//CreateFog(0, 200, 200, 100, 0.0008)
 
 			if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+				remove_task(TASK_COUNTDOWN)
 			
 			// Mode fully started!
 			g_modestarted = true
@@ -11654,8 +11207,8 @@ start_mode(mode, id)
 		else
 		{
 			// Single Infection Mode
-			g_currentmode = infection
-			g_lastmode = infection
+			SetModeBit(g_currentmode, MODE_INFECTION)
+			g_lastmode = MODE_INFECTION
 			
 			// Turn player into the first zombie
 			zombieme(id, 0, none)
@@ -11668,7 +11221,7 @@ start_mode(mode, id)
 			//CreateFog(0, 128, 175, 200, 0.0008)
 
 			if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+				remove_task(TASK_COUNTDOWN)
 			
 			// Mode fully started!
 			g_modestarted = true
@@ -11678,12 +11231,10 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Not alive
-			if (!g_isalive[id])
-			continue
+			if (!g_isalive[id]) continue
 			
 			// First zombie/nemesis
-			if (g_zombie[id])
-			continue
+			if (g_zombie[id]) continue
 			
 			// Switch to CT
 			if (fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
@@ -11696,23 +11247,8 @@ start_mode(mode, id)
 	}
 	
 	// Start ambience sounds after a mode begins
-	if ((g_nemround)
-			|| (g_assaround)
-			|| (g_bombardierround)
-			|| (g_survround)
-			|| (g_sniround)
-			|| (g_samurairound)		// Abhinash
-			|| (g_swarmround)
-			|| (g_plagueround)
-			|| (g_armageround) 
-			|| (g_apocround)
-			|| (g_nightround)
-			|| (g_devilround) 		// Abhinash
-			|| (!g_nemround && !g_assaround && !g_bombardierround && !g_survround && !g_sniround && !g_samurairound && !g_swarmround && !g_plagueround && !g_armageround && !g_apocround && !g_nightround && !g_devilround))
-	{
-		remove_task(TASK_AMBIENCESOUNDS)
-		set_task(2.0, "ambience_sound_effects", TASK_AMBIENCESOUNDS)
-	}
+	remove_task(TASK_AMBIENCESOUNDS)
+	set_task(2.0, "ambience_sound_effects", TASK_AMBIENCESOUNDS)
 }
 
 public TaskRemoveRender(infector)
@@ -11731,24 +11267,24 @@ zombieme(victim, infector, class)
 
 	// Jetpack
 	if (get_user_jetpack(victim))
-	user_drop_jetpack(victim, 1)
+		user_drop_jetpack(victim, 1)
 
 	// Fix for glow
 	remove_glow(victim)
 
 	if (g_isbot[victim])
-	g_zombieclass[victim] = random_num(0, 6)
+		g_zombieclass[victim] = random_num(0, 6)
 
 	// Show zombie class menu if they haven't chosen any (e.g. just connected)
 	if (g_zombieclassnext[victim] == -1)
-	menu_display(victim, g_iZombieClassMenu, 0)
+		menu_display(victim, g_iZombieClassMenu, 0)
 	
 	// Set selected zombie class
 	g_zombieclass[victim] = g_zombieclassnext[victim]
 
 	// Set random class if player didnt choose any
 	if (g_zombieclass[victim] == -1)
-	g_zombieclass[victim] = random_num(0, 6)
+		g_zombieclass[victim] = random_num(0, 6)
 	
 	// For Class strings and few var checks
 	if (g_zombieclass[victim] == 0)
@@ -11805,7 +11341,7 @@ zombieme(victim, infector, class)
 	// Reset burning duration counter (bugfix)
 	g_burning_duration[victim] = 0
 
-	if(infector)
+	if (infector)
 	{
 		set_user_health(infector, pev(infector, pev_health) + 300)
 		set_glow(infector, 0, 255, 0, 25)
@@ -11813,7 +11349,7 @@ zombieme(victim, infector, class)
 		set_hudmessage(0, 255, 0, -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
 		ShowSyncHudMsg(infector, g_MsgSync4, "== INFECTION ==^n!!!!Regeneration: +250 HP Gained!!!")
 	}
-	
+
 	// Set zombie attributes based on the mode
 	if (class == nemesis)
 	{
@@ -11831,19 +11367,10 @@ zombieme(victim, infector, class)
 			set_pev(victim, pev_gravity, NemesisGravity)
 
 			// Set Glow
-			if(NemesisGlow == 1)
-			{
-				set_glow(victim, 250, 0, 0, 25)
-			}
-			else
-			{
-				remove_glow(victim)
-			}
+			if (NemesisGlow) set_glow(victim, 250, 0, 0, 25)
+			else remove_glow(victim)
 		}
-		else 
-		{
-			g_frozen_gravity[victim] = NemesisGravity
-		}
+		else g_frozen_gravity[victim] = NemesisGravity
 
 		// Set nemesis maxspeed
 		ExecuteHamB(Ham_Player_ResetMaxSpeed, victim)
@@ -11866,19 +11393,10 @@ zombieme(victim, infector, class)
 			set_pev(victim, pev_gravity, AssassinGravity)
 
 			// Set Glow
-			if(AssassinGlow == 1)
-			{
-				set_glow(victim, 255, 140, 0, 25)
-			}
-			else
-			{
-				remove_glow(victim)
-			}
+			if (AssassinGlow) set_glow(victim, 255, 140, 0, 25)
+			else remove_glow(victim)
 		}
-		else 
-		{
-			g_frozen_gravity[victim] = AssassinGravity
-		}
+		else g_frozen_gravity[victim] = AssassinGravity
 
 		// Set assassin maxspeed
 		ExecuteHamB(Ham_Player_ResetMaxSpeed, victim)
@@ -11900,24 +11418,15 @@ zombieme(victim, infector, class)
 			set_pev(victim, pev_gravity, BombardierGravity)
 
 			// Set glow
-			if(BombardierGlow == 1)
-			{
-				set_glow(victim, 255, 140, 0, 25)
-			}
-			else
-			{
-				remove_glow(victim)
-			}
+			if (BombardierGlow) set_glow(victim, 255, 140, 0, 25)
+			else remove_glow(victim)
 		}
-		else 
-		{
-			g_frozen_gravity[victim] = BombardierGravity
-		}
+		else g_frozen_gravity[victim] = BombardierGravity
 
 		// Set bombardier maxspeed
 		ExecuteHamB(Ham_Player_ResetMaxSpeed, victim)
 	}
-	else if(class == none)
+	else if (class == none)
 	{
 		if ((fnGetZombies() == 1))
 		{
@@ -11988,16 +11497,16 @@ zombieme(victim, infector, class)
 		set_hudmessage(255, 0, 0, HUD_INFECT_X, HUD_INFECT_Y, 0, 0.0, 5.0, 1.0, 1.0, -1)
 		
 		if (infector) // infected by someone?
-		ShowSyncHudMsg(0, g_MsgSync, "%s's brain is eaten by %s...", g_playername[victim], g_playername[infector])
+			ShowSyncHudMsg(0, g_MsgSync, "%s's brain is eaten by %s...", g_playername[victim], g_playername[infector])
 		else
-		ShowSyncHudMsg(0, g_MsgSync, "%s's brain is eaten by...", g_playername[victim])
+			ShowSyncHudMsg(0, g_MsgSync, "%s's brain is eaten by...", g_playername[victim])
 	}
 	
 	// Remove previous tasks
-	remove_task(victim+TASK_MODEL)
-	remove_task(victim+TASK_BLOOD)
-	remove_task(victim+TASK_AURA)
-	remove_task(victim+TASK_BURN)
+	remove_task(victim + TASK_MODEL)
+	remove_task(victim + TASK_BLOOD)
+	remove_task(victim + TASK_AURA)
+	remove_task(victim + TASK_BURN)
 	
 
 	// Set the right model, after checking that we don't already have it
@@ -12010,7 +11519,7 @@ zombieme(victim, infector, class)
 	}
 	else
 	{
-		set_task((g_models_targettime + g_modelchange_delay) - current_time, "ChangeModels", victim+TASK_MODEL)
+		set_task((g_models_targettime + g_modelchange_delay) - current_time, "ChangeModels", victim + TASK_MODEL)
 		g_models_targettime = g_models_targettime + g_modelchange_delay
 	}
 	
@@ -12037,33 +11546,26 @@ zombieme(victim, infector, class)
 	fm_give_item(victim, "weapon_knife")
 	
 	// Give Bombardier Killing grenade
-	if(g_bombardier[victim])
-	{
-		fm_give_item(victim, "weapon_hegrenade")
-	}
+	if(g_bombardier[victim]) fm_give_item(victim, "weapon_hegrenade")
 
 	if (g_firstzombie[victim])
-	{
-		if (!g_swarmround && !g_plagueround && !g_sniround && !g_survround && !g_samurairound)
-		{
+		if (!CheckModeBit(g_currentmode, MODE_SWARM) && !CheckModeBit(g_currentmode, MODE_PLAGUE) && !CheckModeBit(g_currentmode, MODE_SNIPER) && !CheckModeBit(g_currentmode, MODE_SURVIVOR) && !CheckModeBit(g_currentmode, MODE_SAMURAI))
 			fm_give_item(victim, "weapon_hegrenade")
-		}
-	}
 	
 	// Fancy effects
 	infection_effects(victim)
 	
 	// Nemesis aura task
-	if (g_nemesis[victim] && NemesisAura != 0)
-	set_task(0.1, "zombie_aura", victim+TASK_AURA, _, _, "b")
+	if (g_nemesis[victim] && NemesisAura)
+		set_task(0.1, "zombie_aura", victim + TASK_AURA, _, _, "b")
 	
 	// Assassin aura task
-	if (g_assassin[victim] && AssassinAura != 0)
-	set_task(0.1, "zombie_aura", victim+TASK_AURA, _, _, "b")
+	if (g_assassin[victim] && AssassinAura)
+		set_task(0.1, "zombie_aura", victim + TASK_AURA, _, _, "b")
 	
 	// Bombardier aura task
-	if (g_bombardier[victim] && BombardierAura != 0)
-	set_task(0.1, "zombie_aura", victim+TASK_AURA, _, _, "b")
+	if (g_bombardier[victim] && BombardierAura)
+		set_task(0.1, "zombie_aura", victim + TASK_AURA, _, _, "b")
 	
 	// Remove CS nightvision if player owns one (bugfix)
 	if (cs_get_user_nvg(victim))
@@ -12074,36 +11576,34 @@ zombieme(victim, infector, class)
 	}
 	
 	// Give Zombies Night Vision?
-	if (NightVisionEnabled == 1)
+	if (NightVisionEnabled)
 	{
 		g_nvision[victim] = true
 		
 		if (!g_isbot[victim])
 		{
 			// Turn on Night Vision automatically?
-			if (NightVisionEnabled == 1)
+			if (NightVisionEnabled)
 			{
 				g_nvisionenabled[victim] = true
 				
 				// Custom nvg?
-				if (CustomNightVision == 1)
+				if (CustomNightVision)
 				{
 					remove_task(victim+TASK_NVISION)
-					set_task(0.1, "set_user_nvision", victim+TASK_NVISION, _, _, "b")
+					set_task(0.1, "set_user_nvision", victim + TASK_NVISION, _, _, "b")
 				}
-				else
-				set_user_gnvision(victim, 1)
+				else set_user_gnvision(victim, 1)
 			}
 			// Turn off nightvision when infected (bugfix)
 			else if (g_nvisionenabled[victim])
 			{
-				if (CustomNightVision == 1) remove_task(victim+TASK_NVISION)
+				if (CustomNightVision) remove_task(victim + TASK_NVISION)
 				else set_user_gnvision(victim, 0)
 				g_nvisionenabled[victim] = false
 			}
 		}
-		else
-		cs_set_user_nvg(victim, 1) // turn on NVG for bots
+		else cs_set_user_nvg(victim, 1) // turn on NVG for bots
 	}
 	// Disable nightvision when infected (bugfix)
 	else if (g_nvision[victim])
@@ -12119,34 +11619,30 @@ zombieme(victim, infector, class)
 	
 	// Call the bloody task
 	if (!g_nemesis[victim] && !g_assassin[victim] && !g_bombardier[victim] && ZombieBleeding)
-	set_task(0.7, "make_blood", victim+TASK_BLOOD, _, _, "b")
+		set_task(0.7, "make_blood", victim + TASK_BLOOD, _, _, "b")
 	
 	// Idle sounds task
 	if (!g_nemesis[victim] && !g_assassin[victim] && !g_bombardier[victim])
-	set_task(random_float(50.0, 70.0), "zombie_play_idle", victim+TASK_BLOOD, _, _, "b")
+		set_task(random_float(50.0, 70.0), "zombie_play_idle", victim + TASK_BLOOD, _, _, "b")
 	
 	// Turn off zombie's flashlight
 	turn_off_flashlight(victim)
 
 	// Remove tasks
 	if (task_exists(victim + TASK_CONCUSSION))
-	remove_task(victim + TASK_CONCUSSION)
+		remove_task(victim + TASK_CONCUSSION)
 
 	// Show VIP
-	if (g_bVip[victim])
-	{
-		Show_VIP()
-	}
+	if (g_bVip[victim]) Show_VIP()
 
 	// Reset some vars
 	g_antidotebomb[victim] = 0
 	g_concussionbomb[victim] = 0
 	g_bubblebomb[victim] = 0
 	g_killingbomb[victim] = 0
-	if (g_multijump[victim])
-	{
-		g_jumpnum[victim] = 0
-	}
+
+	if (g_multijump[victim]) g_jumpnum[victim] = 0
+
 	g_norecoil[victim] = false
 	
 	// Last Zombie Check
@@ -12159,11 +11655,11 @@ humanme(id, class)
 	set_zombie(id, false)		// For module
 
 	// Remove previous tasks
-	remove_task(id+TASK_MODEL)
-	remove_task(id+TASK_BLOOD)
-	remove_task(id+TASK_AURA)
-	remove_task(id+TASK_BURN)
-	remove_task(id+TASK_NVISION)
+	remove_task(id + TASK_MODEL)
+	remove_task(id + TASK_BLOOD)
+	remove_task(id + TASK_AURA)
+	remove_task(id + TASK_BURN)
+	remove_task(id + TASK_NVISION)
 	
 	// Reset some vars
 	g_zombie[id] = false
@@ -12196,7 +11692,7 @@ humanme(id, class)
 	if (cs_get_user_nvg(id))
 	{
 		cs_set_user_nvg(id, 0)
-		if (CustomNightVision == 1) remove_task(id+TASK_NVISION)
+		if (CustomNightVision) remove_task(id + TASK_NVISION)
 		else if (g_nvisionenabled[id]) set_user_gnvision(id, 0)
 	}
 	
@@ -12225,14 +11721,8 @@ humanme(id, class)
 			set_pev(id, pev_gravity, SurvivorGravity)
 
 			// Set glow
-			if(SurvivorGlow == 1)
-			{
-				set_glow(id, 0, 0, 255, 25)
-			}
-			else
-			{
-				remove_glow(id)
-			}
+			if (SurvivorGlow) set_glow(id, 0, 0, 255, 25)
+			else remove_glow(id)
 		}
 		
 		// Set survivor maxspeed
@@ -12274,14 +11764,8 @@ humanme(id, class)
 			set_pev(id, pev_gravity, SniperGravity)
 
 			// Set glow
-			if(SniperGlow == 1)
-			{
-				set_glow(id, 255, 255, 0, 25)
-			}
-			else
-			{
-				remove_glow(id)
-			}
+			if (SniperGlow) set_glow(id, 255, 255, 0, 25)
+			else remove_glow(id)
 		}
 		
 		// Give sniper his own weapon		
@@ -12293,8 +11777,7 @@ humanme(id, class)
 		turn_off_flashlight(id)
 		
 		// Give the sniper a bright light
-		if (SniperAura == 1) 
-		set_pev(id, pev_effects, pev(id, pev_effects) | EF_INVLIGHT)
+		if (SniperAura) set_pev(id, pev_effects, pev(id, pev_effects) | EF_INVLIGHT)
 		
 		// Sniper bots will also need nightvision to see in the dark
 		if (g_isbot[id])
@@ -12323,14 +11806,8 @@ humanme(id, class)
 			set_pev(id, pev_gravity, SamuraiGravity)
 
 			// Set glow
-			if(SamuraiGlow == 1)
-			{
-				set_glow(id, 50, 100, 150, 25)
-			}
-			else
-			{
-				remove_glow(id)
-			}
+			if (SamuraiGlow) set_glow(id, 50, 100, 150, 25)
+			else remove_glow(id)
 		}
 		
 		// Give Samurai his own weapon		
@@ -12372,7 +11849,7 @@ humanme(id, class)
 			set_pev(id, pev_gravity, TryderGravity)
 
 			// Set glow
-			if(TryderGlow == 1)
+			if(TryderGlow)
 			{
 				switch (random_num(0, 1))
 				{
@@ -12380,10 +11857,7 @@ humanme(id, class)
 					case 1: set_glow(id, 250, 10, 175, 25)
 				}
 			}
-			else
-			{
-				remove_glow(id)
-			}
+			else remove_glow(id)
 		}
 		
 		// Give tryder his own weapon		
@@ -12413,20 +11887,14 @@ humanme(id, class)
 		set_user_health(id, HumanHealth)
 		
 		// Set gravity, if frozen set the restore gravity value instead
-		if (!g_frozen[id]) 
-		{
-			set_pev(id, pev_gravity, HumanGravity)
-		}
-		else 
-		{
-			g_frozen_gravity[id] = HumanGravity
-		}
+		if (!g_frozen[id]) set_pev(id, pev_gravity, HumanGravity)
+		else g_frozen_gravity[id] = HumanGravity
 		
 		// Set human maxspeed
 		ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
 		
 		// Show custom buy menu
-		set_task(0.2, "show_menu_buy1", id+TASK_SPAWN)
+		set_task(0.2, "show_menu_buy1", id + TASK_SPAWN)
 	}
 	
 	// Switch to CT
@@ -12444,12 +11912,12 @@ humanme(id, class)
 	
 	if (current_time - g_models_targettime >= g_modelchange_delay)
 	{
-		ChangeModels(id+TASK_MODEL)
+		ChangeModels(id + TASK_MODEL)
 		g_models_targettime = current_time
 	}
 	else
 	{
-		set_task((g_models_targettime + g_modelchange_delay) - current_time, "ChangeModels", id+TASK_MODEL)
+		set_task((g_models_targettime + g_modelchange_delay) - current_time, "ChangeModels", id + TASK_MODEL)
 		g_models_targettime = g_models_targettime + g_modelchange_delay
 	}
 	
@@ -12459,14 +11927,9 @@ humanme(id, class)
 	// Disable nightvision when turning into human/survivor (bugfix)
 	if (g_nvision[id])
 	{
-		if (CustomNightVision == 1) 
-		{
-			remove_task(id+TASK_NVISION)
-		}
-		else if (g_nvisionenabled[id]) 
-		{
-			set_user_gnvision(id, 0)
-		}
+		if (CustomNightVision) remove_task(id+TASK_NVISION)
+		else if (g_nvisionenabled[id]) set_user_gnvision(id, 0)
+
 		g_nvision[id] = false
 		g_nvisionenabled[id] = false
 	}
@@ -12484,20 +11947,20 @@ humanme(id, class)
 
 public cache_cvars()
 {
-	g_cached_zombiesilent = ZombieSilentFootSteps
-	g_cached_customflash = FlashLightEnabled
-	g_cached_leapzombiescooldown = LeapZombiesCooldown
-	g_cached_leapnemesis = LeapNemesis
-	g_cached_leapnemesiscooldown = LeapNemesisCooldown
-	g_cached_leapassassin = LeapAssassin
-	g_cached_leapassassincooldown = LeapAssassinCooldown
-	g_cached_leapsurvivor = LeapSurvivor
-	g_cached_leapsurvivorcooldown = LeapSurvivorCooldown
-	g_cached_leapsniper = LeapSniper
-	g_cached_leapsnipercooldown = LeapSniperCooldown
-	g_cached_leapzadoc = LeapSamurai		// Abhinash
-	g_cached_leapzadoccooldown = LeapSamuraiCooldown
-	g_cached_leapbombardier = LeapBombardier		// Abhinash
+	g_cached_zombiesilent 			= ZombieSilentFootSteps
+	g_cached_customflash 			= FlashLightEnabled
+	g_cached_leapzombiescooldown 	= LeapZombiesCooldown
+	g_cached_leapnemesis 			= LeapNemesis
+	g_cached_leapnemesiscooldown 	= LeapNemesisCooldown
+	g_cached_leapassassin 			= LeapAssassin
+	g_cached_leapassassincooldown 	= LeapAssassinCooldown
+	g_cached_leapsurvivor 			= LeapSurvivor
+	g_cached_leapsurvivorcooldown 	= LeapSurvivorCooldown
+	g_cached_leapsniper 			= LeapSniper
+	g_cached_leapsnipercooldown 	= LeapSniperCooldown
+	g_cached_leapzadoc 				= LeapSamurai		// Abhinash
+	g_cached_leapzadoccooldown 		= LeapSamuraiCooldown
+	g_cached_leapbombardier 		= LeapBombardier		// Abhinash
 	g_cached_leapbombardiercooldown = LeapBombardierCooldown
 }
 
@@ -12505,8 +11968,7 @@ public cache_cvars()
 public register_ham_czbots(id)
 {
 	// Make sure it's a CZ bot and it's still connected
-	if (g_hamczbots || !g_isconnected[id] || !get_pcvar_num(cvar_botquota))
-	return
+	if (g_hamczbots || !g_isconnected[id] || !get_pcvar_num(cvar_botquota)) return
 	
 	RegisterHamFromEntity(Ham_Spawn, id, "OnPlayerSpawn", 1)
 	RegisterHamFromEntity(Ham_Killed, id, "OnPlayerKilled")
@@ -12534,8 +11996,7 @@ public disable_minmodels(id)
 balance_teams()
 {
 	// Get amount of users playing
-	static iPlayersnum
-	iPlayersnum = fnGetPlaying()
+	static iPlayersnum; iPlayersnum = fnGetPlaying()
 	
 	// No players, don't bother
 	if (iPlayersnum < 1) return
@@ -12549,14 +12010,12 @@ balance_teams()
 	for (id = 1; id <= g_maxplayers; id++)
 	{
 		// Skip if not connected
-		if (!g_isconnected[id])
-		continue
+		if (!g_isconnected[id]) continue
 		
 		team[id] = fm_cs_get_user_team(id)
 		
 		// Skip if not playing
-		if (team[id] == FM_CS_TEAM_SPECTATOR || team[id] == FM_CS_TEAM_UNASSIGNED)
-		continue
+		if (team[id] == FM_CS_TEAM_SPECTATOR || team[id] == FM_CS_TEAM_UNASSIGNED) continue
 		
 		// Set team
 		remove_task(id+TASK_TEAM)
@@ -12571,12 +12030,10 @@ balance_teams()
 		if (++id > g_maxplayers) id = 1
 		
 		// Skip if not connected
-		if (!g_isconnected[id])
-		continue
+		if (!g_isconnected[id]) continue
 		
 		// Skip if not playing or already a Terrorist
-		if (team[id] != FM_CS_TEAM_CT)
-		continue
+		if (team[id] != FM_CS_TEAM_CT) continue
 		
 		// Random chance
 		if (random_num(0, 1))
@@ -12607,19 +12064,17 @@ public welcome_msg()
 public respawn_player_check_task(taskid)
 {
 	// Retrieve player index
-	static id
-	id = taskid - TASK_SPAWN
+	static id; id = taskid - TASK_SPAWN
+
 	// Successfully spawned or round ended
-	if (g_isalive[id] || g_endround)
-	return
+	if (g_isalive[id] || g_endround) return
 	
 	// Get player's team
 	static team
 	team = fm_cs_get_user_team(id)
 	
 	// Player moved to spectators
-	if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED)
-	return
+	if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED) return
 	
 	// If player was being spawned as a zombie, set the flag again
 	if (g_zombie[id]) g_respawn_as_zombie[id] = true
@@ -12632,10 +12087,8 @@ public respawn_player_check_task(taskid)
 respawn_player_manually(id)
 {
 	// Set proper team before respawning, so that the TeamInfo message that's sent doesn't confuse PODBots
-	if (g_respawn_as_zombie[id])
-	fm_cs_set_user_team(id, FM_CS_TEAM_T)
-	else
-	fm_cs_set_user_team(id, FM_CS_TEAM_CT)
+	if (g_respawn_as_zombie[id]) fm_cs_set_user_team(id, FM_CS_TEAM_T)
+	else fm_cs_set_user_team(id, FM_CS_TEAM_CT)
 	
 	// Respawning a player has never been so easy
 	ExecuteHamB(Ham_CS_RoundRespawn, id)
@@ -12645,58 +12098,51 @@ respawn_player_manually(id)
 check_round(leaving_player)
 {
 	// Round ended or make_a_zombie task still active
-	if (g_endround || task_exists(TASK_MAKEZOMBIE))
-	return
+	if (g_endround || task_exists(TASK_MAKEZOMBIE)) return
 	
 	// Get alive players count
 	static iPlayersnum, id
 	iPlayersnum = fnGetAlive()
 	
 	// Last alive player, don't bother
-	if (iPlayersnum < 2)
-	return
+	if (iPlayersnum < 2) return
 	
 	// Last zombie disconnecting
 	if (g_zombie[leaving_player] && fnGetZombies() == 1)
 	{
 		// Only one CT left, don't bother
-		if (fnGetHumans() == 1 && fnGetCTs() == 1)
-		return
+		if (fnGetHumans() == 1 && fnGetCTs() == 1) return
 		
 		// Pick a random one to take his place
 		while ((id = fnGetRandomAlive(random_num(1, iPlayersnum))) == leaving_player ) { /* keep looping */ }
 		
 		// Show last zombie left notice
 		client_print_color(0, print_team_grey, "%s Last zombie has disconnected,^4 %s^1 is the last zombie!", CHAT_PREFIX, g_playername[id])
+
 		// Turn into a Nemesis or just a zombie?
-		if (g_nemesis[leaving_player])
-		zombieme(id, 0, nemesis)
-		else if (g_assassin[leaving_player])
-		zombieme(id, 0, assassin)
-		else if (g_bombardier[leaving_player])
-		zombieme(id, 0, bombardier)
-		else
-		zombieme(id, 0, none)
+		if (g_nemesis[leaving_player]) zombieme(id, 0, nemesis)
+		else if (g_assassin[leaving_player]) zombieme(id, 0, assassin)
+		else if (g_bombardier[leaving_player]) zombieme(id, 0, bombardier)
+		else zombieme(id, 0, none)
 		
 		// If Nemesis, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect == 1 && g_nemesis[leaving_player])
-		set_user_health(id, pev(leaving_player, pev_health))
+		if (KeepHealthOnDisconnect && g_nemesis[leaving_player])
+			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Assassin, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect == 1 && g_assassin[leaving_player])
-		set_user_health(id, pev(leaving_player, pev_health))
+		if (KeepHealthOnDisconnect && g_assassin[leaving_player])
+			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Bombardier, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect == 1 && g_bombardier[leaving_player])
-		set_user_health(id, pev(leaving_player, pev_health))
+		if (KeepHealthOnDisconnect && g_bombardier[leaving_player])
+			set_user_health(id, pev(leaving_player, pev_health))
 	}
 	
 	// Last human disconnecting
 	else if (!g_zombie[leaving_player] && fnGetHumans() == 1)
 	{
 		// Only one T left, don't bother
-		if (fnGetZombies() == 1 && fnGetTs() == 1)
-		return
+		if (fnGetZombies() == 1 && fnGetTs() == 1) return
 		
 		// Pick a random one to take his place
 		while ((id = fnGetRandomAlive(random_num(1, iPlayersnum))) == leaving_player ) { /* keep looping */ }
@@ -12705,26 +12151,22 @@ check_round(leaving_player)
 		client_print_color(0, print_team_grey, "%s Last human has disconnected,^4 %s^1 is the last human!", CHAT_PREFIX, g_playername[id]);
 		
 		// Turn into a Survivor or just a human?
-		if (g_survivor[leaving_player])
-		humanme(id, survivor)
-		else if (g_sniper[leaving_player])
-		humanme(id, sniper)
-		else if (g_samurai[leaving_player])		// Abhinash
-		humanme(id, samurai)
-		else
-		humanme(id, none)
+		if (g_survivor[leaving_player]) humanme(id, survivor)
+		else if (g_sniper[leaving_player]) humanme(id, sniper)
+		else if (g_samurai[leaving_player])	humanme(id, samurai)
+		else humanme(id, none)
 		
 		// If Survivor, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect == 1 && g_survivor[leaving_player])
-		set_user_health(id, pev(leaving_player, pev_health))
+		if (KeepHealthOnDisconnect && g_survivor[leaving_player])
+			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Sniper, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect == 1 && g_sniper[leaving_player])
-		set_user_health(id, pev(leaving_player, pev_health))
+		if (KeepHealthOnDisconnect && g_sniper[leaving_player])
+			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Samurai, set chosen player's health to that of the one who's leaving			// Abhinash
-		if (KeepHealthOnDisconnect == 1 && g_samurai[leaving_player])
-		set_user_health(id, pev(leaving_player, pev_health))
+		if (KeepHealthOnDisconnect && g_samurai[leaving_player])
+			set_user_health(id, pev(leaving_player, pev_health))
 	}
 }
 
@@ -12758,58 +12200,20 @@ public OnRegeneratorSkill()
 // Ambience Sound Effects Task
 public ambience_sound_effects(taskid)
 {
-	if (g_nemround) // Nemesis Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_assaround) // Assassin Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_bombardierround) // Assassin Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_survround) // Survivor Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_sniround) // Sniper Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_samurairound) // Samurai Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_swarmround) // Swarm Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_plagueround) // Plague Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_armageround) // Armageddon Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_apocround) // Apocalypse Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_nightround) // Nightmare Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else if (g_devilround) // Nightmare Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
-	else // Infection Mode
-	{
-		PlaySound("PerfectZM/ambience_normal.wav")
-	}
+	if (CheckModeBit(g_currentmode, MODE_INFECTION)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_MULTI_INFECTION)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_BOMBARDIER)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_SURVIVOR)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_SNIPER)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_SAMURAI)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_SWARM)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_PLAGUE)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckModeBit(g_currentmode, MODE_NIGHTMARE)) PlaySound("PerfectZM/ambience_normal.wav")
 }
 
 // Ambience Sounds Stop Task
@@ -12822,14 +12226,11 @@ ambience_sound_stop()
 public ChargeFlashLight(taskid)
 {
 	// Retrieve player id
-	static id
-	id = taskid - TASK_CHARGE
+	static id; id = taskid - TASK_CHARGE
 
 	// Drain or charge?
-	if (g_flashlight[id])
-	g_flashbattery[id] -= FlashLightDrain
-	else
-	g_flashbattery[id] += FlashLightCharge
+	if (g_flashlight[id]) g_flashbattery[id] -= FlashLightDrain
+	else g_flashbattery[id] += FlashLightCharge
 	
 	// Battery fully charged
 	if (g_flashbattery[id] >= 100)
@@ -12879,12 +12280,10 @@ public ChargeFlashLight(taskid)
 public remove_spawn_protection(taskid)
 {
 	// Retrieve player index
-	static id
-	id = taskid - TASK_SPAWN
+	static id; id = taskid - TASK_SPAWN
 
 	// Not alive
-	if (!g_isalive[id])
-	return
+	if (!g_isalive[id]) return
 	
 	// Remove spawn protection
 	g_nodamage[id] = false
@@ -12895,12 +12294,10 @@ public remove_spawn_protection(taskid)
 public task_hide_money(taskid)
 {
 	// Retrieve player index
-	static id
-	id = taskid - TASK_SPAWN
+	static id; id = taskid - TASK_SPAWN
 
 	// Not alive
-	if (!g_isalive[id])
-	return
+	if (!g_isalive[id]) return
 	
 	// Hide money
 	HideWeapon(id, HIDE_MONEY)
@@ -12916,16 +12313,8 @@ turn_off_flashlight(id)
 	fm_cs_set_user_batteries(id, 100)
 	
 	// Check if flashlight is on
-	if (pev(id, pev_effects) & EF_DIMLIGHT)
-	{
-		// Turn it off
-		set_pev(id, pev_impulse, IMPULSE_FLASHLIGHT)
-	}
-	else
-	{
-		// Clear any stored flashlight impulse (bugfix)
-		set_pev(id, pev_impulse, 0)
-	}
+	if (pev(id, pev_effects) & EF_DIMLIGHT) set_pev(id, pev_impulse, IMPULSE_FLASHLIGHT) // Turn it off 
+	else set_pev(id, pev_impulse, 0) // Clear any stored flashlight impulse (bugfix) 
 	
 	// Turn off custom flashlight
 	if (g_cached_customflash)
@@ -12941,8 +12330,8 @@ turn_off_flashlight(id)
 		message_end()
 		
 		// Remove previous tasks
-		remove_task(id+TASK_CHARGE)
-		remove_task(id+TASK_FLASH)
+		remove_task(id + TASK_CHARGE)
+		remove_task(id + TASK_FLASH)
 	}
 }
 
@@ -12963,8 +12352,7 @@ infection_explode(ent)
 	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
-	static attacker
-	attacker = pev(ent, pev_owner)
+	static attacker; attacker = pev(ent, pev_owner)
 	
 	// Infection bomb owner disconnected? (bugfix)
 	if (!is_user_valid_connected(attacker))
@@ -12975,8 +12363,7 @@ infection_explode(ent)
 	}
 	
 	// Collisions
-	static victim
-	victim = -1
+	static victim; victim = -1
 
 	// Count
 	new count
@@ -12984,8 +12371,7 @@ infection_explode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive non-spawnprotected humans
-		if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim])
-		continue
+		if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim]) continue
 		
 		// Last human is killed
 		if (fnGetHumans() == 1)
@@ -13040,8 +12426,7 @@ killing_explode(ent)
 	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
-	static attacker
-	attacker = pev(ent, pev_owner)
+	static attacker; attacker = pev(ent, pev_owner)
 	
 	// Infection bomb owner disconnected? (bugfix)
 	if (!is_user_valid_connected(attacker))
@@ -13052,16 +12437,14 @@ killing_explode(ent)
 	}
 	
 	// Collisions
-	static victim
-	victim = -1
+	static victim; victim = -1
 	
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		if (g_bombardier[attacker])
 		{
 			// Only effect alive non-spawnprotected humans
-			if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim])
-			continue
+			if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim]) continue
 			
 			// Last human is killed
 			ExecuteHamB(Ham_Killed, victim, attacker, 0)
@@ -13074,8 +12457,7 @@ killing_explode(ent)
 		else
 		{
 			// Only effect alive non-spawnprotected humans
-			if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim])
-			continue
+			if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim]) continue
 			
 			// Last human is killed
 			ExecuteHamB(Ham_Killed, victim, attacker, 0)
@@ -13091,8 +12473,7 @@ killing_explode(ent)
 	engfunc(EngFunc_RemoveEntity, ent)
 
 	// Give Bombardier his grenade
-	if (g_bombardier[attacker])
-	fm_give_item(attacker, "weapon_hegrenade")
+	if (g_bombardier[attacker]) fm_give_item(attacker, "weapon_hegrenade")
 }
 
 public concussion_explode(ent)
@@ -13111,8 +12492,7 @@ public concussion_explode(ent)
 	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
-	static attacker
-	attacker = pev(ent, pev_owner)
+	static attacker; attacker = pev(ent, pev_owner)
 	
 	// Infection bomb owner disconnected? (bugfix)
 	if (!is_user_valid_connected(attacker))
@@ -13123,14 +12503,12 @@ public concussion_explode(ent)
 	}
 
 	// Collisions
-	static victim
-	victim = -1
+	static victim; victim = -1
 	
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive non-spawnprotected humans
-		if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim])
-		continue	
+		if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim]) continue	
 		
 		// Continiously affect them
 		set_task (0.2, "affect_victim", victim + TASK_CONCUSSION, _, _, "a", 35)
@@ -13147,8 +12525,7 @@ public bubble_explode(ent)
 	if (g_endround) return
 
 	// Get attacker
-	static attacker
-	attacker = pev(ent, pev_owner)
+	static attacker; attacker = pev(ent, pev_owner)
 	
 	// Bubble bomb owner disconnected? (bugfix)
 	if (!is_user_valid_connected(attacker))
@@ -13162,8 +12539,7 @@ public bubble_explode(ent)
 	new iEntity = create_entity("info_target")
 	
 	// Check if entity is valid
-	if(!is_valid_ent(iEntity))
-	return 
+	if(!is_valid_ent(iEntity)) return 
 	
 	// Get origin
 	new Float: Origin[3] 
@@ -13222,8 +12598,7 @@ public antidote_explode(ent)
 	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
-	static attacker
-	attacker = pev(ent, pev_owner)
+	static attacker; attacker = pev(ent, pev_owner)
 	
 	// Infection bomb owner disconnected? (bugfix)
 	if (!is_user_valid_connected(attacker))
@@ -13234,20 +12609,15 @@ public antidote_explode(ent)
 	}
 
 	// Collisions
-	static victim
-	victim = -1
+	static victim; victim = -1
 	
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive non-spawnprotected zombies
-		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim])
-		continue
+		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim]) continue
 
 		// Last human is killed
-		if (fnGetZombies() == 1)
-		{
-			continue
-		}
+		if (fnGetZombies() == 1) continue
 
 		// Make them all human
 		humanme(victim, none)
@@ -13261,12 +12631,10 @@ public antidote_explode(ent)
 public affect_victim(taskid)
 {
 	// Retrieve index
-	static id
-	id = taskid - TASK_CONCUSSION
+	static id; id = taskid - TASK_CONCUSSION
 
 	// Dead
-	if (!g_isalive[id])
-	return
+	if (!g_isalive[id]) return
 		
 	// Make a screen fade
 	//UTIL_ScreenFade(i, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
@@ -13322,14 +12690,13 @@ public explosion_explode(ent)
 	// Loop
 	for(victim = 1 ; victim <= g_maxplayers; victim++)
 	{
-		if(!is_user_alive(victim))
-		continue
+		if(!is_user_alive(victim)) continue
 		
-		if(!g_zombie[victim])
-		continue
+		if(!g_zombie[victim]) continue
 		
 		pev(victim, pev_origin, clorigin)
 		distance = get_distance_f(origin, clorigin)
+
 		if(distance < 330)
 		{
 			damage = 700.0 - distance
@@ -13351,14 +12718,11 @@ public explosion_explode(ent)
 			// Send Screenshake message
 			SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
 
-			if(g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim]) 
-			damage *= 1.50
+			if(g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim]) damage *= 1.50
 
 			// Checks
 			if(health - floatround(damage) > 0)
-			{
 				ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-			}
 			else
 			{
 				ExecuteHamB(Ham_Killed, victim, attacker, 2)
@@ -13388,14 +12752,12 @@ fire_explode(ent)
 	emit_sound(ent, CHAN_WEAPON, grenade_fire[random(sizeof grenade_fire)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Collisions
-	static victim
-	victim = -1
+	static victim; victim = -1
 	
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive zombies
-		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim])
-		continue
+		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim]) continue
 		
 		// Set Yellow Rendering ( Glow ) on Victims.
 		set_glow(victim, 200, 200, 0, 25)
@@ -13404,7 +12766,7 @@ fire_explode(ent)
 		UTIL_ScreenFade(victim, {200, 200, 0}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
 		
 		// Heat icon?
-		if (HUDIcons == 1)
+		if (HUDIcons)
 		{
 			message_begin(MSG_ONE_UNRELIABLE, get_user_msgid("Damage"), _, victim)
 			write_byte(0) // damage save
@@ -13416,14 +12778,12 @@ fire_explode(ent)
 			message_end()
 		}
 		
-		if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim]) // fire duration (nemesis is fire resistant)
-		g_burning_duration[victim] += FireDuration
-		else
-		g_burning_duration[victim] += FireDuration * 5
+		if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim]) g_burning_duration[victim] += FireDuration // fire duration (nemesis is fire resistant)
+		else g_burning_duration[victim] += FireDuration * 5
 		
 		// Set burning task on victim if not present
-		if (!task_exists(victim+TASK_BURN))
-		set_task(0.2, "burning_flame", victim+TASK_BURN, _, _, "b")
+		if (!task_exists(victim + TASK_BURN))
+			set_task(0.2, "burning_flame", victim + TASK_BURN, _, _, "b")
 		
 		// Set a task to remove the burn effects from victim
 		set_task(float(FireDuration), "remove_fire", victim)
@@ -13450,14 +12810,12 @@ frost_explode(ent)
 	emit_sound(ent, CHAN_WEAPON, grenade_frost[random(sizeof grenade_frost)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Collisions
-	static victim
-	victim = -1
+	static victim; victim = -1
 	
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive unfrozen zombies
-		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_frozen[victim] || g_nodamage[victim])
-		continue
+		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_frozen[victim] || g_nodamage[victim]) continue
 		
 		// Nemesis shouldn't be frozen
 		if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim])
@@ -13476,7 +12834,7 @@ frost_explode(ent)
 		}
 		
 		// Freeze icon?
-		if (HUDIcons == 1)
+		if (HUDIcons)
 		{
 			message_begin(MSG_ONE_UNRELIABLE, get_user_msgid("Damage"), _, victim)
 			write_byte(0) // damage save
@@ -13504,10 +12862,8 @@ frost_explode(ent)
 		pev(victim, pev_gravity, g_frozen_gravity[victim])
 		
 		// Prevent from jumping
-		if (pev(victim, pev_flags) & FL_ONGROUND)
-		set_pev(victim, pev_gravity, 999999.9) // set really high
-		else
-		set_pev(victim, pev_gravity, 0.000001) // no gravity
+		if (pev(victim, pev_flags) & FL_ONGROUND) set_pev(victim, pev_gravity, 999999.9) // set really high
+		else set_pev(victim, pev_gravity, 0.000001) // no gravity
 		
 		// Prevent from moving
 		ExecuteHamB(Ham_Player_ResetMaxSpeed, victim)
@@ -13524,8 +12880,7 @@ frost_explode(ent)
 public remove_freeze(id)
 {
 	// Not alive or not frozen anymore
-	if (!g_isalive[id] || !g_frozen[id])
-	return
+	if (!g_isalive[id] || !g_frozen[id]) return
 	
 	// Unfreeze
 	g_frozen[id] = false
@@ -13537,75 +12892,35 @@ public remove_freeze(id)
 	// Nemesis or Survivor glow / remove glow
 	if (g_nemesis[id])
 	{
-		if(NemesisGlow == 1)
-		{ 
-			set_glow(id, 250, 0, 0, 25)
-		}
-		else
-		{ 
-			remove_glow(id)
-		}
+		if (NemesisGlow) set_glow(id, 250, 0, 0, 25)
+		else remove_glow(id)
 	}
 	else if (g_assassin[id])
 	{
-		if(AssassinGlow == 1)
-		{
-			set_glow(id, 255, 255, 0, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (AssassinGlow) set_glow(id, 255, 255, 0, 25)
+		else remove_glow(id)
 	}
 	else if (g_survivor[id])
 	{
-		if(SurvivorGlow == 1)
-		{
-			set_glow(id, 0, 0, 255, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (SurvivorGlow) set_glow(id, 0, 0, 255, 25)
+		else remove_glow(id)
 	}
-	
 	else if (g_sniper[id])
 	{ 
-		if(SniperGlow == 1)
-		{ 
-			set_glow(id, 0, 255, 0, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (SniperGlow) set_glow(id, 0, 255, 0, 25)
+		else remove_glow(id)
 	}
 	else if (g_samurai[id])
 	{
-		if(SamuraiGlow == 1)
-		{
-			set_glow(id, 50, 100, 150, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (SamuraiGlow) set_glow(id, 50, 100, 150, 25)
+		else remove_glow(id)
 	}
 	else if (g_bombardier[id])
 	{
-		if(BombardierGlow == 1)
-		{
-			set_glow(id, 50, 100, 150, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (BombardierGlow) set_glow(id, 50, 100, 150, 25)
+		else remove_glow(id)
 	}
-	else
-	{
-		remove_glow(id)
-	}
+	else remove_glow(id)
 	
 	// Gradually remove screen's blue tint
 	UTIL_ScreenFade(id, {0, 200, 200}, 1.0, 0.0, 100, FFADE_IN, true, false)
@@ -13621,81 +12936,40 @@ public remove_freeze(id)
 public remove_fire(id)
 {
 	// Not alive or not frozen anymore
-	if (!g_isalive[id])
-	return
+	if (!g_isalive[id]) return
 	
 	// Nemesis or Survivor glow / remove glow
 	if (g_nemesis[id])
 	{
-		if(NemesisGlow == 1)
-		{ 
-			set_glow(id, 250, 0, 0, 25)
-		}
-		else
-		{ 
-			remove_glow(id)
-		}
+		if (NemesisGlow) set_glow(id, 250, 0, 0, 25)
+		else remove_glow(id)
 	}
 	else if (g_assassin[id])
 	{
-		if(AssassinGlow == 1)
-		{
-			set_glow(id, 255, 255, 0, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (AssassinGlow) set_glow(id, 255, 255, 0, 25) 
+		else remove_glow(id) 
 	}
 	else if (g_survivor[id])
 	{
-		if(SurvivorGlow == 1)
-		{
-			set_glow(id, 0, 0, 255, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (SurvivorGlow) set_glow(id, 0, 0, 255, 25) 
+		else remove_glow(id) 
 	}
-	
 	else if (g_sniper[id])
 	{ 
-		if(SniperGlow == 1)
-		{ 
-			set_glow(id, 0, 255, 0, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (SniperGlow) set_glow(id, 0, 255, 0, 25)
+		else remove_glow(id)
 	}
 	else if (g_samurai[id])
 	{
-		if(SamuraiGlow == 1)
-		{
-			set_glow(id, 50, 100, 150, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (SamuraiGlow) set_glow(id, 50, 100, 150, 25) 
+		else remove_glow(id) 
 	}
 	else if (g_bombardier[id])
 	{
-		if(BombardierGlow == 1)
-		{
-			set_glow(id, 50, 100, 150, 25)
-		}
-		else
-		{
-			remove_glow(id)
-		}
+		if (BombardierGlow) set_glow(id, 50, 100, 150, 25) 
+		else remove_glow(id) 
 	}
-	else
-	{
-		remove_glow(id)
-	}
+	else remove_glow(id) 
 	
 	// Gradually remove screen fade
 	UTIL_ScreenFade(id, {200, 200, 0}, 1.0, 0.0, 100, FFADE_IN, true, false)
@@ -13738,10 +13012,7 @@ replace_weapon_models(id, weaponid)
 					set_pev(id, pev_viewmodel2, V_KNIFE_HUMAN)
 					set_pev(id, pev_weaponmodel2, P_KNIFE_HUMAN)
 				}
-				if (get_user_jetpack(id))
-				{
-					set_jetpack(id)		// Native from module
-				}
+				if (get_user_jetpack(id)) set_jetpack(id)		// Native from module
 			}
 		}
 	case CSW_AWP: // Sniper's AWP
@@ -13761,49 +13032,17 @@ replace_weapon_models(id, weaponid)
 				set_pdata_float(id, 83, 1.0, OFFSET_LINUX)
 			}
 		}
-	case CSW_AK47:
-		{
-			if (g_goldenak47[id])
-			{
-				set_goldenak47(id)
-			}
-		}  
-	case CSW_M4A1:
-		{
-			if (g_goldenm4a1[id])
-			{
-				set_goldenm4a1(id)
-			}
-		}
-	case CSW_XM1014:
-		{
-			if (g_goldenxm1014[id])
-			{
-				set_goldenxm1014(id)
-			}
-		}
-	case CSW_DEAGLE:
-		{
-			if (g_goldendeagle[id])
-			{
-				set_goldendeagle(id)
-			}
-		}   
+	case CSW_AK47: if (g_goldenak47[id]) set_goldenak47(id)   
+	case CSW_M4A1: if (g_goldenm4a1[id]) set_goldenm4a1(id) 
+	case CSW_XM1014: if (g_goldenxm1014[id]) set_goldenxm1014(id) 
+	case CSW_DEAGLE: if (g_goldendeagle[id]) set_goldendeagle(id)    
 	case CSW_HEGRENADE: // Infection bomb or Explode grenade
 		{
-			if (g_zombie[id])
-			set_pev(id, pev_viewmodel2, V_INFECTION_NADE)
-			else
-			set_pev(id, pev_viewmodel2, V_EXPLODE_NADE)
+			if (g_zombie[id]) set_pev(id, pev_viewmodel2, V_INFECTION_NADE)
+			else set_pev(id, pev_viewmodel2, V_EXPLODE_NADE)
 		}
-	case CSW_FLASHBANG: // Fire grenade
-		{
-			set_pev(id, pev_viewmodel2, V_FIRE_NADE)
-		}
-	case CSW_SMOKEGRENADE: // Frost grenade
-		{
-			set_pev(id, pev_viewmodel2, V_FROST_NADE)
-		}
+	case CSW_FLASHBANG: set_pev(id, pev_viewmodel2, V_FIRE_NADE) // Fire grenade
+	case CSW_SMOKEGRENADE: set_pev(id, pev_viewmodel2, V_FROST_NADE) // Frost grenade 
 	}
 }
 
@@ -13857,27 +13096,25 @@ reset_vars(id, resetall)
 public spec_nvision(id)
 {
 	// Not connected, alive, or bot
-	if (!g_isconnected[id] || g_isalive[id] || g_isbot[id])
-	return
+	if (!g_isconnected[id] || g_isalive[id] || g_isbot[id]) return
 	
 	// Give Night Vision?
-	if (NightVisionEnabled == 1)
+	if (NightVisionEnabled)
 	{
 		g_nvision[id] = true
 		
 		// Turn on Night Vision automatically?
-		if (NightVisionEnabled == 1)
+		if (NightVisionEnabled)
 		{
 			g_nvisionenabled[id] = true
 			
 			// Custom nvg?
-			if (CustomNightVision == 1)
+			if (CustomNightVision)
 			{
 				remove_task(id+TASK_NVISION)
 				set_task(0.1, "set_user_nvision", id+TASK_NVISION, _, _, "b")
 			}
-			else
-			set_user_gnvision(id, 1)
+			else set_user_gnvision(id, 1)
 		}
 	}
 }
@@ -13885,8 +13122,7 @@ public spec_nvision(id)
 // Show HUD Task
 public ShowHUD(taskid)
 {
-	static id
-	id = ID_SHOWHUD
+	static id; id = ID_SHOWHUD
 	
 	// Player died?
 	if (!g_isalive[id])
@@ -13937,30 +13173,21 @@ public ShowHUD(taskid)
 public zombie_play_idle(taskid)
 {
 	//Retrieve player index
-	static id
-	id = taskid - TASK_BLOOD
+	static id; id = taskid - TASK_BLOOD
 
 	// Round ended/new one starting
-	if (g_endround || g_newround)
-	return
+	if (g_endround || g_newround) return
 	
 	// Last zombie?
-	if (g_lastzombie[id])
-	{
-		emit_sound(id, CHAN_VOICE, zombie_idle_last[random(sizeof zombie_idle_last)], 1.0, ATTN_NORM, 0, PITCH_NORM)
-	}
-	else
-	{
-		emit_sound(id, CHAN_VOICE, zombie_idle[random(sizeof zombie_idle)], 1.0, ATTN_NORM, 0, PITCH_NORM)
-	}
+	if (g_lastzombie[id]) emit_sound(id, CHAN_VOICE, zombie_idle_last[random(sizeof zombie_idle_last)], 1.0, ATTN_NORM, 0, PITCH_NORM) 
+	else emit_sound(id, CHAN_VOICE, zombie_idle[random(sizeof zombie_idle)], 1.0, ATTN_NORM, 0, PITCH_NORM) 
 }
 
 // Madness Over Task
 public madness_over(taskid)
 {
 	//Retrieve player index
-	static id
-	id = taskid - TASK_BLOOD
+	static id; id = taskid - TASK_BLOOD
 
 	g_nodamage[id] = false
 	remove_glow(id)
@@ -13969,8 +13196,7 @@ public madness_over(taskid)
 // NeO's set weapon function
 set_weapon(id , iWeaponTypeID , iClip=0)
 {
-	if (!(CSW_P228 <= iWeaponTypeID <= CSW_P90) || !is_user_alive(id))
-	return -1
+	if (!(CSW_P228 <= iWeaponTypeID <= CSW_P90) || !is_user_alive(id)) return -1
 	
 	new szWeaponName[20] , iWeaponEntity , bool:bIsGrenade
 	
@@ -13985,21 +13211,15 @@ set_weapon(id , iWeaponTypeID , iClip=0)
 	{
 		if (iWeaponTypeID != CSW_KNIFE)
 		{
-			if (!iClip && !bIsGrenade)
-			{
-				cs_set_weapon_ammo(iWeaponEntity, 10000)
-			}
-			else if(iClip && !bIsGrenade)
+			if (!iClip && !bIsGrenade) cs_set_weapon_ammo(iWeaponEntity, 10000) 
+			else if (iClip && !bIsGrenade)
 			{
 				cs_set_user_bpammo(id, iWeaponTypeID, iClip)
 				
 				if (iWeaponTypeID == CSW_C4) 
 				cs_set_user_plant(id, 1, 1)
 			}
-			else if (iClip && bIsGrenade)
-			{
-				cs_set_user_bpammo(id, iWeaponTypeID, iClip)
-			}
+			else if (iClip && bIsGrenade) cs_set_user_bpammo(id, iWeaponTypeID, iClip) 
 		}
 	}
 	
@@ -14014,8 +13234,7 @@ fnGetZombies()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_zombie[id])
-		iZombies++
+		if (g_isalive[id] && g_zombie[id]) iZombies++
 	}
 	
 	return iZombies
@@ -14029,8 +13248,7 @@ fnGetHumans()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && !g_zombie[id])
-		iHumans++
+		if (g_isalive[id] && !g_zombie[id]) iHumans++
 	}
 	
 	return iHumans
@@ -14044,8 +13262,7 @@ fnGetHumans()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_nemesis[id])
-		iNemesis++
+		if (g_isalive[id] && g_nemesis[id]) iNemesis++
 	}
 	
 	return iNemesis
@@ -14059,8 +13276,7 @@ fnGetAssassin()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_assassin[id])
-		iAssassin++
+		if (g_isalive[id] && g_assassin[id]) iAssassin++
 	}
 	
 	return iAssassin
@@ -14075,8 +13291,7 @@ fnGetBombardier()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_bombardier[id])
-		iBombardier++
+		if (g_isalive[id] && g_bombardier[id]) iBombardier++
 	}
 	
 	return iBombardier
@@ -14090,8 +13305,7 @@ fnGetSurvivors()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_survivor[id])
-		iSurvivors++
+		if (g_isalive[id] && g_survivor[id]) iSurvivors++
 	}
 	
 	return iSurvivors
@@ -14105,8 +13319,7 @@ fnGetSnipers()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_sniper[id])
-		iSnipers++
+		if (g_isalive[id] && g_sniper[id]) iSnipers++
 	}
 	
 	return iSnipers
@@ -14121,8 +13334,7 @@ fnGetSamurai()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_samurai[id])
-		iSamurai++
+		if (g_isalive[id] && g_samurai[id]) iSamurai++
 	}
 	
 	return iSamurai
@@ -14136,8 +13348,7 @@ fnGetAlive()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id])
-		iAlive++
+		if (g_isalive[id]) iAlive++
 	}
 	
 	return iAlive
@@ -14151,11 +13362,9 @@ fnGetRandomAlive(n)
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id])
-		iAlive++
+		if (g_isalive[id]) iAlive++
 		
-		if (iAlive == n)
-		return id
+		if (iAlive == n) return id
 	}
 	
 	return -1
@@ -14173,8 +13382,7 @@ fnGetPlaying()
 		{
 			team = fm_cs_get_user_team(id)
 			
-			if (team != FM_CS_TEAM_SPECTATOR && team != FM_CS_TEAM_UNASSIGNED)
-			iPlaying++
+			if (team != FM_CS_TEAM_SPECTATOR && team != FM_CS_TEAM_UNASSIGNED) iPlaying++
 		}
 	}
 	
@@ -14191,8 +13399,7 @@ fnGetCTs()
 	{
 		if (g_isconnected[id])
 		{			
-			if (fm_cs_get_user_team(id) == FM_CS_TEAM_CT)
-			iCTs++
+			if (fm_cs_get_user_team(id) == FM_CS_TEAM_CT) iCTs++
 		}
 	}
 	
@@ -14209,8 +13416,7 @@ fnGetTs()
 	{
 		if (g_isconnected[id])
 		{			
-			if (fm_cs_get_user_team(id) == FM_CS_TEAM_T)
-			iTs++
+			if (fm_cs_get_user_team(id) == FM_CS_TEAM_T) iTs++
 		}
 	}
 	
@@ -14227,8 +13433,7 @@ fnGetAliveCTs()
 	{
 		if (g_isalive[id])
 		{			
-			if (fm_cs_get_user_team(id) == FM_CS_TEAM_CT)
-			iCTs++
+			if (fm_cs_get_user_team(id) == FM_CS_TEAM_CT) iCTs++
 		}
 	}
 	
@@ -14245,8 +13450,7 @@ fnGetAliveTs()
 	{
 		if (g_isalive[id])
 		{			
-			if (fm_cs_get_user_team(id) == FM_CS_TEAM_T)
-			iTs++
+			if (fm_cs_get_user_team(id) == FM_CS_TEAM_T) iTs++
 		}
 	}
 	
@@ -14258,10 +13462,7 @@ fnGetLastHuman()
 	new id = 1
 	while (id <= g_maxplayers)
 	{
-		if (g_isalive[id] && g_isconnected[id] && !g_zombie[id])
-		{
-			return id
-		}
+		if (g_isalive[id] && g_isconnected[id] && !g_zombie[id]) return id 
 		id++
 	}
 	return PLUGIN_CONTINUE
@@ -14272,10 +13473,7 @@ fnGetLastZombie()
 	new id = 1
 	while (id <= g_maxplayers)
 	{
-		if (g_isalive[id] && g_isconnected[id] && g_zombie[id])
-		{
-			return id
-		}
+		if (g_isalive[id] && g_isconnected[id] && g_zombie[id]) return id 
 		id++
 	}
 	return PLUGIN_CONTINUE
@@ -14288,27 +13486,17 @@ fnCheckLastZombie()
 	for (id = 1; id <= g_maxplayers; id++)
 	{
 		// Last zombie
-		if (g_isalive[id] && g_zombie[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && fnGetZombies() == 1)
-		{
-			g_lastzombie[id] = true
-		}
-		else
-		{
-			g_lastzombie[id] = false
-		}
+		if (g_isalive[id] && g_zombie[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && fnGetZombies() == 1) 
+		g_lastzombie[id] = true 
+		else g_lastzombie[id] = false 
 		
 		// Last human
 		if (g_isalive[id] && !g_zombie[id] && !g_survivor[id] && !g_sniper[id] && !g_samurai[id] && fnGetHumans() == 1)
 		{
-			if (!g_lasthuman[id])
-			{
-				// Reward extra hp
-				set_user_health(id, pev(id, pev_health) + LastHumanExtraHealth)
-			}
+			if (!g_lasthuman[id]) set_user_health(id, pev(id, pev_health) + LastHumanExtraHealth) // Reward extra hp 
 			g_lasthuman[id] = true
 		}
-		else
-		g_lasthuman[id] = false
+		else g_lasthuman[id] = false
 	}
 }
 
@@ -14450,7 +13638,7 @@ allowed_swarm()
 // Checks if multi infection mode is allowed
 allowed_multi()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive()*MultiInfectionRatio, floatround_ceil) < 2 || floatround(fnGetAlive()*MultiInfectionRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * MultiInfectionRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * MultiInfectionRatio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14459,8 +13647,8 @@ allowed_multi()
 // Checks if plague mode is allowed
 allowed_plague()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive()-(PlagueNemesisCount+PlagueSurvivorCount))*PlagueRatio, floatround_ceil) < 1
-			|| fnGetAlive()-(PlagueSurvivorCount+PlagueNemesisCount+floatround((fnGetAlive()-(PlagueNemesisCount+PlagueSurvivorCount))*PlagueRatio, floatround_ceil)) < 1)
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil) < 1
+			|| fnGetAlive() - (PlagueSurvivorCount + PlagueNemesisCount + floatround((fnGetAlive() - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil)) < 1)
 	return false
 	
 	return true
@@ -14469,7 +13657,7 @@ allowed_plague()
 // Checks if armageddon mode is allowed
 allowed_armageddon()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive()*ArmageddonRatio, floatround_ceil) < 2 || floatround(fnGetAlive()*ArmageddonRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * ArmageddonRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * ArmageddonRatio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14478,7 +13666,7 @@ allowed_armageddon()
 // Checks if apocalypse mode is allowed
 allowed_apocalypse()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive()*ApocalypseRatio, floatround_ceil) < 2 || floatround(fnGetAlive()*ApocalypseRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * ApocalypseRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * ApocalypseRatio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14487,7 +13675,7 @@ allowed_apocalypse()
 // Checks if nightmare mode is allowed
 allowed_nightmare()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive()*NightmareRatio, floatround_ceil) < 2 || floatround(fnGetAlive()*NightmareRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * NightmareRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * NightmareRatio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14497,7 +13685,7 @@ allowed_nightmare()
 // Checks if devil mode is allowed
 allowed_devil()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive()*DevilRatio, floatround_ceil) < 2 || floatround(fnGetAlive()*DevilRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * DevilRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * DevilRatio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14507,32 +13695,15 @@ CanBuyItem(id, item)
 {
 	switch(item)
 	{
-		case nightvision:
-		{
-			return true
-		}
-		case explosion_nade:
-		{
-			return true
-		}
-		case napalm_nade:
-		{
-			return true
-		}
-		case forcefield_nade:
-		{
-			return true
-		}
-		case frost_nade:
-		{
-			return true
-		}
+		case nightvision: return true 
+		case explosion_nade: return true 
+		case napalm_nade: return true 
+		case forcefield_nade: return true 
+		case frost_nade: return true 
 		case killing_nade:
 		{
-			if (g_nemround || g_assaround || g_bombardierround || g_swarmround || g_plagueround)
-			{
+			if (CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN) || CheckModeBit(g_currentmode, MODE_BOMBARDIER) || CheckModeBit(g_currentmode, MODE_SWARM) || CheckModeBit(g_currentmode, MODE_PLAGUE))
 				return false
-			}
 			else
 			{
 				if (LIMIT[id][KILL_NADE] == 2)
@@ -14540,18 +13711,13 @@ CanBuyItem(id, item)
 					client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
 					return false
 				}
-				else
-				{
-					return true
-				}
+				else return true 
 			}
 		}
 		case antidote_nade:
 		{
-			if (g_nemround || g_assaround || g_bombardierround || g_swarmround || g_plagueround)
-			{
+			if (CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN) || CheckModeBit(g_currentmode, MODE_BOMBARDIER) || CheckModeBit(g_currentmode, MODE_SWARM) || CheckModeBit(g_currentmode, MODE_PLAGUE))
 				return false
-			}
 			else
 			{
 				if (LIMIT[id][ANTIDOTE_NADE] == 2)
@@ -14559,39 +13725,19 @@ CanBuyItem(id, item)
 					client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
 					return false
 				}
-				else
-				{
-					return true
-				}
+				else return true 
 			}
 		}
 		case infection_nade:
 		{
-			if (g_endround || g_swarmround || g_nemround || g_assaround || g_survround || g_sniround || g_plagueround || g_armageround || g_apocround || g_nightround)
-			{
+			if (g_endround || CheckModeBit(g_currentmode, MODE_SWARM) || CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN) || CheckModeBit(g_currentmode, MODE_SURVIVOR) || CheckModeBit(g_currentmode, MODE_SNIPER) || CheckModeBit(g_currentmode, MODE_PLAGUE) || CheckModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckModeBit(g_currentmode, MODE_NIGHTMARE))
 				return false
-			}
-			else
-			{
-				return true
-			}
+			else return true
 		}
-		case concussion_nade:
-		{
-			return true
-		}
-		case unlimitedclip:
-		{
-			return true
-		}
-		case multijump:
-		{
-			return true
-		}
-		case jetpack:
-		{
-			return true
-		}
+		case concussion_nade: return true 
+		case unlimitedclip: return true 
+		case multijump: return true 
+		case jetpack: return true 
 		case tryder:
 		{
 			if (LIMIT[id][TRYDER] == 2)
@@ -14599,166 +13745,54 @@ CanBuyItem(id, item)
 				client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
 				return false
 			}
-			else
-			{
-				return true
-			}
+			else return true 
 		}
-		case armor100:
-		{
-			return true
-		}
-		case armor200:
-		{
-			return true
-		}
-		case crossbow:
-		{
-			return true
-		}
-		case goldenak:
-		{
-			return true
-		}
-		case goldenm4:
-		{
-			return true
-		}
-		case goldenxm:
-		{
-			return true
-		}
-		case goldendeagle:
-		{
-			return true
-		}
+		case armor100: return true 
+		case armor200: return true 
+		case crossbow: return true 
+		case goldenak: return true 
+		case goldenm4: return true 
+		case goldenxm: return true 
+		case goldendeagle: return true 
 		case antidote:
 		{
-			if (g_endround || g_swarmround || g_nemround || g_assaround || g_survround || g_samurairound || g_sniround || g_plagueround || g_armageround || g_apocround || g_nightround || fnGetZombies() <= 1)
-			{
+			if (g_endround || CheckModeBit(g_currentmode, MODE_SWARM) || CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN) || CheckModeBit(g_currentmode, MODE_SURVIVOR) || CheckModeBit(g_currentmode, MODE_SAMURAI) || CheckModeBit(g_currentmode, MODE_SNIPER) || CheckModeBit(g_currentmode, MODE_PLAGUE) || CheckModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckModeBit(g_currentmode, MODE_NIGHTMARE) || fnGetZombies() <= 1)
 				return false
-			}
-			else
-			{
-				return true
-			}
+			else return true 
 		}
 		case madness:
 		{
-			if (g_nodamage[id])
-			{
-				return false
-			}
-			else
-			{
-				return true
-			}
+			if (g_nodamage[id]) return false 
+			else return true 
 		}
-		case knifeblink:
-		{
-			return true
-		}
+		case knifeblink: return true 
 		case godmode:
 		{
-			if (g_endround || g_swarmround || g_nemround || g_assaround || g_survround || g_sniround || g_plagueround)
+			if (g_endround || CheckModeBit(g_currentmode, MODE_SWARM) || CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN) || CheckModeBit(g_currentmode, MODE_SURVIVOR) || CheckModeBit(g_currentmode, MODE_SNIPER) || CheckModeBit(g_currentmode, MODE_PLAGUE))
 			{
 				client_print_color(id, print_team_grey, "%s This item is not available in current round", CHAT_PREFIX)
 				return false
 			}
 			else if (g_sniper[id] || g_survivor[id])
-			{
 				return true
-			}
 			else
 			{
 				client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
 				return false
 			}
 		}
-		case doubledamage:
+		case doubledamage, norecoil, invisibility, sprint, lowgravity, headhunter:
 		{
 			if (g_zombie[id] || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
 			{
 				client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
 				return false
 			}
-			else
-			{
-				return true
-			}	
+			else return true 	
 		}
-		case norecoil:
-		{
-			if (g_zombie[id] || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-			{
-				client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
-				return false
-			}
-			else
-			{
-				return true
-			}
-		}
-		case invisibility:
-		{
-			if (g_zombie[id] || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-			{
-				client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
-				return false
-			}
-			else
-			{
-				return true
-			}
-		}
-		case sprint:
-		{
-			if (g_zombie[id] || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-			{
-				client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
-				return false
-			}
-			else
-			{
-				return true
-			}
-		}
-		case lowgravity:
-		{
-			if (g_zombie[id] || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-			{
-				client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
-				return false
-			}
-			else
-			{
-				return true
-			}
-		}
-		case headhunter:
-		{
-			if (g_zombie[id] || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-			{
-				client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
-				return false
-			}
-			else
-			{
-				return true
-			}
-		}
-		case nightcrawler:
-		{
-			return true
-		}
-		case synapsis:
-		{
-			return true
-		}
-		case sonic_vs_shadow:
-		{
-			return true
-		}
+		case nightcrawler: return true 
+		case synapsis: return true 
+		case sonic_vs_shadow: return true 
 		case nemesis:
 		{
 			if (g_modestarted ||  g_endround)
@@ -14780,10 +13814,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -14813,10 +13844,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -14846,10 +13874,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -14879,10 +13904,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -14912,10 +13934,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -14945,10 +13964,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -14978,10 +13994,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -15011,10 +14024,7 @@ CanBuyItem(id, item)
 						client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 						return false
 					}
-					else
-					{
-						return true
-					}
+					else return true 
 				}
 				else
 				{
@@ -15030,10 +14040,7 @@ CanBuyItem(id, item)
 				client_print_color(id, print_team_grey, "%s You can only buy packs once a round.", CHAT_PREFIX)
 				return false
 			}
-			else
-			{
-				return true
-			}
+			else return true 
 		}
 	}
 	return true
@@ -15045,24 +14052,25 @@ LogToFile(admin, target, action)
 	static logdata[100], authid[32], ip[16]
 	get_user_authid(admin, authid, charsmax(authid))
 	get_user_ip(admin, ip, charsmax(ip), 1)
+
 	switch (action)
 	{
-		case zombie 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case human 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case nemesis 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case assassin   : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case bombardier : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case sniper  	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case survivor 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case samurai 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case multi 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. (Players: %d/%d)", g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case swarm 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. (Players: %d/%d)", g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case plague 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. (Players: %d/%d)", g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case armageddon : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. (Players: %d/%d)", g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case nightmare  : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. (Players: %d/%d)", g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case apocalypse : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. (Players: %d/%d)", g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case devil 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. (Players: %d/%d)", g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case respawn 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. (Players: %d/%d)", g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case zombie 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case human 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case nemesis 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case assassin   : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case bombardier : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case sniper  	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case survivor 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case samurai 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case multi 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. (Players: %d/%d)", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case swarm 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. (Players: %d/%d)", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case plague 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. (Players: %d/%d)", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case armageddon : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. (Players: %d/%d)", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case nightmare  : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. (Players: %d/%d)", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case apocalypse : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. (Players: %d/%d)", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case devil 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. (Players: %d/%d)", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case respawn 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. (Players: %d/%d)", 						g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 	}
 	log_to_file("ZombieQueen.log", logdata)
 }
@@ -15071,42 +14079,26 @@ LogToFile(admin, target, action)
 set_player_maxspeed(id)
 {
 	// If frozen, prevent from moving
-	if (g_frozen[id])
-	{
-		set_pev(id, pev_maxspeed, 20.0)
-	}
-	else if (g_raptor_speeded[id])
-	{
-		set_pev(id, pev_maxspeed, 500.0)
-	}
+	if (g_frozen[id]) set_pev(id, pev_maxspeed, 20.0) 
+	else if (g_raptor_speeded[id]) set_pev(id, pev_maxspeed, 500.0) 
 	else
 	{
 		if (g_zombie[id])
 		{
-			if (g_nemesis[id])
-			set_pev(id, pev_maxspeed, NemesisSpeed)
-			else if (g_assassin[id])
-			set_pev(id, pev_maxspeed, AssassinSpeed)
-			else if (g_bombardier[id])
-			set_pev(id, pev_maxspeed, BombardierSpeed)
-			else
-			set_pev(id, pev_maxspeed, g_cZombieClasses[g_zombieclass[id]][Speed])
+			if (g_nemesis[id]) set_pev(id, pev_maxspeed, NemesisSpeed)
+			else if (g_assassin[id]) set_pev(id, pev_maxspeed, AssassinSpeed)
+			else if (g_bombardier[id]) set_pev(id, pev_maxspeed, BombardierSpeed)
+			else set_pev(id, pev_maxspeed, g_cZombieClasses[g_zombieclass[id]][Speed])
 		}
 		else
 		{
-			if (g_survivor[id])
-			set_pev(id, pev_maxspeed, SurvivorSpeed)
-			else if (g_sniper[id])
-			set_pev(id, pev_maxspeed, SniperSpeed)
-			else if (g_samurai[id])
-			set_pev(id, pev_maxspeed, SamuraiSpeed)		// Abhinash
-			else if(g_tryder[id])
-			set_pev(id, pev_maxspeed, TryderSpeed)
-			else 
-			set_pev(id, pev_maxspeed, HumanSpeed)
+			if (g_survivor[id]) set_pev(id, pev_maxspeed, SurvivorSpeed)
+			else if (g_sniper[id]) set_pev(id, pev_maxspeed, SniperSpeed)
+			else if (g_samurai[id]) set_pev(id, pev_maxspeed, SamuraiSpeed)		// Abhinash
+			else if(g_tryder[id]) set_pev(id, pev_maxspeed, TryderSpeed)
+			else set_pev(id, pev_maxspeed, HumanSpeed)
 
-			if (g_speed[id])
-			set_pev(id, pev_maxspeed, 500.0)
+			if (g_speed[id]) set_pev(id, pev_maxspeed, 500.0)
 		}
 	}
 }
@@ -15201,8 +14193,7 @@ public native_make_user_zombie(id)
 		remove_task(TASK_MAKEZOMBIE)
 		start_mode(infection, id)
 	}
-	else // Just infect
-	zombieme(id, 0, none)
+	else zombieme(id, 0, none) // Just infect
 
 	return true
 }
@@ -15526,10 +14517,9 @@ public native_make_user_nemesis(id)
 	{
 		// Set as first nemesis
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(nemesis, id)
+		start_mode(MODE_NEMESIS, id)
 	}
-	else // Just make him nemesis
-	zombieme(id, 0, nemesis)
+	else zombieme(id, 0, nemesis) // Just make him nemesis
 
 	return true
 }
@@ -15560,10 +14550,9 @@ public native_make_user_assasin(id)
 	{
 		// Set as first assasin
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(assassin, id)
+		start_mode(MODE_ASSASIN, id)
 	}
-	else // Just make him assasin
-	zombieme(id, 0, assassin)
+	else zombieme(id, 0, assassin) // Just make him assasin
 
 	return true
 }
@@ -15594,10 +14583,9 @@ public native_make_user_bombardier(id)
 	{
 		// Set as first bombardier
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(bombardier, id)
+		start_mode(MODE_BOMBARDIER, id)
 	}
-	else // Just infect
-	zombieme(id, 0, bombardier)
+	else zombieme(id, 0, bombardier) // Just infect
 
 	return true
 }
@@ -15628,10 +14616,9 @@ public native_make_user_sniper(id)
 	{
 		// Set as first sniper
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(sniper, id)
+		start_mode(MODE_SNIPER, id)
 	}
-	else // Just make him sniper
-	humanme(id, sniper)
+	else humanme(id, sniper) // Just make him sniper
 
 	return true
 }
@@ -15662,10 +14649,9 @@ public native_make_user_survivor(id)
 	{
 		// Set as first survivor
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(survivor, id)
+		start_mode(MODE_SURVIVOR, id)
 	}
-	else // Just make him survivor
-	humanme(id, survivor)
+	else humanme(id, survivor) // Just make him survivor
 
 	return true
 }
@@ -15696,10 +14682,9 @@ public native_make_user_samurai(id)
 	{
 		// Set as first samurai
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(samurai, id)
+		start_mode(MODE_SAMURAI, id)
 	}
-	else // Just make him samurai
-	humanme(id, samurai)
+	else humanme(id, samurai) // Just make him samurai
 
 	return true
 }
@@ -15707,55 +14692,55 @@ public native_make_user_samurai(id)
 // Native: IsInfectionRound
 public native_is_infection_round()
 {
-	return (g_currentmode == infection)
+	return CheckModeBit(g_currentmode, MODE_INFECTION)
 }
 
 // Native: StartInfectionRound
 public native_start_infection_round()
 {
-
+	/* Coming soon */
 }
 
 // Native: IsMultiInfectionRound
 public native_is_multi_infection_round()
 {
-	return (g_currentmode == multi)
+	return CheckModeBit(g_currentmode, MODE_MULTI_INFECTION)
 }
 
 // Native: IsSwarmRound
 public native_is_swarm_round()
 {
-	return g_swarmround
+	return CheckModeBit(g_currentmode, MODE_SWARM)
 }
 
 // Native: IsPlagueRound
 public native_is_plague_round()
 {
-	return g_plagueround
+	return CheckModeBit(g_currentmode, MODE_PLAGUE)
 }
 
 // Native: IsArmageddonRound
 public native_is_armageddon_round()
 {
-	return g_armageround
+	return CheckModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
 }
 
 // Native: IsApocalypseRound
 public native_is_apocalypse_round()
 {
-	return g_apocround
+	return CheckModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
 }
 
 // Native: IsDevilRound
 public native_is_devil_round()
 {
-	return g_devilround
+	return CheckModeBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 }
 
 // Native: IsNightmareRound
 public native_is_nightmare_round()
 {
-	return g_nightround
+	return CheckModeBit(g_currentmode, MODE_NIGHTMARE)
 }
 
 /*================================================================================
@@ -15769,37 +14754,12 @@ public set_user_nvision(taskid)
 	static id
 	id = taskid - TASK_NVISION
 
-	
-	// Nemesis / Madness 
-	if (g_nemesis[id] || (g_zombie[id] && g_nodamage[id]))
-	{
-		SendNightVision(id, NColorNemesis_R, NColorNemesis_G, NColorNemesis_B)
-	}
-	// Assassin 
-	else if (g_assassin[id])
-	{
-		SendNightVision(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B)
-	}	
-	// Bombardier 
-	else if (g_bombardier[id])
-	{
-		SendNightVision(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B)
-	}	
-	// Human 
-	else if (!g_zombie[id])
-	{
-		SendNightVision(id, NColorHuman_R, NColorHuman_G, NColorHuman_B)
-	}
-	// Spectators
-	else if (!g_isalive[id])
-	{
-		SendNightVision(id, NColorSpectator_R, NColorSpectator_G, NColorSpectator_B)
-	}
-	// Zombie
-	else
-	{
-		SendNightVision(id, NColorZombie_R, NColorZombie_G, NColorZombie_B)
-	}
+	if (g_nemesis[id] || (g_zombie[id] && g_nodamage[id])) SendNightVision(id, NColorNemesis_R, NColorNemesis_G, NColorNemesis_B) // Nemesis / Madness  
+	else if (g_assassin[id]) SendNightVision(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B) // Assassin  	
+	else if (g_bombardier[id]) SendNightVision(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B) // Bombardier  	
+	else if (!g_zombie[id]) SendNightVision(id, NColorHuman_R, NColorHuman_G, NColorHuman_B) // Human  
+	else if (!g_isalive[id]) SendNightVision(id, NColorSpectator_R, NColorSpectator_G, NColorSpectator_B) // Spectators 
+	else SendNightVision(id, NColorZombie_R, NColorZombie_G, NColorZombie_B) // Zombie 
 	
 }
 
@@ -15816,8 +14776,7 @@ set_user_gnvision(id, toggle)
 public set_user_flashlight_1(taskid)
 {
 	// Retrieve player id
-	static id
-	id = taskid - TASK_FLASH
+	static id; id = taskid - TASK_FLASH
 
 	// Get player and aiming origins
 	static Float:originF[3], Float:destoriginF[3]
@@ -15825,8 +14784,7 @@ public set_user_flashlight_1(taskid)
 	fm_get_aim_origin(id, destoriginF)
 
 	// Max distance check
-	if (get_distance_f(originF, destoriginF) > FlashLightDistance)
-	return;
+	if (get_distance_f(originF, destoriginF) > FlashLightDistance) return
 
 	// Flashlight
 	engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, destoriginF, 0)
@@ -15847,8 +14805,7 @@ public set_user_flashlight_1(taskid)
 public set_user_flashlight_2(taskid)
 {
 	// Retrieve player id
-	static id
-	id = taskid - TASK_FLASH
+	static id; id = taskid - TASK_FLASH
 
 	// Get player and aiming origins
 	static Float:originF[3], Float:destoriginF[3]
@@ -15856,8 +14813,7 @@ public set_user_flashlight_2(taskid)
 	fm_get_aim_origin(id, destoriginF)
 
 	// Max distance check
-	if (get_distance_f(originF, destoriginF) > FlashLightDistance)
-	return;
+	if (get_distance_f(originF, destoriginF) > FlashLightDistance) return
 
 	// Flashlight
 	engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, destoriginF, 0)
@@ -15877,31 +14833,19 @@ public set_user_flashlight_2(taskid)
 // Infection special effects
 infection_effects(id)
 {
-	if (!g_frozen[id] && InfectionScreenFade == 1)
+	if (!g_frozen[id] && InfectionScreenFade)
 	{
-		if (g_nemesis[id])
-		{
-			UTIL_ScreenFade(id, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
-		}
-		else if (g_assassin[id])
-		{
-			UTIL_ScreenFade(id, {0, 150, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
-		}
-		else
-		{
-			UTIL_ScreenFade(id, {165, 42, 42}, 1.0, 0.5, 225, FFADE_IN, true, false)
-		}
+		if (g_nemesis[id]) UTIL_ScreenFade(id, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false) 
+		else if (g_assassin[id]) UTIL_ScreenFade(id, {0, 150, 0}, 1.0, 0.5, 100, FFADE_IN, true, false) 
+		else UTIL_ScreenFade(id, {165, 42, 42}, 1.0, 0.5, 225, FFADE_IN, true, false) 
 	}
 	
 	
 	// Screen shake?
-	if (InfectionScreenShake == 1)
-	{
-		SendScreenShake(id, UNIT_SECOND*4, UNIT_SECOND*2, UNIT_SECOND*10)
-	}
+	if (InfectionScreenShake) SendScreenShake(id, UNIT_SECOND * 4, UNIT_SECOND * 2, UNIT_SECOND * 10)
 	
 	// Infection icon?
-	if (HUDIcons == 1)
+	if (HUDIcons)
 	{
 		message_begin(MSG_ONE_UNRELIABLE, get_user_msgid("Damage"), _, id)
 		write_byte(0) // damage save
@@ -15918,30 +14862,20 @@ infection_effects(id)
 	get_user_origin(id, origin)
 	
 	// Tracers?
-	if (InfectionTracers == 1)
-	{
-		SendImplosion(id)
-	}
+	if (InfectionTracers) SendImplosion(id) 
 	
 	// Particle burst?
-	if (InfectionParticles == 1)
-	{
-		SendParticleBurst(id)
-	}
+	if (InfectionParticles) SendParticleBurst(id) 
 	
 	// Light sparkle?
-	if (InfectionSparkle == 1)
-	{
-		SendInfectionLight(id)
-	}
+	if (InfectionSparkle) SendInfectionLight(id) 
 }
 
 // Nemesis/madness aura task
 public zombie_aura(taskid)
 {
 	// Retrieve player index
-	static id
-	id = taskid - TASK_AURA
+	static id; id = taskid - TASK_AURA
 
 	// Not nemesis, not assassin, not in zombie madness
 	if (!g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && !g_nodamage[id])
@@ -15951,40 +14885,27 @@ public zombie_aura(taskid)
 		return
 	}
 	
-	if (g_assassin[id])
-	{
-		SendAura(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B)
-	}
-	else if (g_bombardier[id])
-	{
-		SendAura(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B)
-	}
-	else
-	{
-		SendAura(id, NColorNemesis_R, NColorNemesis_G, NColorNemesis_B)
-	}
+	if (g_assassin[id]) SendAura(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B) 
+	else if (g_bombardier[id]) SendAura(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B) 
+	else SendAura(id, NColorNemesis_R, NColorNemesis_G, NColorNemesis_B) 
 }
 
 // Make zombies leave footsteps and bloodstains on the floor
 public make_blood(taskid)
 {
 	//Retrieve player index
-	static id
-	id = taskid - TASK_BLOOD
+	static id; id = taskid - TASK_BLOOD
 
 	// Only bleed when moving on ground
-	if (!(pev(id, pev_flags) & FL_ONGROUND) || fm_get_speed(id) < 80)
-	return
+	if (!(pev(id, pev_flags) & FL_ONGROUND) || fm_get_speed(id) < 80) return
 	
 	// Get user origin
 	static Float:originF[3]
 	pev(id, pev_origin, originF)
 	
 	// If ducking set a little lower
-	if (pev(id, pev_bInDuck))
-	originF[2] -= 18.0
-	else
-	originF[2] -= 36.0
+	if (pev(id, pev_bInDuck)) originF[2] -= 18.0
+	else originF[2] -= 36.0
 	
 	// Send the decal message
 	engfunc(EngFunc_MessageBegin, MSG_PAS, SVC_TEMPENTITY, originF, 0)
@@ -16000,12 +14921,10 @@ public make_blood(taskid)
 public burning_flame(taskid)
 {
 	// Retrieve player index
-	static id
-	id = taskid - TASK_BURN
+	static id; id = taskid - TASK_BURN
 
 	// Get player origin and flags
-	static flags
-	flags = pev(id, pev_flags)
+	static flags; flags = pev(id, pev_flags)
 	
 	// Madness mode - in water - burning stopped
 	if (g_nodamage[id] || (flags & FL_INWATER) || g_burning_duration[id] < 1)
@@ -16020,9 +14939,7 @@ public burning_flame(taskid)
 	
 	// Randomly play burning zombie scream sounds (not for nemesis)
 	if (!g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && !random_num(0, 20))
-	{
 		emit_sound(id, CHAN_VOICE, grenade_fire_player[random(sizeof grenade_fire_player)], 1.0, ATTN_NORM, 0, PITCH_NORM)
-	}
 	
 	// Fire slow down, unless nemesis
 	if (!g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && (flags & FL_ONGROUND) && FireSlowdown > 0.0)
@@ -16034,12 +14951,11 @@ public burning_flame(taskid)
 	}
 	
 	// Get player's health
-	static health
-	health = pev(id, pev_health)
+	static health; health = pev(id, pev_health)
 	
 	// Take damage from the fire
 	if (health - floatround(FireDamage, floatround_ceil) > 0)
-	set_user_health(id, health - floatround(FireDamage, floatround_ceil))
+		set_user_health(id, health - floatround(FireDamage, floatround_ceil))
 	
 	// Flame sprite
 	SendFlame(id)
@@ -16070,9 +14986,9 @@ UpdateFrags(attacker, victim, frags, deaths, scoreboard)
 PlaySound(const sound[])
 {
 	if (equal(sound[strlen(sound)-4], ".mp3"))
-	client_cmd(0, "mp3 play ^"sound/%s^"", sound)
+		client_cmd(0, "mp3 play ^"sound/%s^"", sound)
 	else
-	client_cmd(0, "spk ^"%s^"", sound)
+		client_cmd(0, "spk ^"%s^"", sound)
 }
 
 /*================================================================================
@@ -16196,8 +15112,7 @@ stock fm_give_item(id, const item[])
 	static save
 	save = pev(ent, pev_solid)
 	dllfunc(DLLFunc_Touch, ent, id)
-	if (pev(ent, pev_solid) != save)
-	return
+	if (pev(ent, pev_solid) != save) return
 	
 	engfunc(EngFunc_RemoveEntity, ent)
 }
@@ -16205,8 +15120,7 @@ stock fm_give_item(id, const item[])
 // Strip user weapons (from fakemeta_util)
 stock fm_strip_user_weapons(id)
 {
-	static ent
-	ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "player_weaponstrip"))
+	static ent; ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "player_weaponstrip"))
 	if (!pev_valid(ent)) return
 	
 	dllfunc(DLLFunc_Spawn, ent)
@@ -16252,7 +15166,7 @@ stock str_count(const str[], searchchar)
 	
 	for (i = 0; i <= len; i++)
 	{
-		if(str[i] == searchchar)
+		if (str[i] == searchchar)
 		count++
 	}
 	
@@ -16263,8 +15177,7 @@ stock str_count(const str[], searchchar)
 stock fm_cs_get_current_weapon_ent(id)
 {
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(id) != PDATA_SAFE)
-	return -1
+	if (pev_valid(id) != PDATA_SAFE) return -1
 	
 	return get_pdata_cbase(id, OFFSET_ACTIVE_ITEM, OFFSET_LINUX)
 }
@@ -16273,8 +15186,7 @@ stock fm_cs_get_current_weapon_ent(id)
 stock fm_cs_get_weapon_ent_owner(ent)
 {
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(ent) != PDATA_SAFE)
-	return -1
+	if (pev_valid(ent) != PDATA_SAFE) return -1
 	
 	return get_pdata_cbase(ent, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS)
 }
@@ -16283,8 +15195,7 @@ stock fm_cs_get_weapon_ent_owner(ent)
 stock fm_cs_set_user_deaths(id, value)
 {
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(id) != PDATA_SAFE)
-	return
+	if (pev_valid(id) != PDATA_SAFE) return
 	
 	set_pdata_int(id, OFFSET_CSDEATHS, value, OFFSET_LINUX)
 }
@@ -16293,8 +15204,7 @@ stock fm_cs_set_user_deaths(id, value)
 stock fm_cs_get_user_team(id)
 {
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(id) != PDATA_SAFE)
-	return FM_CS_TEAM_UNASSIGNED
+	if (pev_valid(id) != PDATA_SAFE) return FM_CS_TEAM_UNASSIGNED
 	
 	return get_pdata_int(id, OFFSET_CSTEAMS, OFFSET_LINUX)
 }
@@ -16303,8 +15213,7 @@ stock fm_cs_get_user_team(id)
 stock fm_cs_set_user_team(id, team)
 {
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(id) != PDATA_SAFE)
-	return
+	if (pev_valid(id) != PDATA_SAFE) return
 	
 	set_pdata_int(id, OFFSET_CSTEAMS, team, OFFSET_LINUX)
 }
@@ -16313,8 +15222,7 @@ stock fm_cs_set_user_team(id, team)
 stock fm_cs_set_user_money(id, value)
 {
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(id) != PDATA_SAFE)
-	return
+	if (pev_valid(id) != PDATA_SAFE) return
 	
 	set_pdata_int(id, OFFSET_CSMONEY, value, OFFSET_LINUX)
 }
@@ -16323,8 +15231,7 @@ stock fm_cs_set_user_money(id, value)
 stock fm_cs_set_user_batteries(id, value)
 {
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(id) != PDATA_SAFE)
-	return
+	if (pev_valid(id) != PDATA_SAFE) return
 	
 	set_pdata_int(id, OFFSET_FLASHLIGHT_BATTERY, value, OFFSET_LINUX)
 }
@@ -16332,8 +15239,7 @@ stock fm_cs_set_user_batteries(id, value)
 // Update Player's Team on all clients (adding needed delays)
 stock fm_user_team_update(id)
 {
-	static Float:current_time
-	current_time = get_gametime()
+	static Float:current_time; current_time = get_gametime()
 	
 	if (current_time - g_teams_targettime >= 0.1)
 	{
@@ -16350,10 +15256,7 @@ stock fm_user_team_update(id)
 // Send User Team Message
 public fm_cs_set_user_team_msg(taskid)
 {
-	static id
-
-	// Retrieve index
-	id = taskid - TASK_TEAM
+	static id; id = taskid - TASK_TEAM
 
 	// Set the switching team flag
 	g_switchingteam = true
@@ -16432,22 +15335,16 @@ public RemoveBot()
 	static i
 	for(i = 1; i <= get_maxplayers(); i++) 
 	{
-		if(g_bot[i]) 
-		{
-			server_cmd("kick #%d", get_user_userid(i))
-		}
+		if(g_bot[i]) server_cmd("kick #%d", get_user_userid(i))
 	}
 }
 
 // Set User Model
 public ChangeModels(taskid)
-{
-	static bool:change
-	static currentmodel[33]
-	static id
-	id = taskid - TASK_MODEL
-	change = true
-	get_user_model(id, currentmodel, charsmax(currentmodel))
+{	
+	static id; id = taskid - TASK_MODEL
+	static bool:change; change = true
+	static currentmodel[33]; get_user_model(id, currentmodel, charsmax(currentmodel))
 
 	// Check if model change is needed
 	if (!g_zombie[id])
@@ -16456,30 +15353,21 @@ public ChangeModels(taskid)
 		{
 			for(new i; i < sizeof g_cSurvivorModels; i++)
 			{
-				if (equal(currentmodel, g_cSurvivorModels[i]))
-				{
-					change = false
-				}
+				if (equal(currentmodel, g_cSurvivorModels[i])) change = false 
 			}
 		}
 		else if (g_sniper[id])
 		{
 			for(new i; i < sizeof g_cSniperModels; i++)
 			{
-				if (equal(currentmodel, g_cSniperModels[i]))
-				{
-					change = false
-				}
+				if (equal(currentmodel, g_cSniperModels[i])) change = false 
 			}
 		}
 		else if (g_samurai[id])
 		{
 			for(new i; i < sizeof g_cSamuraiModels; i++)
 			{
-				if (equal(currentmodel, g_cSamuraiModels[i]))
-				{
-					change = false
-				}
+				if (equal(currentmodel, g_cSamuraiModels[i])) change = false 
 			}
 		}
 		else
@@ -16488,50 +15376,35 @@ public ChangeModels(taskid)
 			{
 				for(new i; i < sizeof g_cOwnerModels; i++)
 				{
-					if (equal(currentmodel, g_cOwnerModels[i]))
-					{
-						change = false
-					}
+					if (equal(currentmodel, g_cOwnerModels[i])) change = false 
 				}
 			}
 			else if (g_bAdmin[id] && SkinFlag(id, '1') && g_bVip[id])
 			{
 				for(new i; i < sizeof g_cVipModels; i++)
 				{
-					if (equal(currentmodel, g_cVipModels[i]))
-					{
-						change = false
-					}
+					if (equal(currentmodel, g_cVipModels[i])) change = false 
 				}
 			}
 			else if (g_bAdmin[id] && SkinFlag(id, '2') && !g_bVip[id])
 			{
 				for(new i; i < sizeof g_cAdminModels; i++)
 				{
-					if (equal(currentmodel, g_cAdminModels[i]))
-					{
-						change = false
-					}
+					if (equal(currentmodel, g_cAdminModels[i])) change = false 
 				}
 			}
 			else if (g_bAdmin[id] && SkinFlag(id, '2') && g_bVip[id])
 			{
 				for(new i; i < sizeof g_cVipModels; i++)
 				{
-					if (equal(currentmodel, g_cVipModels[i]))
-					{
-						change = false
-					}
+					if (equal(currentmodel, g_cVipModels[i])) change = false 
 				}
 			}
 			else
 			{
 				for(new i; i < sizeof g_cHumanModels; i++)
 				{
-					if (equal(currentmodel, g_cHumanModels[i]))
-					{
-						change = false
-					}
+					if (equal(currentmodel, g_cHumanModels[i])) change = false 
 				}
 			}
 		}
@@ -16542,39 +15415,24 @@ public ChangeModels(taskid)
 		{
 			for(new i; i < sizeof g_cNemesisModels; i++)
 			{
-				if (equal(currentmodel, g_cNemesisModels[i]))
-				{
-					change = false
-				}
+				if (equal(currentmodel, g_cNemesisModels[i])) change = false 
 			}
 		}
 		if (g_assassin[id])
 		{
 			for(new i; i < sizeof g_cAssassinModels; i++)
 			{
-				if (equal(currentmodel, g_cAssassinModels[i]))
-				{
-					change = false
-				}
+				if (equal(currentmodel, g_cAssassinModels[i])) change = false 
 			}
 		}
 		if (g_bombardier[id])
 		{
 			for(new i; i < sizeof g_cBombardierModels; i++)
 			{
-				if (equal(currentmodel, g_cBombardierModels[i]))
-				{
-					change = false
-				}
+				if (equal(currentmodel, g_cBombardierModels[i])) change = false 
 			}
 		}
-		else
-		{
-			if (equal(currentmodel, g_cZombieClasses[g_zombieclass[id]][Model]))
-			{
-				change = false
-			}
-		}
+		else if (equal(currentmodel, g_cZombieClasses[g_zombieclass[id]][Model])) change = false  
 	}
 
 	// No change function
