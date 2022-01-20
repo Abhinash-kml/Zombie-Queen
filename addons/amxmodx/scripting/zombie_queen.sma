@@ -1170,7 +1170,7 @@ new g_SecondaryMenu
 new g_cClass[33][14]
 
 // Mode names
-enum ( <<=1 )
+enum (<<=1)
 {
 	MODE_INFECTION = 1,
 	MODE_MULTI_INFECTION,
@@ -1191,14 +1191,14 @@ enum ( <<=1 )
 }
 
 // Null variable for mode
-new MODE_NONE = 0;
+new const MODE_NONE = 0
 
 // Mode type variable
 new g_currentmode
 
 // Macros
-#define SetModeBit(%1,%2)			(%1 |= (1<<%2))
-#define CheckModeBit(%1,%2)		(%1 & (1<<%2)) 
+#define SetModeBit(%1,%2)			(%1 |= %2)
+#define CheckModeBit(%1,%2)		(%1 & %2) 
 //#define ClearBit(%1, %2)        	(%1 &= ~(1<<%2))
 
 // Class names and game modes
@@ -2785,7 +2785,7 @@ public MySQL_GetStatistics(FailState, Handle:Query, Error[], Errcode, Data[], Da
 	//formatex(menudata, 255, "")
 	//menu_additem(g_menu, menudata, "", 0, -1)
 
-	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is ^4%s ^1out of ^4%s ^1[ ^3Kills: ^4%s ^1- ^3Deaths: ^4%s ^1- ^3KPD: - ^4%0.2f ^1- ^3Score: ^4%s ^1]", CHAT_PREFIX, g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1, AddCommas(g_score[id]))
+	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is ^4%s ^1out of ^4%s ^1[ ^3Kills: ^4%s ^1- ^3Deaths: ^4%s ^1- ^3KPD: ^4%0.2f ^1- ^3Score: ^4%s ^1]", CHAT_PREFIX, g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1, AddCommas(g_score[id]))
     
     return PLUGIN_HANDLED
 } 
@@ -4631,7 +4631,7 @@ public event_round_start()
 
 	// countdown
 	if (task_exists(TASK_COUNTDOWN))
-	remove_task(TASK_COUNTDOWN)
+		remove_task(TASK_COUNTDOWN)
 
 	countdown_timer = 10
 	set_task(4.0, "Countdown", TASK_COUNTDOWN)
@@ -4853,6 +4853,70 @@ public logevent_round_end()
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "We rise from the ashes...")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nCant feel the same pain again...")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case MODE_ASSASIN, MODE_NEMESIS, MODE_BOMBARDIER:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nCant feel the same pain again...")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case MODE_SURVIVOR, MODE_SNIPER, MODE_SAMURAI:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "They will remember this defeat...")
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -7161,6 +7225,28 @@ public Client_Say(id)
 		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], AddCommas(ammo), g_playername[target])
 		return PLUGIN_CONTINUE
 	}
+	else if (equali(cMessage, "/mode", 5) || equali(cMessage, "mode", 4))
+	{
+		new buffer[40]
+		if (g_newround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Not yet started...")
+		else if (g_endround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Just ended...")
+		else if (CheckModeBit(g_currentmode, MODE_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Infection")
+		else if (CheckModeBit(g_currentmode, MODE_MULTI_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Multi-infection")
+		else if (CheckModeBit(g_currentmode, MODE_SWARM)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Swarm")
+		else if (CheckModeBit(g_currentmode, MODE_PLAGUE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
+		else if (CheckModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
+		else if (CheckModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
+		else if (CheckModeBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
+		else if (CheckModeBit(g_currentmode, MODE_NIGHTMARE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
+		else if (CheckModeBit(g_currentmode, MODE_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Assasin")
+		else if (CheckModeBit(g_currentmode, MODE_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nemesis")
+		else if (CheckModeBit(g_currentmode, MODE_BOMBARDIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier")
+		else if (CheckModeBit(g_currentmode, MODE_SURVIVOR)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor")
+		else if (CheckModeBit(g_currentmode, MODE_SNIPER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Sniper")
+		else if (CheckModeBit(g_currentmode, MODE_SAMURAI)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Samurai")
+
+		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
+	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
 	else if (equali(cMessage, "/commands", 9) || equali(cMessage, "commands", 8))
@@ -7314,6 +7400,28 @@ public Client_SayTeam(id)
 		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], AddCommas(ammo), g_playername[target])
 
 		return PLUGIN_CONTINUE
+	}
+	else if (equali(cMessage, "/mode", 5) || equali(cMessage, "mode", 4))
+	{
+		new buffer[40]
+		if (g_newround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Not yet started...")
+		else if (g_endround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Just ended...")
+		else if (CheckModeBit(g_currentmode, MODE_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Infection")
+		else if (CheckModeBit(g_currentmode, MODE_MULTI_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Multi-infection")
+		else if (CheckModeBit(g_currentmode, MODE_SWARM)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Swarm")
+		else if (CheckModeBit(g_currentmode, MODE_PLAGUE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
+		else if (CheckModeBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
+		else if (CheckModeBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
+		else if (CheckModeBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
+		else if (CheckModeBit(g_currentmode, MODE_NIGHTMARE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
+		else if (CheckModeBit(g_currentmode, MODE_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Assasin")
+		else if (CheckModeBit(g_currentmode, MODE_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nemesis")
+		else if (CheckModeBit(g_currentmode, MODE_BOMBARDIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier")
+		else if (CheckModeBit(g_currentmode, MODE_SURVIVOR)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor")
+		else if (CheckModeBit(g_currentmode, MODE_SNIPER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Sniper")
+		else if (CheckModeBit(g_currentmode, MODE_SAMURAI)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Samurai")
+
+		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
