@@ -1716,6 +1716,8 @@ new g_sniper[33] // is assassin
 new g_samurai[33]	 // is samurai 				// Abhinash
 new g_tryder[33]	// is tryder
 new g_specialclass[33]	// is special class for reminder task and other stuffs
+new g_lastSpecialHumanIndex // is index of last special human
+new g_lastSpecialZombieIndex // is index of last special zombie
 new g_firstzombie[33] // is first zombie
 new g_lastzombie[33] // is last zombie
 new g_lasthuman[33] // is last human
@@ -4878,13 +4880,13 @@ public logevent_round_end()
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
 			}
 		}
-		case MODE_ASSASIN, MODE_NEMESIS, MODE_BOMBARDIER:
+		case MODE_ASSASIN:
 		{
 			if (!fnGetZombies())
 			{
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated")
+				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -4894,7 +4896,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nCant feel the same pain again...")
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's claws are much stronger than we thought", g_playername[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -4910,13 +4912,13 @@ public logevent_round_end()
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
 			}
 		}
-		case MODE_SURVIVOR, MODE_SNIPER, MODE_SAMURAI:
+		case MODE_NEMESIS:
 		{
 			if (!fnGetZombies())
 			{
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "They will remember this defeat...")
+				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -4926,7 +4928,136 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nCant feel the same pain again...")
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's skills are much stronger than we thought...", g_playername[g_lastSpecialZombieIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case MODE_BOMBARDIER:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Looks like %s's bombs were very powerful^nBetter luck next time...", g_playername[g_lastSpecialZombieIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case MODE_SURVIVOR:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "They will not mess with you again^n%s is a badass Survivor", g_playername[g_lastSpecialHumanIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playername[g_lastSpecialHumanIndex])
+
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case MODE_SNIPER:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "%s's AWP is much stronger than you think^nBe carefull next time Mr.Zombie", g_playername[g_lastSpecialHumanIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playername[g_lastSpecialHumanIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+			}
+		}
+		case MODE_SAMURAI:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "%s's sword is much sharper that you think^nBe carefull next time Mr.Zombie", g_playername[g_lastSpecialHumanIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to sharpen your skills and sword^n%s", g_playername[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -4969,6 +5100,7 @@ public logevent_round_end()
 		g_iVariable += 1
 	}
 	g_iVariable = 1
+
 	while (g_maxplayers + 1 > g_iVariable)
 	{
 		if (g_isconnected[g_iVariable] && g_ammopacks[g_iVariable] > iMaximumPacks)
@@ -5348,7 +5480,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 
 	if (!iHumans || !iZombies) return
 
-	if (CheckModeBit(g_currentmode, MODE_SNIPER) || CheckModeBit(g_currentmode, MODE_SURVIVOR))
+	if (CheckModeBit(g_currentmode, MODE_SNIPER) || CheckModeBit(g_currentmode, MODE_SURVIVOR) || CheckModeBit(g_currentmode, MODE_SAMURAI))
 	{
 		if (iZombies != 1)
 		{
@@ -5356,7 +5488,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			ShowSyncHudMsg(0, g_MsgSync7, "%d Zombies Remaining...", iZombies)
 		}
 	}
-	else if (CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN))
+	else if (CheckModeBit(g_currentmode, MODE_NEMESIS) || CheckModeBit(g_currentmode, MODE_ASSASIN) || CheckModeBit(g_currentmode, MODE_BOMBARDIER))
 	{
 		if (iHumans != 1)
 		{
@@ -5415,7 +5547,13 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	g_iKillsThisRound[attacker]++
 
 	// Update player datas
-	g_points[attacker] += 2
+	if (random_num(1, 4) == 1)
+	{
+		g_points[attacker] += 10
+		set_hudmessage(255, 180, 30, -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
+		ShowSyncHudMsg(attacker, g_MsgSync6, "== ELIMINATION ==^n!!!Randomly got +10 point!!!^n[ 25% chance ]")
+	} 
+	else g_points[attacker] += 2
 	g_kills[attacker] += 1
 	g_deaths[victim] += 1
 	g_score[attacker] += 10
@@ -10603,6 +10741,9 @@ start_mode(mode, id)
 		
 		// Turn player into a survivor
 		humanme(id, survivor)
+
+		// Save his index for future use
+		g_lastSpecialHumanIndex = id
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -10652,6 +10793,9 @@ start_mode(mode, id)
 		
 		// Turn player into a sniper
 		humanme(id, sniper)
+
+		// Save his index for future use
+		g_lastSpecialHumanIndex = id
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -10702,6 +10846,9 @@ start_mode(mode, id)
 		
 		// Turn player into a Samurai
 		humanme(id, samurai)
+
+		// Save his index for future use
+		g_lastSpecialHumanIndex = id
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -11233,6 +11380,9 @@ start_mode(mode, id)
 			// Turn player into nemesis
 			zombieme(id, 0, nemesis)
 
+			// Save his index for future use
+			g_lastSpecialZombieIndex = id
+
 			// Play Nemesis sound
 			PlaySound(sound_nemesis[random(sizeof sound_nemesis)])
 			
@@ -11264,6 +11414,9 @@ start_mode(mode, id)
 			// Turn player into assassin
 			zombieme(id, 0, assassin)
 
+			// Save his index for future use
+			g_lastSpecialZombieIndex = id
+
 			// Play Assassin sound
 			PlaySound(sound_assassin[random(sizeof sound_assassin)])
 			
@@ -11292,6 +11445,9 @@ start_mode(mode, id)
 			
 			// Turn player into bombardier
 			zombieme(id, 0, bombardier)
+
+			// Save his index for future use
+			g_lastSpecialZombieIndex = id
 
 			// Play Bombardier sound
 			PlaySound(sound_bombardier[random(sizeof sound_bombardier)])
