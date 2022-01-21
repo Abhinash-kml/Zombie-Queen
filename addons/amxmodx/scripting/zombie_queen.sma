@@ -12,7 +12,7 @@
 #include <	 screenfade   >
 #include <      xs        >
 #include <     geoip      >
-#include <    targetex     >
+#include <    targetex    >
 #include <		sqlx	  >
 
 // Jetapck
@@ -1207,7 +1207,7 @@ new g_primaryTeam
 // Primary Class Names
 enum _: primaryClassNames (<<=1)
 {
-	CLASS_HUMAN = 1,
+	CLASS_HUMAN = 3,
 	CLASS_ZOMBIE
 }
 
@@ -3644,7 +3644,7 @@ public _ExtraItems(id, menu, item)
 						{
 							LIMIT[id][TRYDER]++
 
-							humanme(id, tryder)		// Make him tryder
+							MakeHuman(id, CLASS_TRYDER)		// Make him tryder
 							set_hudmessage(190, 55, 115, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 							ShowSyncHudMsg(0, g_MsgSync6, "%s is now a Tryder!", g_playername[id])
 							client_cmd(id, "spk PerfectZM/armor_equip")
@@ -3952,7 +3952,7 @@ public _ExtraItems2(id, menu, item)
 						if (g_ammopacks[id] >= g_cExtraItemsZombie[iChoice][ZPrice])
 						{
 							// Make him human
-							humanme(id, none)
+							MakeHuman(id)
 
 							// Antidote sound
 							emit_sound(id, CHAN_ITEM, sound_antidote[random(sizeof sound_antidote)], 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -5576,7 +5576,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	{
 		g_points[attacker] += 10
 		set_hudmessage(255, 180, 30, -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
-		ShowSyncHudMsg(attacker, g_MsgSync6, "== ELIMINATION ==^n!!!Randomly got +10 point!!!^n[ 25% chance ]")
+		ShowSyncHudMsg(attacker, g_MsgSync6, "== ELIMINATION ==^n!!!Randomly got +10 point!!!^n[ 25%% chance ]")
 	} 
 	else g_points[attacker] += 2
 	g_kills[attacker] += 1
@@ -8335,7 +8335,7 @@ public menu_player_list(id, menuid, item)
 						if (allowed_human(target))
 						{
 							// Just cure
-							humanme(target, none)
+							MakeHuman(target)
 			
 							// Print in chat
 							if (id == target)
@@ -8473,7 +8473,7 @@ public menu_player_list(id, menuid, item)
 							remove_task(TASK_MAKEZOMBIE)
 							start_mode(MODE_SURVIVOR, target)
 						}
-						else humanme(target, survivor) // Turn player into a Survivor 
+						else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
 						
 						// Print in chat
 						if (id == target)
@@ -8500,7 +8500,7 @@ public menu_player_list(id, menuid, item)
 							remove_task(TASK_MAKEZOMBIE)
 							start_mode(MODE_SNIPER, target)
 						}
-						else humanme(target, sniper) // Turn player into a Sniper 
+						else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
 						
 						// Print in chat
 						if (id == target)
@@ -8527,7 +8527,7 @@ public menu_player_list(id, menuid, item)
 							remove_task(TASK_MAKEZOMBIE)
 							start_mode(MODE_SAMURAI, target)
 						}
-						else humanme(target, samurai) // Turn player into a Samurai 
+						else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
 						
 						// Print in chat
 						if (id == target)
@@ -9628,7 +9628,7 @@ public cmd_human(id)
 		LogToFile(id, target, human)
 		
 		// Turn to human
-		humanme(target, none)
+		MakeHuman(target)
 
 		return PLUGIN_HANDLED
 	}
@@ -9686,7 +9686,7 @@ public cmd_survivor(id)
 			remove_task(TASK_MAKEZOMBIE)
 			start_mode(MODE_SURVIVOR, target)
 		}
-		else humanme(target, survivor) // Turn player into a Survivor 
+		else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -9750,7 +9750,7 @@ public cmd_sniper(id)
 			remove_task(TASK_MAKEZOMBIE)
 			start_mode(MODE_SNIPER, target)
 		}
-		else humanme(target, sniper) // Turn player into a Sniper 
+		else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -9814,7 +9814,7 @@ public cmd_samurai(id)
 			remove_task(TASK_MAKEZOMBIE)
 			start_mode(MODE_SAMURAI, target)
 		}
-		else humanme(target, samurai) // Turn player into a Samurai 
+		else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
 		
 		// Print in chat
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
@@ -10765,7 +10765,7 @@ start_mode(mode, id)
 		forward_id = id
 		
 		// Turn player into a survivor
-		humanme(id, survivor)
+		MakeHuman(id, CLASS_SURVIVOR)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
@@ -10817,7 +10817,7 @@ start_mode(mode, id)
 		forward_id = id
 		
 		// Turn player into a sniper
-		humanme(id, sniper)
+		MakeHuman(id, CLASS_SNIPER)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
@@ -10870,7 +10870,7 @@ start_mode(mode, id)
 		forward_id = id
 		
 		// Turn player into a Samurai
-		humanme(id, samurai)
+		MakeHuman(id, CLASS_SAMURAI)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
@@ -11047,7 +11047,7 @@ start_mode(mode, id)
 			if (g_survivor[id]) continue
 			
 			// If not, turn him into one
-			humanme(id, survivor)
+			MakeHuman(id, CLASS_SURVIVOR)
 			iSurvivors++
 			
 			// Apply survivor health multiplier
@@ -11169,7 +11169,7 @@ start_mode(mode, id)
 				continue
 			
 			// Turn into a Survivor
-			humanme(id, survivor)
+			MakeHuman(id, CLASS_SURVIVOR)
 			set_user_health(id, floatround(float(pev(id, pev_health)) * ArmageddonSurvivorHealthMultiply))
 		}
 		
@@ -11227,7 +11227,7 @@ start_mode(mode, id)
 				continue
 			
 			// Turn into a Sniper
-			humanme(id, sniper)
+			MakeHuman(id, CLASS_SNIPER)
 			set_user_health(id, floatround(float(pev(id, pev_health)) * ApocalypseSniperHealthMultiply))
 		}
 		
@@ -11298,7 +11298,7 @@ start_mode(mode, id)
 			
 			if (random_num(1, 5) == 1)
 			{
-				humanme(id, survivor)
+				MakeHuman(id, CLASS_SURVIVOR)
 				set_user_health(id, floatround(float(pev(id, pev_health)) * NightmareSurvivorHealthMultiply))
 				iZombies++
 			}
@@ -11309,7 +11309,7 @@ start_mode(mode, id)
 			if (!g_isalive[id] || g_assassin[id] || g_nemesis[id] || g_survivor[id])
 				continue
 
-			humanme(id, sniper)
+			MakeHuman(id, CLASS_SNIPER)
 			set_user_health(id, floatround(float(pev(id, pev_health)) * NightmareSniperHealthMultiply))
 		}
 		
@@ -11368,7 +11368,7 @@ start_mode(mode, id)
 				continue
 			
 			// Turn into a Sniper
-			humanme(id, sniper)
+			MakeHuman(id, CLASS_SNIPER)
 			set_user_health(id, floatround(float(pev(id, pev_health)) * DevilSniperHealthMultiply))
 		}
 		
@@ -11904,7 +11904,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 }
 
 // Function Human Me (player id, turn into a survivor, silent mode)
-humanme(id, class)
+MakeHuman(id, class = CLASS_HUMAN)
 {	
 	set_zombie(id, false)		// For module
 
@@ -11959,196 +11959,196 @@ humanme(id, class)
 	fm_give_item(id, "weapon_knife")
 	
 	// Set human attributes based on the mode
-	if (class == survivor)
+	switch (class)
 	{
-		// Survivor
-		g_survivor[id] = true
-		g_specialclass[id] = true
-		g_cClass[id] = "Survivor"
-		
-		// Set Health [0 = auto]
-		set_user_health(id, SurvivorHealth)
-		
-		// Set gravity and glow, if frozen set the restore gravity value instead
-		if (!g_frozen[id]) 
+		case CLASS_HUMAN:
 		{
-			set_pev(id, pev_gravity, SurvivorGravity)
-
-			// Set glow
-			if (SurvivorGlow) set_glow(id, 0, 0, 255, 25)
-			else remove_glow(id)
+			// Set health
+			set_user_health(id, HumanHealth)
+			
+			// Set gravity, if frozen set the restore gravity value instead
+			if (!g_frozen[id]) set_pev(id, pev_gravity, HumanGravity)
+			else g_frozen_gravity[id] = HumanGravity
+			
+			// Set human maxspeed
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
+			
+			// Show custom buy menu
+			set_task(0.2, "show_menu_buy1", id + TASK_SPAWN)
 		}
-		
-		// Set survivor maxspeed
-		ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
-		
-		// Give survivor his own weapon
-		set_weapon(id, CSW_XM1014, 1000)
-		set_weapon(id, CSW_AK47, 1000)
-		set_weapon(id, CSW_M4A1, 1000)
-		set_weapon(id, CSW_DEAGLE, 1000)
-		set_weapon(id, CSW_HEGRENADE, 5)
-		
-		// Turn off his flashlight
-		turn_off_flashlight(id)
-		
-		// Survivor bots will also need nightvision to see in the dark
-		if (g_isbot[id])
+		case CLASS_TRYDER:
 		{
-			g_nvision[id] = true
-			cs_set_user_nvg(id, 1)
-		}
-	}
-	else if (class == sniper)
-	{
-		// Sniper
-		g_sniper[id] = true
-		g_specialclass[id] = true
-		g_cClass[id] = "Sniper"
-		
-		// Set Health
-		set_user_health(id, SniperHealth)
+			// Tryder
+			g_tryder[id] = true
+			g_specialclass[id] = false
+			g_cClass[id] = "Tryder"
+			
+			// Set Health [0 = auto]
+			set_user_health(id, TryderHealth)
 
-		// Set sniper maxspeed
-		ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
-		
-		// Set gravity and glow, unless frozen
-		if (!g_frozen[id]) 
-		{
-			set_pev(id, pev_gravity, SniperGravity)
+			// Set armor
+			set_pev(id, pev_armorvalue, 777.0)
 
-			// Set glow
-			if (SniperGlow) set_glow(id, 255, 255, 0, 25)
-			else remove_glow(id)
-		}
-		
-		// Give sniper his own weapon		
-		set_weapon(id, CSW_AWP, 200)
-		set_weapon(id, CSW_DEAGLE, 1000)
-		set_weapon(id, CSW_HEGRENADE, 5)
-		
-		// Turn off his flashlight
-		turn_off_flashlight(id)
-		
-		// Give the sniper a bright light
-		if (SniperAura) set_pev(id, pev_effects, pev(id, pev_effects) | EF_INVLIGHT)
-		
-		// Sniper bots will also need nightvision to see in the dark
-		if (g_isbot[id])
-		{
-			g_nvision[id] = true
-			cs_set_user_nvg(id, 1)
-		}
-	}
-	// Abhinash
-	else if (class == samurai)
-	{
-		// Samurai
-		g_samurai[id] = true
-		g_specialclass[id] = true
-		g_cClass[id] = "Samurai"
-		
-		// Set Health [0 = auto]
-		set_user_health(id, SamuraiHealth)
-
-		// Set samurai maxspeed
-		ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
-		
-		// Set gravity and glow, unless frozen
-		if (!g_frozen[id]) 
-		{
-			set_pev(id, pev_gravity, SamuraiGravity)
-
-			// Set glow
-			if (SamuraiGlow) set_glow(id, 50, 100, 150, 25)
-			else remove_glow(id)
-		}
-		
-		// Give Samurai his own weapon		
-		fm_give_item(id, "weapon_knife")                
-		
-		// Models fix
-		replace_weapon_models(id, CSW_KNIFE)
-		
-		// Turn off his flashlight
-		turn_off_flashlight(id)
-		
-		// Samurai bots will also need nightvision to see in the dark
-		if (g_isbot[id])
-		{
-			g_nvision[id] = true
-			cs_set_user_nvg(id, 1)
-		}
-	}
-	// Tryder
-	else if (class == tryder)
-	{
-		// Tryder
-		g_tryder[id] = true
-		g_specialclass[id] = false
-		g_cClass[id] = "Tryder"
-		
-		// Set Health [0 = auto]
-		set_user_health(id, TryderHealth)
-
-		// Set armor
-		set_pev(id, pev_armorvalue, 777.0)
-
-		// Set tryder maxspeed
-		ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
-		
-		// Set gravity and glow, unless frozen
-		if (!g_frozen[id]) 
-		{
-			set_pev(id, pev_gravity, TryderGravity)
-
-			// Set glow
-			if(TryderGlow)
+			// Set tryder maxspeed
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
+			
+			// Set gravity and glow, unless frozen
+			if (!g_frozen[id]) 
 			{
-				switch (random_num(0, 1))
+				set_pev(id, pev_gravity, TryderGravity)
+
+				// Set glow
+				if(TryderGlow)
 				{
-					case 0: set_glow(id, 155, 48, 255, 25)
-					case 1: set_glow(id, 250, 10, 175, 25)
+					switch (random_num(0, 1))
+					{
+						case 0: set_glow(id, 155, 48, 255, 25)
+						case 1: set_glow(id, 250, 10, 175, 25)
+					}
 				}
+				else remove_glow(id)
 			}
-			else remove_glow(id)
+			
+			// Give tryder his own weapon		
+			set_weapon(id, CSW_AK47, 1000)
+			set_weapon(id, CSW_M4A1, 1000)
+			set_weapon(id, CSW_XM1014, 1000)
+			set_weapon(id, CSW_SG552, 1000)
+			set_weapon(id, CSW_SG550, 1000)
+			set_weapon(id, CSW_HEGRENADE, 5)
+			set_weapon(id, CSW_FLASHBANG, 5)
+			set_weapon(id, CSW_SMOKEGRENADE, 5)
+			
+			// Turn off his flashlight
+			turn_off_flashlight(id)
+			
+			// Tryder bots will also need nightvision to see in the dark
+			if (g_isbot[id])
+			{
+				g_nvision[id] = true
+				cs_set_user_nvg(id, 1)
+			}
 		}
-		
-		// Give tryder his own weapon		
-		set_weapon(id, CSW_AK47, 1000)
-		set_weapon(id, CSW_M4A1, 1000)
-		set_weapon(id, CSW_XM1014, 1000)
-		set_weapon(id, CSW_SG552, 1000)
-		set_weapon(id, CSW_SG550, 1000)
-		set_weapon(id, CSW_HEGRENADE, 5)
-		set_weapon(id, CSW_FLASHBANG, 5)
-		set_weapon(id, CSW_SMOKEGRENADE, 5)
-		
-		// Turn off his flashlight
-		turn_off_flashlight(id)
-		
-		// Tryder bots will also need nightvision to see in the dark
-		if (g_isbot[id])
+		case CLASS_SURVIVOR:
 		{
-			g_nvision[id] = true
-			cs_set_user_nvg(id, 1)
+			// Survivor
+			g_survivor[id] = true
+			g_specialclass[id] = true
+			g_cClass[id] = "Survivor"
+			
+			// Set Health [0 = auto]
+			set_user_health(id, SurvivorHealth)
+			
+			// Set gravity and glow, if frozen set the restore gravity value instead
+			if (!g_frozen[id]) 
+			{
+				set_pev(id, pev_gravity, SurvivorGravity)
+
+				// Set glow
+				if (SurvivorGlow) set_glow(id, 0, 0, 255, 25)
+				else remove_glow(id)
+			}
+			
+			// Set survivor maxspeed
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
+			
+			// Give survivor his own weapon
+			set_weapon(id, CSW_XM1014, 1000)
+			set_weapon(id, CSW_AK47, 1000)
+			set_weapon(id, CSW_M4A1, 1000)
+			set_weapon(id, CSW_DEAGLE, 1000)
+			set_weapon(id, CSW_HEGRENADE, 5)
+			
+			// Turn off his flashlight
+			turn_off_flashlight(id)
+			
+			// Survivor bots will also need nightvision to see in the dark
+			if (g_isbot[id])
+			{
+				g_nvision[id] = true
+				cs_set_user_nvg(id, 1)
+			}
 		}
-	}
-	
-	else if (class == none)
-	{
-		// Set health
-		set_user_health(id, HumanHealth)
-		
-		// Set gravity, if frozen set the restore gravity value instead
-		if (!g_frozen[id]) set_pev(id, pev_gravity, HumanGravity)
-		else g_frozen_gravity[id] = HumanGravity
-		
-		// Set human maxspeed
-		ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
-		
-		// Show custom buy menu
-		set_task(0.2, "show_menu_buy1", id + TASK_SPAWN)
+		case CLASS_SNIPER:
+		{
+			// Sniper
+			g_sniper[id] = true
+			g_specialclass[id] = true
+			g_cClass[id] = "Sniper"
+			
+			// Set Health
+			set_user_health(id, SniperHealth)
+
+			// Set sniper maxspeed
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
+			
+			// Set gravity and glow, unless frozen
+			if (!g_frozen[id]) 
+			{
+				set_pev(id, pev_gravity, SniperGravity)
+
+				// Set glow
+				if (SniperGlow) set_glow(id, 255, 255, 0, 25)
+				else remove_glow(id)
+			}
+			
+			// Give sniper his own weapon		
+			set_weapon(id, CSW_AWP, 200)
+			set_weapon(id, CSW_DEAGLE, 1000)
+			set_weapon(id, CSW_HEGRENADE, 5)
+			
+			// Turn off his flashlight
+			turn_off_flashlight(id)
+			
+			// Give the sniper a bright light
+			if (SniperAura) set_pev(id, pev_effects, pev(id, pev_effects) | EF_INVLIGHT)
+			
+			// Sniper bots will also need nightvision to see in the dark
+			if (g_isbot[id])
+			{
+				g_nvision[id] = true
+				cs_set_user_nvg(id, 1)
+			}
+		}
+		case CLASS_SAMURAI:
+		{
+			// Samurai
+			g_samurai[id] = true
+			g_specialclass[id] = true
+			g_cClass[id] = "Samurai"
+			
+			// Set Health [0 = auto]
+			set_user_health(id, SamuraiHealth)
+
+			// Set samurai maxspeed
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
+			
+			// Set gravity and glow, unless frozen
+			if (!g_frozen[id]) 
+			{
+				set_pev(id, pev_gravity, SamuraiGravity)
+
+				// Set glow
+				if (SamuraiGlow) set_glow(id, 50, 100, 150, 25)
+				else remove_glow(id)
+			}
+			
+			// Give Samurai his own weapon		
+			fm_give_item(id, "weapon_knife")                
+			
+			// Models fix
+			replace_weapon_models(id, CSW_KNIFE)
+			
+			// Turn off his flashlight
+			turn_off_flashlight(id)
+			
+			// Samurai bots will also need nightvision to see in the dark
+			if (g_isbot[id])
+			{
+				g_nvision[id] = true
+				cs_set_user_nvg(id, 1)
+			}
+		}
 	}
 	
 	// Switch to CT
@@ -12405,10 +12405,10 @@ check_round(leaving_player)
 		client_print_color(0, print_team_grey, "%s Last human has disconnected,^4 %s^1 is the last human!", CHAT_PREFIX, g_playername[id]);
 		
 		// Turn into a Survivor or just a human?
-		if (g_survivor[leaving_player]) humanme(id, survivor)
-		else if (g_sniper[leaving_player]) humanme(id, sniper)
-		else if (g_samurai[leaving_player])	humanme(id, samurai)
-		else humanme(id, none)
+		if (g_survivor[leaving_player]) MakeHuman(id, CLASS_SURVIVOR)
+		else if (g_sniper[leaving_player]) MakeHuman(id, CLASS_SNIPER)
+		else if (g_samurai[leaving_player])	MakeHuman(id, CLASS_SAMURAI)
+		else MakeHuman(id)
 		
 		// If Survivor, set chosen player's health to that of the one who's leaving
 		if (KeepHealthOnDisconnect && g_survivor[leaving_player])
@@ -12874,7 +12874,7 @@ public antidote_explode(ent)
 		if (fnGetZombies() == 1) continue
 
 		// Make them all human
-		humanme(victim, none)
+		MakeHuman(victim)
 	}
 	
 	// Get rid of the grenade
@@ -14468,7 +14468,7 @@ public native_make_user_human(id)
 	if (!allowed_human(id)) return false
 
 	// Make him Human
-	humanme(id, none)
+	MakeHuman(id)
 
 	return true
 }
@@ -14872,7 +14872,7 @@ public native_make_user_sniper(id)
 		remove_task(TASK_MAKEZOMBIE)
 		start_mode(MODE_SNIPER, id)
 	}
-	else humanme(id, sniper) // Just make him sniper
+	else MakeHuman(id, CLASS_SNIPER) // Just make him sniper
 
 	return true
 }
@@ -14905,7 +14905,7 @@ public native_make_user_survivor(id)
 		remove_task(TASK_MAKEZOMBIE)
 		start_mode(MODE_SURVIVOR, id)
 	}
-	else humanme(id, survivor) // Just make him survivor
+	else MakeHuman(id, CLASS_SURVIVOR) // Just make him survivor
 
 	return true
 }
@@ -14938,7 +14938,7 @@ public native_make_user_samurai(id)
 		remove_task(TASK_MAKEZOMBIE)
 		start_mode(MODE_SAMURAI, id)
 	}
-	else humanme(id, samurai) // Just make him samurai
+	else MakeHuman(id, CLASS_SAMURAI) // Just make him samurai
 
 	return true
 }
