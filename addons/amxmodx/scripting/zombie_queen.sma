@@ -1025,14 +1025,17 @@ enum _:MMenuData
 
 new g_cModesMenu[][MMenuData] =
 {
-	{"Armageddon Mode", 					 		  "\r[120 points]",  120},
-	{"Nightmare Mode", 						 		  "\r[140 points]",  140},
-	{"NightCrawler Mode\y(comming soon)", 	 		  "\r[200 points]",  200},
-	{"Synapsis Mode\y(comming soon)", 		 		  "\r[120 points]",  120},
-	{"Sonic vs Shadow Mode\y(comming soon)", 		  "\r[300 points]",  300},
-	{"Sniper vs Nemesis Mode", 				 		  "\r[150 points]",  150},
-	{"Sniper vs Assassin Mode", 			 		  "\r[150 points]",  150},
-	{"Bombardier vs Grenadier Mode\y(comming soon)",  "\r[500 points]",  500}
+	{"Survivor vs Nemesis round", 		"\r[120 points]",  120},
+	{"Survivor vs Assasin round", 		"\r[140 points]",  140},
+	{"Sniper vs Nemesis round", 	 	"\r[200 points]",  200},
+	{"Sniper vs Assasin round", 		"\r[120 points]",  120},
+	{"Nightmare round", 		  		"\r[300 points]",  300},
+	{"Synapsis round", 				 	"\r[150 points]",  150},
+	{"Bombardier vs Bomber round", 		"\r[150 points]",  150},
+	{"Bombardier vs Grenadier Mode",  	"\r[500 points]",  500},
+	{"Samurai vs Nemesis round", 		"\r[500 points]",  500},
+	{"Sonic vs Shadow round", 			"\r[500 round]",  500},
+	{"Nightcrawler round", 				"\r[500 round]",  500}
 }
 
 enum _:aCMenuData
@@ -1173,7 +1176,8 @@ enum _: canFunc
 	PSHOP_PACKS,
 	PSHOP_FEATURES,
 	PSHOP_WEAPONS,
-	PSHOP_MODES
+	PSHOP_MODES,
+	START_MODE
 }
 
 // Can() func purpose
@@ -1304,7 +1308,7 @@ enum _: buyModesWithPoints
 	PSHOP_MODE_SNIPER_VS_ASSASIN,
 	PSHOP_MODE_NIGHTMARE,
 	PSHOP_MODE_SYNAPSIS,
-	PSHOP_MODE_BOMBARDIER_VS_BOMBER,
+	PSHOP_MODE_BOMBARDIER_VS_GRENADIER,
 	PSHOP_MODE_SAMURAI_VS_NEMESIS,
 	PSHOP_MODE_SONIC_VS_SHADOW,
 	PSHOP_MODE_NIGHTCRAWLER
@@ -1316,62 +1320,66 @@ enum _: buyAccessWithPoints
 	// Coming soon
 }
 
-// Class names and game modes
-enum
+// LogToFile actions enums
+enum _: logActions
 {
-	none = 0,
-	zombie,
-	human,
-	respawn,
-	infection,
-	nemesis,
-	assassin,
-	survivor,
-	sniper,
-	samurai,
-	tryder,     
-	bombardier, 	
-	swarm,
-	multi,
-	plague,
-	armageddon,
-	apocalypse,
-	nightmare,
-	devil,
-	nightvision,
-	explosion_nade,
-	napalm_nade,
-	forcefield_nade,
-	frost_nade,
-	killing_nade,
-	antidote_nade,
-	infection_nade,
-	concussion_nade,
-	unlimitedclip,
-	multijump,
-	jetpack,
-	armor100,
-	armor200,
-	crossbow,
-	goldenak,
-	goldenm4,
-	goldenxm,
-	goldendeagle,
-	antidote,
-	madness,
-	knifeblink,
-	godmode,
-	doubledamage,
-	norecoil,
-	invisibility,
-	sprint,
-	lowgravity,
-	headhunter,
-	armagedddon,
-	nightcrawler,
-	synapsis,
-	sonic_vs_shadow,
-	shoppacks
+	LOG_SLAY = 0,
+	LOG_SLAP,
+	LOG_KICK,
+	LOG_FREEZE,
+	LOG_NICK,
+	LOG_MAP,
+	LOG_GAG,
+	LOG_BAN,
+	LOG_MAKE_HUMAN,
+	LOG_MAKE_ZOMBIE,
+	LOG_MAKE_ASSASIN,
+	LOG_MAKE_NEMESIS,
+	LOG_MAKE_BOMBARDIER,
+	LOG_MAKE_SNIPER,
+	LOG_MAKE_SURVIVOR,
+	LOG_MAKE_SAMURAI,
+	LOG_MODE_MULTIPLE_INFECTION,
+	LOG_MODE_SWARM,
+	LOG_MODE_PLAGUE,
+	LOG_MODE_SYNAPSIS,
+	LOG_MODE_NIGHTCRAWLER,
+	LOG_MODE_NIGHTMARE,
+	LOG_MODE_SURVIVOR_VS_NEMESIS,
+	LOG_MODE_SURVIVOR_VS_ASSASIN,
+	LOG_MODE_SNIPER_VS_NEMESIS,
+	LOG_MODE_SNIPER_VS_ASSASIN,
+	LOG_RESPAWN_PLAYER
+}
+
+// Admin menu actions
+enum _: adminMakeActions
+{
+	ACTION_ZOMBIEFY_HUMANIZE = 0,
+	ACTION_MAKE_NEMESIS,
+	ACTION_MAKE_ASSASIN,
+	ACTION_MAKE_BOMBARDIER,
+	ACTION_MAKE_SURVIVOR,
+	ACTION_MAKE_SNIPER,
+	ACTION_MAKE_SAMURAI,			
+	ACTION_RESPAWN_PLAYER
+}
+
+// Admin modes menu actions
+enum _: adminNormalModeActions
+{
+	ACTION_MODE_SWARM,
+	ACTION_MODE_MULTIPLE_INFECTION,
+	ACTION_MODE_PLAGUE
+}
+
+// Admin custom modes menu actions
+enum _: adminCustomModeActions
+{
+	ACTION_MODE_SURVIVOR_VS_NEMESIS,
+	ACTION_MODE_SNIPER_VS_ASSASIN,
+	ACTION_MODE_NIGHTMARE,
+	ACTION_MODE_SNIPER_VS_NEMESIS
 }
 
 // Limiters for stuff not worth making dynamic arrays out of (increase if needed)
@@ -1788,35 +1796,6 @@ const KEYS_ADMINMENUCLASSES = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_K
 const KEYS_ADMINMENUMODES = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
 const KEYS_ADMINCUSTOMMODES = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
 
-// Admin menu actions
-enum
-{
-	ACTION_ZOMBIEFY_HUMANIZE = 0,
-	ACTION_MAKE_NEMESIS,
-	ACTION_MAKE_ASSASSIN,
-	ACTION_MAKE_BOMBARDIER,
-	ACTION_MAKE_SURVIVOR,
-	ACTION_MAKE_SNIPER,
-	ACTION_MAKE_SAMURAI,			// Abhinash
-	ACTION_RESPAWN_PLAYER
-}
-
-// Admin modes menu actions
-enum
-{
-	ACTION_MODE_SWARM,
-	ACTION_MODE_MULTI,
-	ACTION_MODE_PLAGUE
-}
-
-// Admin custom modes menu actions
-enum
-{
-	ACTION_MODE_ARMAGEDDON,
-	ACTION_MODE_APOCALYPSE,
-	ACTION_MODE_NIGHTMARE,
-	ACTION_MODE_DEVIL
-}
 /*================================================================================
 	[Global Variables]
 =================================================================================*/
@@ -4296,7 +4275,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_DOUBLE_DAMAGE:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_FEATURE_DOUBLE_DAMAGE, id))
+				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_DOUBLE_DAMAGE, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4317,7 +4296,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_NO_RECOIL:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_FEATURE_NO_RECOIL, id))
+				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_NO_RECOIL, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4338,7 +4317,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_INVISIBILITY:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_FEATURE_INVISIBILITY, id))
+				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_INVISIBILITY, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4358,7 +4337,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_SPRINT:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_FEATURE_SPRINT, id))
+				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_SPRINT, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4380,7 +4359,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_LOW_GRAVITY:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_FEATURE_LOW_GRAVITY, id))
+				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_LOW_GRAVITY, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4400,7 +4379,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_HEAD_HUNTER:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_FEATURE_HEAD_HUNTER, id))
+				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_HEAD_HUNTER, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4543,16 +4522,16 @@ public _Modes(id, menu, item)
 
 				}
 			} 
-		case PSHOP_MODE_BOMBARDIER_VS_BOMBER: 
+		case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: 
 			{ 
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_BOMBARDIER_VS_BOMBER, id))
+				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
 				{
 
 				}
 			}
 		case PSHOP_MODE_SAMURAI_VS_NEMESIS: 
 			{ 
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_BOMBARDIER_VS_BOMBER, id))
+				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
 				{
 
 				}
@@ -7833,7 +7812,7 @@ show_menu_player_list(id)
 	{
 		case ACTION_ZOMBIEFY_HUMANIZE: formatex(menu, charsmax(menu), "Make Zombie / Human\r")
 		case ACTION_MAKE_NEMESIS: formatex(menu, charsmax(menu), "Make Nemesis\r")
-		case ACTION_MAKE_ASSASSIN: formatex(menu, charsmax(menu), "Make Assassin\r")
+		case ACTION_MAKE_ASSASIN: formatex(menu, charsmax(menu), "Make Assassin\r")
 		case ACTION_MAKE_BOMBARDIER: formatex(menu, charsmax(menu), "Make Bombardier\r")		// Abhinash
 		case ACTION_MAKE_SURVIVOR: formatex(menu, charsmax(menu), "Make Survivor\r")
 		case ACTION_MAKE_SNIPER: formatex(menu, charsmax(menu), "Make Sniper\r")
@@ -7875,7 +7854,7 @@ show_menu_player_list(id)
 				else
 					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
 			}
-		case ACTION_MAKE_ASSASSIN: // Assassin command
+		case ACTION_MAKE_ASSASIN: // Assassin command
 			{
 				if (allowed_assassin(player) && AdminHasFlag(id, 'a'))
 					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
@@ -8058,12 +8037,12 @@ public menu_admin_classes(id, key)
 				show_menu_admin_classes(id)
 			}
 		}
-	case ACTION_MAKE_ASSASSIN: // Assassin command
+	case ACTION_MAKE_ASSASIN: // Assassin command
 		{
 			if (AdminHasFlag(id, 'a'))
 			{
 				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_MAKE_ASSASSIN
+				PL_ACTION = ACTION_MAKE_ASSASIN
 				show_menu_player_list(id)
 			}
 			else
@@ -8152,7 +8131,7 @@ public menu_admin_modes(id, key)
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(id, 0, swarm)
+					LogToFile(LOG_MODE_SWARM, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8160,7 +8139,7 @@ public menu_admin_modes(id, key)
 			
 			show_menu_modes_admin(id)
 		}
-	case ACTION_MODE_MULTI: // Multiple Infection command
+	case ACTION_MODE_MULTIPLE_INFECTION: // Multiple Infection command
 		{
 			if (AdminHasFlag(id, 'a'))
 			{
@@ -8174,7 +8153,7 @@ public menu_admin_modes(id, key)
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(id, 0, multi)
+					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8196,7 +8175,7 @@ public menu_admin_modes(id, key)
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(id, 0, plague)
+					LogToFile(LOG_MODE_PLAGUE, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8215,7 +8194,7 @@ public menu_admin_custom_modes(id, key)
 {
 	switch (key)
 	{		
-	case ACTION_MODE_ARMAGEDDON: // Armageddon Mode command
+	case ACTION_MODE_SURVIVOR_VS_NEMESIS: // Armageddon Mode command
 		{
 			if (AdminHasFlag(id, 'a'))
 			{
@@ -8229,7 +8208,7 @@ public menu_admin_custom_modes(id, key)
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(id, 0, armageddon)
+					LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8237,7 +8216,7 @@ public menu_admin_custom_modes(id, key)
 
 			show_menu_admin_custom_modes(id)
 		}
-	case ACTION_MODE_APOCALYPSE: // Apocalypse Mode command
+	case ACTION_MODE_SNIPER_VS_ASSASIN: // Apocalypse Mode command
 		{
 			if (AdminHasFlag(id, 'a'))
 			{
@@ -8251,7 +8230,7 @@ public menu_admin_custom_modes(id, key)
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(id, 0, apocalypse)
+					LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8273,7 +8252,7 @@ public menu_admin_custom_modes(id, key)
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(id, 0, nightmare)
+					LogToFile(LOG_MODE_NIGHTMARE, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8281,7 +8260,7 @@ public menu_admin_custom_modes(id, key)
 			
 			show_menu_admin_custom_modes(id)
 		}
-	case ACTION_MODE_DEVIL: // Devil Mode command ( Sniper vs Nemesis)
+	case ACTION_MODE_SNIPER_VS_NEMESIS: // Devil Mode command ( Sniper vs Nemesis)
 		{
 			if (AdminHasFlag(id, 'a'))
 			{
@@ -8295,7 +8274,7 @@ public menu_admin_custom_modes(id, key)
 					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(id, 0, devil)
+					LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8352,12 +8331,11 @@ public menu_player_list(id, menuid, item)
 							MakeHuman(target)
 			
 							// Print in chat
-							if (id == target)
-								client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+							if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 							else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 							// Log to file
-							LogToFile(id, target, human)
+							LogToFile(LOG_MAKE_HUMAN, id, target)
 						}
 						else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 					}
@@ -8379,12 +8357,11 @@ public menu_player_list(id, menuid, item)
 							else MakeZombie(target) // Just infect
 			
 							// Print in chat
-							if (id == target)
-								client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+							if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 							else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 							// Log to file
-							LogToFile(id, target, zombie)
+							LogToFile(LOG_MAKE_ZOMBIE, id, target)
 						}
 						else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 					}
@@ -8407,19 +8384,18 @@ public menu_player_list(id, menuid, item)
 						else MakeZombie(target, CLASS_NEMESIS) // Turn player into a Nemesis
 						
 						// Print in chat
-						if (id == target)
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						
 
 						// Log to file
-						LogToFile(id, target, nemesis)
+						LogToFile(LOG_MAKE_NEMESIS, id, target)
 					}
 					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
 				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 			}
-		case ACTION_MAKE_ASSASSIN: // Assassin command
+		case ACTION_MAKE_ASSASIN: // Assassin command
 			{
 				if (AdminHasFlag(id, 'a'))
 				{
@@ -8434,14 +8410,12 @@ public menu_player_list(id, menuid, item)
 						}
 						else MakeZombie(target, CLASS_ASSASIN)// Turn player into a Nemesis
 
-						
 						// Print in chat
-						if (id == target)
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
-						LogToFile(id, target, assassin)
+						LogToFile(LOG_MAKE_ASSASIN, id, target)
 					}
 					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
@@ -8463,12 +8437,11 @@ public menu_player_list(id, menuid, item)
 						else MakeZombie(target, CLASS_BOMBARDIER) // Turn player into a Bombardier 
 						
 						// Print in chat
-						if (id == target)
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
-						LogToFile(id, target, bombardier)
+						LogToFile(LOG_MAKE_BOMBARDIER, id, target)
 					} 
 					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
@@ -8490,12 +8463,11 @@ public menu_player_list(id, menuid, item)
 						else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
 						
 						// Print in chat
-						if (id == target)
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himslef a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himslef a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
-						LogToFile(id, target, survivor)
+						LogToFile(LOG_MAKE_SURVIVOR, id, target)
 					}
 					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
@@ -8517,12 +8489,11 @@ public menu_player_list(id, menuid, item)
 						else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
 						
 						// Print in chat
-						if (id == target)
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
-						LogToFile(id, target, sniper)
+						LogToFile(LOG_MAKE_SNIPER, id, target)
 					}
 					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
@@ -8544,12 +8515,11 @@ public menu_player_list(id, menuid, item)
 						else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
 						
 						// Print in chat
-						if (id == target)
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
-						LogToFile(id, target, samurai)
+						LogToFile(LOG_MAKE_SAMURAI, id, target)
 					}
 					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
@@ -8565,12 +8535,11 @@ public menu_player_list(id, menuid, item)
 						respawn_player_manually(target)
 
 						// Print in chat
-						if (id == target)
-							client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 
 						// Log to file
-						LogToFile(id, target, respawn)
+						LogToFile(LOG_RESPAWN_PLAYER, id, target)
 					}
 					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 				}
@@ -8696,9 +8665,7 @@ public cmd_slap(id)
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playername[id], target)
 		
 		// Log to Zombie Plague log file?
-		static logdata[100]
-		formatex(logdata, charsmax(logdata), "Admin %s slapped %s  (Players: %d/%d)", g_playername[id], target, fnGetPlaying(), g_maxplayers)
-		log_to_file("zombie_queen.log", logdata)
+		//LogToFile(LOG_SLAP, id, target)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -8756,9 +8723,7 @@ public cmd_slay(id)
 		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
-		static logdata[100]
-		formatex(logdata, charsmax(logdata), "Admin %s slayed %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
-		log_to_file("zombie_queen.log", logdata)
+		LogToFile(LOG_SLAY, id, target)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -8816,9 +8781,7 @@ public cmd_kick(id)
 		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
-		static logdata[100]
-		formatex(logdata, charsmax(logdata), "Admin %s kicked %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
-		log_to_file("zombie_queen.log", logdata)
+		LogToFile(LOG_KICK, id, target)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -8899,11 +8862,10 @@ public cmd_freeze(id)
 		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
-		static logdata[100]
-		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
-		log_to_file("zombie_queen.log", logdata)
+		LogToFile(LOG_FREEZE, id, target)
 	}
 	else console_print(id, "You have no access to that command")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -8960,46 +8922,33 @@ public cmd_unfreeze(id)
 				// Nemesis or Survivor glow / remove glow
 				if (g_nemesis[target])
 				{
-					if(NemesisGlow) 
-						set_glow(target, 250, 0, 0, 25)
-					else 
-						remove_glow(target)
+					if (NemesisGlow) set_glow(target, 250, 0, 0, 25)
+					else remove_glow(target)
 				}
 				else if (g_assassin[target])
 				{
-					if(AssassinGlow)
-						set_glow(target, 255, 255, 0, 25)
-					else
-						remove_glow(target)
+					if (AssassinGlow) set_glow(target, 255, 255, 0, 25)
+					else remove_glow(target)
 				}
 				else if (g_survivor[target])
 				{
-					if(SurvivorGlow)
-						set_glow(target, 0, 0, 255, 25)
-					else
-						remove_glow(target)
+					if (SurvivorGlow) set_glow(target, 0, 0, 255, 25)
+					else remove_glow(target)
 				}
-				
 				else if (g_sniper[target])
 				{ 
-					if(SniperGlow) 
-						set_glow(target, 0, 255, 0, 25)
-					else
-						remove_glow(target)
+					if (SniperGlow) set_glow(target, 0, 255, 0, 25)
+					else remove_glow(target)
 				}
 				else if (g_samurai[target])
 				{
-					if(SamuraiGlow)
-						set_glow(target, 50, 100, 150, 25)
-					else
-						remove_glow(target)
+					if (SamuraiGlow) set_glow(target, 50, 100, 150, 25)
+					else remove_glow(target)
 				}
 				else if (g_bombardier[target])
 				{
-					if(BombardierGlow)
-						set_glow(target, 50, 100, 150, 25)
-					else
-						remove_glow(target)
+					if (BombardierGlow) set_glow(target, 50, 100, 150, 25)
+					else remove_glow(target)
 				}
 				else remove_glow(target)
 				
@@ -9046,6 +8995,9 @@ public cmd_map(id)
 		set_task(5.0, "ShutDownSQL")
 		set_task(11.0, "MessageIntermission")
 		set_task(16.0, "ChangeMap", 0, arg, arglen + 1)
+
+		// Log to file
+		//LogToFile(LOG_MAP, id)
 	}
 	return PLUGIN_HANDLED
 }
@@ -9586,7 +9538,7 @@ public cmd_zombie(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, zombie)
+		LogToFile(LOG_MAKE_ZOMBIE, id, target)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -9639,7 +9591,7 @@ public cmd_human(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, human)
+		LogToFile(LOG_MAKE_HUMAN, id, target)
 		
 		// Turn to human
 		MakeHuman(target)
@@ -9706,7 +9658,7 @@ public cmd_survivor(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, survivor)
+		LogToFile(LOG_MAKE_SURVIVOR, id, target)
 
 		return PLUGIN_HANDLED
 	}
@@ -9770,7 +9722,7 @@ public cmd_sniper(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, sniper)
+		LogToFile(LOG_MAKE_SNIPER, id, target)
 
 		return PLUGIN_HANDLED
 	}
@@ -9834,7 +9786,7 @@ public cmd_samurai(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, samurai)
+		LogToFile(LOG_MAKE_SAMURAI, id, target)
 
 		return PLUGIN_HANDLED
 	}
@@ -9898,7 +9850,7 @@ public cmd_nemesis(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, nemesis)
+		LogToFile(LOG_MAKE_NEMESIS, id, target)
 
 		return PLUGIN_HANDLED
 	}
@@ -9962,7 +9914,7 @@ public cmd_assassin(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, assassin)
+		LogToFile(LOG_MAKE_ASSASIN, id, target)
 
 		return PLUGIN_HANDLED
 	}
@@ -10026,7 +9978,7 @@ public cmd_bombardier(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, bombardier)
+		LogToFile(LOG_MAKE_BOMBARDIER, id, target)
 
 		return PLUGIN_HANDLED
 	}
@@ -10081,7 +10033,7 @@ public cmd_respawn(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
 		
 		// Log to file
-		LogToFile(id, target, respawn)
+		LogToFile(LOG_RESPAWN_PLAYER, id, target)
 		
 		respawn_player_manually(target)
 
@@ -10113,7 +10065,7 @@ public cmd_swarm(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1mode.", CHAT_PREFIX, g_playername[id])
 		
 		// Log to file
-		LogToFile(id, 0, swarm)
+		LogToFile(LOG_MODE_SWARM, id)
 
 		return PLUGIN_HANDLED
 	}
@@ -10143,7 +10095,7 @@ public cmd_multi(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1mode.", CHAT_PREFIX, g_playername[id])
 		
 		// Log to file
-		LogToFile(id, 0, multi)
+		LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
 
 		return PLUGIN_HANDLED
 	}
@@ -10173,7 +10125,7 @@ public cmd_plague(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1mode.", CHAT_PREFIX, g_playername[id])
 		
 		// Log to file
-		LogToFile(id, 0, plague)
+		LogToFile(LOG_MODE_PLAGUE, id)
 
 		return PLUGIN_HANDLED
 	}
@@ -10203,7 +10155,7 @@ public cmd_armageddon(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1mode.", CHAT_PREFIX, g_playername[id])
 		
 		// Log to file
-		LogToFile(id, 0, armageddon)
+		LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
 
 		return PLUGIN_HANDLED
 	}
@@ -10233,7 +10185,7 @@ public cmd_apocalypse(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1mode.", CHAT_PREFIX, g_playername[id])
 		
 		// Log to file
-		LogToFile(id, 0, apocalypse)
+		LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
 
 		return PLUGIN_HANDLED
 	}
@@ -10263,7 +10215,7 @@ public cmd_nightmare(id)
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1mode.", CHAT_PREFIX, g_playername[id])
 		
 		// Log to file
-		LogToFile(id, 0, nightmare)
+		LogToFile(LOG_MODE_NIGHTMARE, id)
 
 		return PLUGIN_HANDLED
 	}
@@ -10293,7 +10245,7 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playername[id])
 		
 		// Log to file
-		LogToFile(id, 0, devil)
+		LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
 
 		return PLUGIN_HANDLED
 	}
@@ -10743,7 +10695,7 @@ public message_teaminfo(msg_id, msg_dest)
 public make_zombie_task()
 {
 	// Call make a zombie with no specific mode
-	start_mode(none, 0)
+	start_mode(MODE_NONE, 0)
 }
 
 // Start any mode function
@@ -14219,7 +14171,7 @@ Can(category, action, item, id)
 						case PSHOP_MODE_NIGHTCRAWLER: return true 
 						case PSHOP_MODE_SYNAPSIS: return true 
 						case PSHOP_MODE_SONIC_VS_SHADOW: return true 
-						case PSHOP_MODE_BOMBARDIER_VS_BOMBER: return true
+						case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: return true
 						case PSHOP_MODE_SURVIVOR_VS_NEMESIS, PSHOP_MODE_SURVIVOR_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_NEMESIS:
 						{
 							if (g_modestarted ||  g_endround)
@@ -14259,7 +14211,7 @@ Can(category, action, item, id)
 						case PSHOP_MODE_NIGHTCRAWLER: return true 
 						case PSHOP_MODE_SYNAPSIS: return true 
 						case PSHOP_MODE_SONIC_VS_SHADOW: return true 
-						case PSHOP_MODE_BOMBARDIER_VS_BOMBER: return true
+						case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: return true
 						case PSHOP_MODE_SURVIVOR_VS_NEMESIS, PSHOP_MODE_SURVIVOR_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_NEMESIS: return true
 					}
 				}
@@ -14271,7 +14223,7 @@ Can(category, action, item, id)
 }
 
 // Abhinash's custom built LogToFile() Funtion
-LogToFile(admin, target, action)
+LogToFile(action, admin, target = 0)
 {
 	static logdata[100], authid[32], ip[16]
 	get_user_authid(admin, authid, charsmax(authid))
@@ -14279,23 +14231,32 @@ LogToFile(admin, target, action)
 
 	switch (action)
 	{
-		case zombie 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case human 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case nemesis 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case assassin   : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case bombardier : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case sniper  	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case survivor 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case samurai 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case multi 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. (Players: %d/%d)", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case swarm 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. (Players: %d/%d)", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case plague 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. (Players: %d/%d)", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case armageddon : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. (Players: %d/%d)", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case nightmare  : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. (Players: %d/%d)", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case apocalypse : formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. (Players: %d/%d)", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case devil 		: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. (Players: %d/%d)", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case respawn 	: formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. (Players: %d/%d)", 						g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAY: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slayed %s. (Players: %d/%d)", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAP: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slapped %s. (Players: %d/%d)", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_KICK:						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] kicked %s. (Players: %d/%d)", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_GAG:						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] gagged %s. (Players: %d/%d)", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_BAN:						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] banned %s. (Players: %d/%d)", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_FREEZE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] froze %s. (Players: %d/%d)", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_NICK: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed nickname of %s. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAP: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed map to . (Players: %d/%d)", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ZOMBIE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_HUMAN: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_NEMESIS:			 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ASSASIN: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_BOMBARDIER: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SNIPER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SURVIVOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SAMURAI: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_MULTIPLE_INFECTION: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. (Players: %d/%d)", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SWARM: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. (Players: %d/%d)", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_PLAGUE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. (Players: %d/%d)", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. (Players: %d/%d)", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_NIGHTMARE: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. (Players: %d/%d)", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. (Players: %d/%d)", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_NEMESIS: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. (Players: %d/%d)", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_RESPAWN_PLAYER: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. (Players: %d/%d)", 						g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 	}
+
 	log_to_file("ZombieQueen.log", logdata)
 }
 
@@ -14415,7 +14376,7 @@ public native_make_user_zombie(id)
 	{
 		// Set as first zombie
 		remove_task(TASK_MAKEZOMBIE)
-		start_mode(infection, id)
+		start_mode(MODE_INFECTION, id)
 	}
 	else MakeZombie(id) // Just infect
 
