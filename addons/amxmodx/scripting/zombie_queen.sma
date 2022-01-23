@@ -107,6 +107,7 @@ enum (+= 100)
 	TASK_BURN,
 	TASK_NVISION,
 	TASK_COUNTDOWN,
+	TASK_REMOVE_FORECEFIELD,
 	TASK_CONCUSSION,
 	TASK_BUBBLE,
 	TASK_REMINDER,
@@ -1875,8 +1876,7 @@ new db_zombieclass[MAX_STATS_SAVED] // zombie class
 new db_slot_i // additional saved slots counter (should start on maxplayers+1)
 
 // CVAR pointers
-new cvar_toggle,
-cvar_botquota
+new cvar_toggle, cvar_botquota
 
 /// Cached stuff for players
 new g_isconnected[33] // whether player is connected
@@ -2076,6 +2076,11 @@ public plugin_precache()
 	engfunc(EngFunc_PrecacheModel, "models/PerfectZM/PerfectZM_predator_claws.mdl")
 	engfunc(EngFunc_PrecacheModel, "models/PerfectZM/PerfectZM_mutant_claws.mdl")
 	engfunc(EngFunc_PrecacheModel, "models/PerfectZM/PerfectZM_hunter_claws.mdl")
+
+	//register_forward(FM_AddToFullPack, "OnAddToFullpack", 1)
+
+	// For 3rd person death
+	precache_model("models/rpgrocket.mdl")
 
 	engfunc(EngFunc_PrecacheModel, BubbleGrenadeModel)
 	
@@ -2318,6 +2323,19 @@ public Spawn(iEnt)
 	}
 }
 
+/*public OnAddToFullpack(es_handle, e, ent, host, hostflags, player, pSet)
+{
+	if (!player) return FMRES_IGNORED
+
+	if (get_user_team(host) == get_user_team(ent))
+	{
+		set_es(es_handle, ES_RenderFx, kRenderFxGlowShell)
+		set_es(es_handle, ES_RenderColor, {100, 150, 220})
+		set_es(es_handle, ES_RenderMode, kRenderTransAlpha)
+		set_es(es_handle, ES_RenderAmt, 20)
+	}
+}*/
+
 public fwPrecacheEvent_Post(type, const name[])
 {
 	if (equal("events/sg550.sc", name))
@@ -2397,7 +2415,7 @@ public plugin_init()
 	}
 	
 	// FM Forwards
-	//register_forward(FM_TraceLine, "FwTraceLine")
+	register_forward(FM_TraceLine, "FwTraceLine")
 	register_forward(FM_ClientDisconnect, "FwPlayerDisconnect")
 	register_forward(FM_ClientDisconnect, "FwPlayerDisconnectPost", 1)
 	register_forward(FM_ClientKill, "FwPlayerKill")
@@ -3430,10 +3448,10 @@ public _ExtraItems(id, menu, item)
 							else
 							{
 								// Set the boolean to true
-								g_bubblebomb[id]++
+								g_bubblebomb[id] = 100
 
 								// Give weapon to the player
-								set_weapon(id, CSW_SMOKEGRENADE, 1)	
+								set_weapon(id, CSW_SMOKEGRENADE, 100)	
 
 								// Show HUD message
 								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
@@ -4697,18 +4715,30 @@ public logevent_round_start()
 	//CreateFog(0, 128, 170, 128, 0.0008)
 }
 
+#define entity_get_classname(%0,%1)	entity_get_string( %0, EV_SZ_classname, %1, charsmax( %1 ) )
+
 // Log Event Round End
 public logevent_round_end()
 {
 	// Round ended
 	g_currentmode = MODE_NONE
 
+	// Remove Bubble Grenade  (bugfix) ( credits: yokomo )
+	new ent = find_ent_by_class(-1, BubbleEntityClassName)
+    while (ent > 0)
+    {
+        if(is_valid_ent(ent))
+        {
+            remove_task(ent + TASK_REMOVE_FORECEFIELD)
+            remove_entity(ent)
+        }
+        
+        ent = find_ent_by_class(-1, BubbleEntityClassName)
+    }
+
 	// Reset lighting if last round was Assassin round
 	if (g_lastmode == MODE_ASSASIN)
 		engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
-	
-	// Remove Bubble bomb entity
-	remove_entity_name(BubbleEntityClassName)
 
 	// Prevent this from getting called twice when restarting (bugfix)
 	static Float:lastendtime, Float:current_time
@@ -5153,9 +5183,12 @@ public event_intermission()
 	remove_task(TASK_AMBIENCESOUNDS)
 }
 
-public event_reset_hud()
+public event_reset_hud(id)
 {
 	Show_VIP()
+
+	set_view(id, CAMERA_NONE)
+	return PLUGIN_HANDLED
 }
 
 public Show_VIP()
@@ -5255,14 +5288,14 @@ public Countdown()
 	if (countdown_timer == 0)
 	{
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
-		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 2.0, 0.01, 0.1, 10);
-		ShowSyncHudMsg(0, g_MsgSync4, "Warning: Biohazard detected");
+		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 2.0, 0.01, 0.1, 10)
+		ShowSyncHudMsg(0, g_MsgSync4, "Warning: Biohazard detected")
 	}
 
 	if(countdown_timer >= 1)
-	set_task(1.0, "Countdown", TASK_COUNTDOWN);
+	set_task(1.0, "Countdown", TASK_COUNTDOWN)
 	else if (task_exists(TASK_COUNTDOWN))
-	remove_task(TASK_COUNTDOWN);
+	remove_task(TASK_COUNTDOWN)
 }
 
 /*================================================================================
@@ -5431,6 +5464,17 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 
 	// Remove concussion grenade effects
 	remove_task(victim + TASK_CONCUSSION)
+
+	// --------------- 3rd Person Death ------------------
+
+	client_cmd(victim,"spk fvox/flatline.wav")
+	UTIL_ScreenFade(victim, {0, 0, 0}, random_float(2.0, 3.5), 0.3, 255, FFADE_OUT, true, false)
+	set_view(victim, CAMERA_3RDPERSON)
+	SetFOV(victim, get_cvar_num("amx_hsfov"))
+	set_view(victim, CAMERA_NONE)
+
+	// --------------- 3rd Person Death ------------------
+
 	
 	// Enable dead players nightvision
 	spec_nvision(victim)
@@ -12759,7 +12803,7 @@ public bubble_explode(ent)
 	new iEntity = create_entity("info_target")
 	
 	// Check if entity is valid
-	if(!is_valid_ent(iEntity)) return 
+	if (!is_valid_ent(iEntity)) return 
 	
 	// Get origin
 	new Float: Origin[3] 
@@ -12778,7 +12822,7 @@ public bubble_explode(ent)
 	entity_set_float(iEntity, EV_FL_renderamt, 50.0)
 	
 	// Check if Valid Entity and Apply glow color
-	if(is_valid_ent(iEntity))
+	if (is_valid_ent(iEntity))
 	{
 		new Float:vColor[3]
 		for(new i; i < 3; i++)
@@ -12789,17 +12833,19 @@ public bubble_explode(ent)
 	}
 
 	// Set task to remove the entity
-	set_task(45.0, "DeleteEntityGrenade", iEntity)
+	set_task(300.0, "DeleteEntityGrenade", TASK_REMOVE_FORECEFIELD + iEntity)
 	
 	// Get rid of the grenade
 	engfunc(EngFunc_RemoveEntity, ent)
 }
 
 // Remove entity function of Bubble Grenade
-public DeleteEntityGrenade(entity) 
+public DeleteEntityGrenade(taskid) 
 {
-	if(is_valid_ent(entity))
-	remove_entity(entity)
+	new entity = taskid - TASK_REMOVE_FORECEFIELD
+
+	if (is_valid_ent(entity))
+		remove_entity(entity)
 }
 
 public antidote_explode(ent)
