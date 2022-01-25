@@ -1167,7 +1167,7 @@ new g_iAccessMenu
 new g_PrimaryMenu
 new g_SecondaryMenu
 
-new g_cClass[33][14]
+new g_classString[33][14]
 
 // Can() func enums
 enum _: canFunc
@@ -1215,34 +1215,46 @@ new const MODE_NONE = 0
 // Mode type variable
 new g_currentmode
 
-// Macros
-#define SetBit(%1,%2)			(%1 |= %2)
-#define CheckBit(%1,%2)		(%1 & %2) 
-//#define ClearBit(%1, %2)        	(%1 &= ~(1<<%2))
-
-// Primary team var
-new g_primaryTeam
-
-// Primary Class Names
-enum _: primaryClassNames (<<=1)
-{
-	CLASS_HUMAN = 3,
-	CLASS_ZOMBIE
-}
-
-// Player class
+// Player class & Player team var
+new g_playerTeam[33]
 new g_playerClass[33]
 
-// Zombie Sub-class Names
-enum _: subClasses (<<=1)
+// Player Team names
+enum _: playerTeams (<<=1)
 {
-	CLASS_TRYDER = 1,
+	TEAM_HUMAN = 1,
+	TEAM_ZOMBIE
+}
+
+// Zombie Sub-class Names
+enum _: classNames (<<=1)
+{
+	CLASS_HUMAN = 1,
+	CLASS_ZOMBIE,
+	CLASS_TRYDER,
 	CLASS_SURVIVOR,
 	CLASS_SNIPER,
 	CLASS_SAMURAI,
 	CLASS_ASSASIN,
 	CLASS_NEMESIS,
 	CLASS_BOMBARDIER
+}
+
+// Macros
+#define SetBit(%1,%2)			(%1 |= %2)
+#define CheckBit(%1,%2)		(%1 & %2) 
+//#define ClearBit(%1, %2)        	(%1 &= ~(1<<%2))
+
+// Zombie Class names
+enum _: zombieClassNames (<<=1)
+{
+	ZC_CLASSIC = 1,
+	ZC_RAPTOR,
+	ZC_MUTANT,
+	ZC_FROST,
+	ZC_REGENERATOR,
+	ZC_PREDATOR,
+	ZC_HUNTER
 }
 
 // Extra item for Humans
@@ -1802,14 +1814,6 @@ const KEYS_ADMINCUSTOMMODES = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_K
 =================================================================================*/
 
 // Player vars
-new g_zombie[33] // is zombie
-new g_nemesis[33] // is nemesis
-new g_assassin[33] // is assassin
-new g_bombardier[33] // is bombardier		// Abhinash
-new g_survivor[33] // is survivor
-new g_sniper[33] // is assassin
-new g_samurai[33]	 // is samurai 				// Abhinash
-new g_tryder[33]	// is tryder
 new g_specialclass[33]	// is special class for reminder task and other stuffs
 new g_lastSpecialHumanIndex // is index of last special human
 new g_lastSpecialZombieIndex // is index of last special zombie
@@ -3172,11 +3176,11 @@ public Task_Rays(id)
 	{
 		if (is_user_alive(vip) && g_bVip[vip] && VipHasFlag(vip, 'h'))
 		{
-			if (!g_zombie[vip])
+			if (CheckBit(g_playerClass[vip], CLASS_HUMAN))
 			{
 				for (new z = 1;z <= g_maxplayers; z++)
 				{
-					if (is_user_alive(z) && g_zombie[z] && !ExecuteHam(Ham_FVisible, vip, z))
+					if (is_user_alive(z) && CheckBit(g_playerClass[z], CLASS_ZOMBIE) && !ExecuteHam(Ham_FVisible, vip, z))
 					{
 						Beam(vip, z, 0, 255, 0)
 					}
@@ -3186,7 +3190,7 @@ public Task_Rays(id)
 			{
 				for (new h = 1; h <= g_maxplayers; h++)
 				{
-					if (is_user_alive(h) && !g_zombie[h] && !ExecuteHam(Ham_FVisible, vip, h))
+					if (is_user_alive(h) && CheckBit(g_playerClass[h], CLASS_HUMAN) && !ExecuteHam(Ham_FVisible, vip, h))
 					{
 						Beam(vip, h, 0, 120, 190)
 					}
@@ -3246,7 +3250,7 @@ public TaskReminder()
 	{
 		if (g_isalive[id] && g_specialclass[id])
 		{
-			client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_cClass[id], AddCommas(pev(id, pev_health)))
+			client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_classString[id], AddCommas(pev(id, pev_health)))
 		}
 		id += 1
 	}
@@ -3331,9 +3335,9 @@ public _GameMenu(id, menu, item)
 			{
 				if (g_isalive[id])
 				{
-					if (!g_zombie[id] && !g_survivor[id] && !g_sniper[id] && !g_samurai[id])
+					if (CheckBit(g_playerClass[id], CLASS_HUMAN))
 						menu_display(id, g_iExtraItemsMenu, 0)
-					else if (g_zombie[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+					else if (CheckBit(g_playerClass[id], CLASS_ZOMBIE))
 						menu_display(id, g_iExtraItems2Menu, 0)
 					else client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
 				}
@@ -3341,7 +3345,7 @@ public _GameMenu(id, menu, item)
 		case 1: menu_display(id, g_iZombieClassMenu, 0)
 		case 2:
 			{
-				if(g_isalive[id] && !g_sniper[id] || !g_samurai[id] || !g_nemesis[id] || !g_assassin[id] || !g_bombardier[id])
+				if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
 					menu_display(id, g_iPointShopMenu, 0)
 				else client_print_color(id, print_team_grey, "%s Points shop is unavailbale right now.", CHAT_PREFIX)
 			}
@@ -3393,7 +3397,7 @@ public _ExtraItems(id, menu, item)
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
 		
-		if (!g_zombie[id] && !g_sniper[id] && !g_survivor[id] && !g_samurai[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+		if (CheckBit(g_playerClass[id], CLASS_HUMAN))
 		{
 			switch (iChoice)
 			{
@@ -3915,7 +3919,7 @@ public _ExtraItems2(id, menu, item)
 		iChoice = str_to_num(cBuffer)
 
 		// Additional check to prevent humans classes from buying items if menu is left open
-		if (g_zombie[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && !g_sniper[id] && !g_survivor[id] && !g_samurai[id])
+		if (CheckBit(g_playerClass[id], CLASS_ZOMBIE))
 		{
 			switch (iChoice)
 			{
@@ -4630,7 +4634,7 @@ public client_disconnected(id)
 	g_killingbomb[id] = 0
 	g_multijump[id] = false
 	g_jumpnum[id] = 0
-	g_tryder[id] = false
+	g_playerClass[id] = 0
 	g_blinks[id] = 0
 }
 
@@ -5217,12 +5221,12 @@ public event_show_status(id)
 		aimid = read_data(2)
 		
 		// Only show friends status ?
-		if (g_zombie[id] == g_zombie[aimid])
+		if (CheckBit(g_playerTeam[id], TEAM_HUMAN) == CheckBit(g_playerTeam[aimid], TEAM_HUMAN))
 		{
 			static red, green, blue 
 			
 			// Format the class name according to the player's team
-			if (g_zombie[id])
+			if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 			{
 				red = 255
 				green = 50
@@ -5231,7 +5235,7 @@ public event_show_status(id)
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Points: %s ]", \
-				g_playername[aimid], g_cClass[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(g_points[aimid]))
+				g_playername[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(g_points[aimid]))
 			}
 			else
 			{
@@ -5242,17 +5246,17 @@ public event_show_status(id)
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Armor: %d | Points: %s ]", \
-				g_playername[aimid], g_cClass[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(g_points[aimid]))
+				g_playername[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(g_points[aimid]))
 			}
 		}
-		else if (!g_zombie[id] && g_zombie[aimid])
+		else if (CheckBit(g_playerTeam[id], TEAM_HUMAN) && CheckBit(g_playerTeam[aimid], TEAM_ZOMBIE))
 		{
 			set_hudmessage(255, 50, 0, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 			ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)))
 		}
-		else if (g_zombie[id] && !g_zombie[aimid])
+		else if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && CheckBit(g_playerTeam[aimid], TEAM_HUMAN))
 		{
-			if(g_sniper[aimid] || g_survivor[aimid] || g_samurai[aimid])
+			if (CheckBit(g_playerClass[aimid], CLASS_SNIPER) || CheckBit(g_playerClass[aimid], CLASS_SURVIVOR) || CheckBit(g_playerClass[aimid], CLASS_SAMURAI))
 			{
 				set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)))
@@ -5344,7 +5348,7 @@ public OnPlayerSpawn(id)
 	// Player spawned
 	g_isalive[id] = true
 	g_specialclass[id] = false
-	g_cClass[id] = "Human"
+	g_classString[id] = "Human"
 	g_jumpnum[id] = 1
 	
 	// Remove previous tasks
@@ -5509,7 +5513,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	}
 	
 	// Stop bleeding/burning/aura when killed
-	if (g_zombie[victim])
+	if (CheckBit(g_playerClass[victim], CLASS_ZOMBIE))
 	{
 		remove_task(victim + TASK_BLOOD)
 		remove_task(victim + TASK_AURA)
@@ -5523,16 +5527,16 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	UTIL_ScreenFade(attacker, {0, 0, 200}, 0.5, 0.5, 75, FFADE_IN, true, false)
 	
 	// Special killed functions
-	if (g_nemesis[attacker]) g_nemesiskills[attacker]++
-	else if (g_assassin[attacker]) g_assasinkills[attacker]++
-	else if (g_bombardier[attacker]) g_bombardierkills[attacker]++
-	else if (g_survivor[attacker]) g_survivorkills[attacker]++
-	else if (g_sniper[attacker] && g_currentweapon[attacker] == CSW_AWP)
+	if (CheckBit(g_playerClass[attacker], CLASS_NEMESIS)) g_nemesiskills[attacker]++
+	else if (CheckBit(g_playerClass[attacker], CLASS_ASSASIN)) g_assasinkills[attacker]++
+	else if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER)) g_bombardierkills[attacker]++
+	else if (CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) g_survivorkills[attacker]++
+	else if (CheckBit(g_playerClass[attacker], CLASS_SNIPER) && g_currentweapon[attacker] == CSW_AWP)
 	{
 		g_sniperkills[attacker]++
 		SendLavaSplash(victim)
 	}
-	else if (g_samurai[attacker])
+	else if (CheckBit(g_playerClass[attacker], CLASS_SAMURAI))
 	{
 		g_samuraikills[attacker]++
 		SendLavaSplash(victim)
@@ -5574,18 +5578,18 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	if (selfkill) return
 	
 	// Killed by Zombie Team, reward packs
-	if (g_zombie[attacker])
+	if (CheckBit(g_playerTeam[attacker], TEAM_ZOMBIE))
 	{
-		if (g_nemesis[attacker]) g_ammopacks[attacker] += 2
-		else if(g_assassin[attacker]) g_ammopacks[attacker] += 1
-		else if(g_bombardier[attacker]) g_ammopacks[attacker] += 1
+		if (CheckBit(g_playerClass[attacker], CLASS_NEMESIS)) g_ammopacks[attacker] += 2
+		else if (CheckBit(g_playerClass[attacker], CLASS_ASSASIN)) g_ammopacks[attacker] += 1
+		else if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER)) g_ammopacks[attacker] += 1
 		else g_ammopacks[attacker] += 5
 	}
 	else
 	{
-		if(g_survivor[attacker]) g_ammopacks[attacker] += 2
-		else if(g_sniper[attacker]) g_ammopacks[attacker] += 3
-		else if(g_samurai[attacker]) g_ammopacks[attacker] += 4
+		if (CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) g_ammopacks[attacker] += 2
+		else if (CheckBit(g_playerClass[attacker], CLASS_SNIPER)) g_ammopacks[attacker] += 3
+		else if (CheckBit(g_playerClass[attacker], CLASS_SAMURAI)) g_ammopacks[attacker] += 4
 		else g_ammopacks[attacker] += 5
 	}
 
@@ -5600,11 +5604,11 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	g_goldendeagle[victim] = false
 	
 	// Human killed zombie, add up the extra frags for kill
-	if (!g_zombie[attacker] && HumanFragsForKill > 1)
+	if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) && HumanFragsForKill > 1)
 	UpdateFrags(attacker, victim, HumanFragsForKill - 1, 0, 0)
 	
 	// Zombie killed human, add up the extra frags for kill
-	if (g_zombie[attacker] && ZombieRewardInfectFrags > 1)
+	if (CheckBit(g_playerClass[attacker], CLASS_ZOMBIE) && ZombieRewardInfectFrags > 1)
 	UpdateFrags(attacker, victim, ZombieRewardInfectFrags - 1, 0, 0)
 
 	// For Leader
@@ -5653,44 +5657,45 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	return HAM_SUPERCEDE
 	
 	// Prevent friendly fire
-	if (g_zombie[attacker] == g_zombie[victim])
+	if (CheckBit(g_playerTeam[attacker], TEAM_ZOMBIE) == CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
 	return HAM_SUPERCEDE
 	
 	// Reward ammo packs to human classes
 	
 	// Attacker is human...
-	if (!g_zombie[attacker])
+	if (CheckBit(g_playerTeam[attacker], TEAM_HUMAN))
 	{
 		// Armor multiplier for the final damage on normal zombies
-		if (!g_nemesis[victim] && !g_assassin[victim] && !g_bombardier[victim] && !g_sniper[attacker] && !g_samurai[attacker] && !g_survivor[attacker])		// Abhinash
+		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN))		// Abhinash
 		{
 			damage *= ZombieArmor
 			SetHamParamFloat(4, damage)
 		}
 
 		// Set Sniper's damage
-		if ((g_sniper[attacker] && g_currentweapon[attacker] == CSW_AWP) && (damage_type & DMG_BULLET))
+		if ((CheckBit(g_playerClass[attacker], CLASS_SNIPER) && g_currentweapon[attacker] == CSW_AWP) && (damage_type & DMG_BULLET))
 		SetHamParamFloat(4, SniperDamage)
 		
 		// Set samurai's damage	
-		if ((g_samurai[attacker] && g_currentweapon[attacker] == CSW_KNIFE) && (damage_type & DMG_BULLET))
+		if ((CheckBit(g_playerClass[attacker], CLASS_SAMURAI) && g_currentweapon[attacker] == CSW_KNIFE) && (damage_type & DMG_BULLET))
 		SetHamParamFloat(4, SamuraiDamage)
 
 		// Crossbow damage
-		if(g_currentweapon[attacker] == CSW_SG550 && g_has_crossbow[attacker])
+		if (g_currentweapon[attacker] == CSW_SG550 && g_has_crossbow[attacker])
 		{
 			damage *= CROSSBOW_DAMAGE
 			SetHamParamFloat(4, CROSSBOW_DAMAGE)
 		}
 
 		// Double damage
-		if (!g_bVip[attacker] && g_doubledamage[attacker] && !g_sniper[attacker] && (damage_type & DMG_BULLET))
+		if (!g_bVip[attacker] && g_doubledamage[attacker] && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) && (damage_type & DMG_BULLET))
 		{
 			damage *= 2.0
 			SetHamParamFloat(4, damage)
 		}
 
-		if (VipHasFlag(attacker, 'g') && (!g_zombie[attacker] && !g_sniper[attacker] && !g_samurai[attacker]) && (damage_type & DMG_BULLET))
+		// Vip Human Damage
+		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) && VipHasFlag(attacker, 'g') && (damage_type & DMG_BULLET))
 		{
 			damage *= 1.5
 			SetHamParamFloat(4, damage)
@@ -5704,7 +5709,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		
 		g_damagedealt_human[attacker] += floatround(damage)
 		
-		if(!g_sniper[attacker] && !g_samurai[attacker])
+		if(CheckBit(g_playerClass[attacker], CLASS_HUMAN))
 		{
 			while (g_damagedealt_human[attacker] > 500)
 			{
@@ -5734,7 +5739,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 				// Send Screenshake message
 				SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
 			}
-			else if (!(g_sniper[attacker] || g_samurai[attacker]) && (damage_type & DMG_BULLET))
+			else if ((CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) && (damage_type & DMG_BULLET))
 			{
 				set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
 				show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))	
@@ -5747,21 +5752,21 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	else
 	{
 		// Nemesis?
-		if (g_nemesis[attacker])
+		if (CheckBit(g_playerClass[attacker], CLASS_NEMESIS))
 		{
 			// Ignore nemesis damage override if damage comes from a 3rd party entity
 			// (to prevent this from affecting a sub-plugin's rockets e.g.)
 			if (inflictor == attacker) SetHamParamFloat(4, NemesisDamage)
 			return HAM_IGNORED
 		}
-		else if (g_assassin[attacker])
+		else if (CheckBit(g_playerClass[attacker], CLASS_ASSASIN))
 		{
 			// Ignore assassin damage override if damage comes from a 3rd party entity
 			// (to prevent this from affecting a sub-plugin's rockets e.g.)
 			if (inflictor == attacker) SetHamParamFloat(4, AssassinDamage)
 			return HAM_IGNORED
 		}
-		else if (g_bombardier[attacker])
+		else if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER))
 		{
 			// Ignore assassin damage override if damage comes from a 3rd party entity
 			// (to prevent this from affecting a sub-plugin's rockets e.g.)
@@ -5779,7 +5784,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	return HAM_IGNORED // human is killed
 	
 	// Does human armor need to be reduced before infecting?
-	if (HumanArmorProtect && !(g_survivor[victim] || g_sniper[victim] || g_samurai[victim]))
+	if (HumanArmorProtect && CheckBit(g_playerClass[victim], CLASS_HUMAN))
 	{		
 		// Get victim armor
 		static Float:armor
@@ -5827,11 +5832,11 @@ public OnTakeDamagePost(victim)
 	// --- Check if victim should be Pain Shock Free ---
 	
 	// Check if proper CVARs are enabled
-	if (g_zombie[victim])
+	if (CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
 	{
-		if (g_nemesis[victim]) if (!NemesisPainfree) return
-		else if (g_assassin[victim]) if (!AssassinPainfree) return
-		else if (g_bombardier[victim]) if (!BombardierPainfree) return
+		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS)) if (!NemesisPainfree) return
+		else if (CheckBit(g_playerClass[victim], CLASS_ASSASIN)) if (!AssassinPainfree) return
+		else if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) if (!BombardierPainfree) return
 		else
 		switch (ZombiePainfree)
 		{
@@ -5842,9 +5847,9 @@ public OnTakeDamagePost(victim)
 	}
 	else
 	{
-		if (g_survivor[victim]) if (!SurvivorPainfree) return
-		else if (g_sniper[victim]) if (!SniperPainfree) return
-		else if (g_samurai[victim]) if (!SamuraiPainfree) return
+		if (CheckBit(g_playerClass[victim], CLASS_SURVIVOR)) if (!SurvivorPainfree) return
+		else if (CheckBit(g_playerClass[victim], CLASS_SNIPER)) if (!SniperPainfree) return
+		else if (CheckBit(g_playerClass[victim], CLASS_SAMURAI)) if (!SamuraiPainfree) return
 		else return
 	}
 	
@@ -5872,15 +5877,15 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	return HAM_SUPERCEDE
 	
 	// Prevent friendly fire
-	if (g_zombie[attacker] == g_zombie[victim])
+	if (CheckBit(g_playerTeam[attacker], TEAM_ZOMBIE) == CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
 	return HAM_SUPERCEDE
 	
 	// Victim isn't a zombie or not bullet damage, nothing else to do here
-	if (!g_zombie[victim] || !(damage_type & DMG_BULLET))
+	if (CheckBit(g_playerTeam[victim], TEAM_HUMAN) || !(damage_type & DMG_BULLET))
 	return HAM_IGNORED
 	
 	// Knockback disabled, nothing else to do here
-	if (KnockbackEnabled == 0)
+	if (!KnockbackEnabled)
 	return HAM_IGNORED
 	
 	// Get whether the victim is in a crouch state
@@ -5912,11 +5917,11 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	xs_vec_mul_scalar(direction, KnockbackDucking, direction)
 	
 	// Apply zombie class/nemesis knockback multiplier
-	if (g_nemesis[victim])
+	if (CheckBit(g_playerClass[victim], CLASS_NEMESIS))
 	xs_vec_mul_scalar(direction, KnockbackNemesis, direction)
-	else if (g_assassin[victim])
+	else if (CheckBit(g_playerClass[victim], CLASS_ASSASIN))
 	xs_vec_mul_scalar(direction, KnockbackAssassin, direction)
-	else if (g_bombardier[victim])
+	else if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER))
 	xs_vec_mul_scalar(direction, KnockbackBombardier, direction)
 	else
 	xs_vec_mul_scalar(direction, g_cZombieClasses[g_zombieclass[victim]][Knockback], direction) 
@@ -5977,19 +5982,19 @@ public OnPlayerDuck(id)
 {
 	// Check if proper CVARs are enabled and retrieve leap settings
 	static Float:cooldown, Float:current_time
-	if (g_zombie[id])
+	if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 	{
-		if (g_nemesis[id])
+		if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 		{
 			if (!g_cached_leapnemesis) return
 			cooldown = g_cached_leapnemesiscooldown
 		}
-		else if (g_assassin[id])
+		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 		{
 			if (!g_cached_leapassassin) return
 			cooldown = g_cached_leapassassincooldown
 		}
-		else if (g_bombardier[id])
+		else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 		{
 			if (!g_cached_leapbombardier) return
 			cooldown = g_cached_leapbombardiercooldown
@@ -5998,17 +6003,17 @@ public OnPlayerDuck(id)
 	}
 	else
 	{
-		if (g_survivor[id])
+		if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 		{
 			if (!g_cached_leapsurvivor) return
 			cooldown = g_cached_leapsurvivorcooldown
 		}
-		else if (g_sniper[id])
+		else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 		{
 			if (!g_cached_leapsniper) return
 			cooldown = g_cached_leapsnipercooldown
 		}
-		else if (g_samurai[id])
+		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 		{
 			if (!g_cached_leapzadoc) return
 			cooldown = g_cached_leapzadoccooldown
@@ -6033,21 +6038,21 @@ public OnPlayerDuck(id)
 	static Float:velocity[3]
 	
 	// Make velocity vector
-	velocity_by_aim(id, g_survivor[id] ? LeapSurvivorForce
-	: g_sniper[id] ? LeapSniperForce
-	: g_samurai[id] ? LeapSamuraiForce		// Abhinash
-	: g_nemesis[id] ? LeapNemesisForce
-	: g_assassin[id] ? LeapAssassinForce
-	: g_bombardier[id] ? LeapBombardierForce		// Abhinash
+	velocity_by_aim(id, CheckBit(g_playerClass[id], CLASS_SURVIVOR) ? LeapSurvivorForce
+	: CheckBit(g_playerClass[id], CLASS_SNIPER) ? LeapSniperForce
+	: CheckBit(g_playerClass[id], CLASS_SAMURAI) ? LeapSamuraiForce		// Abhinash
+	: CheckBit(g_playerClass[id], CLASS_NEMESIS) ? LeapNemesisForce
+	: CheckBit(g_playerClass[id], CLASS_ASSASIN) ? LeapAssassinForce
+	: CheckBit(g_playerClass[id], CLASS_BOMBARDIER) ? LeapBombardierForce		// Abhinash
 	: LeapZombiesForce, velocity)
 	
 	// Set custom height
-	velocity[2] = g_survivor[id] ? LeapSurvivorHeight
-	: g_sniper[id] ? LeapSniperHeight
-	: g_samurai[id] ? LeapSamuraiHeight		// Abhinash
-	: g_nemesis[id] ? LeapNemesisHeight
-	: g_assassin[id] ? LeapAssassinHeight
-	: g_bombardier[id] ? LeapBombardierHeight
+	velocity[2] = CheckBit(g_playerClass[id], CLASS_SURVIVOR) ? LeapSurvivorHeight
+	: CheckBit(g_playerClass[id], CLASS_SNIPER) ? LeapSniperHeight
+	: CheckBit(g_playerClass[id], CLASS_SAMURAI) ? LeapSamuraiHeight		// Abhinash
+	: CheckBit(g_playerClass[id], CLASS_NEMESIS) ? LeapNemesisHeight
+	: CheckBit(g_playerClass[id], CLASS_ASSASIN) ? LeapAssassinHeight
+	: CheckBit(g_playerClass[id], CLASS_BOMBARDIER) ? LeapBombardierHeight
 	: LeapZombiesHeight
 	
 	// Apply the new velocity
@@ -6061,7 +6066,7 @@ public event_CurWeapon(id)
 {
 	if (is_user_connected(id))
 	{
-		if (g_sniper[id])
+		if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 		{
 			new clip, ammo
 			new wpnid = get_user_weapon(id, clip, ammo)
@@ -6110,7 +6115,7 @@ public OnResetMaxSpeedPost(id)
 public OnUseStationary(entity, caller, activator, use_type)
 {
 	// Prevent zombies from using stationary guns
-	if (use_type == USE_USING && is_user_valid_connected(caller) && g_zombie[caller])
+	if (use_type == USE_USING && is_user_valid_connected(caller) && CheckBit(g_playerTeam[caller], TEAM_ZOMBIE))
 	return HAM_SUPERCEDE
 	
 	return HAM_IGNORED
@@ -6132,7 +6137,7 @@ public OnTouchWeapon(weapon, id)
 	return HAM_IGNORED
 	
 	// Dont pickup weapons if zombie or survivor (+PODBot MM fix)
-	if (g_zombie[id] || g_isbot[id] || ((g_survivor[id] || g_sniper[id] || g_samurai[id] /* Abhinash */) && (g_isbot[id] || g_isalive[id])))
+	if (g_isalive[id])
 	return HAM_SUPERCEDE
 	
 	return HAM_IGNORED
@@ -6179,7 +6184,7 @@ public OnWeaponDeploy(weapon_ent)
 	replace_weapon_models(id, weaponid)
 	
 	// Zombie not holding an allowed weapon for some reason
-	if (g_zombie[id] && !((1<<weaponid) & ZOMBIE_ALLOWED_WEAPONS_BITSUM))
+	if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && !((1<<weaponid) & ZOMBIE_ALLOWED_WEAPONS_BITSUM))
 	{
 		// Switch to knife
 		g_currentweapon[id] = CSW_KNIFE
@@ -6314,14 +6319,14 @@ public FwEmitSound(id, channel, const sample[], Float:volume, Float:attn, flags,
 	return FMRES_SUPERCEDE
 	
 	// Replace these next sounds for zombies only
-	if (!is_user_valid_connected(id) || !g_zombie[id])
+	if (!is_user_valid_connected(id) || CheckBit(g_playerTeam[id], TEAM_HUMAN))
 	return FMRES_IGNORED
 	
 	// Zombie being hit
 	if (sample[7] == 'b' && sample[8] == 'h' && sample[9] == 'i' && sample[10] == 't')
 	{
-		if (g_nemesis[id]) emit_sound(id, channel, nemesis_pain[random(sizeof nemesis_pain)], volume, attn, flags, pitch)
-		else if (g_assassin[id]) emit_sound(id, channel, assassin_pain[random(sizeof assassin_pain)], volume, attn, flags, pitch)
+		if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) emit_sound(id, channel, nemesis_pain[random(sizeof nemesis_pain)], volume, attn, flags, pitch)
+		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) emit_sound(id, channel, assassin_pain[random(sizeof assassin_pain)], volume, attn, flags, pitch)
 		else emit_sound(id, channel, zombie_pain[random(sizeof zombie_pain)], volume, attn, flags, pitch)
 		return FMRES_SUPERCEDE
 	}
@@ -6438,9 +6443,9 @@ public FwSetModel(entity, const model[])
 	{
 		case 'h':
 		{
-			if (g_zombie[id])
+			if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 			{
-				if (g_bombardier[id]) GrenadeEffect(entity, 128, 0, 255, NADE_TYPE_KILLING)
+				if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) GrenadeEffect(entity, 128, 0, 255, NADE_TYPE_KILLING)
 				else GrenadeEffect(entity, 0, 255, 0, NADE_TYPE_INFECTION)
 			}
 			else
@@ -6464,7 +6469,7 @@ public FwSetModel(entity, const model[])
 		}
 		case 'f':
 		{
-			if (g_zombie[id])
+			if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 			{
 				if (g_concussionbomb[id])
 				{
@@ -6590,7 +6595,7 @@ public Rocket_Touch(attacker, iRocket)
 	{
 		for(new victim = 0; victim < g_maxplayers; victim++)
 		{
-			if(g_isalive[victim] && g_zombie[victim] && !g_nodamage[victim])
+			if(g_isalive[victim] && CheckBit(g_playerTeam[victim], TEAM_ZOMBIE) && !g_nodamage[victim])
 			{
 				static Float: fDistance, Float: fDamage
 				fDistance = entity_range(victim, iRocket) * 1.5
@@ -6599,7 +6604,7 @@ public Rocket_Touch(attacker, iRocket)
 				{
 					fDamage = 1250.0 - fDistance
 					
-					if(g_nemesis[victim] && g_assassin[victim] && g_bombardier[victim])
+					if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) || CheckBit(g_playerClass[victim], CLASS_BOMBARDIER))
 					fDamage *= 1.50
 				
 					// Throw him away in his current vector
@@ -6628,7 +6633,7 @@ public OnKnifeBlinkAttack(entity)
 {
 	static owner
 	owner = pev(entity, pev_owner);
-	if (g_zombie[owner] && g_blinks[owner])
+	if (CheckBit(g_playerClass[owner], CLASS_ZOMBIE) && g_blinks[owner])
 	{
 		if (get_target_and_attack(owner))
 		{
@@ -6891,29 +6896,25 @@ public FwCmdStart(id, handle)
 
 	// Get button for Zombie Abilities
     new button = pev(id, pev_button)
-	
-	// Frozen zombie skill
-	//if(g_frozen[id] && !g_zombie[id] && (button & IN_ATTACK || button & IN_ATTACK2))
-	//set_uc(handle, UC_Buttons, (button & ~IN_ATTACK) & ~IN_ATTACK2)
 
-	if(g_zombie[id] && (button & IN_USE) && g_zombieclass[id] == 1 && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && (button & IN_USE) && g_zombieclass[id] == 1)
 	OnRaptorSkill(id)
 	
-	if(g_zombie[id] && (button & IN_USE) && g_zombieclass[id] == 3 && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && (button & IN_USE) && g_zombieclass[id] == 3)
 	OnFrozenSkill(id)
 
 	// Predator zombie skill
-	if(g_zombie[id] && (button & IN_USE) && g_zombieclass[id] == 5 && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && (button & IN_USE) && g_zombieclass[id] == 5)
 	OnPredatorSkill(id)
 
 	// Hunter zombie skill
-	if(g_zombie[id] && (button & IN_USE) && g_zombieclass[id] == 6 && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && (button & IN_USE) && g_zombieclass[id] == 6)
 	OnHunterSkill(id)
 	
 	// This logic looks kinda weird, but it should work in theory...
 	// p = g_zombie[id], q = g_survivor[id], r = g_cached_customflash
 	// ¬(p v q v (¬p ^ r)) <==> ¬p ^ ¬q ^ (p v ¬r)
-	if (!g_zombie[id] && !g_survivor[id] && !g_sniper[id] && !g_samurai[id] && (g_zombie[id] || !g_cached_customflash))		// Abhinash
+	if (CheckBit(g_playerClass[id], CLASS_HUMAN) && (CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || !g_cached_customflash))		// Abhinash
 	return
 	
 	// Check if it's a flashlight impulse
@@ -6924,7 +6925,7 @@ public FwCmdStart(id, handle)
 	set_uc(handle, UC_Impulse, 0)
 	
 	// Should human's custom flashlight be turned on?
-	if (!g_zombie[id] && !g_survivor[id] && !g_sniper[id] && g_flashbattery[id] > 2 && get_gametime() - g_lastflashtime[id] > 1.2)
+	if (CheckBit(g_playerClass[id], CLASS_HUMAN) && g_flashbattery[id] > 2 && get_gametime() - g_lastflashtime[id] > 1.2)
 	{
 		// Prevent calling flashlight too quickly (bugfix)
 		g_lastflashtime[id] = get_gametime()
@@ -6946,7 +6947,7 @@ public FwCmdStart(id, handle)
 		remove_task(id + TASK_FLASH)
 		
 		// Set the flashlight charge task
-		set_task(1.0, "ChargeFlashLight", id+TASK_CHARGE, _, _, "b")
+		set_task(1.0, "ChargeFlashLight", id + TASK_CHARGE, _, _, "b")
 		
 		// Call our custom flashlight task if enabled
 		if (g_flashlight[id]) 
@@ -6964,10 +6965,9 @@ public FwCmdStart(id, handle)
 
 public OnRaptorSkill(id)
 {
-	if(!g_isalive[id] || !g_zombie[id] || g_zombieclass[id] != 1 || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-	return PLUGIN_HANDLED
+	if (!g_isalive[id]) return PLUGIN_HANDLED
 	
-	if(get_gametime() - g_lastability[id] < float(frost_cooldown))
+	if (get_gametime() - g_lastability[id] < float(frost_cooldown))
 	{
 		return PLUGIN_HANDLED
 	}
@@ -7031,8 +7031,7 @@ public OnResetRaptorSpeed(id)
 
 public OnFrozenSkill(id)
 {
-	if(!g_isalive[id] || !g_zombie[id] || g_zombieclass[id] != 3 || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-	return PLUGIN_HANDLED
+	if (!g_isalive[id]) return PLUGIN_HANDLED
 	
 	if(get_gametime() - g_lastability[id] < float(frost_cooldown))
 	{
@@ -7047,7 +7046,7 @@ public OnFrozenSkill(id)
 	new target, body
 	get_user_aiming(id, target, body, frost_distance)
 	
-	if(g_isalive[target] && !g_zombie[target] && !g_sniper[target] && !g_survivor[target] && !g_samurai[target])
+	if (g_isalive[target] && CheckBit(g_playerClass[target], CLASS_HUMAN))
 	{
 		// Line effect
 		SendSkillEffect(id, aimorigin, 0, 50, 90)
@@ -7079,7 +7078,6 @@ public unfrozen_user(id)
 	g_frozen[id] = false
 }
 
-
 public OnSkillsCooldownHUD(id)
 {
 	if(g_isalive[id])
@@ -7095,10 +7093,9 @@ public OnSkillsCooldownHUD(id)
 
 public OnHunterSkill(id)
 {
-	if(!g_isalive[id] || !g_zombie[id] || g_zombieclass[id] != 6 || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-		return PLUGIN_HANDLED
+	if (!g_isalive[id]) return PLUGIN_HANDLED
 	
-	if(get_gametime() - g_lastability[id] < float(hunter_cooldown))
+	if (get_gametime() - g_lastability[id] < float(hunter_cooldown))
 		return PLUGIN_HANDLED
 	
 	g_lastability[id] = get_gametime()
@@ -7109,7 +7106,7 @@ public OnHunterSkill(id)
 	new target, body
 	get_user_aiming(id, target, body, hunter_distance)
 	
-	if(g_isalive[target] && !g_zombie[target] && !g_sniper[target] && !g_survivor[target] && !g_samurai[target])
+	if (g_isalive[target] && CheckBit(g_playerClass[target], CLASS_HUMAN))
 	{
 		// Drop target's weapon
 		drop_weapons(target, 1)
@@ -7125,8 +7122,7 @@ public OnHunterSkill(id)
 
 public OnPredatorSkill(id)
 {
-	if (!g_isalive[id] || !g_zombie[id] || g_zombieclass[id] != 5 || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
-		return PLUGIN_HANDLED
+	if (!g_isalive[id]) return PLUGIN_HANDLED
 	
 	if (get_gametime() - g_lastability[id] < float(predator_cooldown))
 		return PLUGIN_HANDLED
@@ -7165,15 +7161,15 @@ public FwPlayerPreThink(id)
 		set_pev(id, pev_velocity, vel)
 	}
 	
-	// Enable custom buyzone for player during buytime, unless zombie or survivor or time expired		// Abhinash
-	if (!g_zombie[id] && !g_survivor[id] && !g_sniper[id] && !g_samurai[id] && (get_gametime() < g_buytime[id]))
+	// Enable custom buyzone for player during buytime, unless zombie or survivor or time expired
+	if (CheckBit(g_playerClass[id], CLASS_HUMAN) && (get_gametime() < g_buytime[id]))
 	{
 		if (pev_valid(g_buyzone_ent))
 		dllfunc(DLLFunc_Touch, g_buyzone_ent, id)
 	}
 	
 	// Silent footsteps for zombies?
-	if (g_cached_zombiesilent && g_zombie[id] && !g_nemesis[id] && g_assassin[id] && !g_bombardier[id])
+	if (g_cached_zombiesilent && CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 	set_pev(id, pev_flTimeStepSound, STEPTIME_SILENT)
 	
 	// Player frozen?
@@ -7192,9 +7188,9 @@ public FwTouch(ent, toucher)
 	static entclass[32]
 	pev(ent, pev_model, entclass, 31)
 	
-	if(!(strcmp(entclass, BubbleGrenadeModel)))
+	if (!(strcmp(entclass, BubbleGrenadeModel)))
 	{	
-		if(is_user_alive(toucher) && g_zombie[toucher])
+		if (is_user_alive(toucher) && CheckBit(g_playerTeam[toucher], TEAM_ZOMBIE))
 		{
 			static Float:pos_ptr[3], Float:pos_ptd[3]
 			
@@ -7243,7 +7239,7 @@ public clcmd_drop(id)
 		user_drop_jetpack(id, 0)
 
 	// Survivor should stick with its weapon
-	if (g_survivor[id] || g_sniper[id])
+	if (CheckBit(g_playerClass[id], CLASS_SURVIVOR) || CheckBit(g_playerClass[id], CLASS_SNIPER))
 		return PLUGIN_HANDLED
 
 	return PLUGIN_CONTINUE
@@ -7365,7 +7361,7 @@ public Client_Say(id)
 	}
 	else if (equali(cMessage, "/spec", 5) || equali(cMessage, "spec", 4) || equali(cMessage, "/spectate", 9) || equali(cMessage, "spectate", 8))
 	{
-		if (!g_zombie[id] && !g_sniper[id] && !g_survivor[id] && !g_samurai[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+		if (CheckBit(g_playerClass[id], CLASS_HUMAN))
 		{
 			if(cs_get_user_team(id) != CS_TEAM_SPECTATOR)
 			{
@@ -7446,6 +7442,18 @@ public Client_Say(id)
 		else if (CheckBit(g_currentmode, MODE_SAMURAI)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Samurai")
 
 		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
+	}
+	else if (equali(cMessage, "class", 5))
+	{
+		if (CheckBit(g_playerClass[id], CLASS_HUMAN)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Human")
+		else if (CheckBit(g_playerClass[id], CLASS_ZOMBIE)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Zombie")
+		else if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Nemesis")
+		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Assasin")
+		else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Bombardier")
+		else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Survivor")
+		else if (CheckBit(g_playerClass[id], CLASS_SNIPER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Sniper")
+		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Samurai")
+		else if (CheckBit(g_playerClass[id], CLASS_TRYDER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Tryder")
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
@@ -7540,7 +7548,7 @@ public Client_SayTeam(id)
 	}
 	else if (equali(cMessage, "/spec", 5) || equali(cMessage, "spec", 4) || equali(cMessage, "/spectate", 9) || equali(cMessage, "spectate", 8))
 	{
-		if (!g_zombie[id] && !g_sniper[id] && !g_survivor[id] && !g_samurai[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id])
+		if (CheckBit(g_playerClass[id], CLASS_HUMAN))
 		{
 			if(cs_get_user_team(id) != CS_TEAM_SPECTATOR)
 			{
@@ -7654,16 +7662,15 @@ public show_menu_buy1(taskid)
 	else id = taskid
 	
 	// Zombies, Survivors and Snipers get no guns.
-	if (!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id]) return
+	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
+		menu_display(id, g_PrimaryMenu)
 	
 	// Bots get weapons randomly.
 	if (g_isbot[id])
 	{
 		set_weapon(id, CSW_KNIFE)
-		//set_weapon(id, CSW_DEAGLE)
+		set_weapon(id, CSW_DEAGLE)
 	}
-	
-	menu_display(id, g_PrimaryMenu)
 }
 
 // Admin Menu
@@ -7876,63 +7883,63 @@ show_menu_player_list(id)
 		{
 		case ACTION_ZOMBIEFY_HUMANIZE: // Zombiefy/Humanize command
 			{
-				if (g_zombie[player])
+				if (CheckBit(g_playerTeam[player], TEAM_ZOMBIE))
 				{
 					if (allowed_human(player) && AdminHasFlag(id, 'a'))
-						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 					else
-						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 				}
 				else
 				{
 					if (allowed_zombie(player) && AdminHasFlag(id, 'a'))
-						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 					else
-						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 				}
 			}
 		case ACTION_MAKE_NEMESIS: // Nemesis command
 			{
 				if (allowed_nemesis(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 			}
 		case ACTION_MAKE_ASSASIN: // Assassin command
 			{
 				if (allowed_assassin(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 			}
 		case ACTION_MAKE_BOMBARDIER: // Assassin command
 			{
 				if (allowed_bombardier(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 			}
 		case ACTION_MAKE_SURVIVOR: // Survivor command
 			{
 				if (allowed_survivor(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 			}
 		case ACTION_MAKE_SNIPER: // Sniper command
 			{
 				if (allowed_sniper(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 			}			
 			// Abhinash
 		case ACTION_MAKE_SAMURAI: // Samurai command
 			{
 				if (allowed_samurai(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
 				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_cClass[player])
+					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
 			}			
 		case ACTION_RESPAWN_PLAYER: // Respawn command
 			{
@@ -7969,23 +7976,23 @@ public SecondaryHandler(id, menu, item)
 	if (item == MENU_EXIT) return PLUGIN_HANDLED
 	
 	// Zombies, Survivors and Snipers get no guns.
-	if(!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
-		return PLUGIN_HANDLED
-	
-	// Drop Previous Weapons
-	drop_weapons(id, 2)
-	g_canbuy[id] = false
-	
-	// Set weapon and ammo
-	//fm_give_item(id, g_SecondaryWeapons[item][weaponID])
-	//cs_set_user_bpammo(id, g_SecondaryWeapons[item][weaponCSW], 99999)
-	set_weapon(id, g_SecondaryWeapons[item][weaponCSW], 10000)
+	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
+	{
+		// Drop Previous Weapons
+		drop_weapons(id, 2)
+		g_canbuy[id] = false
+		
+		// Set weapon and ammo
+		//fm_give_item(id, g_SecondaryWeapons[item][weaponID])
+		//cs_set_user_bpammo(id, g_SecondaryWeapons[item][weaponCSW], 99999)
+		set_weapon(id, g_SecondaryWeapons[item][weaponCSW], 10000)
 
-	// Set grenades
-	set_weapon(id, CSW_HEGRENADE, 1)
-	set_weapon(id, CSW_FLASHBANG, 1)
-	set_weapon(id, CSW_SMOKEGRENADE, 1)
-	
+		// Set grenades
+		set_weapon(id, CSW_HEGRENADE, 1)
+		set_weapon(id, CSW_FLASHBANG, 1)
+		set_weapon(id, CSW_SMOKEGRENADE, 1)
+	}
+
 	return PLUGIN_HANDLED
 }
 
@@ -7995,15 +8002,15 @@ public PrimaryHandler(id, menu, item)
 	if (item == MENU_EXIT) return PLUGIN_HANDLED
 	
 	// Zombies, Survivors and Snipers get no guns.
-	if(!g_isalive[id] || g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
-		return PLUGIN_HANDLED
-	
-	// Drop previous weapons
-	drop_weapons(id, 1)
-	
-	set_weapon(id, g_PrimaryWeapons[item][weaponCSW], 10000)
+	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
+	{
+		// Drop previous weapons
+		drop_weapons(id, 1)
+		
+		set_weapon(id, g_PrimaryWeapons[item][weaponCSW], 10000)
 
-	menu_display(id, g_SecondaryMenu)
+		menu_display(id, g_SecondaryMenu)
+	}
 	
 	return PLUGIN_HANDLED
 }
@@ -8365,7 +8372,7 @@ public menu_player_list(id, menuid, item)
 		{
 		case ACTION_ZOMBIEFY_HUMANIZE: // Zombiefy/Humanize command
 			{
-				if (g_zombie[target])
+				if (CheckBit(g_playerTeam[target], TEAM_ZOMBIE))
 				{
 					if (AdminHasFlag(id, 'a'))
 					{
@@ -8603,9 +8610,9 @@ public menu_player_list(id, menuid, item)
 public menu_cs_buy(id, key)
 {
 	// Prevent buying if zombie/survivor (bugfix)
-	if (g_zombie[id] || g_survivor[id] || g_sniper[id] || g_samurai[id])
-		return PLUGIN_HANDLED
-	
+	if (CheckBit(g_playerClass[id], CLASS_HUMAN))	
+	return PLUGIN_CONTINUE
+
 	return PLUGIN_CONTINUE
 }
 
@@ -8964,32 +8971,32 @@ public cmd_unfreeze(id)
 				ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
 				
 				// Nemesis or Survivor glow / remove glow
-				if (g_nemesis[target])
+				if (CheckBit(g_playerClass[target], CLASS_NEMESIS))
 				{
 					if (NemesisGlow) set_glow(target, 250, 0, 0, 25)
 					else remove_glow(target)
 				}
-				else if (g_assassin[target])
+				else if (CheckBit(g_playerClass[target], CLASS_ASSASIN))
 				{
 					if (AssassinGlow) set_glow(target, 255, 255, 0, 25)
 					else remove_glow(target)
 				}
-				else if (g_survivor[target])
+				else if (CheckBit(g_playerClass[target], CLASS_SURVIVOR))
 				{
 					if (SurvivorGlow) set_glow(target, 0, 0, 255, 25)
 					else remove_glow(target)
 				}
-				else if (g_sniper[target])
+				else if (CheckBit(g_playerClass[target], CLASS_SNIPER))
 				{ 
 					if (SniperGlow) set_glow(target, 0, 255, 0, 25)
 					else remove_glow(target)
 				}
-				else if (g_samurai[target])
+				else if (CheckBit(g_playerClass[target], CLASS_SAMURAI))
 				{
 					if (SamuraiGlow) set_glow(target, 50, 100, 150, 25)
 					else remove_glow(target)
 				}
-				else if (g_bombardier[target])
+				else if (CheckBit(g_playerClass[target], CLASS_BOMBARDIER))
 				{
 					if (BombardierGlow) set_glow(target, 50, 100, 150, 25)
 					else remove_glow(target)
@@ -10439,7 +10446,7 @@ public cmd_resetpoints(id)
 public message_cur_weapon(msg_id, msg_dest, msg_entity)
 {
 	// Not alive or zombie
-	if (!g_isalive[msg_entity] || g_zombie[msg_entity])
+	if (!g_isalive[msg_entity] || CheckBit(g_playerTeam[msg_entity], TEAM_ZOMBIE))
 		return
 	
 	// Not an active weapon
@@ -10507,7 +10514,7 @@ public message_screenfade(msg_id, msg_dest, msg_entity)
 		return PLUGIN_CONTINUE
 	
 	// Nemesis shouldn't be FBed
-	if (g_zombie[msg_entity] && !g_nemesis[msg_entity] && !g_assassin[msg_entity] && !g_bombardier[msg_entity])
+	if (CheckBit(g_playerClass[msg_entity], CLASS_ZOMBIE))
 	{
 		// Set flash color to nighvision's
 		set_msg_arg_int(4, get_msg_argtype(4), NColorHuman_R)
@@ -10787,7 +10794,7 @@ start_mode(mode, id)
 			if (!g_isalive[id]) continue
 			
 			// Survivor or already a zombie
-			if (g_survivor[id] || g_zombie[id])
+			if (CheckBit(g_playerClass[id], CLASS_SURVIVOR) || CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 				continue
 			
 			// Turn into a zombie
@@ -10839,7 +10846,7 @@ start_mode(mode, id)
 			if (!g_isalive[id]) continue
 			
 			// Sniper or already a zombie
-			if (g_sniper[id] || g_zombie[id])
+			if (CheckBit(g_playerClass[id], CLASS_SNIPER) || CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 				continue
 			
 			// Turn into a zombie
@@ -10892,7 +10899,7 @@ start_mode(mode, id)
 			if (!g_isalive[id]) continue
 			
 			// Samurai or already a zombie
-			if (g_samurai[id] || g_zombie[id])
+			if (CheckBit(g_playerClass[id], CLASS_SAMURAI) || CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 				continue
 			
 			// Turn into a zombie
@@ -10989,7 +10996,7 @@ start_mode(mode, id)
 			if (++id > g_maxplayers) id = 1
 			
 			// Dead or already a zombie
-			if (!g_isalive[id] || g_zombie[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 				continue
 			
 			// Random chance
@@ -11008,7 +11015,7 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Only those of them who aren't zombies
-			if (!g_isalive[id] || g_zombie[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 				continue
 			
 			// Switch to CT
@@ -11054,7 +11061,7 @@ start_mode(mode, id)
 			id = fnGetRandomAlive(random_num(1, iPlayersnum))
 			
 			// Already a survivor?
-			if (g_survivor[id]) continue
+			if (CheckBit(g_playerClass[id], CLASS_SURVIVOR)) continue
 			
 			// If not, turn him into one
 			MakeHuman(id, CLASS_SURVIVOR)
@@ -11075,7 +11082,7 @@ start_mode(mode, id)
 			id = fnGetRandomAlive(random_num(1, iPlayersnum))
 			
 			// Already a survivor or nemesis?
-			if (g_survivor[id] || g_nemesis[id])
+			if (CheckBit(g_playerClass[id], CLASS_SURVIVOR) || CheckBit(g_playerClass[id], CLASS_NEMESIS))
 			continue
 			
 			// If not, turn him into one
@@ -11097,7 +11104,7 @@ start_mode(mode, id)
 			if (++id > g_maxplayers) id = 1
 			
 			// Dead or already a zombie or survivor
-			if (!g_isalive[id] || g_zombie[id] || g_survivor[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 				continue
 			
 			// Random chance
@@ -11113,13 +11120,13 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Only those of them who arent zombies or survivor
-			if (!g_isalive[id] || g_zombie[id] || g_survivor[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 				continue
 			
 			// Switch to CT
 			if (fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
 			{
-				remove_task(id+TASK_TEAM)
+				remove_task(id + TASK_TEAM)
 				fm_cs_set_user_team(id, FM_CS_TEAM_CT)
 				fm_user_team_update(id)
 			}
@@ -11158,7 +11165,7 @@ start_mode(mode, id)
 			if (++id > g_maxplayers) id = 1
 			
 			// Dead or already a zombie or survivor
-			if (!g_isalive[id] || g_zombie[id] || g_survivor[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 				continue
 			
 			// Random chance
@@ -11175,7 +11182,7 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Only those of them who arent zombies or survivor
-			if (!g_isalive[id] || g_zombie[id]|| g_survivor[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 				continue
 			
 			// Turn into a Survivor
@@ -11216,7 +11223,7 @@ start_mode(mode, id)
 			if (++id > g_maxplayers) id = 1
 			
 			// Dead or already a zombie or sniper
-			if (!g_isalive[id] || g_zombie[id] || g_sniper[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SNIPER))
 				continue
 			
 			// Random chance
@@ -11233,7 +11240,7 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Only those of them who arent zombies or sniper
-			if (!g_isalive[id] || g_zombie[id]|| g_sniper[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SNIPER))
 				continue
 			
 			// Turn into a Sniper
@@ -11286,7 +11293,7 @@ start_mode(mode, id)
 		{
 			if ((++id) > g_maxplayers) id = 1
 			
-			if (!g_isalive[id] || g_assassin[id])
+			if (!g_isalive[id] || CheckBit(g_playerClass[id], CLASS_ASSASIN))
 				continue
 			
 			if (random_num(1, 5) == 1)
@@ -11303,7 +11310,7 @@ start_mode(mode, id)
 		{
 			if ((++id) > g_maxplayers) id = 1
 			
-			if (!g_isalive[id] || g_assassin[id] || g_nemesis[id])
+			if (!g_isalive[id] || CheckBit(g_playerClass[id], CLASS_ASSASIN) || CheckBit(g_playerClass[id], CLASS_NEMESIS))
 				continue
 			
 			if (random_num(1, 5) == 1)
@@ -11316,7 +11323,7 @@ start_mode(mode, id)
 		
 		for (id = 1; id <= g_maxplayers; id++)
 		{
-			if (!g_isalive[id] || g_assassin[id] || g_nemesis[id] || g_survivor[id])
+			if (!g_isalive[id] || CheckBit(g_playerClass[id], CLASS_ASSASIN) || CheckBit(g_playerClass[id], CLASS_NEMESIS) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 				continue
 
 			MakeHuman(id, CLASS_SNIPER)
@@ -11357,7 +11364,7 @@ start_mode(mode, id)
 			if (++id > g_maxplayers) id = 1
 			
 			// Dead or already a zombie or sniper
-			if (!g_isalive[id] || g_zombie[id] || g_sniper[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SNIPER))
 				continue
 			
 			// Random chance
@@ -11374,7 +11381,7 @@ start_mode(mode, id)
 		for (id = 1; id <= g_maxplayers; id++)
 		{
 			// Only those of them who arent zombies or sniper
-			if (!g_isalive[id] || g_zombie[id]|| g_sniper[id])
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SNIPER))
 				continue
 			
 			// Turn into a Sniper
@@ -11536,7 +11543,7 @@ start_mode(mode, id)
 			if (!g_isalive[id]) continue
 			
 			// First zombie/nemesis
-			if (g_zombie[id]) continue
+			if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) continue
 			
 			// Switch to CT
 			if (fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
@@ -11561,6 +11568,15 @@ public TaskRemoveRender(infector)
 // Zombie Me Function (player id, infector, turn into a nemesis, silent mode, deathmsg and rewards)
 MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 {
+	// Way to go...
+	g_playerTeam[victim] = TEAM_ZOMBIE
+	//SetBit(g_playerTeam[victim], TEAM_ZOMBIE)
+	
+	g_playerClass[victim] = 0
+
+	g_specialclass[victim] = false
+	g_firstzombie[victim] = false
+
 	set_zombie(victim, true)	// For Module
 	g_goldenak47[victim] = false
 	g_goldenm4a1[victim] = false
@@ -11589,52 +11605,17 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 		g_zombieclass[victim] = random_num(0, 6)
 	
 	// For Class strings and few var checks
-	if (g_zombieclass[victim] == 0)
+	switch (g_zombieclass[victim])
 	{
-		g_cClass[victim] = "Classic"
-		g_specialclass[victim] = false
+		case 0:	g_classString[victim] = "Classic"
+		case 1:	g_classString[victim] = "Raptor"
+		case 2:	g_classString[victim] = "Mutant"
+		case 3:	g_classString[victim] = "Frozen"
+		case 4:	g_classString[victim] = "Regenerator"
+		case 5:	g_classString[victim] = "Predator Blue"
+		case 6:	g_classString[victim] = "Hunter"
 	}
-	else if (g_zombieclass[victim] == 1)
-	{
-		g_cClass[victim] = "Raptor"
-		g_specialclass[victim] = false
-	}
-	else if (g_zombieclass[victim] == 2)
-	{
-		g_cClass[victim] = "Mutant"
-		g_specialclass[victim] = false
-	}
-	else if (g_zombieclass[victim] == 3)
-	{
-		g_cClass[victim] = "Frozen"
-		g_specialclass[victim] = false
-	}
-	else if (g_zombieclass[victim] == 4)
-	{
-		g_cClass[victim] = "Regenerator"
-		g_specialclass[victim] = false
-	}
-	else if (g_zombieclass[victim] == 5)
-	{
-		g_cClass[victim] = "Predator Blue"
-		g_specialclass[victim] = false
-	}
-	else if (g_zombieclass[victim] == 6)
-	{
-		g_cClass[victim] = "Hunter"
-		g_specialclass[victim] = false
-	}
-	
-	// Way to go...
-	g_zombie[victim] = true
-	g_nemesis[victim] = false
-	g_assassin[victim] = false
-	g_bombardier[victim] = false	// Abhinash
-	g_survivor[victim] = false
-	g_sniper[victim] = false
-	g_samurai[victim] = false		// Abhinash
-	g_tryder[victim] = false
-	g_firstzombie[victim] = false
+
 	
 	// Remove spawn protection (bugfix)
 	g_nodamage[victim] = false
@@ -11649,9 +11630,9 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 		case CLASS_NEMESIS:
 		{
 			// Nemesis
-			g_nemesis[victim] = true
+			SetBit(g_playerClass[victim], CLASS_NEMESIS)
+			g_classString[victim] = "Nemesis"
 			g_specialclass[victim] = true
-			g_cClass[victim] = "Nemesis"
 			
 			// Set health and model
 			set_user_health(victim, NemesisHealth)
@@ -11675,9 +11656,9 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 		case CLASS_ASSASIN:
 		{
 			// Assassin
-			g_assassin[victim] = true
+			SetBit(g_playerClass[victim], CLASS_ASSASIN)
+			g_classString[victim] = "Assassin"
 			g_specialclass[victim] = true
-			g_cClass[victim] = "Assassin"
 			
 			// Set health [0 = auto]
 			set_user_health(victim, AssassinHealth)
@@ -11699,9 +11680,9 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 		case CLASS_BOMBARDIER:
 		{
 			// Bombardier
-			g_bombardier[victim] = true
+			SetBit(g_playerClass[victim], CLASS_BOMBARDIER)
+			g_classString[victim] = "Bombardier"
 			g_specialclass[victim] = true
-			g_cClass[victim] = "Bombardier"
 			
 			// Set health
 			set_user_health(victim, BombardierHealth)	
@@ -11722,7 +11703,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 		}
 		case CLASS_ZOMBIE:
 		{
-			// Special class bool
+			SetBit(g_playerClass[victim], CLASS_ZOMBIE)
 			g_specialclass[victim] = false
 
 			// Give all zombies multijump
@@ -11810,7 +11791,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	fm_give_item(victim, "weapon_knife")
 	
 	// Give Bombardier Killing grenade
-	if(g_bombardier[victim]) fm_give_item(victim, "weapon_hegrenade")
+	if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) fm_give_item(victim, "weapon_hegrenade")
 
 	if (g_firstzombie[victim])
 		if (!CheckBit(g_currentmode, MODE_SWARM) && !CheckBit(g_currentmode, MODE_PLAGUE) && !CheckBit(g_currentmode, MODE_SNIPER) && !CheckBit(g_currentmode, MODE_SURVIVOR) && !CheckBit(g_currentmode, MODE_SAMURAI))
@@ -11820,15 +11801,15 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	infection_effects(victim)
 	
 	// Nemesis aura task
-	if (g_nemesis[victim] && NemesisAura)
+	if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) && NemesisAura)
 		set_task(0.1, "zombie_aura", victim + TASK_AURA, _, _, "b")
 	
 	// Assassin aura task
-	if (g_assassin[victim] && AssassinAura)
+	if (CheckBit(g_playerClass[victim], CLASS_ASSASIN) && AssassinAura)
 		set_task(0.1, "zombie_aura", victim + TASK_AURA, _, _, "b")
 	
 	// Bombardier aura task
-	if (g_bombardier[victim] && BombardierAura)
+	if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER) && BombardierAura)
 		set_task(0.1, "zombie_aura", victim + TASK_AURA, _, _, "b")
 	
 	// Remove CS nightvision if player owns one (bugfix)
@@ -11882,11 +11863,11 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	SetFOV(victim, ZombieFOV)
 	
 	// Call the bloody task
-	if (!g_nemesis[victim] && !g_assassin[victim] && !g_bombardier[victim] && ZombieBleeding)
+	if (CheckBit(g_playerClass[victim], CLASS_ZOMBIE) && ZombieBleeding)
 		set_task(0.7, "make_blood", victim + TASK_BLOOD, _, _, "b")
 	
 	// Idle sounds task
-	if (!g_nemesis[victim] && !g_assassin[victim] && !g_bombardier[victim])
+	if (CheckBit(g_playerClass[victim], CLASS_ZOMBIE))
 		set_task(random_float(50.0, 70.0), "zombie_play_idle", victim + TASK_BLOOD, _, _, "b")
 	
 	// Turn off zombie's flashlight
@@ -11924,23 +11905,17 @@ MakeHuman(id, class = CLASS_HUMAN)
 	remove_task(id + TASK_AURA)
 	remove_task(id + TASK_BURN)
 	remove_task(id + TASK_NVISION)
-	
-	// Reset some vars
-	g_zombie[id] = false
-	g_nemesis[id] = false
-	g_assassin[id] = false
-	g_bombardier[id] = false		// Abhinash
-	g_survivor[id] = false
-	g_sniper[id] = false
-	g_samurai[id] = false		// Abhinash
-	g_tryder[id] = false
+
+	g_playerTeam[id] = TEAM_HUMAN
+	//SetBit(g_playerTeam[id], TEAM_HUMAN)
+	g_playerClass[id] = 0
 	g_specialclass[id] = false
 	g_firstzombie[id] = false
 	g_canbuy[id] = true
 	g_buytime[id] = get_gametime()
 	
 	// Set class string
-	g_cClass[id] = "Human"
+	g_classString[id] = "Human"
 	
 	// Remove survivor's aura (bugfix)
 	set_pev(id, pev_effects, pev(id, pev_effects) &~ EF_INVLIGHT)
@@ -11973,6 +11948,8 @@ MakeHuman(id, class = CLASS_HUMAN)
 	{
 		case CLASS_HUMAN:
 		{
+			SetBit(g_playerClass[id], CLASS_HUMAN)
+
 			// Set health
 			set_user_health(id, HumanHealth)
 			
@@ -11989,9 +11966,9 @@ MakeHuman(id, class = CLASS_HUMAN)
 		case CLASS_TRYDER:
 		{
 			// Tryder
-			g_tryder[id] = true
+			SetBit(g_playerClass[id], CLASS_TRYDER)
 			g_specialclass[id] = false
-			g_cClass[id] = "Tryder"
+			g_classString[id] = "Tryder"
 			
 			// Set Health [0 = auto]
 			set_user_health(id, TryderHealth)
@@ -12042,9 +12019,9 @@ MakeHuman(id, class = CLASS_HUMAN)
 		case CLASS_SURVIVOR:
 		{
 			// Survivor
-			g_survivor[id] = true
+			SetBit(g_playerClass[id], CLASS_SURVIVOR)
 			g_specialclass[id] = true
-			g_cClass[id] = "Survivor"
+			g_classString[id] = "Survivor"
 			
 			// Set Health [0 = auto]
 			set_user_health(id, SurvivorHealth)
@@ -12082,9 +12059,9 @@ MakeHuman(id, class = CLASS_HUMAN)
 		case CLASS_SNIPER:
 		{
 			// Sniper
-			g_sniper[id] = true
+			SetBit(g_playerClass[id], CLASS_SNIPER)
 			g_specialclass[id] = true
-			g_cClass[id] = "Sniper"
+			g_classString[id] = "Sniper"
 			
 			// Set Health
 			set_user_health(id, SniperHealth)
@@ -12123,9 +12100,9 @@ MakeHuman(id, class = CLASS_HUMAN)
 		case CLASS_SAMURAI:
 		{
 			// Samurai
-			g_samurai[id] = true
+			SetBit(g_playerClass[id], CLASS_SAMURAI)
 			g_specialclass[id] = true
-			g_cClass[id] = "Samurai"
+			g_classString[id] = "Samurai"
 			
 			// Set Health [0 = auto]
 			set_user_health(id, SamuraiHealth)
@@ -12341,7 +12318,7 @@ public respawn_player_check_task(taskid)
 	if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED) return
 	
 	// If player was being spawned as a zombie, set the flag again
-	if (g_zombie[id]) g_respawn_as_zombie[id] = true
+	if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) g_respawn_as_zombie[id] = true
 	else g_respawn_as_zombie[id] = false
 	
 	respawn_player_manually(id)
@@ -12372,7 +12349,7 @@ check_round(leaving_player)
 	if (iPlayersnum < 2) return
 	
 	// Last zombie disconnecting
-	if (g_zombie[leaving_player] && fnGetZombies() == 1)
+	if (CheckBit(g_playerTeam[leaving_player], TEAM_ZOMBIE) && fnGetZombies() == 1)
 	{
 		// Only one CT left, don't bother
 		if (fnGetHumans() == 1 && fnGetCTs() == 1) return
@@ -12384,26 +12361,26 @@ check_round(leaving_player)
 		client_print_color(0, print_team_grey, "%s Last zombie has disconnected,^4 %s^1 is the last zombie!", CHAT_PREFIX, g_playername[id])
 
 		// Turn into a Nemesis or just a zombie?
-		if (g_nemesis[leaving_player]) MakeZombie(id, CLASS_NEMESIS)
-		else if (g_assassin[leaving_player]) MakeZombie(id, CLASS_ASSASIN)
-		else if (g_bombardier[leaving_player]) MakeZombie(id, CLASS_BOMBARDIER)
+		if (CheckBit(g_playerClass[leaving_player], CLASS_NEMESIS)) MakeZombie(id, CLASS_NEMESIS)
+		else if (CheckBit(g_playerClass[leaving_player], CLASS_ASSASIN)) MakeZombie(id, CLASS_ASSASIN)
+		else if (CheckBit(g_playerClass[leaving_player], CLASS_BOMBARDIER)) MakeZombie(id, CLASS_BOMBARDIER)
 		else MakeZombie(id)
 		
 		// If Nemesis, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect && g_nemesis[leaving_player])
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_NEMESIS))
 			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Assassin, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect && g_assassin[leaving_player])
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_ASSASIN))
 			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Bombardier, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect && g_bombardier[leaving_player])
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_BOMBARDIER))
 			set_user_health(id, pev(leaving_player, pev_health))
 	}
 	
 	// Last human disconnecting
-	else if (!g_zombie[leaving_player] && fnGetHumans() == 1)
+	else if (CheckBit(g_playerTeam[leaving_player], TEAM_HUMAN) && fnGetHumans() == 1)
 	{
 		// Only one T left, don't bother
 		if (fnGetZombies() == 1 && fnGetTs() == 1) return
@@ -12415,21 +12392,21 @@ check_round(leaving_player)
 		client_print_color(0, print_team_grey, "%s Last human has disconnected,^4 %s^1 is the last human!", CHAT_PREFIX, g_playername[id]);
 		
 		// Turn into a Survivor or just a human?
-		if (g_survivor[leaving_player]) MakeHuman(id, CLASS_SURVIVOR)
-		else if (g_sniper[leaving_player]) MakeHuman(id, CLASS_SNIPER)
-		else if (g_samurai[leaving_player])	MakeHuman(id, CLASS_SAMURAI)
+		if (CheckBit(g_playerClass[leaving_player], CLASS_SURVIVOR)) MakeHuman(id, CLASS_SURVIVOR)
+		else if (CheckBit(g_playerClass[leaving_player], CLASS_SNIPER)) MakeHuman(id, CLASS_SNIPER)
+		else if (CheckBit(g_playerClass[leaving_player], CLASS_SAMURAI))	MakeHuman(id, CLASS_SAMURAI)
 		else MakeHuman(id)
 		
 		// If Survivor, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect && g_survivor[leaving_player])
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_SURVIVOR))
 			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Sniper, set chosen player's health to that of the one who's leaving
-		if (KeepHealthOnDisconnect && g_sniper[leaving_player])
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_SNIPER))
 			set_user_health(id, pev(leaving_player, pev_health))
 		
 		// If Samurai, set chosen player's health to that of the one who's leaving			// Abhinash
-		if (KeepHealthOnDisconnect && g_samurai[leaving_player])
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_SAMURAI))
 			set_user_health(id, pev(leaving_player, pev_health))
 	}
 }
@@ -12441,7 +12418,7 @@ public OnRegeneratorSkill()
 	id = 1
 	while (g_maxplayers + 1 > id)
 	{
-		if (g_isalive[id] && g_zombie[id] && !g_specialclass[id] && g_zombieclass[id] == 4 && pev(id, pev_health) < 6000)
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_ZOMBIE) && g_zombieclass[id] == 4 && pev(id, pev_health) < 6000)
 		{
 			// Regenerate user health
 			set_user_health(id, pev(id, pev_health) + 350)
@@ -12635,7 +12612,7 @@ infection_explode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive non-spawnprotected humans
-		if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim]) continue
+		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_ZOMBIE) || g_nodamage[victim]) continue
 		
 		// Last human is killed
 		if (fnGetHumans() == 1)
@@ -12705,10 +12682,10 @@ killing_explode(ent)
 	
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
-		if (g_bombardier[attacker])
+		if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER))
 		{
 			// Only effect alive non-spawnprotected humans
-			if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim]) continue
+			if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_ZOMBIE) || g_nodamage[victim]) continue
 			
 			// Last human is killed
 			ExecuteHamB(Ham_Killed, victim, attacker, 0)
@@ -12721,7 +12698,7 @@ killing_explode(ent)
 		else
 		{
 			// Only effect alive non-spawnprotected humans
-			if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim]) continue
+			if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_nodamage[victim]) continue
 			
 			// Last human is killed
 			ExecuteHamB(Ham_Killed, victim, attacker, 0)
@@ -12737,7 +12714,7 @@ killing_explode(ent)
 	engfunc(EngFunc_RemoveEntity, ent)
 
 	// Give Bombardier his grenade
-	if (g_bombardier[attacker]) fm_give_item(attacker, "weapon_hegrenade")
+	if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER)) fm_give_item(attacker, "weapon_hegrenade")
 }
 
 public concussion_explode(ent)
@@ -12772,7 +12749,7 @@ public concussion_explode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive non-spawnprotected humans
-		if (!is_user_valid_alive(victim) || g_zombie[victim] || g_nodamage[victim]) continue	
+		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_ZOMBIE) || g_nodamage[victim]) continue	
 		
 		// Continiously affect them
 		set_task (0.2, "affect_victim", victim + TASK_CONCUSSION, _, _, "a", 35)
@@ -12880,7 +12857,7 @@ public antidote_explode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive non-spawnprotected zombies
-		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim]) continue
+		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_nodamage[victim]) continue
 
 		// Last human is killed
 		if (fnGetZombies() == 1) continue
@@ -12954,16 +12931,16 @@ public explosion_explode(ent)
 	SendGrenadeBeamCylinder(ent, 255, 0, 0, 200)
 	
 	// Loop
-	for(victim = 1 ; victim <= g_maxplayers; victim++)
+	for (victim = 1 ; victim <= g_maxplayers; victim++)
 	{
-		if(!is_user_alive(victim)) continue
+		if (!is_user_alive(victim)) continue
 		
-		if(!g_zombie[victim]) continue
+		if (CheckBit(g_playerTeam[victim], TEAM_HUMAN)) continue
 		
 		pev(victim, pev_origin, clorigin)
 		distance = get_distance_f(origin, clorigin)
 
-		if(distance < 330)
+		if (distance < 330)
 		{
 			damage = 700.0 - distance
 			health = get_user_health(victim)
@@ -12984,7 +12961,7 @@ public explosion_explode(ent)
 			// Send Screenshake message
 			SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
 
-			if(g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim]) damage *= 1.50
+			if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) || CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) damage *= 1.50
 
 			// Checks
 			if(health - floatround(damage) > 0)
@@ -13023,7 +13000,7 @@ fire_explode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive zombies
-		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_nodamage[victim]) continue
+		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_nodamage[victim]) continue
 		
 		// Set Yellow Rendering ( Glow ) on Victims.
 		set_glow(victim, 200, 200, 0, 25)
@@ -13044,7 +13021,7 @@ fire_explode(ent)
 			message_end()
 		}
 		
-		if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim]) g_burning_duration[victim] += FireDuration // fire duration (nemesis is fire resistant)
+		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) || CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) g_burning_duration[victim] += FireDuration // fire duration (nemesis is fire resistant)
 		else g_burning_duration[victim] += FireDuration * 5
 		
 		// Set burning task on victim if not present
@@ -13081,10 +13058,10 @@ frost_explode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive unfrozen zombies
-		if (!is_user_valid_alive(victim) || !g_zombie[victim] || g_frozen[victim] || g_nodamage[victim]) continue
+		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_frozen[victim] || g_nodamage[victim]) continue
 		
 		// Nemesis shouldn't be frozen
-		if (g_nemesis[victim] || g_assassin[victim] || g_bombardier[victim])
+		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) || CheckBit(g_playerClass[victim], CLASS_BOMBARDIER))
 		{
 			// Get player's origin
 			static origin2[3]
@@ -13156,32 +13133,32 @@ public remove_freeze(id)
 	ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
 	
 	// Nemesis or Survivor glow / remove glow
-	if (g_nemesis[id])
+	if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 	{
 		if (NemesisGlow) set_glow(id, 250, 0, 0, 25)
 		else remove_glow(id)
 	}
-	else if (g_assassin[id])
+	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 	{
 		if (AssassinGlow) set_glow(id, 255, 255, 0, 25)
 		else remove_glow(id)
 	}
-	else if (g_survivor[id])
+	else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 	{
 		if (SurvivorGlow) set_glow(id, 0, 0, 255, 25)
 		else remove_glow(id)
 	}
-	else if (g_sniper[id])
+	else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 	{ 
 		if (SniperGlow) set_glow(id, 0, 255, 0, 25)
 		else remove_glow(id)
 	}
-	else if (g_samurai[id])
+	else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 	{
 		if (SamuraiGlow) set_glow(id, 50, 100, 150, 25)
 		else remove_glow(id)
 	}
-	else if (g_bombardier[id])
+	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 	{
 		if (BombardierGlow) set_glow(id, 50, 100, 150, 25)
 		else remove_glow(id)
@@ -13205,32 +13182,32 @@ public remove_fire(id)
 	if (!g_isalive[id]) return
 	
 	// Nemesis or Survivor glow / remove glow
-	if (g_nemesis[id])
+	if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 	{
 		if (NemesisGlow) set_glow(id, 250, 0, 0, 25)
 		else remove_glow(id)
 	}
-	else if (g_assassin[id])
+	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 	{
 		if (AssassinGlow) set_glow(id, 255, 255, 0, 25) 
 		else remove_glow(id) 
 	}
-	else if (g_survivor[id])
+	else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 	{
 		if (SurvivorGlow) set_glow(id, 0, 0, 255, 25) 
 		else remove_glow(id) 
 	}
-	else if (g_sniper[id])
+	else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 	{ 
 		if (SniperGlow) set_glow(id, 0, 255, 0, 25)
 		else remove_glow(id)
 	}
-	else if (g_samurai[id])
+	else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 	{
 		if (SamuraiGlow) set_glow(id, 50, 100, 150, 25) 
 		else remove_glow(id) 
 	}
-	else if (g_bombardier[id])
+	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 	{
 		if (BombardierGlow) set_glow(id, 50, 100, 150, 25) 
 		else remove_glow(id) 
@@ -13248,14 +13225,14 @@ replace_weapon_models(id, weaponid)
 	{
 	case CSW_KNIFE: // Custom knife models
 		{
-			if (g_zombie[id])
+			if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 			{
-				if (g_nemesis[id]) // Nemesis
+				if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) // Nemesis
 				{
 					set_pev(id, pev_viewmodel2, V_KNIFE_NEMESIS)
 					set_pev(id, pev_weaponmodel2, "")
 				}
-				else if (g_assassin[id]) // Assassins
+				else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) // Assassins
 				{
 					set_pev(id, pev_viewmodel2, V_KNIFE_ASSASSIN)
 					set_pev(id, pev_weaponmodel2, "")
@@ -13268,7 +13245,7 @@ replace_weapon_models(id, weaponid)
 			}
 			else // Humans
 			{
-				if(g_samurai[id])
+				if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 				{
 					set_pev(id, pev_viewmodel2, V_KNIFE_SAMURAI)
 					set_pev(id, pev_weaponmodel2, P_KNIFE_SAMURAI)
@@ -13283,7 +13260,7 @@ replace_weapon_models(id, weaponid)
 		}
 	case CSW_AWP: // Sniper's AWP
 		{
-			if (g_sniper[id])
+			if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 			{
 				set_pev(id, pev_viewmodel2, V_AWP_SNIPER)
 				set_pev(id, pev_weaponmodel2, P_AWP_SNIPER)
@@ -13291,7 +13268,7 @@ replace_weapon_models(id, weaponid)
 		}
 	case CSW_SG550:		// Crossbow
 		{
-			if(g_has_crossbow[id])
+			if (g_has_crossbow[id])
 			{
 				set_pev(id, pev_viewmodel2, crossbow_V_MODEL)
 				set_pev(id, pev_weaponmodel2, crossbow_P_MODEL)
@@ -13304,7 +13281,7 @@ replace_weapon_models(id, weaponid)
 	case CSW_DEAGLE: if (g_goldendeagle[id]) set_goldendeagle(id)    
 	case CSW_HEGRENADE: // Infection bomb or Explode grenade
 		{
-			if (g_zombie[id]) set_pev(id, pev_viewmodel2, V_INFECTION_NADE)
+			if (CheckBit(g_playerClass[id], CLASS_ZOMBIE)) set_pev(id, pev_viewmodel2, V_INFECTION_NADE)
 			else set_pev(id, pev_viewmodel2, V_EXPLODE_NADE)
 		}
 	case CSW_FLASHBANG: set_pev(id, pev_viewmodel2, V_FIRE_NADE) // Fire grenade
@@ -13315,14 +13292,12 @@ replace_weapon_models(id, weaponid)
 // Reset Player Vars
 reset_vars(id, resetall)
 {
-	g_zombie[id] = false
-	g_nemesis[id] = false
-	g_assassin[id] = false		// Abhinash
-	g_bombardier[id] = false
-	g_survivor[id] = false
-	g_sniper[id] = false
-	g_samurai[id] = false 		// Abhinash
-	g_tryder[id] = false
+	// Set Human Bits
+	g_playerTeam[id] = 0
+	g_playerTeam[id] = TEAM_HUMAN
+	g_playerClass[id] = CLASS_HUMAN
+	//SetBit(g_playerClass[id], CLASS_HUMAN)
+
 	g_firstzombie[id] = false
 	g_lastzombie[id] = false
 	g_concussionbomb[id] = 0	// Abhinash
@@ -13403,13 +13378,13 @@ public ShowHUD(taskid)
 	// Format classname
 	static message[128], red, green, blue
 	
-	if (g_zombie[id]) // zombies
+	if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) // zombies
 	{
 		red   = 255
 		green = 50
 		blue  = 0
 		
-		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
+		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
 	}	
 	else // humans
 	{
@@ -13417,7 +13392,7 @@ public ShowHUD(taskid)
 		green = 180
 		blue  = 150
 		
-		formatex(message, charsmax(message), "%s - Health: %s - Armor: %d - Packs: %s - Points: %s", g_cClass[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), pev(ID_SHOWHUD, pev_armorvalue), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
+		formatex(message, charsmax(message), "%s - Health: %s - Armor: %d - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), pev(ID_SHOWHUD, pev_armorvalue), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
 	}
 	
 	// Spectating someone else?
@@ -13425,7 +13400,7 @@ public ShowHUD(taskid)
 	{
 		set_hudmessage(10, 180, 150, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
 		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
-		g_bVip[id] ? "(Gold Member ®)" : "", g_playername[id], g_cClass[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
+		g_bVip[id] ? "(Gold Member ®)" : "", g_playername[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
 	}
 	else
 	{
@@ -13500,7 +13475,7 @@ fnGetZombies()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_zombie[id]) iZombies++
+		if (g_isalive[id] && CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) iZombies++
 	}
 	
 	return iZombies
@@ -13514,7 +13489,7 @@ fnGetHumans()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && !g_zombie[id]) iHumans++
+		if (g_isalive[id] && CheckBit(g_playerTeam[id], TEAM_HUMAN)) iHumans++
 	}
 	
 	return iHumans
@@ -13728,7 +13703,7 @@ fnGetLastHuman()
 	new id = 1
 	while (id <= g_maxplayers)
 	{
-		if (g_isalive[id] && g_isconnected[id] && !g_zombie[id]) return id 
+		if (g_isalive[id] && g_isconnected[id] && CheckBit(g_playerTeam[id], TEAM_HUMAN)) return id 
 		id++
 	}
 	return PLUGIN_CONTINUE
@@ -13739,7 +13714,7 @@ fnGetLastZombie()
 	new id = 1
 	while (id <= g_maxplayers)
 	{
-		if (g_isalive[id] && g_isconnected[id] && g_zombie[id]) return id 
+		if (g_isalive[id] && g_isconnected[id] && CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) return id 
 		id++
 	}
 	return PLUGIN_CONTINUE
@@ -13752,12 +13727,12 @@ fnCheckLastZombie()
 	for (id = 1; id <= g_maxplayers; id++)
 	{
 		// Last zombie
-		if (g_isalive[id] && g_zombie[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && fnGetZombies() == 1) 
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_ZOMBIE) && fnGetZombies() == 1) 
 		g_lastzombie[id] = true 
 		else g_lastzombie[id] = false 
 		
 		// Last human
-		if (g_isalive[id] && !g_zombie[id] && !g_survivor[id] && !g_sniper[id] && !g_samurai[id] && fnGetHumans() == 1)
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN) && fnGetHumans() == 1)
 		{
 			if (!g_lasthuman[id]) set_user_health(id, pev(id, pev_health) + LastHumanExtraHealth) // Reward extra hp 
 			g_lasthuman[id] = true
@@ -13810,7 +13785,7 @@ load_stats(id)
 // Checks if a player is allowed to be zombie
 allowed_zombie(id)
 {
-	if ((g_zombie[id] && !g_nemesis[id] && !g_assassin[id] && !g_bombardier[id]) || g_endround || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && !g_zombie[id] && fnGetHumans() == 1))
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) || g_endround || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_HUMAN) && fnGetHumans() == 1))
 	return false
 	
 	return true
@@ -13819,7 +13794,7 @@ allowed_zombie(id)
 // Checks if a player is allowed to be human
 allowed_human(id)
 {
-	if ((!g_zombie[id] && !g_survivor[id] && !g_sniper[id] && !g_samurai[id]) || g_endround || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && g_zombie[id] && fnGetZombies() == 1))
+	if (CheckBit(g_playerClass[id], CLASS_HUMAN) || g_endround || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && fnGetZombies() == 1))
 	return false
 	
 	return true
@@ -13828,7 +13803,7 @@ allowed_human(id)
 // Checks if a player is allowed to be survivor
 allowed_survivor(id)
 {
-	if (g_endround || g_survivor[id] || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && g_zombie[id] && fnGetZombies() == 1))
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_SURVIVOR) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && fnGetZombies() == 1))
 	return false
 	
 	return true
@@ -13837,7 +13812,7 @@ allowed_survivor(id)
 // Checks if a player is allowed to be sniper
 allowed_sniper(id)
 {
-	if (g_endround || g_sniper[id] || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && g_zombie[id] && fnGetZombies() == 1))
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_SNIPER) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && fnGetZombies() == 1))
 	return false
 	
 	return true
@@ -13847,7 +13822,7 @@ allowed_sniper(id)
 // Checks if a player is allowed to be sniper
 allowed_samurai(id)
 {
-	if (g_endround || g_samurai[id] || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && g_zombie[id] && fnGetZombies() == 1))
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_SAMURAI) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && fnGetZombies() == 1))
 	return false
 	
 	return true
@@ -13856,7 +13831,7 @@ allowed_samurai(id)
 // Checks if a player is allowed to be nemesis
 allowed_nemesis(id)
 {
-	if (g_endround || g_nemesis[id] || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && !g_zombie[id] && fnGetHumans() == 1))
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_NEMESIS) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_HUMAN) && fnGetHumans() == 1))
 	return false
 	
 	return true
@@ -13865,7 +13840,7 @@ allowed_nemesis(id)
 // Checks if a player is allowed to be assassin
 allowed_assassin(id)
 {
-	if (g_endround || g_assassin[id] || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && !g_zombie[id] && fnGetHumans() == 1))
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_ASSASIN) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_HUMAN) && fnGetHumans() == 1))
 	return false
 	
 	return true
@@ -13874,7 +13849,7 @@ allowed_assassin(id)
 // Checks if a player is allowed to be bombardier
 allowed_bombardier(id)
 {
-	if (g_endround || g_bombardier[id] || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && !g_zombie[id] && fnGetHumans() == 1))
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_BOMBARDIER) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_HUMAN) && fnGetHumans() == 1))
 	return false
 	
 	return true
@@ -14177,19 +14152,19 @@ Can(category, action, item, id)
 								client_print_color(id, print_team_grey, "%s This item is not available in current round", CHAT_PREFIX)
 								return false
 							}
-							else if (g_sniper[id] || g_survivor[id])
+							else if (CheckBit(g_playerClass[id], CLASS_SNIPER) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 								return true
 							else
 							{
-								client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
+								client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_classString[id])
 								return false
 							}
 						}
 						case PSHOP_FEATURE_DOUBLE_DAMAGE, PSHOP_FEATURE_NO_RECOIL, PSHOP_FEATURE_INVISIBILITY, PSHOP_FEATURE_SPRINT, PSHOP_FEATURE_LOW_GRAVITY, PSHOP_FEATURE_HEAD_HUNTER:
 						{
-							if (g_zombie[id] || g_nemesis[id] || g_assassin[id] || g_bombardier[id])
+							if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 							{
-								client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_cClass[id])
+								client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_classString[id])
 								return false
 							}
 							else return true 	
@@ -14314,19 +14289,19 @@ set_player_maxspeed(id)
 	else if (g_raptor_speeded[id]) set_pev(id, pev_maxspeed, 500.0) 
 	else
 	{
-		if (g_zombie[id])
+		if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 		{
-			if (g_nemesis[id]) set_pev(id, pev_maxspeed, NemesisSpeed)
-			else if (g_assassin[id]) set_pev(id, pev_maxspeed, AssassinSpeed)
-			else if (g_bombardier[id]) set_pev(id, pev_maxspeed, BombardierSpeed)
+			if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) set_pev(id, pev_maxspeed, NemesisSpeed)
+			else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) set_pev(id, pev_maxspeed, AssassinSpeed)
+			else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) set_pev(id, pev_maxspeed, BombardierSpeed)
 			else set_pev(id, pev_maxspeed, g_cZombieClasses[g_zombieclass[id]][Speed])
 		}
 		else
 		{
-			if (g_survivor[id]) set_pev(id, pev_maxspeed, SurvivorSpeed)
-			else if (g_sniper[id]) set_pev(id, pev_maxspeed, SniperSpeed)
-			else if (g_samurai[id]) set_pev(id, pev_maxspeed, SamuraiSpeed)		// Abhinash
-			else if(g_tryder[id]) set_pev(id, pev_maxspeed, TryderSpeed)
+			if (CheckBit(g_playerClass[id], CLASS_SURVIVOR)) set_pev(id, pev_maxspeed, SurvivorSpeed)
+			else if (CheckBit(g_playerClass[id], CLASS_SNIPER)) set_pev(id, pev_maxspeed, SniperSpeed)
+			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) set_pev(id, pev_maxspeed, SamuraiSpeed)		// Abhinash
+			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) set_pev(id, pev_maxspeed, TryderSpeed)
 			else set_pev(id, pev_maxspeed, HumanSpeed)
 
 			if (g_speed[id]) set_pev(id, pev_maxspeed, 500.0)
@@ -14399,7 +14374,7 @@ public native_admin_has_flag(id, flag)
 // Native: zp_get_user_zombie
 public native_get_user_zombie(id)
 {
-	return g_zombie[id]
+	return CheckBit(g_playerClass[id], CLASS_ZOMBIE)
 }
 
 // Native: MakeZombie
@@ -14513,6 +14488,8 @@ public native_add_user_kills(id, amount)
 
 	g_kills[id] += amount
 	MySQL_UPDATE_DATABASE(id)
+
+	return true
 }
 
 // Native: SetKills
@@ -14725,7 +14702,7 @@ public native_set_user_samurai_kills(id, amount)
 // Native: GetNemesis
 public native_get_user_nemesis(id)
 {
-	return g_nemesis[id]
+	return CheckBit(g_playerClass[id], CLASS_NEMESIS)
 }
 
 // Native: MakeNemesis
@@ -14758,7 +14735,7 @@ public native_make_user_nemesis(id)
 // Native: GetAssasin
 public native_get_user_assassin(id)
 {
-	return g_assassin[id]
+	return CheckBit(g_playerClass[id], CLASS_ASSASIN)
 }
 
 // Native: MakeAssasin
@@ -14791,7 +14768,7 @@ public native_make_user_assasin(id)
 // Native: GetBombardier
 public native_get_user_bombardier(id)
 {
-	return g_bombardier[id]
+	return CheckBit(g_playerClass[id], CLASS_BOMBARDIER)
 }
 
 // Native: MakeBombardier
@@ -14824,7 +14801,7 @@ public native_make_user_bombardier(id)
 // Native: GetSniper
 public native_get_user_sniper(id)
 {
-	return g_sniper[id];
+	return CheckBit(g_playerClass[id], CLASS_SNIPER)
 }
 
 // Native: MakeSniper
@@ -14857,7 +14834,7 @@ public native_make_user_sniper(id)
 // Native: GetSurvivor
 public native_get_user_survivor(id)
 {
-	return g_survivor[id];
+	return CheckBit(g_playerClass[id], CLASS_SURVIVOR)
 }
 
 // Native: MakeSurvivor
@@ -14890,7 +14867,7 @@ public native_make_user_survivor(id)
 // Native: GetSamurai
 public native_get_user_samurai(id)
 {
-	return g_samurai[id];
+	return CheckBit(g_playerClass[id], CLASS_SAMURAI)
 }
 
 // Native: MakeSamurai
@@ -14985,10 +14962,10 @@ public set_user_nvision(taskid)
 	static id
 	id = taskid - TASK_NVISION
 
-	if (g_nemesis[id] || (g_zombie[id] && g_nodamage[id])) SendNightVision(id, NColorNemesis_R, NColorNemesis_G, NColorNemesis_B) // Nemesis / Madness  
-	else if (g_assassin[id]) SendNightVision(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B) // Assassin  	
-	else if (g_bombardier[id]) SendNightVision(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B) // Bombardier  	
-	else if (!g_zombie[id]) SendNightVision(id, NColorHuman_R, NColorHuman_G, NColorHuman_B) // Human  
+	if (CheckBit(g_playerClass[id], CLASS_NEMESIS) || (CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && g_nodamage[id])) SendNightVision(id, NColorNemesis_R, NColorNemesis_G, NColorNemesis_B) // Nemesis / Madness  
+	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) SendNightVision(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B) // Assassin  	
+	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) SendNightVision(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B) // Bombardier  	
+	else if (CheckBit(g_playerTeam[id], TEAM_HUMAN)) SendNightVision(id, NColorHuman_R, NColorHuman_G, NColorHuman_B) // Human  
 	else if (!g_isalive[id]) SendNightVision(id, NColorSpectator_R, NColorSpectator_G, NColorSpectator_B) // Spectators 
 	else SendNightVision(id, NColorZombie_R, NColorZombie_G, NColorZombie_B) // Zombie 
 	
@@ -15066,8 +15043,8 @@ infection_effects(id)
 {
 	if (!g_frozen[id] && InfectionScreenFade)
 	{
-		if (g_nemesis[id]) UTIL_ScreenFade(id, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false) 
-		else if (g_assassin[id]) UTIL_ScreenFade(id, {0, 150, 0}, 1.0, 0.5, 100, FFADE_IN, true, false) 
+		if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) UTIL_ScreenFade(id, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false) 
+		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) UTIL_ScreenFade(id, {0, 150, 0}, 1.0, 0.5, 100, FFADE_IN, true, false) 
 		else UTIL_ScreenFade(id, {165, 42, 42}, 1.0, 0.5, 225, FFADE_IN, true, false) 
 	}
 	
@@ -15109,15 +15086,15 @@ public zombie_aura(taskid)
 	static id; id = taskid - TASK_AURA
 
 	// Not nemesis, not assassin, not in zombie madness
-	if (!g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && !g_nodamage[id])
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !g_nodamage[id])
 	{
 		// Task not needed anymore
 		remove_task(taskid)
 		return
 	}
 	
-	if (g_assassin[id]) SendAura(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B) 
-	else if (g_bombardier[id]) SendAura(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B) 
+	if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) SendAura(id, NColorAssassin_R, NColorAssassin_G, NColorAssassin_B) 
+	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) SendAura(id, NColorBombardier_R, NColorBombardier_G, NColorBombardier_B) 
 	else SendAura(id, NColorNemesis_R, NColorNemesis_G, NColorNemesis_B) 
 }
 
@@ -15169,11 +15146,11 @@ public burning_flame(taskid)
 	}
 	
 	// Randomly play burning zombie scream sounds (not for nemesis)
-	if (!g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && !random_num(0, 20))
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !random_num(0, 20))
 		emit_sound(id, CHAN_VOICE, grenade_fire_player[random(sizeof grenade_fire_player)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Fire slow down, unless nemesis
-	if (!g_nemesis[id] && !g_assassin[id] && !g_bombardier[id] && (flags & FL_ONGROUND) && FireSlowdown > 0.0)
+	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && (flags & FL_ONGROUND) && FireSlowdown > 0.0)
 	{
 		static Float:velocity[3]
 		pev(id, pev_velocity, velocity)
@@ -15578,23 +15555,23 @@ public ChangeModels(taskid)
 	static currentmodel[33]; get_user_model(id, currentmodel, charsmax(currentmodel))
 
 	// Check if model change is needed
-	if (!g_zombie[id])
+	if (CheckBit(g_playerTeam[id], TEAM_HUMAN))
 	{
-		if (g_survivor[id])
+		if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 		{
 			for(new i; i < sizeof g_cSurvivorModels; i++)
 			{
 				if (equal(currentmodel, g_cSurvivorModels[i])) change = false 
 			}
 		}
-		else if (g_sniper[id])
+		else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 		{
 			for(new i; i < sizeof g_cSniperModels; i++)
 			{
 				if (equal(currentmodel, g_cSniperModels[i])) change = false 
 			}
 		}
-		else if (g_samurai[id])
+		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 		{
 			for(new i; i < sizeof g_cSamuraiModels; i++)
 			{
@@ -15642,21 +15619,21 @@ public ChangeModels(taskid)
 	}
 	else
 	{
-		if (g_nemesis[id])
+		if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 		{
 			for(new i; i < sizeof g_cNemesisModels; i++)
 			{
 				if (equal(currentmodel, g_cNemesisModels[i])) change = false 
 			}
 		}
-		if (g_assassin[id])
+		if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 		{
 			for(new i; i < sizeof g_cAssassinModels; i++)
 			{
 				if (equal(currentmodel, g_cAssassinModels[i])) change = false 
 			}
 		}
-		if (g_bombardier[id])
+		if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 		{
 			for(new i; i < sizeof g_cBombardierModels; i++)
 			{
@@ -15669,21 +15646,21 @@ public ChangeModels(taskid)
 	// No change function
 	if (change)
 	{
-		if (!g_zombie[id])
+		if (CheckBit(g_playerTeam[id], TEAM_HUMAN))
 		{
-			if (g_survivor[id])
+			if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 			{
 				new temp = random(sizeof g_cSurvivorModels)
 				set_user_model(id, g_cSurvivorModels[temp])
 				log_amx("Survivor %s model changed to %s", g_playername[id], g_cSurvivorModels[temp])
 			}
-			else if (g_sniper[id])
+			else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 			{
 				new temp = random(sizeof g_cSniperModels)
 				set_user_model(id, g_cSniperModels[temp])
 				log_amx("Sniper %s model changed to %s", g_playername[id], g_cSniperModels[temp])
 			}
-			else if (g_samurai[id])
+			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 			{
 				new temp = random(sizeof g_cSamuraiModels)
 				set_user_model(id, g_cSamuraiModels[temp])
@@ -15725,19 +15702,19 @@ public ChangeModels(taskid)
 		}
 		else
 		{
-			if (g_nemesis[id])
+			if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 			{
 				new temp = random(sizeof g_cNemesisModels)
 				set_user_model(id, g_cNemesisModels[temp])
 				log_amx("Nemesis %s model changed to %s", g_playername[id], g_cNemesisModels[temp])
 			}
-			else if (g_assassin[id])
+			else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 			{
 				new temp = random(sizeof g_cAssassinModels)
 				set_user_model(id, g_cAssassinModels[temp])
 				log_amx("Assassin %s model changed to %s", g_playername[id], g_cAssassinModels[temp])
 			}
-			else if (g_bombardier[id])
+			else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 			{
 				new temp = random(sizeof g_cBombardierModels)
 				set_user_model(id, g_cBombardierModels[temp])
