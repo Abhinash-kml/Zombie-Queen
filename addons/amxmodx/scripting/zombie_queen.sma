@@ -1054,10 +1054,19 @@ new g_cAccessMenu[][aCMenuData] =
 	{"Buy Diamond VIP\y(comming soon)", "\r[40000 points]", 40000}
 }
 
-enum _:structExtrasTeam
+enum _: structExtrasTeam (<<=1)
 {
-	HUMAN = 0,
-	ZOMBIE
+	ZQ_EXTRA_HUMAN = 1,
+	ZQ_EXTRA_TRYDER,
+	ZQ_EXTRA_SURVIVOR,
+	ZQ_EXTRA_SNIPER,
+	ZQ_EXTRA_SAMURAI,
+	ZQ_EXTRA_ZOMBIE,
+	ZQ_EXTRA_ASSASIN,
+	ZQ_EXTRA_NEMESIS,
+	ZQ_EXTRA_BOMBARDIER,
+	ZQ_EXTRA_HUMAN_ALL,
+	ZQ_EXTRA_ZOMBIE_ALL
 }
 
 enum _:ExtraItemsData
@@ -1072,24 +1081,24 @@ enum _:ExtraItemsData
 
 new g_cExtraItems[][ExtraItemsData] =
 {
-	{"Nightvision Goggles", 		  "\r[2 packs]", 	 2, HUMAN, 5, 50}, // 1
-	{"Forcefield Grenade", 			  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 2
-	{"Killing Grenade", 			  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 3
-	{"Explosion Field Grenade", 	  "\r[15 packs]", 	15, HUMAN, 5, 50}, // 4
-	{"Napalm Grenade", 				  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 5
-	{"Frost Grenade", 			 	  "\r[20 packs]", 	20, HUMAN, 5, 50}, // 6
-	{"Antidote Grenade", 			  "\r[15 packs]", 	15, HUMAN, 5, 50}, // 7
-	{"Multijump +1", 				  "\r[5 packs]", 	15, HUMAN, 5, 50}, // 1
-	{"Jetpack + Bazooka", 			  "\r[32 packs]", 	32, HUMAN, 5, 50}, // 2
-	{"Tryder", 						  "\r[30 packs]", 	30, HUMAN, 5, 50}, // 3
-	{"Armor \y(100 AP)", 			  "\r[5 packs]", 	 5, HUMAN, 5, 50}, // 4
-	{"Armor \y(200 AP)", 			  "\r[10 packs]", 	10, HUMAN, 5, 50}, // 5
-	{"Crossbow", 					  "\r[30 packs]", 	30, HUMAN, 5, 50}, // 6
-	{"Golden Weapons", 				  "\r[50 packs]",   50, HUMAN, 5, 50}, // 7
-	{"Nemesis", 					  "\r[150 packs]", 150, HUMAN, 1,  1}, // 1
-	{"Assassin", 					  "\r[150 packs]", 150, HUMAN, 1,  1}, // 2
-	{"Sniper", 						  "\r[180 packs]", 180, HUMAN, 1,  1}, // 3
-	{"Survivor", 					  "\r[180 packs]", 180, HUMAN, 1,  1} // 4
+	{"Nightvision Goggles", 		  "\r[2 packs]", 	 2, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 1
+	{"Forcefield Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI, 5, 50}, // 2
+	{"Killing Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN, 5, 50}, // 3
+	{"Explosion Field Grenade", 	  "\r[15 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 4
+	{"Napalm Grenade", 				  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 5
+	{"Frost Grenade", 			 	  "\r[20 packs]", 	20, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 6
+	{"Antidote Grenade", 			  "\r[15 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 7
+	{"Multijump +1", 				  "\r[5 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 1
+	{"Jetpack + Bazooka", 			  "\r[32 packs]", 	32, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 2
+	{"Tryder", 						  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 3
+	{"Armor \y(100 AP)", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 4
+	{"Armor \y(200 AP)", 			  "\r[10 packs]", 	10, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 5
+	{"Crossbow", 					  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 6
+	{"Golden Weapons", 				  "\r[50 packs]",   50, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR, 5, 50}, // 7
+	{"Nemesis", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN, 1,  1}, // 1
+	{"Assassin", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN, 1,  1}, // 2
+	{"Sniper", 						  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN, 1,  1}, // 3
+	{"Survivor", 					  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN, 1,  1} // 4
 }
 
 enum _:ExtraItemsData2
@@ -1104,11 +1113,11 @@ enum _:ExtraItemsData2
 
 new g_cExtraItemsZombie[][ExtraItemsData2] =
 {
-	{"Antidote", 		 "\r[15 packs]", 15, ZOMBIE, 5, 50}, // 1
-	{"Zombie Madness",   "\r[17 packs]", 17, ZOMBIE, 5, 50}, // 2
-	{"Infection bomb",   "\r[25 packs]", 25, ZOMBIE, 5, 50}, // 3
-	{"Concussion bomb",  "\r[10 packs]", 10, ZOMBIE, 5, 50}, // 4
-	{"Knife Blink", 	 "\r[10 packs]", 10, ZOMBIE, 5, 50} // 4
+	{"Antidote", 		 "\r[15 packs]", 15, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 1
+	{"Zombie Madness",   "\r[17 packs]", 17, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 2
+	{"Infection bomb",   "\r[25 packs]", 25, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 3
+	{"Concussion bomb",  "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 4
+	{"Knife Blink", 	 "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE_ALL, 5, 50} // 4
 }
 
 enum _:Items
@@ -1155,8 +1164,6 @@ new g_SecondaryWeapons[][WeaponsData] =
 
 new g_iGameMenu
 new g_iZombieClassMenu
-new g_iExtraItemsMenu
-new g_iExtraItems2Menu
 new g_iStatisticsMenu
 new g_iPointShopMenu
 new g_iAmmoMenu
@@ -1189,7 +1196,7 @@ enum _: canFuncPurpose
 }
 
 // Mode names
-enum _: modNames (<<=1)
+enum _: modNames 
 {
 	MODE_INFECTION = 1,
 	MODE_MULTI_INFECTION,
@@ -1227,7 +1234,7 @@ enum _: playerTeams (<<=1)
 }
 
 // Zombie Sub-class Names
-enum _: classNames (<<=1)
+enum _: classNames
 {
 	CLASS_HUMAN = 1,
 	CLASS_ZOMBIE,
@@ -1241,9 +1248,10 @@ enum _: classNames (<<=1)
 }
 
 // Macros
-#define SetBit(%1,%2)			(%1 |= %2)
-#define CheckBit(%1,%2)		(%1 & %2) 
-//#define ClearBit(%1, %2)        	(%1 &= ~(1<<%2))
+#define SetBit(%1,%2)			(%1 |= (1<<(%2-1)))
+#define CheckBit(%1,%2)			(%1 & (1<<(%2-1)))  
+#define ClearBit(%1,%2)         (%1 &= ~(1<<(%2-1)))
+#define CheckFlag(%1,%2)		(%1 & %2)
 
 // Zombie Class names
 enum _: zombieClassNames (<<=1)
@@ -2601,8 +2609,6 @@ public plugin_init()
 	new cNumber[3]
 	g_iGameMenu = menu_create("Game Menu", "_GameMenu", 0)	// Game menu
 	g_iZombieClassMenu = menu_create("Zombie Classes", "_ZombieClasses", 0)	// Zombie class menu
-	g_iExtraItemsMenu = menu_create("Extra Items", "_ExtraItems", 0)	// Human Extra items menu
-	g_iExtraItems2Menu = menu_create("Extra Items", "_ExtraItems2", 0)	// Zombie Extra items menu
 	g_iStatisticsMenu = menu_create("Statistics Menu", "_StatisticsMenu", 0) // Statistics Sub - menu
 	g_iPointShopMenu = menu_create("Points Shop", "_PointShop", 0)	// Points shop menu
 	g_iAmmoMenu = menu_create("Buy Ammo Packs", "_AmmoMenu", 0)	// Ammo shop menu
@@ -2616,22 +2622,6 @@ public plugin_init()
 	menu_additem(g_iGameMenu, "Buy features with points", "2", 0, -1)
 	menu_additem(g_iGameMenu, "Unstuck", "3", 0, -1)
 	menu_additem(g_iGameMenu, "Statistics", "4", 0, -1)
-	
-	// Extra Items Human menu
-	for (new i; i < sizeof(g_cExtraItems); i++)
-	{
-		formatex(cLine, 128, "%s %s", g_cExtraItems[i][ItemName], g_cExtraItems[i][PriceTag])
-		num_to_str(i, cNumber, 3)
-		menu_additem(g_iExtraItemsMenu, cLine, cNumber, 0, -1)
-	}
-
-	// Extra Items Zombie menu
-	for (new i; i < sizeof(g_cExtraItemsZombie); i++)
-	{
-		formatex(cLine, 128, "%s %s", g_cExtraItemsZombie[i][ZItemName], g_cExtraItemsZombie[i][ZPriceTag])
-		num_to_str(i, cNumber, 3)
-		menu_additem(g_iExtraItems2Menu, cLine, cNumber, 0, -1)
-	}
 	
 	// Zombie Classes menu
 	for (new i; i < sizeof(g_cZombieClasses); i++)
@@ -3335,10 +3325,10 @@ public _GameMenu(id, menu, item)
 			{
 				if (g_isalive[id])
 				{
-					if (CheckBit(g_playerClass[id], CLASS_HUMAN))
-						menu_display(id, g_iExtraItemsMenu, 0)
-					else if (CheckBit(g_playerClass[id], CLASS_ZOMBIE))
-						menu_display(id, g_iExtraItems2Menu, 0)
+					if (CheckBit(g_playerTeam[id], TEAM_HUMAN))
+						ShowMenuExtraItemHumans(id)
+					else if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
+						ShowMenuExtraItemZombies(id)
 					else client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
 				}
 			}
@@ -3385,6 +3375,51 @@ public _GameMenu(id, menu, item)
 		}
 	}
 	return  PLUGIN_CONTINUE
+}
+
+ShowMenuExtraItemHumans(id)
+{
+	static g_humanExtraItemsMenu, line[128], number[3], ctr
+
+	g_humanExtraItemsMenu = menu_create(fmt("%s's Extra Items", g_classString[id]), "_ExtraItems", 0)	// Human Extra items menu
+
+	for (new i = 0; i < sizeof(g_cExtraItems); i++)
+	{
+		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_HUMAN)))
+		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_TRYDER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SURVIVOR)))
+		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SNIPER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SAMURAI)))
+		|| (CheckBit(g_playerTeam[id], TEAM_HUMAN) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_HUMAN_ALL)))) continue
+		
+		formatex(line, charsmax(line), "%s %s", g_cExtraItems[i][ItemName], g_cExtraItems[i][PriceTag])
+		num_to_str(i, number, 3)
+		menu_additem(g_humanExtraItemsMenu, line, number, 0, -1)
+	}
+	
+	menu_display(id, g_humanExtraItemsMenu, 0)
+}
+
+public ShowMenuExtraItemZombies(id)
+{
+	static g_ZombieExtraItemsMenu, line[128], number[3]
+
+	g_ZombieExtraItemsMenu = menu_create(fmt("%s's Extra Items", g_classString[id]), "_ExtraItems2", 0)	// Human Extra items menu
+
+	for (new i = 0; i < sizeof(g_cExtraItemsZombie); i++)
+	{
+		if ((CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ZOMBIE))) 
+		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ASSASIN))) 
+		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_NEMESIS)))
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_BOMBARDIER)))
+		|| (CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ZOMBIE_ALL)))) continue
+
+		formatex(line, charsmax(line), "%s %s", g_cExtraItemsZombie[i][ItemName], g_cExtraItemsZombie[i][PriceTag])
+		num_to_str(i, number, 3)
+		menu_additem(g_ZombieExtraItemsMenu, line, number, 0, -1)
+	}
+	
+	menu_display(id, g_ZombieExtraItemsMenu, 0)
 }
 
 public _ExtraItems(id, menu, item)
