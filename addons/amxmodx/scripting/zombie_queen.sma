@@ -1046,12 +1046,12 @@ enum _:aCMenuData
 	aCPoints
 }
 
-new g_cAccessMenu[][aCMenuData] =
+new g_cWeaponsMenu[][aCMenuData] =
 {
-	{"Buy Server Slot\y(comming soon)", "\r[2250 points]",  2250},
-	{"Buy Silver VIP\y(comming soon)", 	"\r[10000 points]", 10000},
-	{"Buy Golden VIP\y(comming soon)",  "\r[20000 points]", 20000},
-	{"Buy Diamond VIP\y(comming soon)", "\r[40000 points]", 40000}
+	{"Balrog 7\y(comming soon)", "\r[2250 points]",  2250},
+	{"Janus 7 \y(comming soon)", 	"\r[10000 points]", 10000},
+	{"RPG 7 VIP\y(comming soon)",  "\r[20000 points]", 20000},
+	{"Milkor MG32 VIP\y(comming soon)", "\r[40000 points]", 40000}
 }
 
 enum _: structExtrasTeam (<<=1)
@@ -1064,9 +1064,7 @@ enum _: structExtrasTeam (<<=1)
 	ZQ_EXTRA_ZOMBIE,
 	ZQ_EXTRA_ASSASIN,
 	ZQ_EXTRA_NEMESIS,
-	ZQ_EXTRA_BOMBARDIER,
-	ZQ_EXTRA_HUMAN_ALL,
-	ZQ_EXTRA_ZOMBIE_ALL
+	ZQ_EXTRA_BOMBARDIER
 }
 
 enum _:ExtraItemsData
@@ -1082,9 +1080,9 @@ enum _:ExtraItemsData
 new g_cExtraItems[][ExtraItemsData] =
 {
 	{"Nightvision Goggles", 		  "\r[2 packs]", 	 2, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 1
-	{"Forcefield Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI, 5, 50}, // 2
-	{"Killing Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN, 5, 50}, // 3
-	{"Explosion Field Grenade", 	  "\r[15 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 4
+	{"Forcefield Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI, 5, 50}, // 2
+	{"Killing Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 3
+	{"Explosion Grenade", 	  		  "\r[15 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 4
 	{"Napalm Grenade", 				  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 5
 	{"Frost Grenade", 			 	  "\r[20 packs]", 	20, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 6
 	{"Antidote Grenade", 			  "\r[15 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 7
@@ -1095,10 +1093,10 @@ new g_cExtraItems[][ExtraItemsData] =
 	{"Armor \y(200 AP)", 			  "\r[10 packs]", 	10, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 5
 	{"Crossbow", 					  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 6
 	{"Golden Weapons", 				  "\r[50 packs]",   50, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR, 5, 50}, // 7
-	{"Nemesis", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN, 1,  1}, // 1
-	{"Assassin", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN, 1,  1}, // 2
-	{"Sniper", 						  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN, 1,  1}, // 3
-	{"Survivor", 					  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN, 1,  1} // 4
+	{"Nemesis", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1}, // 1
+	{"Assassin", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1}, // 2
+	{"Sniper", 						  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1}, // 3
+	{"Survivor", 					  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1} // 4
 }
 
 enum _:ExtraItemsData2
@@ -1113,11 +1111,11 @@ enum _:ExtraItemsData2
 
 new g_cExtraItemsZombie[][ExtraItemsData2] =
 {
-	{"Antidote", 		 "\r[15 packs]", 15, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 1
-	{"Zombie Madness",   "\r[17 packs]", 17, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 2
-	{"Infection bomb",   "\r[25 packs]", 25, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 3
-	{"Concussion bomb",  "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE_ALL, 5, 50}, // 4
-	{"Knife Blink", 	 "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE_ALL, 5, 50} // 4
+	{"Antidote", 		 "\r[15 packs]", 15, ZQ_EXTRA_ZOMBIE, 5, 50}, // 1
+	{"Zombie Madness",   "\r[17 packs]", 17, ZQ_EXTRA_ZOMBIE, 5, 50}, // 2
+	{"Infection bomb",   "\r[25 packs]", 25, ZQ_EXTRA_ZOMBIE, 5, 50}, // 3
+	{"Concussion bomb",  "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE, 5, 50}, // 4
+	{"Knife Blink", 	 "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE, 5, 50} // 4
 }
 
 enum _:Items
@@ -1169,7 +1167,7 @@ new g_iPointShopMenu
 new g_iAmmoMenu
 new g_iFeaturesMenu
 new g_iModesMenu
-new g_iAccessMenu
+new g_iWeaponsMenu
 
 new g_PrimaryMenu
 new g_SecondaryMenu
@@ -1184,15 +1182,7 @@ enum _: canFunc
 	PSHOP_PACKS,
 	PSHOP_FEATURES,
 	PSHOP_WEAPONS,
-	PSHOP_MODES,
-	START_MODE
-}
-
-// Can() func purpose
-enum _: canFuncPurpose
-{
-	BUY = 0,
-	VIEW
+	PSHOP_MODES
 }
 
 // Mode names
@@ -2614,7 +2604,7 @@ public plugin_init()
 	g_iAmmoMenu = menu_create("Buy Ammo Packs", "_AmmoMenu", 0)	// Ammo shop menu
 	g_iFeaturesMenu = menu_create("Buy Features", "_Features", 0)	// Features menu
 	g_iModesMenu = menu_create("Buy Modes", "_Modes", 0)	// Modes menu
-	g_iAccessMenu = menu_create("Buy Access", "_Access", 0)	// Buy access menu
+	g_iWeaponsMenu = menu_create("Buy Access", "_Weapons", 0)	// Buy access menu
 	
 	// Main Game menu
 	menu_additem(g_iGameMenu, "Buy extra items", "0", 0, -1)
@@ -2669,11 +2659,11 @@ public plugin_init()
 	}
 	
 	// Access menu
-	for (new i; i < sizeof(g_cAccessMenu); i++)
+	for (new i; i < sizeof(g_cWeaponsMenu); i++)
 	{
-		formatex(cLine, 128, "%s %s", g_cAccessMenu[i][aCItemName], g_cAccessMenu[i][aCItemTag])
+		formatex(cLine, 128, "%s %s", g_cWeaponsMenu[i][aCItemName], g_cWeaponsMenu[i][aCItemTag])
 		num_to_str(i, cNumber, 3)
-		menu_additem(g_iAccessMenu, cLine, cNumber, 0, -1)
+		menu_additem(g_iWeaponsMenu, cLine, cNumber, 0, -1)
 	}
 	
 	g_PrimaryMenu = menu_create("Primary Weapons", "PrimaryHandler")
@@ -2769,11 +2759,11 @@ public MySql_Init()
 
 public register_client(FailState,Handle:Query,Error[],Errcode,Data[],DataSize)
 {
-	if(FailState == TQUERY_CONNECT_FAILED)
+	if (FailState == TQUERY_CONNECT_FAILED)
 	{
 	    log_amx("Load - Could not connect to SQL database.  [%d] %s", Errcode, Error)
 	}
-	else if(FailState == TQUERY_QUERY_FAILED)
+	else if (FailState == TQUERY_QUERY_FAILED)
 	{
 	    log_amx("Load Query failed. [%d] %s", Errcode, Error)
 	}
@@ -2781,7 +2771,7 @@ public register_client(FailState,Handle:Query,Error[],Errcode,Data[],DataSize)
 	new id
 	id = Data[0]
 
-	if(SQL_NumResults(Query) < 1) 
+	if (SQL_NumResults(Query) < 1) 
 	{
 	    // If there are no results found
 	    
@@ -3379,7 +3369,7 @@ public _GameMenu(id, menu, item)
 
 ShowMenuExtraItemHumans(id)
 {
-	static g_humanExtraItemsMenu, line[128], number[3], ctr
+	static g_humanExtraItemsMenu, line[128], number[3]
 
 	g_humanExtraItemsMenu = menu_create(fmt("%s's Extra Items", g_classString[id]), "_ExtraItems", 0)	// Human Extra items menu
 
@@ -3389,8 +3379,7 @@ ShowMenuExtraItemHumans(id)
 		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_TRYDER)))
 		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SURVIVOR)))
 		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SNIPER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SAMURAI)))
-		|| (CheckBit(g_playerTeam[id], TEAM_HUMAN) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_HUMAN_ALL)))) continue
+		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SAMURAI)))) continue
 		
 		formatex(line, charsmax(line), "%s %s", g_cExtraItems[i][ItemName], g_cExtraItems[i][PriceTag])
 		num_to_str(i, number, 3)
@@ -3411,8 +3400,7 @@ public ShowMenuExtraItemZombies(id)
 		if ((CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ZOMBIE))) 
 		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ASSASIN))) 
 		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_NEMESIS)))
-		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_BOMBARDIER)))
-		|| (CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ZOMBIE_ALL)))) continue
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_BOMBARDIER)))) continue
 
 		formatex(line, charsmax(line), "%s %s", g_cExtraItemsZombie[i][ItemName], g_cExtraItemsZombie[i][PriceTag])
 		num_to_str(i, number, 3)
@@ -3431,515 +3419,453 @@ public _ExtraItems(id, menu, item)
 		static cBuffer[3]
 		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
 		iChoice = str_to_num(cBuffer)
-		
-		if (CheckBit(g_playerClass[id], CLASS_HUMAN))
+
+		switch (iChoice)
 		{
-			switch (iChoice)
+		case EXTRA_NIGHTVISION:
 			{
-			case EXTRA_NIGHTVISION:
+				if (CanBuy(EXTRA_HUMANS, EXTRA_NIGHTVISION, id))
 				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_NIGHTVISION, id))
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
 					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							g_nvision[id] = true
-							
-							set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(id, g_MsgSync6, "You bought Nightvision Googles!", g_playername[id])
-
-							// Check is the user is not bot
-							if (!g_isbot[id])
-							{
-								g_nvisionenabled[id] = true
-								
-								// Custom nvg?
-								if (CustomNightVision)
-								{
-									remove_task(id + TASK_NVISION)
-									set_task(0.1, "set_user_nvision", id+TASK_NVISION, _, _, "b")
-								}
-								else set_user_gnvision(id, 1)
-							}
-							else cs_set_user_nvg(id, 1)
-
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
 					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_FORCEFIELD_NADE:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_FORCEFIELD_NADE, id))
+
+					g_nvision[id] = true
+					
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Nightvision Googles!", g_playername[id])
+
+					// Check is the user is not bot
+					if (!g_isbot[id])
 					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
+						g_nvisionenabled[id] = true
+						
+						// Custom nvg?
+						if (CustomNightVision)
 						{
-							// Already own one
-							if (user_has_weapon(id, CSW_SMOKEGRENADE))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							else
-							{
-								// Set the boolean to true
-								g_bubblebomb[id] = 100
-
-								// Give weapon to the player
-								set_weapon(id, CSW_SMOKEGRENADE, 100)	
-
-								// Show HUD message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Force Field Grenade!")
-
-								// Play clip purchase sound
-								emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-								g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-							}	
+							remove_task(id + TASK_NVISION)
+							set_task(0.1, "set_user_nvision", id+TASK_NVISION, _, _, "b")
 						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
+						else set_user_gnvision(id, 1)
 					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_KILL_NADE:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_KILL_NADE, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							// Already own one
-							if (user_has_weapon(id, CSW_HEGRENADE))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							else
-							{
-								LIMIT[id][KILL_NADE]++
+					else cs_set_user_nvg(id, 1)
 
-								// Set the boolean to true
-								g_killingbomb[id]++
-
-								// Give weapon to the player
-								set_weapon(id, CSW_HEGRENADE, 1)
-
-								// Show HUD message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Killing Grenade!")
-
-								// Play clip purchase sound
-								emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-								g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-							}
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_EXPLOSION_NADE:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_EXPLOSION_NADE, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							// Already own one
-							if (user_has_weapon(id, CSW_HEGRENADE))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							else
-							{
-								// Give weapon to the player
-								set_weapon(id, CSW_HEGRENADE, 1)	
-
-								// Show hud message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Explosion Grenade!")
-								
-								// Play clip purchase sound
-								emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-								g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-							}
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_NAPALM_NADE:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_NAPALM_NADE, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							// Already own one
-							if (user_has_weapon(id, CSW_FLASHBANG))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED	
-							}
-							else
-							{
-								// Give weapon to the player
-								set_weapon(id, CSW_FLASHBANG, 1)
-
-								// Show HUD message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Napalm Grenade!")	
-
-								// Play clip purchase sound
-								emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-								g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-							}
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_FROST_NADE:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_FROST_NADE, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							// Already own one
-							if (user_has_weapon(id, CSW_SMOKEGRENADE))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							else
-							{
-								// Give weapon to the player
-								set_weapon(id, CSW_SMOKEGRENADE, 1)	
-
-								// Show HUD Message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Frost Grenade!")
-
-								// Play clip purchase sound
-								emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-								g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-							}
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_ANTIDOTE_NADE:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_ANTIDOTE_NADE, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							// Already own one
-							if (user_has_weapon(id, CSW_HEGRENADE))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							else
-							{
-								LIMIT[id][ANTIDOTE_NADE]++
-
-								// Set the boolean to true
-								g_antidotebomb[id]++
-
-								// Give weapon to the player
-								set_weapon(id, CSW_HEGRENADE, 1)
-
-								// Show HUD message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Antidote Grenade!")
-
-								g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-							}
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_MULTIJUMP:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_MULTIJUMP, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							g_multijump[id] = true
-							g_jumpnum[id]++
-							set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(id, g_MsgSync6, "You can now jump %d times!", g_jumpnum[id] + 1)
-
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_JETPACK:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_JETPACK, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							if (get_user_jetpack(id)) 
-							user_drop_jetpack(id, 1)
-
-							set_user_jetpack(id, 1)
-							set_user_fuel(id, 250.0)
-							set_user_rocket_time(id, 0.0)
-							client_print_color(id, print_team_grey, "%s Press^3 CTR+SPACE^1 to fly!", CHAT_PREFIX)
-							client_print_color(id, print_team_grey, "%s Press^3 RIGHT CLICK^1 to shoot!", CHAT_PREFIX)
-							set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Jetpack!", g_playername[id])
-
-							emit_sound(id, CHAN_STATIC, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
-
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_TRYDER:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_TRYDER, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							LIMIT[id][TRYDER]++
-
-							MakeHuman(id, CLASS_TRYDER)		// Make him tryder
-							set_hudmessage(190, 55, 115, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s is now a Tryder!", g_playername[id])
-							client_cmd(id, "spk PerfectZM/armor_equip")
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_ARMOR_100:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_ARMOR_100, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							if (pev(id, pev_armorvalue) > 120)
-							{
-								client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							set_pev(id, pev_armorvalue, pev(id, pev_armorvalue) + 100.0)
-							client_cmd(id, "spk PerfectZm/armor_equip")
-							set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(id, g_MsgSync6, "You've been equiped with armor (100ap)")
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_ARMOR_200:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_ARMOR_200, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							if (pev(id, pev_armorvalue) > 120)
-							{
-								client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							set_pev(id, pev_armorvalue, pev(id, pev_armorvalue) + 200.0)
-							client_cmd(id, "spk PerfectZM/armor_equip")
-							set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(id, g_MsgSync6, "You've been equiped with armor (200ap)")
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_CROSSBOW:
-				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_CROSSBOW, id))
-					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							if (user_has_weapon(id, CSW_SG550)) drop_prim(id)
-							g_has_crossbow[id] = true
-							new iWep2 = give_item(id,"weapon_sg550")
-							client_cmd(id, "spk ^"fvox/get_crossbow acquired^"")
-							cs_set_weapon_ammo(iWep2, CROSSBOW_CLIP)
-							cs_set_user_bpammo (id, CSW_SG550, 10000)
-							set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playername[id])
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-					}
-					return PLUGIN_HANDLED
-				}
-			case EXTRA_GOLDEN_WEAPONS:
-			{
-				if (Can(EXTRA_HUMANS, BUY, EXTRA_GOLDEN_WEAPONS, id))
-				{
-					/* Coming soon */
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
-			case EXTRA_CLASS_NEMESIS:
+		case EXTRA_FORCEFIELD_NADE:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_FORCEFIELD_NADE, id))
 				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_CLASS_NEMESIS, id))
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
 					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							LIMIT[id][MODES]++
-
-							remove_task(TASK_COUNTDOWN)
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_NEMESIS, id)
-							set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s brought Nemesis", g_playername[id])
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
 					}
-					return PLUGIN_HANDLED
+
+					// Already own one
+					if (user_has_weapon(id, CSW_SMOKEGRENADE))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+					
+					// Set the boolean to true
+					g_bubblebomb[id] = 100
+
+					// Give weapon to the player
+					set_weapon(id, CSW_SMOKEGRENADE, 100)	
+
+					// Show HUD message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Force Field Grenade!")
+
+					// Play clip purchase sound
+					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
-			case EXTRA_CLASS_ASSASIN:
+			}
+		case EXTRA_KILL_NADE:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_KILL_NADE, id))
 				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_CLASS_ASSASIN, id))
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
 					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							LIMIT[id][MODES]++
-
-							remove_task(TASK_COUNTDOWN)
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_ASSASIN, id)
-							set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s brought Assassin", g_playername[id])
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
 					}
-					return PLUGIN_HANDLED
+					
+					// Already own one
+					if (user_has_weapon(id, CSW_HEGRENADE))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					LIMIT[id][KILL_NADE]++
+
+					// Set the boolean to true
+					g_killingbomb[id]++
+
+					// Give weapon to the player
+					set_weapon(id, CSW_HEGRENADE, 1)
+
+					// Show HUD message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Killing Grenade!")
+
+					// Play clip purchase sound
+					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
-			case EXTRA_CLASS_SNIPER:
+			}
+		case EXTRA_EXPLOSION_NADE:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_EXPLOSION_NADE, id))
 				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_CLASS_SNIPER, id))
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
 					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							LIMIT[id][MODES]++
-
-							remove_task(TASK_COUNTDOWN)
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_SNIPER, id)
-							set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s brought Sniper", g_playername[id])
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
 					}
-					return PLUGIN_HANDLED
+
+					// Already own one
+					if (user_has_weapon(id, CSW_HEGRENADE))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+						
+					// Give weapon to the player
+					set_weapon(id, CSW_HEGRENADE, 1)	
+
+					// Show hud message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Explosion Grenade!")
+					
+					// Play clip purchase sound
+					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
-			case EXTRA_CLASS_SURVIVOR:
+			}
+		case EXTRA_NAPALM_NADE:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_NAPALM_NADE, id))
 				{
-					if (Can(EXTRA_HUMANS, BUY, EXTRA_CLASS_SURVIVOR, id))
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
 					{
-						if (g_ammopacks[id] >= g_cExtraItems[iChoice][Price])
-						{
-							LIMIT[id][MODES]++
-
-							remove_task(TASK_COUNTDOWN)
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_SURVIVOR, id)
-							set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s brought Survivor", g_playername[id])
-							g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
-						}
-						else
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
 					}
-					return PLUGIN_HANDLED
+
+					// Already own one
+					if (user_has_weapon(id, CSW_FLASHBANG))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED	
+					}
+						
+					// Give weapon to the player
+					set_weapon(id, CSW_FLASHBANG, 1)
+
+					// Show HUD message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Napalm Grenade!")	
+
+					// Play clip purchase sound
+					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_FROST_NADE:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_FROST_NADE, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					// Already own one
+					if (user_has_weapon(id, CSW_SMOKEGRENADE))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+						
+					// Give weapon to the player
+					set_weapon(id, CSW_SMOKEGRENADE, 1)	
+
+					// Show HUD Message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Frost Grenade!")
+
+					// Play clip purchase sound
+					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_ANTIDOTE_NADE:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_ANTIDOTE_NADE, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					// Already own one
+					if (user_has_weapon(id, CSW_HEGRENADE))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+						
+					LIMIT[id][ANTIDOTE_NADE]++
+
+					// Set the boolean to true
+					g_antidotebomb[id]++
+
+					// Give weapon to the player
+					set_weapon(id, CSW_HEGRENADE, 1)
+
+					// Show HUD message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Antidote Grenade!")
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_MULTIJUMP:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_MULTIJUMP, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					g_multijump[id] = true
+					g_jumpnum[id]++
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You can now jump %d times!", g_jumpnum[id] + 1)
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_JETPACK:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_JETPACK, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					if (get_user_jetpack(id)) 
+					user_drop_jetpack(id, 1)
+
+					set_user_jetpack(id, 1)
+					set_user_fuel(id, 250.0)
+					set_user_rocket_time(id, 0.0)
+					client_print_color(id, print_team_grey, "%s Press^3 CTR+SPACE^1 to fly!", CHAT_PREFIX)
+					client_print_color(id, print_team_grey, "%s Press^3 RIGHT CLICK^1 to shoot!", CHAT_PREFIX)
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Jetpack!", g_playername[id])
+
+					emit_sound(id, CHAN_STATIC, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
+
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_TRYDER:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_TRYDER, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					LIMIT[id][TRYDER]++
+
+					MakeHuman(id, CLASS_TRYDER)		// Make him tryder
+					set_hudmessage(190, 55, 115, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s is now a Tryder!", g_playername[id])
+					client_cmd(id, "spk PerfectZM/armor_equip")
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_ARMOR_100:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_ARMOR_100, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					if (pev(id, pev_armorvalue) > 120)
+					{
+						client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					set_pev(id, pev_armorvalue, pev(id, pev_armorvalue) + 100.0)
+					client_cmd(id, "spk PerfectZm/armor_equip")
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You've been equiped with armor (100ap)")
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_ARMOR_200:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_ARMOR_200, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					if (pev(id, pev_armorvalue) > 120)
+					{
+						client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					set_pev(id, pev_armorvalue, pev(id, pev_armorvalue) + 200.0)
+					client_cmd(id, "spk PerfectZM/armor_equip")
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You've been equiped with armor (200ap)")
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_CROSSBOW:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_CROSSBOW, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					if (user_has_weapon(id, CSW_SG550)) drop_prim(id)
+
+					g_has_crossbow[id] = true
+					new iWep2 = give_item(id,"weapon_sg550")
+					client_cmd(id, "spk ^"fvox/get_crossbow acquired^"")
+					cs_set_weapon_ammo(iWep2, CROSSBOW_CLIP)
+					cs_set_user_bpammo (id, CSW_SG550, 10000)
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playername[id])
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_GOLDEN_WEAPONS:
+		{
+			if (CanBuy(EXTRA_HUMANS, EXTRA_GOLDEN_WEAPONS, id))
+			{
+				/* Coming soon */
+			}
+		}
+		case EXTRA_CLASS_NEMESIS:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_NEMESIS, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					LIMIT[id][MODES]++
+
+					remove_task(TASK_COUNTDOWN)
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_NEMESIS, id)
+					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Nemesis", g_playername[id])
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_CLASS_ASSASIN:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_ASSASIN, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					LIMIT[id][MODES]++
+
+					remove_task(TASK_COUNTDOWN)
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_ASSASIN, id)
+					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Assassin", g_playername[id])
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_CLASS_SNIPER:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_SNIPER, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					LIMIT[id][MODES]++
+
+					remove_task(TASK_COUNTDOWN)
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SNIPER, id)
+					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Sniper", g_playername[id])
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
+				}
+			}
+		case EXTRA_CLASS_SURVIVOR:
+			{
+				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_SURVIVOR, id))
+				{
+					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+					{
+						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					LIMIT[id][MODES]++
+
+					remove_task(TASK_COUNTDOWN)
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SURVIVOR, id)
+					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Survivor", g_playername[id])
+					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		}
 	}
+
 	return PLUGIN_CONTINUE
 }
 
@@ -3960,159 +3886,147 @@ public _ExtraItems2(id, menu, item)
 			{
 			case EXTRA_ANTIDOTE:
 				{
-					if (Can(EXTRA_ZOMBIES, BUY, EXTRA_ANTIDOTE, id))
+					if (CanBuy(EXTRA_ZOMBIES, EXTRA_ANTIDOTE, id))
 					{
-						if (g_ammopacks[id] >= g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							// Make him human
-							MakeHuman(id)
-
-							// Antidote sound
-							emit_sound(id, CHAN_ITEM, sound_antidote[random(sizeof sound_antidote)], 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-							// Make teleport effect
-							SendTeleport(id)
-							
-							// Show Antidote HUD notice
-							set_hudmessage(9, 201, 214, HUD_INFECT_X, HUD_INFECT_Y, 1, 0.0, 3.0, 2.0, 1.0, -1)
-							ShowSyncHudMsg(0, g_MsgSync, "%s has used an antidote!", g_playername[id])
-
-							client_print_color(id, print_team_grey, "%s You are human now", CHAT_PREFIX)
-
-							g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-						}
-						else
+						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
 						{
 							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
 							return PLUGIN_HANDLED
 						}
+
+						// Make him human
+						MakeHuman(id)
+
+						// Antidote sound
+						emit_sound(id, CHAN_ITEM, sound_antidote[random(sizeof sound_antidote)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+						// Make teleport effect
+						SendTeleport(id)
+						
+						// Show Antidote HUD notice
+						set_hudmessage(9, 201, 214, HUD_INFECT_X, HUD_INFECT_Y, 1, 0.0, 3.0, 2.0, 1.0, -1)
+						ShowSyncHudMsg(0, g_MsgSync, "%s has used an antidote!", g_playername[id])
+
+						client_print_color(id, print_team_grey, "%s You are human now", CHAT_PREFIX)
+
+						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
 					}
-					return PLUGIN_HANDLED
 				}
 			case EXTRA_MADNESS:
 				{
-					if (Can(EXTRA_ZOMBIES, BUY, EXTRA_MADNESS, id))
+					if (CanBuy(EXTRA_ZOMBIES, EXTRA_MADNESS, id))
 					{
-						if (g_ammopacks[id] >= g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							// Show the player HUD message
-							set_hudmessage(255, 0, 0, -1.0, 0.70, 1, 0.0, 3.0, 2.0, 1.0, -1)
-							ShowSyncHudMsg(id, g_MsgSync6, "You bought Zombie Madness!")
-
-							// Set the bool to true
-							g_nodamage[id] = true
-
-							// Set glow on player
-							set_glow(id, 255, 0, 0, 255)
-
-							//set_task(0.1, "zombie_aura", id+TASK_AURA, _, _, "b")
-							set_task(float(MadnessDuration), "madness_over", id+TASK_BLOOD)
-							
-							// Play madness sound
-							emit_sound(id, CHAN_VOICE, zombie_madness[random(sizeof zombie_madness)], 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-							g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-						}
-						else
+						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
 						{
 							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
 							return PLUGIN_HANDLED
 						}
+
+						// Show the player HUD message
+						set_hudmessage(255, 0, 0, -1.0, 0.70, 1, 0.0, 3.0, 2.0, 1.0, -1)
+						ShowSyncHudMsg(id, g_MsgSync6, "You bought Zombie Madness!")
+
+						// Set the bool to true
+						g_nodamage[id] = true
+
+						// Set glow on player
+						set_glow(id, 255, 0, 0, 255)
+
+						//set_task(0.1, "zombie_aura", id+TASK_AURA, _, _, "b")
+						set_task(float(MadnessDuration), "madness_over", id+TASK_BLOOD)
+						
+						// Play madness sound
+						emit_sound(id, CHAN_VOICE, zombie_madness[random(sizeof zombie_madness)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
 					}
-					return PLUGIN_HANDLED
 				}
 			case EXTRA_INFECTION_NADE:
 				{
-					if (Can(EXTRA_ZOMBIES, BUY, EXTRA_INFECTION_NADE, id))
+					if (CanBuy(EXTRA_ZOMBIES, EXTRA_INFECTION_NADE, id))
 					{
-						if (g_ammopacks[id] >= g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							// Already own one
-							if (user_has_weapon(id, CSW_HEGRENADE))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							else
-							{
-								// Show HUD message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Infection Bomb!")
-
-								// Play clip purchase sound
-								emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-								// Give weapon to the player
-								set_weapon(id, CSW_HEGRENADE, 1)	
-
-								g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-							}	
-						}
-						else
+						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
 						{
 							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
 							return PLUGIN_HANDLED
 						}
+
+						// Already own one
+						if (user_has_weapon(id, CSW_HEGRENADE))
+						{
+							client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+							return PLUGIN_HANDLED
+						}
+
+						// Show HUD message
+						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+						ShowSyncHudMsg(id, g_MsgSync6, "You bought Infection Bomb!")
+
+						// Play clip purchase sound
+						emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+						// Give weapon to the player
+						set_weapon(id, CSW_HEGRENADE, 1)	
+
+						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
 					}
-					return PLUGIN_HANDLED
 				}
 			case EXTRA_CONCUSSION_NADE:
 				{
-					if (Can(EXTRA_ZOMBIES, BUY, EXTRA_CONCUSSION_NADE, id))
+					if (CanBuy(EXTRA_ZOMBIES, EXTRA_CONCUSSION_NADE, id))
 					{
-						if (g_ammopacks[id] >= g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							// Already own one
-							if (user_has_weapon(id, CSW_FLASHBANG))
-							{
-								client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-								return PLUGIN_HANDLED
-							}
-							else
-							{
-								// Set the boolean to true
-								g_concussionbomb[id]++
-
-								// Give weapon to the player
-								set_weapon(id, CSW_FLASHBANG, 1)	
-
-								// Show HUD message
-								set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-								ShowSyncHudMsg(id, g_MsgSync6, "You bought Concussion Bomb!")
-
-								// Play clip purchase sound
-								emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-								g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-							}
-						}
-						else
+						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
 						{
 							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
 							return PLUGIN_HANDLED
 						}
+
+						// Already own one
+						if (user_has_weapon(id, CSW_FLASHBANG))
+						{
+							client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+							return PLUGIN_HANDLED
+						}
+							
+						// Set the boolean to true
+						g_concussionbomb[id]++
+
+						// Give weapon to the player
+						set_weapon(id, CSW_FLASHBANG, 1)	
+
+						// Show HUD message
+						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+						ShowSyncHudMsg(id, g_MsgSync6, "You bought Concussion Bomb!")
+
+						// Play clip purchase sound
+						emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
 					}
-					return PLUGIN_HANDLED
 				}
 				case EXTRA_KNIFE_BLINK:
 				{
-					if (Can(EXTRA_ZOMBIES, BUY, EXTRA_KNIFE_BLINK, id))
+					if (CanBuy(EXTRA_ZOMBIES, EXTRA_KNIFE_BLINK, id))
 					{
-						if (g_ammopacks[id] >= g_cExtraItemsZombie[iChoice][ZPrice])
+						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
 						{
-							g_blinks[id] += 5
-
-							// Show HUD message
-							set_hudmessage(115, 230, 1, -1.0, 0.80, 1, 0.0, 0.0, 3.0, 2.0, -1)
-							ShowSyncHudMsg(0, g_MsgSync6, "%s bought knife blinks!", g_playername[id])
-
-							g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
+							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+							return PLUGIN_HANDLED
 						}
+
+						g_blinks[id] += 5
+
+						// Show HUD message
+						set_hudmessage(115, 230, 1, -1.0, 0.80, 1, 0.0, 0.0, 3.0, 2.0, -1)
+						ShowSyncHudMsg(0, g_MsgSync6, "%s bought knife blinks!", g_playername[id])
+
+						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
 					}
 				}
 			}
 		}
 	}
+
 	return PLUGIN_CONTINUE
 }
 
@@ -4130,6 +4044,7 @@ public _ZombieClasses(id, menu, item)
 		client_print_color(id, print_team_grey, "%s You will be^4 %s^1 after the next infection!", CHAT_PREFIX, g_cZombieClasses[iChoice][ZombieName])
 		client_print_color(id, print_team_grey, "%s Health:^4 %s^1 | Speed:^4 %0.0f^1 | Gravity:^4 %0.0f^1 | Knockback:^4 %0.0f%", CHAT_PREFIX, AddCommas(g_cZombieClasses[iChoice][Health]), g_cZombieClasses[iChoice][Speed], floatmul(100.0, g_cZombieClasses[iChoice][Gravity]), floatmul(100.0, g_cZombieClasses[iChoice][Knockback]))
 	}
+	
 	return PLUGIN_CONTINUE
 }
 
@@ -4168,7 +4083,7 @@ public _PointShop(id, menu, item)
 			case 0: menu_display(id, g_iAmmoMenu, 0)
 			case 1: menu_display(id, g_iFeaturesMenu, 0)
 			case 2: menu_display(id, g_iModesMenu, 0)
-			case 3: menu_display(id, g_iAccessMenu, 0)
+			case 3: menu_display(id, g_iWeaponsMenu, 0)
 		}
 	}
 	return PLUGIN_CONTINUE
@@ -4188,7 +4103,7 @@ public _AmmoMenu(id, menu, item)
 		{
 		case PSHOP_PACKS_100:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_PACKS_100, id))
+				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_100, id))
 				{
 					if (g_points[id] >= g_cAmmoMenu[iChoice][APoints])
 					{
@@ -4209,7 +4124,7 @@ public _AmmoMenu(id, menu, item)
 			}
 		case PSHOP_PACKS_200:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_PACKS_200, id))
+				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_200, id))
 				{
 					if (g_points[id] >= g_cAmmoMenu[iChoice][APoints])
 					{
@@ -4230,7 +4145,7 @@ public _AmmoMenu(id, menu, item)
 			}
 		case PSHOP_PACKS_300:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_PACKS_300, id))
+				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_300, id))
 				{
 					if (g_points[id] >= g_cAmmoMenu[iChoice][APoints])
 					{
@@ -4251,7 +4166,7 @@ public _AmmoMenu(id, menu, item)
 			}
 		case PSHOP_PACKS_400:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_PACKS_400, id))
+				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_400, id))
 				{
 					if (g_points[id] >= g_cAmmoMenu[iChoice][APoints])
 					{
@@ -4272,7 +4187,7 @@ public _AmmoMenu(id, menu, item)
 			}
 		case PSHOP_PACKS_500:
 			{
-				if (Can(PSHOP_PACKS, BUY, PSHOP_PACKS_500, id))
+				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_500, id))
 				{
 					if (g_points[id] >= g_cAmmoMenu[iChoice][APoints])
 					{
@@ -4310,7 +4225,7 @@ public _Features(id, menu, item)
 		{
 		case PSHOP_FEATURE_GOD_MODE:
 			{
-				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_GOD_MODE, id))
+				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_GOD_MODE, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4332,7 +4247,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_DOUBLE_DAMAGE:
 			{
-				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_DOUBLE_DAMAGE, id))
+				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_DOUBLE_DAMAGE, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4353,7 +4268,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_NO_RECOIL:
 			{
-				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_NO_RECOIL, id))
+				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_NO_RECOIL, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4374,7 +4289,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_INVISIBILITY:
 			{
-				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_INVISIBILITY, id))
+				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_INVISIBILITY, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4394,7 +4309,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_SPRINT:
 			{
-				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_SPRINT, id))
+				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_SPRINT, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4416,7 +4331,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_LOW_GRAVITY:
 			{
-				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_LOW_GRAVITY, id))
+				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_LOW_GRAVITY, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4436,7 +4351,7 @@ public _Features(id, menu, item)
 			}
 		case PSHOP_FEATURE_HEAD_HUNTER:
 			{
-				if (Can(PSHOP_FEATURES, BUY, PSHOP_FEATURE_HEAD_HUNTER, id))
+				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_HEAD_HUNTER, id))
 				{
 					if (g_points[id] >= g_cFeaturesMenu[iChoice][FPoints])
 					{
@@ -4475,7 +4390,7 @@ public _Modes(id, menu, item)
 		{
 		case PSHOP_MODE_SURVIVOR_VS_NEMESIS:
 			{
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_SURVIVOR_VS_NEMESIS, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SURVIVOR_VS_NEMESIS, id))
 				{
 					if (g_points[id] >= g_cModesMenu[iChoice][MPoints])
 					{
@@ -4498,14 +4413,14 @@ public _Modes(id, menu, item)
 			}
 		case PSHOP_MODE_SURVIVOR_VS_ASSASIN: 
 		{ 
-			if (Can(PSHOP_MODES, BUY, PSHOP_MODE_SURVIVOR_VS_ASSASIN, id))
+			if (CanBuy(PSHOP_MODES, PSHOP_MODE_SURVIVOR_VS_ASSASIN, id))
 			{
 
 			}
 		}
 		case PSHOP_MODE_SNIPER_VS_NEMESIS:
 			{
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_SNIPER_VS_NEMESIS, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SNIPER_VS_NEMESIS, id))
 				{
 					if (g_points[id] >= g_cModesMenu[iChoice][MPoints])
 					{
@@ -4528,7 +4443,7 @@ public _Modes(id, menu, item)
 			}
 		case PSHOP_MODE_SNIPER_VS_ASSASIN:
 			{
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_SNIPER_VS_ASSASIN, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SNIPER_VS_ASSASIN, id))
 				{
 					if (g_points[id] >= g_cModesMenu[iChoice][MPoints])
 					{
@@ -4551,7 +4466,7 @@ public _Modes(id, menu, item)
 			}
 		case PSHOP_MODE_NIGHTMARE:
 			{
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_NIGHTMARE, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_NIGHTMARE, id))
 				{
 					if (g_points[id] >= g_cModesMenu[iChoice][MPoints])
 					{
@@ -4574,35 +4489,35 @@ public _Modes(id, menu, item)
 			}
 		case PSHOP_MODE_SYNAPSIS: 
 			{ 
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_SYNAPSIS, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SYNAPSIS, id))
 				{
 
 				}
 			} 
 		case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: 
 			{ 
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
 				{
 
 				}
 			}
 		case PSHOP_MODE_SAMURAI_VS_NEMESIS: 
 			{ 
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
 				{
 
 				}
 			}
 		case PSHOP_MODE_SONIC_VS_SHADOW: 
 			{ 	
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_SONIC_VS_SHADOW, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SONIC_VS_SHADOW, id))
 				{
 
 				}
 			}
 		case PSHOP_MODE_NIGHTCRAWLER: 
 			{ 
-				if (Can(PSHOP_MODES, BUY, PSHOP_MODE_NIGHTCRAWLER, id))
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_NIGHTCRAWLER, id))
 				{
 
 				}
@@ -4612,7 +4527,7 @@ public _Modes(id, menu, item)
 	return PLUGIN_CONTINUE
 }
 
-public _Access(id, menu, item)
+public _Weapons(id, menu, item)
 {
 	if (item != -3)
 	{
@@ -5774,7 +5689,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 				// Send Screenshake message
 				SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
 			}
-			else if ((CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) && (damage_type & DMG_BULLET))
+			else if ((CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER)) && (damage_type & DMG_BULLET))
 			{
 				set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
 				show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))	
@@ -13967,308 +13882,207 @@ allowed_devil()
 	return true
 }
 
-Can(category, action, item, id)
+CanBuy(category, item, id)
 {
 	switch (category)
 	{
 		case EXTRA_HUMANS:
-		{
-			switch (action)
+		{	
+			switch (item)
 			{
-				case BUY:
+				case EXTRA_NIGHTVISION: return true 
+				case EXTRA_FORCEFIELD_NADE: return true 
+				case EXTRA_KILL_NADE:
 				{
-					switch (item)
+					if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE))
+						return false
+					else
 					{
-						case EXTRA_NIGHTVISION: return true 
-						case EXTRA_FORCEFIELD_NADE: return true 
-						case EXTRA_KILL_NADE:
+						if (LIMIT[id][KILL_NADE] == 2)
 						{
-							if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE))
-								return false
-							else
-							{
-								if (LIMIT[id][KILL_NADE] == 2)
-								{
-									client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
-									return false
-								}
-								else return true 
-							}
+							client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
+							return false
 						}
-						case EXTRA_EXPLOSION_NADE: return true 
-						case EXTRA_NAPALM_NADE: return true 
-						case EXTRA_FROST_NADE: return true 
-						case EXTRA_ANTIDOTE_NADE:
+						else return true 
+					}
+				}
+				case EXTRA_EXPLOSION_NADE: return true 
+				case EXTRA_NAPALM_NADE: return true 
+				case EXTRA_FROST_NADE: return true 
+				case EXTRA_ANTIDOTE_NADE:
+				{
+					if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE))
+						return false
+					else
+					{
+						if (LIMIT[id][ANTIDOTE_NADE] == 2)
 						{
-							if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE))
-								return false
-							else
-							{
-								if (LIMIT[id][ANTIDOTE_NADE] == 2)
-								{
-									client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
-									return false
-								}
-								else return true 
-							}
+							client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
+							return false
 						}
-						case EXTRA_MULTIJUMP: return true 
-						case EXTRA_JETPACK: return true 
-						case EXTRA_TRYDER:
+						else return true 
+					}
+				}
+				case EXTRA_MULTIJUMP: return true 
+				case EXTRA_JETPACK: return true 
+				case EXTRA_TRYDER:
+				{
+					if (LIMIT[id][TRYDER] == 2)
+					{
+						client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
+						return false
+					}
+					else return true 
+				}
+				case EXTRA_ARMOR_100: return true 
+				case EXTRA_ARMOR_200: return true 
+				case EXTRA_CROSSBOW: return true 
+				case EXTRA_GOLDEN_WEAPONS: return true
+				case EXTRA_CLASS_NEMESIS, EXTRA_CLASS_ASSASIN, EXTRA_CLASS_SNIPER, EXTRA_CLASS_SURVIVOR:
+				{
+					if (g_modestarted ||  g_endround)
+					{
+						client_print_color(id, print_team_grey, "%s You cannot ^4buy mode ^1right now", CHAT_PREFIX)
+						return false
+					}
+					else
+					{
+						if (g_roundcount > 10)
 						{
-							if (LIMIT[id][TRYDER] == 2)
+							if (LIMIT[id][MODES] == 1)
 							{
 								client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
 								return false
 							}
-							else return true 
-						}
-						case EXTRA_ARMOR_100: return true 
-						case EXTRA_ARMOR_200: return true 
-						case EXTRA_CROSSBOW: return true 
-						case EXTRA_GOLDEN_WEAPONS: return true
-						case EXTRA_CLASS_NEMESIS, EXTRA_CLASS_ASSASIN, EXTRA_CLASS_SNIPER, EXTRA_CLASS_SURVIVOR:
-						{
-							if (g_modestarted ||  g_endround)
+							else if (g_lastmode != MODE_INFECTION)
 							{
-								client_print_color(id, print_team_grey, "%s You cannot ^4buy mode ^1right now", CHAT_PREFIX)
+								client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
 								return false
 							}
-							else
-							{
-								if (g_roundcount > 10)
-								{
-									if (LIMIT[id][MODES] == 1)
-									{
-										client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
-										return false
-									}
-									else if (g_lastmode != MODE_INFECTION)
-									{
-										client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
-										return false
-									}
-									else return true 
-								}
-								else
-								{
-									client_print_color(id, print_team_grey, "%s You must wait till round^3 10 ^1to buy a ^4mode.", CHAT_PREFIX)
-									return false
-								}
-							}
+							else return true 
+						}
+						else
+						{
+							client_print_color(id, print_team_grey, "%s You must wait till round^3 10 ^1to buy a ^4mode.", CHAT_PREFIX)
+							return false
 						}
 					}
 				}
-				case VIEW:
-				{
-					switch (item)
-					{
-						case EXTRA_NIGHTVISION: return true
-						case EXTRA_FORCEFIELD_NADE: return true
-						case EXTRA_KILL_NADE: return true
-						case EXTRA_EXPLOSION_NADE: return true
-						case EXTRA_NAPALM_NADE: return true
-						case EXTRA_FROST_NADE: return true
-						case EXTRA_ANTIDOTE_NADE: return true
-						case EXTRA_MULTIJUMP: return true
-						case EXTRA_JETPACK: return true
-						case EXTRA_TRYDER: return true
-						case EXTRA_ARMOR_100: return true
-						case EXTRA_ARMOR_200: return true
-						case EXTRA_CROSSBOW: return true
-						case EXTRA_GOLDEN_WEAPONS: return true
-						case EXTRA_CLASS_NEMESIS, EXTRA_CLASS_ASSASIN, EXTRA_CLASS_SNIPER, EXTRA_CLASS_SURVIVOR: return true
-					}
-				}
-			}
+			}	
 		}
 		case EXTRA_ZOMBIES:
 		{
-			switch (action)
+			switch (item)
 			{
-				case BUY:
+				case EXTRA_INFECTION_NADE:
 				{
-					switch (item)
-					{
-						case EXTRA_INFECTION_NADE:
-						{
-							if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE))
-								return false
-							else return true
-						}
-						case EXTRA_CONCUSSION_NADE: return true 
-						case EXTRA_ANTIDOTE:
-						{
-							if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) || fnGetZombies() <= 1)
-								return false
-							else return true 
-						}
-						case EXTRA_MADNESS:
-						{
-							if (g_nodamage[id]) return false 
-							else return true 
-						}
-						case EXTRA_KNIFE_BLINK: return true 
-					}
+					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE))
+						return false
+					else return true
 				}
-				case VIEW:
+				case EXTRA_CONCUSSION_NADE: return true 
+				case EXTRA_ANTIDOTE:
 				{
-					switch (item)
-					{
-						case EXTRA_INFECTION_NADE: return true
-						case EXTRA_CONCUSSION_NADE: return true
-						case EXTRA_ANTIDOTE: return true
-						case EXTRA_MADNESS: return true
-						case EXTRA_KNIFE_BLINK: return true
-					}
+					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) || fnGetZombies() <= 1)
+						return false
+					else return true 
 				}
+				case EXTRA_MADNESS:
+				{
+					if (g_nodamage[id]) return false 
+					else return true 
+				}
+				case EXTRA_KNIFE_BLINK: return true 
 			}
 		}
 		case PSHOP_PACKS:
-		{
-			switch (action)
+		{	
+			switch (item)
 			{
-				case BUY:
+				case PSHOP_PACKS_100, PSHOP_PACKS_200, PSHOP_PACKS_300, PSHOP_PACKS_400, PSHOP_PACKS_500:
 				{
-					switch (item)
+					if (LIMIT[id][PACKS] == 1)
 					{
-						case PSHOP_PACKS_100, PSHOP_PACKS_200, PSHOP_PACKS_300, PSHOP_PACKS_400, PSHOP_PACKS_500:
-						{
-							if (LIMIT[id][PACKS] == 1)
-							{
-								client_print_color(id, print_team_grey, "%s You can only buy packs once a round.", CHAT_PREFIX)
-								return false
-							}
-							else return true 
-						}
+						client_print_color(id, print_team_grey, "%s You can only buy packs once a round.", CHAT_PREFIX)
+						return false
 					}
+					else return true 
 				}
-				case VIEW:
-				{
-					switch (item)
-					{
-						case PSHOP_PACKS_100, PSHOP_PACKS_200, PSHOP_PACKS_300, PSHOP_PACKS_400, PSHOP_PACKS_500: return true
-					}
-				}
-			}
+			}	
 		}
 		case PSHOP_WEAPONS:
 		{
-			switch (action)
+			switch (item)
 			{
-				case BUY:
-				{
-					switch (item)
-					{
-
-					}
-				}
-				case VIEW:
-				{
-					switch (item)
-					{
-
-					}
-				}
+		
 			}
 		}
 		case PSHOP_FEATURES:
 		{
-			switch (action)
+			switch (item)
 			{
-				case BUY:
+				case PSHOP_FEATURE_GOD_MODE:
 				{
-					switch (item)
+					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE))
 					{
-						case PSHOP_FEATURE_GOD_MODE:
-						{
-							if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE))
-							{
-								client_print_color(id, print_team_grey, "%s This item is not available in current round", CHAT_PREFIX)
-								return false
-							}
-							else if (CheckBit(g_playerClass[id], CLASS_SNIPER) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
-								return true
-							else
-							{
-								client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_classString[id])
-								return false
-							}
-						}
-						case PSHOP_FEATURE_DOUBLE_DAMAGE, PSHOP_FEATURE_NO_RECOIL, PSHOP_FEATURE_INVISIBILITY, PSHOP_FEATURE_SPRINT, PSHOP_FEATURE_LOW_GRAVITY, PSHOP_FEATURE_HEAD_HUNTER:
-						{
-							if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
-							{
-								client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_classString[id])
-								return false
-							}
-							else return true 	
-						}
+						client_print_color(id, print_team_grey, "%s This item is not available in current round", CHAT_PREFIX)
+						return false
+					}
+					else if (CheckBit(g_playerClass[id], CLASS_SNIPER) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
+						return true
+					else
+					{
+						client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_classString[id])
+						return false
 					}
 				}
-				case VIEW:
+				case PSHOP_FEATURE_DOUBLE_DAMAGE, PSHOP_FEATURE_NO_RECOIL, PSHOP_FEATURE_INVISIBILITY, PSHOP_FEATURE_SPRINT, PSHOP_FEATURE_LOW_GRAVITY, PSHOP_FEATURE_HEAD_HUNTER:
 				{
-					switch (item)
+					if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 					{
-						case PSHOP_FEATURE_GOD_MODE: return true
-						case PSHOP_FEATURE_DOUBLE_DAMAGE, PSHOP_FEATURE_NO_RECOIL, PSHOP_FEATURE_INVISIBILITY, PSHOP_FEATURE_SPRINT, PSHOP_FEATURE_LOW_GRAVITY, PSHOP_FEATURE_HEAD_HUNTER: return true
+						client_print_color(id, print_team_grey, "%s This item is not for %s", CHAT_PREFIX, g_classString[id])
+						return false
 					}
+					else return true 	
 				}
-			}
+			}	
 		}
 		case PSHOP_MODES:
 		{
-			switch (action)
+			switch (item)
 			{
-				case BUY:
-				{	
-					switch (item)
+				case PSHOP_MODE_NIGHTCRAWLER: return true 
+				case PSHOP_MODE_SYNAPSIS: return true 
+				case PSHOP_MODE_SONIC_VS_SHADOW: return true 
+				case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: return true
+				case PSHOP_MODE_SURVIVOR_VS_NEMESIS, PSHOP_MODE_SURVIVOR_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_NEMESIS:
+				{
+					if (g_modestarted ||  g_endround)
 					{
-						case PSHOP_MODE_NIGHTCRAWLER: return true 
-						case PSHOP_MODE_SYNAPSIS: return true 
-						case PSHOP_MODE_SONIC_VS_SHADOW: return true 
-						case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: return true
-						case PSHOP_MODE_SURVIVOR_VS_NEMESIS, PSHOP_MODE_SURVIVOR_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_NEMESIS:
+						client_print_color(id, print_team_grey, "%s You cannot ^4buy mode ^1right now", CHAT_PREFIX)
+						return false
+					}
+					else
+					{
+						if (g_roundcount > 10)
 						{
-							if (g_modestarted ||  g_endround)
+							if (LIMIT[id][CUSTOM_MODES] == 1)
 							{
-								client_print_color(id, print_team_grey, "%s You cannot ^4buy mode ^1right now", CHAT_PREFIX)
+								client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
 								return false
 							}
-							else
+							else if (g_lastmode != MODE_INFECTION)
 							{
-								if (g_roundcount > 10)
-								{
-									if (LIMIT[id][CUSTOM_MODES] == 1)
-									{
-										client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
-										return false
-									}
-									else if (g_lastmode != MODE_INFECTION)
-									{
-										client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
-										return false
-									}
-									else return true 
-								}
-								else
-								{
-									client_print_color(id, print_team_grey, "%s You must wait till round^3 10 ^1to buy a ^4mode.", CHAT_PREFIX)
-									return false
-								}
+								client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
+								return false
 							}
+							else return true 
 						}
-					}
-				}
-				case VIEW:
-				{
-					switch (item)
-					{
-						case PSHOP_MODE_NIGHTCRAWLER: return true 
-						case PSHOP_MODE_SYNAPSIS: return true 
-						case PSHOP_MODE_SONIC_VS_SHADOW: return true 
-						case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: return true
-						case PSHOP_MODE_SURVIVOR_VS_NEMESIS, PSHOP_MODE_SURVIVOR_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_NEMESIS: return true
+						else
+						{
+							client_print_color(id, print_team_grey, "%s You must wait till round^3 10 ^1to buy a ^4mode.", CHAT_PREFIX)
+							return false
+						}
 					}
 				}
 			}
