@@ -1962,21 +1962,21 @@ public plugin_natives()
 
 	// Custom natives specific to modes
 	register_native("IsInfectionRound",      	"native_is_infection_round", 1)
-	//register_native("StartInfectionRound",   	"native_start_infection_round", 1)
+	register_native("StartInfectionRound",   	"native_start_infection_round", 1)
 	register_native("IsMultiInfectionRound", 	"native_is_multi_infection_round", 1)
-	//register_native("StartMultiInfectionRound", "native_start_multi_infection_round", 1)
+	register_native("StartMultiInfectionRound", "native_start_multi_infection_round", 1)
 	register_native("IsSwarmRound",          	"native_is_swarm_round", 1)
-	//register_native("StartSwarmRound", 			"native_start_swarm_round", 1)
+	register_native("StartSwarmRound", 			"native_start_swarm_round", 1)
 	register_native("IsPlagueRound", 		 	"native_is_plague_round", 1)
-	//register_native("StartPlagueRound", 		"native_start_plague_round", 1)
+	register_native("StartPlagueRound", 		"native_start_plague_round", 1)
 	register_native("IsArmageddonRound", 	 	"native_is_armageddon_round", 1)
-	//register_native("StartArmageddonRound", 	"native_start_armageddon_round", 1)
+	register_native("StartArmageddonRound", 	"native_start_armageddon_round", 1)
 	register_native("IsApocalypseRound", 	 	"native_is_apocalypse_round", 1)
-	//register_native("StartApocalypseRound", 	"native_start_apocalypse_round", 1)
+	register_native("StartApocalypseRound", 	"native_start_apocalypse_round", 1)
 	register_native("IsDevilRound", 		 	"native_is_devil_round", 1)
-	//register_native("StartDevilRound", 			"native_start_devil_round", 1)
+	register_native("StartDevilRound", 			"native_start_devil_round", 1)
 	register_native("IsNightmareRound", 	 	"native_is_nightmare_round", 1)
-	//register_native("StartNightmareRound", 		"native_start_nightmare_round", 1)
+	register_native("StartNightmareRound", 		"native_start_nightmare_round", 1)
 }
 
 public plugin_precache()
@@ -11432,7 +11432,7 @@ start_mode(mode, id)
 			g_modestarted = true
 		}
 		// Bombardier -- Abhinash
-		else if ((mode == MODE_BOMBARDIER && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, BombardierChance) == BombardierEnabled && iPlayersnum >= BombardierMinPlayers) || mode == MODE_BOMBARDIER)
+		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, BombardierChance) == BombardierEnabled && iPlayersnum >= BombardierMinPlayers) || mode == MODE_BOMBARDIER)
 		{
 			// Bombardier Mode
 			SetBit(g_currentmode, MODE_BOMBARDIER)
@@ -11463,7 +11463,7 @@ start_mode(mode, id)
 			// Mode fully started!
 			g_modestarted = true
 		}
-		else
+		else 
 		{
 			// Single Infection Mode
 			SetBit(g_currentmode, MODE_INFECTION)
@@ -14755,7 +14755,12 @@ public native_is_infection_round()
 // Native: StartInfectionRound
 public native_start_infection_round()
 {
-	/* Coming soon */
+	if (g_modestarted) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_INFECTION, fnGetRandomAlive(random_num(1, fnGetAlive())))
+
+	return true
 }
 
 // Native: IsMultiInfectionRound
@@ -14764,10 +14769,32 @@ public native_is_multi_infection_round()
 	return CheckBit(g_currentmode, MODE_MULTI_INFECTION)
 }
 
+//Native: StartMultiInfectionRound
+public native_start_multi_infection_round()
+{
+	if (!allowed_multi()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_MULTI_INFECTION, 0)
+
+	return true
+}
+
 // Native: IsSwarmRound
 public native_is_swarm_round()
 {
 	return CheckBit(g_currentmode, MODE_SWARM)
+}
+
+// Native: StartSwarmRound
+public native_start_swarm_round()
+{
+	if (!allowed_swarm()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SWARM, 0)
+
+	return true
 }
 
 // Native: IsPlagueRound
@@ -14776,10 +14803,32 @@ public native_is_plague_round()
 	return CheckBit(g_currentmode, MODE_PLAGUE)
 }
 
+// Native: StartPlagueRound
+public native_start_plague_round()
+{
+	if (!allowed_plague()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_PLAGUE, 0)
+
+	return true
+}
+
 // Native: IsArmageddonRound
 public native_is_armageddon_round()
 {
 	return CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
+}
+
+// Native: StartArmageddonRound
+public native_start_armageddon_round()
+{
+	if (!allowed_armageddon()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
+
+	return true
 }
 
 // Native: IsApocalypseRound
@@ -14788,16 +14837,49 @@ public native_is_apocalypse_round()
 	return CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
 }
 
+// Native: StartApocalypseRound
+public native_start_apocalypse_round()
+{
+	if (!allowed_apocalypse()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SNIPER_VS_ASSASIN, 0)
+
+	return true
+}
+
 // Native: IsDevilRound
 public native_is_devil_round()
 {
 	return CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 }
 
+// Native: StartDevilRound
+public native_start_devil_round()
+{
+	if (!allowed_devil()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SNIPER_VS_NEMESIS, 0)
+
+	return true
+}
+
 // Native: IsNightmareRound
 public native_is_nightmare_round()
 {
 	return CheckBit(g_currentmode, MODE_NIGHTMARE)
+}
+
+// Native: StartNightmareRound
+public native_start_nightmare_round()
+{
+	if (!allowed_nightmare()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_NIGHTMARE, 0)
+
+	return true
 }
 
 /*================================================================================
