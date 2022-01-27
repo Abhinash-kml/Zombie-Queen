@@ -1947,7 +1947,7 @@ public plugin_natives()
 	register_native("IsAssasin",      "native_get_user_assassin", 1)
 	register_native("MakeAssasin",    "native_make_user_assasin", 1)
 	register_native("IsBombardier",   "native_get_user_bombardier", 1)
-	register_native("Makebombardier", "native_make_user_bombardier", 1)
+	register_native("MakeBombardier", "native_make_user_bombardier", 1)
 	register_native("IsSniper",       "native_get_user_sniper", 1)
 	register_native("MakeSniper",     "native_make_user_sniper", 1)
 	register_native("IsSurvivor",     "native_get_user_survivor", 1)
@@ -3304,9 +3304,8 @@ public _GameMenu(id, menu, item)
 	if (item != -3 && g_isconnected[id])
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[3]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		switch (iChoice)
@@ -3415,9 +3414,8 @@ public _ExtraItems(id, menu, item)
 	if (g_isalive[id] && item != -3)
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[3]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		switch (iChoice)
@@ -3874,9 +3872,8 @@ public _ExtraItems2(id, menu, item)
 	if (g_isalive[id] && item != -3)
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[3]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		// Additional check to prevent humans classes from buying items if menu is left open
@@ -4035,10 +4032,9 @@ public _ZombieClasses(id, menu, item)
 	if (item != -3 && g_isconnected[id])
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[15]
 
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 		g_zombieclassnext[id] = iChoice
 		client_print_color(id, print_team_grey, "%s You will be^4 %s^1 after the next infection!", CHAT_PREFIX, g_cZombieClasses[iChoice][ZombieName])
@@ -4053,10 +4049,9 @@ public _StatisticsMenu(id, menu, item)
 	if (item != -3 && g_isconnected[id])
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[15]
 
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		switch (iChoice)
@@ -4073,9 +4068,8 @@ public _PointShop(id, menu, item)
 	if (item != -3)
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[15]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		switch (iChoice)
@@ -4094,9 +4088,8 @@ public _AmmoMenu(id, menu, item)
 	if (item != -3)
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[15]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		switch (iChoice)
@@ -4216,9 +4209,8 @@ public _Features(id, menu, item)
 	if (item != -3)
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[15]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		switch (iChoice)
@@ -4381,9 +4373,8 @@ public _Modes(id, menu, item)
 	if (item != -3)
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[15]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
 		switch (iChoice)
@@ -4532,9 +4523,8 @@ public _Weapons(id, menu, item)
 	if (item != -3)
 	{
 		static iChoice
-		static iDummy
 		static cBuffer[15]
-		menu_item_getinfo(menu, item, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 		
 		switch (iChoice)
@@ -8308,8 +8298,8 @@ public menu_player_list(id, menuid, item)
 	}
 	
 	// Retrieve player id
-	static buffer[2], dummy, target
-	menu_item_getinfo(menuid, item, dummy, buffer, charsmax(buffer), _, _, dummy)
+	static buffer[2], target
+	menu_item_getinfo(menuid, item, _, buffer, charsmax(buffer), _, _, _)
 	target = buffer[0]
 	
 	// Perform action on player
@@ -9270,9 +9260,8 @@ public SecondVotePanel(id, iMenu, iItem)
 		{
 			static iKeyMinusOne
 			static iKey
-			static iDummy
 			static cData[32]
-			menu_item_getinfo(iMenu, iItem, iDummy, cData, charsmax ( cData ), _, _, iDummy)
+			menu_item_getinfo(iMenu, iItem, _, cData, charsmax (cData), _, _, _)
 			iKey = str_to_num(cData)
 			iKeyMinusOne = iKey -1
 
@@ -9341,9 +9330,8 @@ public CheckSecondVotes(id)
 public _MenuChange(iPlayer, iMenu, iItem)
 {
 	static iChoice
-	static iDummy
 	static cBuffer[3]
-	menu_item_getinfo(iMenu, iItem, iDummy, cBuffer, charsmax(cBuffer), _, _, iDummy)
+	menu_item_getinfo(iMenu, iItem, _, cBuffer, charsmax(cBuffer), _, _, _)
 	iChoice = str_to_num(cBuffer)
 
 	switch (iChoice)
