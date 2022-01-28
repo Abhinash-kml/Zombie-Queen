@@ -15,6 +15,77 @@
 #include <    targetex    >
 #include <		sqlx	  >
 
+new g_adminMenuAction[33]
+new g_playersMenuBackAction[33]
+
+#define ADMIN_MENU_ACTION g_adminMenuAction[id]
+#define PL_MENU_BACK_ACTION g_playersMenuBackAction[id]
+
+enum _: adminMenuActions
+{
+    ACTION_MAKE_HUMAN = 0,
+    ACTION_MAKE_SURVIVOR,
+    ACTION_MAKE_SNIPER,
+    ACTION_MAKE_SAMURAI,
+    ACTION_MAKE_TERMINATOR,
+    ACTION_MAKE_BOMBER,
+    ACTION_MAKE_ZOMBIE,
+    ACTION_MAKE_ASSASIN,
+    ACTION_MAKE_NEMESIS,
+    ACTION_MAKE_BOMBARDIER,
+    ACTION_MAKE_HYBREED,
+    ACTION_MAKE_DRAGON,
+    ACTION_RESPAWN_PLAYER
+}
+
+enum _: makeHumanClassConstants
+{
+    MAKE_HUMAN = 0,
+    MAKE_SURVIVOR,
+    MAKE_SNIPER,
+    MAKE_SAMURAI,
+    MAKE_TERMINATOR,
+    MAKE_BOMBER
+}
+
+enum _: makeZombieClassConstants
+{
+    MAKE_ZOMBIE = 0,
+    MAKE_ASSASIN,
+    MAKE_NEMESIS,
+    MAKE_BOMBARDIER,
+    MAKE_HYBREED,
+    MAKE_DRAGON
+}
+
+enum _: startNormalModesConstants
+{
+    START_INFECTION = 0,
+    START_MULTIPLE_INFECTION,
+    START_SWARM,
+    START_PLAGUE,
+    START_SYNAPSIS
+}
+
+enum _: startSpecialModesConstants
+{
+    START_SURVIVOR_VS_NEMESIS = 0,
+    START_NIGHTMARE,
+    START_SNIPER_VS_ASSASIN,
+    START_SNIPER_VS_NEMESIS,
+    START_SURVIVOR_VS_ASSASIN,
+    START_BOMBARDIER_VS_BOMBER
+}
+
+enum _: menuBackActions
+{
+    MENU_BACK_MAKE_HUMAN_CLASS = 0,
+    MENU_BACK_MAKE_ZOMBIE_CLASS,
+    MENU_BACK_RESPAWN_PLAYERS
+}
+
+new g_mainAdminMenuCallback, g_makeHumanClassMenuCallback, g_makeZombieClassMenuCallback, g_startNormalModesCallback, g_startSpecialModesCallback, g_playersMenuCallback
+
 // Jetapck
 native set_user_jetpack(id, jetpack)
 native get_user_jetpack(id)
@@ -122,9 +193,6 @@ enum (+= 100)
 
 // IDs inside tasks
 #define ID_SHOWHUD 	(taskid - TASK_SHOWHUD)
-
-// For player list menu handlers
-#define PL_ACTION g_menu_data[id][0]
 
 // Chat prefix
 #define CHAT_PREFIX "^4[PerfectZM]^1"
@@ -1363,36 +1431,6 @@ enum _: logActions
 	LOG_RESPAWN_PLAYER
 }
 
-// Admin menu actions
-enum _: adminMakeActions
-{
-	ACTION_ZOMBIEFY_HUMANIZE = 0,
-	ACTION_MAKE_NEMESIS,
-	ACTION_MAKE_ASSASIN,
-	ACTION_MAKE_BOMBARDIER,
-	ACTION_MAKE_SURVIVOR,
-	ACTION_MAKE_SNIPER,
-	ACTION_MAKE_SAMURAI,			
-	ACTION_RESPAWN_PLAYER
-}
-
-// Admin modes menu actions
-enum _: adminNormalModeActions
-{
-	ACTION_MODE_SWARM,
-	ACTION_MODE_MULTIPLE_INFECTION,
-	ACTION_MODE_PLAGUE
-}
-
-// Admin custom modes menu actions
-enum _: adminCustomModeActions
-{
-	ACTION_MODE_SURVIVOR_VS_NEMESIS,
-	ACTION_MODE_SNIPER_VS_ASSASIN,
-	ACTION_MODE_NIGHTMARE,
-	ACTION_MODE_SNIPER_VS_NEMESIS
-}
-
 // Limiters for stuff not worth making dynamic arrays out of (increase if needed)
 const MAX_CSDM_SPAWNS = 128
 const MAX_STATS_SAVED = 64
@@ -1801,12 +1839,6 @@ const SECONDARY_WEAPONS_BIT_SUM = (1<<CSW_P228)|(1<<CSW_ELITE)|(1<<CSW_FIVESEVEN
 // Allowed weapons for zombies (added grenades/bomb for sub-plugin support, since they shouldn't be getting them anyway)
 const ZOMBIE_ALLOWED_WEAPONS_BITSUM = (1<<CSW_KNIFE)|(1<<CSW_HEGRENADE)|(1<<CSW_FLASHBANG)|(1<<CSW_SMOKEGRENADE)|(1<<CSW_C4)
 
-// Menu keys
-const KEYS_ADMINMENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_0
-const KEYS_ADMINMENUCLASSES = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
-const KEYS_ADMINMENUMODES = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
-const KEYS_ADMINCUSTOMMODES = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
-
 /*================================================================================
 	[Global Variables]
 =================================================================================*/
@@ -1835,7 +1867,6 @@ new g_damagedealt_human[33] // damage dealt as human (used to calculate ammo pac
 new g_damagedealt_zombie[33] // damage dealt as zombie (used to calculate ammo packs reward)
 new Float:g_lastleaptime[33] // time leap was last used
 new Float:g_lastflashtime[33] // time flashlight was last toggled
-new g_menu_data[33][8] // data for some menu handlers
 new g_burning_duration[33] // burning task duration
 new Float:g_buytime[33] // used to calculate custom buytime
 
@@ -1941,6 +1972,7 @@ public plugin_natives()
 	// Class related natives
 	register_native("IsZombie",       "native_get_user_zombie", 1)
 	register_native("MakeZombie",     "native_make_user_zombie", 1)
+	register_native("IsHuman", 		  "native_get_user_human", 1)
 	register_native("MakeHuman",      "native_make_user_human", 1)
 	register_native("IsNemesis",      "native_get_user_nemesis", 1)
 	register_native("MakeNemesis",    "native_make_user_nemesis", 1)
@@ -1954,6 +1986,11 @@ public plugin_natives()
 	register_native("MakeSurvivor",   "native_make_user_survivor", 1)
 	register_native("IsSamurai",      "native_get_user_samurai", 1)
 	register_native("MakeSamurai",    "native_make_user_samurai", 1)
+
+	register_native("RespawnPlayer",  "native_respawn_player", 1)
+
+	// String natives
+	register_native("GetClassString", "native_get_class_string")
 
 	// --- Round related natives ---
 	// Master natives
@@ -2443,11 +2480,6 @@ public plugin_init()
 	register_clcmd("radio2", "Admin_menu")
 	register_clcmd("radio3", "Admin_menu")
 	
-	// Menus
-	register_menu("Admin Menu", KEYS_ADMINMENU, "menu_admin")
-	register_menu("Admin Classes Menu", KEYS_ADMINMENUCLASSES, "menu_admin_classes")
-	register_menu("Admin Modes Menu", KEYS_ADMINMENUMODES, "menu_admin_modes")
-	register_menu("Admin Custom Modes Menu", KEYS_ADMINCUSTOMMODES, "menu_admin_custom_modes")
 	
 	// CS Buy Menus (to prevent zombies/survivor from buying)
 	register_menucmd(register_menuid("#Buy", 1), 511, "menu_cs_buy")
@@ -2594,6 +2626,13 @@ public plugin_init()
 	new mymod[6]
 	get_modname(mymod, charsmax(mymod))
 	if (equal(mymod, "czero")) g_czero = 1
+
+	g_mainAdminMenuCallback = menu_makecallback("MainAdminMenuCallback")
+	g_makeHumanClassMenuCallback= menu_makecallback("MakeHumanClassMenuCallback")
+    g_makeZombieClassMenuCallback = menu_makecallback("MakeZombieClassMenuCallback")
+    g_startNormalModesCallback = menu_makecallback("StartNormalModesCallBack")
+    g_startSpecialModesCallback = menu_makecallback("StartSpecialModesCallBack")
+    g_playersMenuCallback = menu_makecallback("PlayersMenuCallBack")
 	
 	new cLine[128]
 	new cNumber[3]
@@ -3086,7 +3125,6 @@ public MakeUserAdmin(id)
 {
 	static i
 	i = 0
-	get_user_name(id, g_playername[id], charsmax(g_playername))
 	g_bAdmin[id] = false
 	
 	while (i < g_AdminsCount)
@@ -3121,7 +3159,6 @@ public MakeUserVip(id)
 {
 	static i
 	i = 0
-	get_user_name(id, g_playername[id], charsmax(g_playername))
 	g_bVip[id] = false
 	
 	while (i < g_VipsCount)
@@ -7584,7 +7621,7 @@ public Client_SayTeam(id)
 
 public Admin_menu(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a')) show_menu_admin(id)
+	if (g_bAdmin[id] && AdminHasFlag(id, 'a')) ShowMainAdminMenu(id)
 	else return PLUGIN_HANDLED
 
 	return PLUGIN_HANDLED
@@ -7609,302 +7646,121 @@ public show_menu_buy1(taskid)
 	if (g_isbot[id])
 	{
 		set_weapon(id, CSW_KNIFE)
-		set_weapon(id, CSW_DEAGLE)
+		set_weapon(id, CSW_AWP)
 	}
 }
 
-// Admin Menu
-show_menu_admin(id)
+public ShowMainAdminMenu(id)
 {
-	// Player disconnected?
-	if (!g_isconnected[id])
-	return
-	
-	static menu[250], len
-	len = 0
-	
-	// Title
-	len += formatex(menu[len], charsmax(menu) - len, "\yAdmin menu^n^n")
-	
-	// 1. Admin menu of classes command
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wChange class^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d1. Change class^n")
-	
-	// 2. Admin Respawn menu
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wRespawn someone^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d2. Respawn someone^n")
-	
-	// 3. Admin modes menu
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wStart modes^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d3. Start modes^n")
-	
-	// 4. Admin custom modes menu
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r4. \wStart custom modes^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d4. Start custom modes^n")
-	
-	// 5. Admin Turn off Zombie Plague menu
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r5. \wTurn off Zombie Queen^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d5. Turn off Zombie Queen^n")
-	
-	// 0. Exit
-	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
-	
-	show_menu(id, KEYS_ADMINMENU, menu, -1, "Admin Menu")
+    new g_mainAdminMenu = menu_create("\yAdmin Menu", "MainAdminMenuHandler", 0)
+    
+    menu_additem(g_mainAdminMenu, "Respawn Players", "0", 0, g_mainAdminMenuCallback)
+    menu_additem(g_mainAdminMenu, "Make Human Class", "1", 0, g_mainAdminMenuCallback)
+	menu_additem(g_mainAdminMenu, "Make Zombie Class", "2", 0, g_mainAdminMenuCallback)
+	menu_additem(g_mainAdminMenu, "Start Normal Rounds", "3", 0, g_mainAdminMenuCallback)
+	menu_additem(g_mainAdminMenu, "Start Special Rounds", "4", 0, g_mainAdminMenuCallback)
+	menu_additem(g_mainAdminMenu, "Switch off Zombie Queen \y( \rnote this will restart map \y)", "5", 0, g_mainAdminMenuCallback)
+
+    menu_display(id, g_mainAdminMenu, 0)
 }
 
-// Admin classes menu
-show_menu_admin_classes(id)
+public ShowMakeHumanClassMenu(id)
 {
-	// Player disconnected?
-	if (!g_isconnected[id]) return
-	
-	static menu[250], len
-	len = 0
-	
-	// Title
-	len += formatex(menu[len], charsmax(menu) - len, "\yAdmin Menu^n^n")
-	
-	// 1. Zombiefy/Humanize command
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wMake Zombie/Human^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d1. Make Zombie/Human^n")
-	
-	// 2. Nemesis command
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wMake Nemesis^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d2. Make Nemesis^n")
-	
-	// 3. Assassin command
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wMake Assassin^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d3. Make Assassin^n")
-	
-	// 4. Assassin command
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r4. \wMake Bombardier^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d4. Make Bombardier^n")
-	
-	// 5. Survivor command
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r5. \wMake Survivor^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d5. Make Survivor^n")
-	
-	// 6. Sniper command
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r6. \wMake Sniper^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d6. Make Sniper^n")
-	
-	// 7. samurai command			// Abhinash
-	if (AdminHasFlag(id, 'a'))
-		len += formatex(menu[len], charsmax(menu) - len, "\r7. \wMake Samurai^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d7. Make Samurai^n")
-	
-	// 0. Exit
-	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
-	
-	show_menu(id, KEYS_ADMINMENUCLASSES, menu, -1, "Admin Classes Menu")
-}
-// Admin Modes Menu
-show_menu_modes_admin(id)
-{
-	static menu[250], len
-	len = 0
-	
-	// Title
-	len += formatex(menu[len], charsmax(menu) - len, "\yAdmin Modes Menu^n^n")
-	
-	// 1. Swarm mode command
-	if ((AdminHasFlag(id, 'a')) && allowed_swarm())
-		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wStart Swarm Mode^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d1. Start Swarm Mode^n")
-	
-	// 2. Multi infection command
-	if ((AdminHasFlag(id, 'a')) && allowed_multi())
-		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wStart Multiple Infection^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d2. Start Multiple Infection^n")
-	
-	// 3. Plague mode command
-	if ((AdminHasFlag(id, 'a')) && allowed_plague())
-		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wStart Plague Mode^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d3. Start Plague Mode^n")
-	
-	// 0. Exit
-	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
-	
-	show_menu(id, KEYS_ADMINMENUMODES, menu, -1, "Admin Modes Menu")
+    new g_makeHumanClassMenu = menu_create("\yMake Human Class", "MakeHumanClassMenuHandler", 0)
+
+    menu_additem(g_makeHumanClassMenu, "Make Human", "0", 0, g_makeHumanClassMenuCallback)
+	menu_additem(g_makeHumanClassMenu, "Make Survivor", "1", 0, g_makeHumanClassMenuCallback)
+	menu_additem(g_makeHumanClassMenu, "Make Sniper", "2", 0, g_makeHumanClassMenuCallback)
+	menu_additem(g_makeHumanClassMenu, "Make Samurai", "3", 0, g_makeHumanClassMenuCallback)
+	menu_additem(g_makeHumanClassMenu, "Make Terminator", "4", 0, g_makeHumanClassMenuCallback)
+	menu_additem(g_makeHumanClassMenu, "Make Bomber", "5", 0, g_makeHumanClassMenuCallback)
+
+    menu_display(id, g_makeHumanClassMenu, 0)
 }
 
-// Admin custom modes menu
-show_menu_admin_custom_modes(id)
+public ShowMakeZombieClassMenu(id)
 {
-	static menu[250], len
-	len = 0
-	
-	// Title
-	len += formatex(menu[len], charsmax(menu) - len, "\yStart custom mode^n^n")
-	
-	// 1. Armageddon mode command
-	if ((AdminHasFlag(id, 'a')) && allowed_armageddon())
-		len += formatex(menu[len], charsmax(menu) - len, "\r1. \wArmageddon^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d1. Armageddon^n")
-	
-	// 2. Apocalypse mode command
-	if ((AdminHasFlag(id, 'a')) && allowed_apocalypse())
-		len += formatex(menu[len], charsmax(menu) - len, "\r2. \wApocalypse^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d2. Apocalypse^n")
-	
-	// 3. Nightmare mode command
-	if ((AdminHasFlag(id, 'a')) && allowed_nightmare())
-		len += formatex(menu[len], charsmax(menu) - len, "\r3. \wNightmare^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d3. Nightmare^n")
-	
-	// 4. Devil mode command ( Sniper vs Nemesis) 	// Abhinash
-	if ((AdminHasFlag(id, 'a')) && allowed_devil())
-		len += formatex(menu[len], charsmax(menu) - len, "\r4. \wSniper vs Nemesis^n")
-	else
-		len += formatex(menu[len], charsmax(menu) - len, "\d4. Sniper vs Nemesis^n")
-	
-	// 0. Exit
-	len += formatex(menu[len], charsmax(menu) - len, "^n\r0. \wExit")
-	
-	show_menu(id, KEYS_ADMINCUSTOMMODES, menu, -1, "Admin Custom Modes Menu")
+    new g_makeZombieClassMenu = menu_create("\yMake Zombie Class", "MakeZombieClassMenuHandler", 0)
+
+    menu_additem(g_makeZombieClassMenu, "Make Zombie", "0", 0, g_makeZombieClassMenuCallback)
+    menu_additem(g_makeZombieClassMenu, "Make Assasin", "1", 0, g_makeZombieClassMenuCallback)
+    menu_additem(g_makeZombieClassMenu, "Make Nemesis", "2", 0, g_makeZombieClassMenuCallback)
+    menu_additem(g_makeZombieClassMenu, "Make Bombardier", "3", 0, g_makeZombieClassMenuCallback)
+    menu_additem(g_makeZombieClassMenu, "Make Hybreed", "4", 0, g_makeZombieClassMenuCallback)
+    menu_additem(g_makeZombieClassMenu, "Make Dragon", "5", 0, g_makeZombieClassMenuCallback)
+
+    menu_display(id, g_makeZombieClassMenu, 0)
 }
 
-// Player List Menu
-show_menu_player_list(id)
+public ShowStartNormalModesMenu(id)
 {
-	static menuid, menu[128], player, buffer[2]
-	
-	// Title
-	switch (PL_ACTION)
-	{
-		case ACTION_ZOMBIEFY_HUMANIZE: formatex(menu, charsmax(menu), "Make Zombie / Human\r")
-		case ACTION_MAKE_NEMESIS: formatex(menu, charsmax(menu), "Make Nemesis\r")
-		case ACTION_MAKE_ASSASIN: formatex(menu, charsmax(menu), "Make Assassin\r")
-		case ACTION_MAKE_BOMBARDIER: formatex(menu, charsmax(menu), "Make Bombardier\r")		// Abhinash
-		case ACTION_MAKE_SURVIVOR: formatex(menu, charsmax(menu), "Make Survivor\r")
-		case ACTION_MAKE_SNIPER: formatex(menu, charsmax(menu), "Make Sniper\r")
-		case ACTION_MAKE_SAMURAI: formatex(menu, charsmax(menu), "Make Samurai\r")		// Abhinash
-		case ACTION_RESPAWN_PLAYER: formatex(menu, charsmax(menu), "Respawn Someone\r")
-	}
-	menuid = menu_create(menu, "menu_player_list")
-	
-	// Player List
-	for (player = 0; player <= g_maxplayers; player++)
-	{
-		// Skip if not connected
-		if (!g_isconnected[player]) continue
-		
-		// Format text depending on the action to take
-		switch (PL_ACTION)
-		{
-		case ACTION_ZOMBIEFY_HUMANIZE: // Zombiefy/Humanize command
-			{
-				if (CheckBit(g_playerTeam[player], TEAM_ZOMBIE))
-				{
-					if (allowed_human(player) && AdminHasFlag(id, 'a'))
-						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-					else
-						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-				}
-				else
-				{
-					if (allowed_zombie(player) && AdminHasFlag(id, 'a'))
-						formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-					else
-						formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-				}
-			}
-		case ACTION_MAKE_NEMESIS: // Nemesis command
-			{
-				if (allowed_nemesis(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-			}
-		case ACTION_MAKE_ASSASIN: // Assassin command
-			{
-				if (allowed_assassin(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-			}
-		case ACTION_MAKE_BOMBARDIER: // Assassin command
-			{
-				if (allowed_bombardier(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-			}
-		case ACTION_MAKE_SURVIVOR: // Survivor command
-			{
-				if (allowed_survivor(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-			}
-		case ACTION_MAKE_SNIPER: // Sniper command
-			{
-				if (allowed_sniper(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-			}			
-			// Abhinash
-		case ACTION_MAKE_SAMURAI: // Samurai command
-			{
-				if (allowed_samurai(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s \r[ %s ]", g_playername[player], g_classString[player])
-				else
-					formatex(menu, charsmax(menu), "\d%s [ %s ]", g_playername[player], g_classString[player])
-			}			
-		case ACTION_RESPAWN_PLAYER: // Respawn command
-			{
-				if (allowed_respawn(player) && AdminHasFlag(id, 'a'))
-					formatex(menu, charsmax(menu), "%s", g_playername[player])
-				else
-					formatex(menu, charsmax(menu), "\d%s", g_playername[player])
-			}
-		}
-		
-		// Add player
-		buffer[0] = player
-		buffer[1] = 0
-		menu_additem(menuid, menu, buffer)
-	}
-	
-	// Back - More - Exit
-	formatex(menu, charsmax(menu), "Back")
-	menu_setprop(menuid, MPROP_BACKNAME, menu)
-	formatex(menu, charsmax(menu), "More")
-	menu_setprop(menuid, MPROP_NEXTNAME, menu)
-	formatex(menu, charsmax(menu), "Exit")
-	menu_setprop(menuid, MPROP_EXITNAME, menu)
-	
-	menu_display(id, menuid)
+    new g_startNormalModesMenu = menu_create("\yStart Normal Modes", "StartNormalModesMenuHandler", 0)
+
+    menu_additem(g_startNormalModesMenu, "Infection Round", "0", 0, g_startNormalModesCallback)
+    menu_additem(g_startNormalModesMenu, "Multiple infection", "1", 0, g_startNormalModesCallback)
+    menu_additem(g_startNormalModesMenu, "Swarm", "2", 0, g_startNormalModesCallback)
+    menu_additem(g_startNormalModesMenu, "Plague", "3", 0, g_startNormalModesCallback)
+    menu_additem(g_startNormalModesMenu, "Synapsis", "4", 0, g_startNormalModesCallback)
+
+    menu_display(id, g_startNormalModesMenu, 0)
+}
+
+public ShowStartSpecialModesMenu(id)
+{
+    new g_startSpecialModesMenu = menu_create("\yStart Special Modes", "StartSpecialModesMenuHandler", 0)
+    menu_additem(g_startSpecialModesMenu, "Armageddon", "0", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Nightmare", "1", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Sniper vs Assasin", "2", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Sniper vs Nemesis", "3", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Survivor vs Assasin", "4", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Bombardier vs Bomber", "5", 0, g_startSpecialModesCallback)
+
+    menu_display(id, g_startSpecialModesMenu, 0)
+}
+
+public ShowPlayersMenu(id)
+{
+    static buffer[64]
+
+    switch (ADMIN_MENU_ACTION)
+    {
+        case ACTION_MAKE_HUMAN: formatex(buffer, charsmax(buffer), "\yMake Human")
+        case ACTION_MAKE_SURVIVOR: formatex(buffer, charsmax(buffer), "\yMake Survivor")
+        case ACTION_MAKE_SNIPER: formatex(buffer, charsmax(buffer), "\yMake Sniper")
+        case ACTION_MAKE_SAMURAI: formatex(buffer, charsmax(buffer), "\yMake Samurai")
+        case ACTION_MAKE_ZOMBIE: formatex(buffer, charsmax(buffer), "\yMake Zombie")
+        case ACTION_MAKE_ASSASIN: formatex(buffer, charsmax(buffer), "\yMake Assasin")
+        case ACTION_MAKE_NEMESIS: formatex(buffer, charsmax(buffer), "\yMake Nemesis")
+        case ACTION_MAKE_BOMBARDIER: formatex(buffer, charsmax(buffer), "\yMake Bombardier")
+        case ACTION_RESPAWN_PLAYER: formatex(buffer, charsmax(buffer), "\yRespawn Players")
+    }
+
+    new menu = menu_create(buffer, "PlayersMenuHandler", 0)
+    
+    // Variables for storing infos
+    new players[32], pnum, tempid
+    new name[32], userid[32], class[32], szString[64]
+
+    //Fill players with available players
+    get_players_ex(players, pnum)
+
+    for (new i = 0; i < pnum; i++)
+    {
+        //Save a tempid so we do not re-index
+        tempid = players[i]
+
+        //Get the players name and class
+        formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playername[tempid], g_classString[tempid])
+        
+        //We will use the data parameter to send the userid, so we can identify which player was selected in the handler
+        formatex(userid, charsmax(userid), "%d", get_user_userid(tempid))
+
+        //Add the item for this player
+        menu_additem(menu, szString, userid, 0, g_playersMenuCallback)
+    }
+
+    //We now have all players in the menu, lets display the menu
+    menu_display(id, menu, 0)
 }
 
 /*================================================================================
@@ -7955,595 +7811,294 @@ public PrimaryHandler(id, menu, item)
 	return PLUGIN_HANDLED
 }
 
-// Admin Menu
-public menu_admin(id, key)
+public MainAdminMenuHandler(id, menu, item)
 {
-	switch (key)
-	{
-	case 0: // Admin classes menu
-		{
-			// Check if player has the required access
-			if (AdminHasFlag(id, 'a'))
-				show_menu_admin_classes(id)
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+    if (item == MENU_EXIT)
+    {
+        menu_destroy(menu)
+        return PLUGIN_HANDLED
+    }
+
+    new data[6]
+
+    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+    new choice = str_to_num(data)
+
+    switch (choice)
+    {
+        case 0: 
+		{ 
+			ADMIN_MENU_ACTION = ACTION_RESPAWN_PLAYER
+			PL_MENU_BACK_ACTION = MENU_BACK_RESPAWN_PLAYERS
+			ShowPlayersMenu(id)
 		}
-	case 1: // Admin respawn menu
-		{
-			// Check if player has the required access
-			if (AdminHasFlag(id, 'a'))
-			{
-				PL_ACTION = ACTION_RESPAWN_PLAYER
-				show_menu_player_list(id)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+        case 1: 
+		{ 
+			ShowMakeHumanClassMenu(id)
+		} 
+        case 2: 
+		{ 
+			ShowMakeZombieClassMenu(id)
+		} 
+        case 3: 
+		{ 
+			ShowStartNormalModesMenu(id)
+		} 
+        case 4: 
+		{ 
+			ShowStartSpecialModesMenu(id)
+		} 
+        case 5: 
+		{ 
+			client_print_color(id, print_team_grey, "^3You have access to this command")
+			return PLUGIN_HANDLED 
 		}
-	case 2: // Admin modes menu
-		{
-			// Check if player has the required access
-			if (AdminHasFlag(id, 'a'))
-				show_menu_modes_admin(id)
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-		}
-	case 3: // Admin custom modes menu
-		{
-			// Check if player has the required access
-			if (AdminHasFlag(id, 'a'))
-				show_menu_admin_custom_modes(id)
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-		}
-	}
-	return PLUGIN_HANDLED
+    }
+
+	return PLUGIN_CONTINUE
 }
 
-// Admin classes menu
-public menu_admin_classes(id, key)
-{	
-	switch (key)
+public MakeHumanClassMenuHandler(id, menu, item)
+{
+    if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
+    
+	new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+
+	switch (choice)
 	{
-	case ACTION_ZOMBIEFY_HUMANIZE: // Zombiefy/Humanize command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_ZOMBIEFY_HUMANIZE
-				show_menu_player_list(id)
-			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				show_menu_admin_classes(id)
-			}
+		case MAKE_HUMAN:	
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_HUMAN
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; 
+			ShowPlayersMenu(id) 
 		}
-	case ACTION_MAKE_NEMESIS: // Nemesis command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_MAKE_NEMESIS
-				show_menu_player_list(id)
-			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				show_menu_admin_classes(id)
-			}
+		case MAKE_SURVIVOR: 
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_SURVIVOR
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS
+			ShowPlayersMenu(id)
 		}
-	case ACTION_MAKE_ASSASIN: // Assassin command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_MAKE_ASSASIN
-				show_menu_player_list(id)
-			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				show_menu_admin_classes(id)
-			}
+		case MAKE_SNIPER:	
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_SNIPER
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS
+			ShowPlayersMenu(id) 
 		}
-	case ACTION_MAKE_BOMBARDIER: // Assassin command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_MAKE_BOMBARDIER
-				show_menu_player_list(id)
-			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				show_menu_admin_classes(id)
-			}
+		case MAKE_SAMURAI:	
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_SAMURAI
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS 
+			ShowPlayersMenu(id) 
 		}
-	case ACTION_MAKE_SURVIVOR: // Survivor command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_MAKE_SURVIVOR
-				show_menu_player_list(id)
-			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				show_menu_admin_classes(id)
-			}
+        case MAKE_TERMINATOR: 
+		{ 
+			return PLUGIN_HANDLED
 		}
-	case ACTION_MAKE_SNIPER: // Sniper command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_MAKE_SNIPER
-				show_menu_player_list(id)
-			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				show_menu_admin_classes(id)
-			}
+        case MAKE_BOMBER: 
+		{ 
+			return PLUGIN_HANDLED
 		}
-	case ACTION_MAKE_SAMURAI: // Samurai command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				// Show player list for admin to pick a target
-				PL_ACTION = ACTION_MAKE_SAMURAI
-				show_menu_player_list(id)
-			}
-			else
-			{
-				client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				show_menu_admin_classes(id)
-			}
-		}
-	case 9: show_menu_admin(id) // Chose to return
 	}
-	return PLUGIN_HANDLED
+
+	return PLUGIN_CONTINUE
 }
 
-// Admin Modes Menu
-public menu_admin_modes(id, key)
+public MakeZombieClassMenuHandler(id, menu, item)
 {
-	switch (key)
-	{		
-	case ACTION_MODE_SWARM: // Swarm Mode command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_swarm())
-				{
-					// Start Swarm Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_SWARM, 0)
+    if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
 
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1round!", CHAT_PREFIX, g_playername[id])
+    new data[6]
 
-					// Log to file
-					LogToFile(LOG_MODE_SWARM, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			
-			show_menu_modes_admin(id)
+    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+    new choice = str_to_num(data)
+
+    switch (choice)
+    {
+        case MAKE_ZOMBIE: 
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_ZOMBIE
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS
+			ShowPlayersMenu(id)
 		}
-	case ACTION_MODE_MULTIPLE_INFECTION: // Multiple Infection command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_multi())
-				{
-					// Start Multi-infection Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_MULTI_INFECTION, 0)
-
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1round!", CHAT_PREFIX, g_playername[id])
-
-					// Log to file
-					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			
-			show_menu_modes_admin(id)
+        case MAKE_ASSASIN: 
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_ASSASIN
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS
+			ShowPlayersMenu(id)
 		}
-	case ACTION_MODE_PLAGUE: // Plague Mode command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_plague())
-				{
-					// Start Plague Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_PLAGUE, 0)
-
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1round!", CHAT_PREFIX, g_playername[id])
-
-					// Log to file
-					LogToFile(LOG_MODE_PLAGUE, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			
-			show_menu_modes_admin(id)
+        case MAKE_NEMESIS: 
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_NEMESIS
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS 
+			ShowPlayersMenu(id)
 		}
-	case 9: show_menu_admin(id) // Chose to return
-	}
-	
-	return PLUGIN_HANDLED
+        case MAKE_BOMBARDIER: 
+		{ 
+			ADMIN_MENU_ACTION = ACTION_MAKE_BOMBARDIER
+			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS
+			ShowPlayersMenu(id)
+		}
+        case MAKE_HYBREED: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+        case MAKE_DRAGON: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+    }
+
+    return PLUGIN_CONTINUE
 }
 
-// Admin Custom Modes Menu
-public menu_admin_custom_modes(id, key)
+public StartNormalModesMenuHandler(id, menu, item)
 {
-	switch (key)
-	{		
-	case ACTION_MODE_SURVIVOR_VS_NEMESIS: // Armageddon Mode command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_armageddon())
-				{
-					// Start Armageddon Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
+    if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
 
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1round!", CHAT_PREFIX, g_playername[id])
+    new data[6]
 
-					// Log to file
-					LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
 
-			show_menu_admin_custom_modes(id)
+    switch (choice)
+    {
+        case START_INFECTION: 
+		{ 
+			return PLUGIN_HANDLED
 		}
-	case ACTION_MODE_SNIPER_VS_ASSASIN: // Apocalypse Mode command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_apocalypse())
-				{
-					// Start Apocalypse Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_SNIPER_VS_ASSASIN, 0)
-
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1round!", CHAT_PREFIX, g_playername[id])
-
-					// Log to file
-					LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			
-			show_menu_admin_custom_modes(id)
+        case START_MULTIPLE_INFECTION: 
+		{ 
+			return PLUGIN_HANDLED
 		}
-	case ACTION_MODE_NIGHTMARE: // Nightmare Mode command
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_nightmare())
-				{
-					// Start Nightmare Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_NIGHTMARE, 0)
-
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playername[id])
-
-					// Log to file
-					LogToFile(LOG_MODE_NIGHTMARE, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			
-			show_menu_admin_custom_modes(id)
+        case START_SWARM: 
+		{ 
+			return PLUGIN_HANDLED
 		}
-	case ACTION_MODE_SNIPER_VS_NEMESIS: // Devil Mode command ( Sniper vs Nemesis)
-		{
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_devil())
-				{
-					// Start Devil Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_SNIPER_VS_NEMESIS, 0)
-
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playername[id])
-
-					// Log to file
-					LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			
-			show_menu_admin_custom_modes(id)
+        case START_PLAGUE: 
+		{ 
+			return PLUGIN_HANDLED
 		}
-	case 9: show_menu_admin(id) // Chose to return
-	}
-	
-	return PLUGIN_HANDLED
+        case START_SYNAPSIS: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+    }
+
+    return PLUGIN_CONTINUE
 }
 
-// Player List Menu
-public menu_player_list(id, menuid, item)
+public StartSpecialModesMenuHandler(id, menu, item)
 {
-	// Player disconnected?
-	if (!is_user_connected(id))
-	{
-		menu_destroy(menuid)
-		return PLUGIN_HANDLED
-	}
-	
-	// Menu was closed
-	if (item == MENU_EXIT)
-	{
-		menu_destroy(menuid)
-		show_menu_admin(id)
-		return PLUGIN_HANDLED
-	}
-	
-	// Retrieve player id
-	static buffer[2], target
-	menu_item_getinfo(menuid, item, _, buffer, charsmax(buffer), _, _, _)
-	target = buffer[0]
-	
-	// Perform action on player
-	
-	// Make sure it's still connected
-	if (g_isconnected[target])
-	{
-		// Perform the right action if allowed
-		switch (PL_ACTION)
-		{
-		case ACTION_ZOMBIEFY_HUMANIZE: // Zombiefy/Humanize command
-			{
-				if (CheckBit(g_playerTeam[target], TEAM_ZOMBIE))
-				{
-					if (AdminHasFlag(id, 'a'))
-					{
-						if (allowed_human(target))
-						{
-							// Just cure
-							MakeHuman(target)
-			
-							// Print in chat
-							if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-							else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+    if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
 
-							// Log to file
-							LogToFile(LOG_MAKE_HUMAN, id, target)
-						}
-						else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-					}
-					else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				}
-				else
-				{
-					if (AdminHasFlag(id, 'a'))
-					{
-						if (allowed_zombie(target))
-						{
-							// New round?
-							if (g_newround)
-							{
-								// Set as first zombie
-								remove_task(TASK_MAKEZOMBIE)
-								start_mode(MODE_INFECTION, target)
-							}
-							else MakeZombie(target) // Just infect
-			
-							// Print in chat
-							if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-							else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+    new data[6]
 
-							// Log to file
-							LogToFile(LOG_MAKE_ZOMBIE, id, target)
-						}
-						else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-					}
-					else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-				}
-			}
-		case ACTION_MAKE_NEMESIS: // Nemesis command
-			{
-				if (AdminHasFlag(id, 'a'))
-				{
-					if (allowed_nemesis(target))
-					{
-						// New round?
-						if (g_newround)
-						{
-							// Set as first nemesis
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_NEMESIS, target)
-						}
-						else MakeZombie(target, CLASS_NEMESIS) // Turn player into a Nemesis
-						
-						// Print in chat
-						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
 
-						// Log to file
-						LogToFile(LOG_MAKE_NEMESIS, id, target)
-					}
-					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-				}
-				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
-		case ACTION_MAKE_ASSASIN: // Assassin command
-			{
-				if (AdminHasFlag(id, 'a'))
-				{
-					if (allowed_assassin(target))
-					{
-						// New round?
-						if (g_newround)
-						{
-							// Set as first Assassin
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_ASSASIN, target)
-						}
-						else MakeZombie(target, CLASS_ASSASIN)// Turn player into a Nemesis
-
-						// Print in chat
-						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-
-						// Log to file
-						LogToFile(LOG_MAKE_ASSASIN, id, target)
-					}
-					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-				}
-				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
-		case ACTION_MAKE_BOMBARDIER: // bombardier command
-			{
-				if (AdminHasFlag(id, 'a'))
-				{
-					if (allowed_bombardier(target))
-					{
-						// New round?
-						if (g_newround)
-						{
-							// Set as first nemesis
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_BOMBARDIER, target)
-						}
-						else MakeZombie(target, CLASS_BOMBARDIER) // Turn player into a Bombardier 
-						
-						// Print in chat
-						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-
-						// Log to file
-						LogToFile(LOG_MAKE_BOMBARDIER, id, target)
-					} 
-					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-				}
-				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
-		case ACTION_MAKE_SURVIVOR: // Survivor command
-			{
-				if (AdminHasFlag(id, 'a'))
-				{
-					if (allowed_survivor(target))
-					{
-						// New round?
-						if (g_newround)
-						{
-							// Set as first 
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_SURVIVOR, target)
-						}
-						else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
-						
-						// Print in chat
-						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himslef a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-
-						// Log to file
-						LogToFile(LOG_MAKE_SURVIVOR, id, target)
-					}
-					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-				}
-				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
-		case ACTION_MAKE_SNIPER: // Sniper command
-			{
-				if (AdminHasFlag(id, 'a'))
-				{
-					if (allowed_sniper(target))
-					{
-						// New round?
-						if (g_newround)
-						{
-							// Set as first 
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_SNIPER, target)
-						}
-						else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
-						
-						// Print in chat
-						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-
-						// Log to file
-						LogToFile(LOG_MAKE_SNIPER, id, target)
-					}
-					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-				}
-				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
-		case ACTION_MAKE_SAMURAI: // Samurai command
-			{
-				if (AdminHasFlag(id, 'a'))
-				{
-					if (allowed_samurai(target))
-					{
-						// New round?
-						if (g_newround)
-						{
-							// Set as first 
-							remove_task(TASK_MAKEZOMBIE)
-							start_mode(MODE_SAMURAI, target)
-						}
-						else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
-						
-						// Print in chat
-						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-
-						// Log to file
-						LogToFile(LOG_MAKE_SAMURAI, id, target)
-					}
-					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-				}
-				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
-		case ACTION_RESPAWN_PLAYER: // Respawn command
-			{
-				if (AdminHasFlag(id, 'a'))
-				{
-					if (allowed_respawn(target))
-					{
-						// Respawn him
-						respawn_player_manually(target)
-
-						// Print in chat
-						if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-						else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-
-						// Log to file
-						LogToFile(LOG_RESPAWN_PLAYER, id, target)
-					}
-					else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-				}
-				else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-			}
+    switch (choice)
+    {
+        case START_SURVIVOR_VS_NEMESIS: 
+		{ 
+			return PLUGIN_HANDLED
 		}
-	}
-	else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-	
-	menu_destroy(menuid)
-	show_menu_player_list(id)
+        case START_NIGHTMARE: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+        case START_SNIPER_VS_ASSASIN: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+        case START_SNIPER_VS_NEMESIS: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+        case START_SURVIVOR_VS_ASSASIN: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+        case START_BOMBARDIER_VS_BOMBER: 
+		{ 
+			return PLUGIN_HANDLED
+		}
+    }
 
-	return PLUGIN_HANDLED
+    return PLUGIN_CONTINUE
+}
+
+public PlayersMenuHandler(id, menu, item)
+{
+    if (item == MENU_EXIT)
+    {
+        switch (PL_MENU_BACK_ACTION)
+        {
+            case MENU_BACK_MAKE_HUMAN_CLASS: { menu_destroy(menu); ShowMakeHumanClassMenu(id); return PLUGIN_HANDLED; }
+            case MENU_BACK_MAKE_ZOMBIE_CLASS: { menu_destroy(menu); ShowMakeZombieClassMenu(id); return PLUGIN_HANDLED; }
+            case MENU_BACK_RESPAWN_PLAYERS: { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
+        }
+    }
+
+    new data[6]
+
+    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+
+    new userid = str_to_num(data)
+    new target = find_player("k", userid)
+
+    switch (ADMIN_MENU_ACTION)
+    {
+        case ACTION_RESPAWN_PLAYER: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+        case ACTION_MAKE_HUMAN: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+        case ACTION_MAKE_SNIPER: 
+		{
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+        case ACTION_MAKE_SURVIVOR: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+        case ACTION_MAKE_SAMURAI: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+        case ACTION_MAKE_ZOMBIE: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+        case ACTION_MAKE_ASSASIN: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id) 
+		}
+        case ACTION_MAKE_NEMESIS: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+        case ACTION_MAKE_BOMBARDIER: 
+		{ 
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
+    }
+
+    return PLUGIN_CONTINUE;
 }
 
 // CS Buy Menus
@@ -8554,6 +8109,134 @@ public menu_cs_buy(id, key)
 	return PLUGIN_CONTINUE
 
 	return PLUGIN_CONTINUE
+}
+
+/*================================================================================
+	[Menu Callbacks...]
+=================================================================================*/
+
+public MainAdminMenuCallback(id, menu, item)
+{
+	new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+
+	switch (choice)
+	{
+		case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 1: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 2: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
+		case 3: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
+		case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+	}
+
+	return ITEM_IGNORE
+}
+
+public MakeHumanClassMenuCallback(id, menu, item)
+{
+	new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+
+	switch (choice)
+	{
+		case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
+		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
+		case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+		case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+	}
+
+	return ITEM_IGNORE
+}
+
+public MakeZombieClassMenuCallback(id, menu, item)
+{
+    new data[6]
+
+    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+    new choice = str_to_num(data)
+
+    switch (choice)
+    {
+        case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+        case 1: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+        case 2: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+        case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+        case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+        case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+    }
+
+    return ITEM_IGNORE
+}
+
+public StartNormalModesCallBack(id, menu, item)
+{
+    new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+
+    switch (choice)
+    {
+        case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
+		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
+		case 3: return AdminHasFlag(id, 'd') ? ITEM_ENABLED : ITEM_DISABLED
+        case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+    }
+
+    return ITEM_IGNORE
+}
+
+public StartSpecialModesCallBack(id, menu, item)
+{
+    new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+
+    switch (choice)
+    {
+        case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
+		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
+		case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+		case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+    }
+
+    return ITEM_IGNORE
+}
+
+public PlayersMenuCallBack(id, menu, item)
+{
+    new data[6]
+
+    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+
+    new userid = str_to_num(data)
+    new target = find_player("k", userid)
+
+    switch (ADMIN_MENU_ACTION)
+    {
+        case ACTION_RESPAWN_PLAYER: return is_user_alive(target) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_HUMAN: return CheckBit(g_playerClass[target], CLASS_HUMAN) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_SNIPER: return CheckBit(g_playerClass[target], CLASS_SNIPER) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_SURVIVOR: return CheckBit(g_playerClass[target], CLASS_SURVIVOR) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_SAMURAI: return CheckBit(g_playerClass[target], CLASS_SAMURAI) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_ZOMBIE: return CheckBit(g_playerClass[target], CLASS_ZOMBIE) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_ASSASIN: return CheckBit(g_playerClass[target], CLASS_ASSASIN) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_NEMESIS: return CheckBit(g_playerClass[target], CLASS_NEMESIS) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_BOMBARDIER: return CheckBit(g_playerClass[target], CLASS_BOMBARDIER) ? ITEM_DISABLED : ITEM_ENABLED
+    }
+
+    return ITEM_IGNORE
 }
 
 /*================================================================================
@@ -13267,7 +12950,6 @@ reset_vars(id, resetall)
 		g_goldenm4a1[id] = false
 		g_goldenxm1014[id] = false
 		g_goldendeagle[id] = false
-		PL_ACTION = 0
 	}
 }
 
@@ -14241,6 +13923,12 @@ public native_make_user_zombie(id)
 	return true
 }
 
+// Native: IsHuman
+public native_get_user_human(id)
+{
+	return CheckBit(g_playerClass[id], CLASS_HUMAN)
+}
+
 // Native: MakeHuman
 public native_make_user_human(id)
 {
@@ -14732,6 +14420,23 @@ public native_make_user_samurai(id)
 	else MakeHuman(id, CLASS_SAMURAI) // Just make him samurai
 
 	return true
+}
+
+// Native: RespawnPlayer
+public native_respawn_player(id)
+{
+	if (!allowed_respawn(id)) return false
+
+	respawn_player_manually(id)
+
+	return true
+}
+
+// Native: GetClassString
+public native_get_class_string(plugin, params)
+{
+	new id = get_param(1)
+	set_string(2, g_classString[id], get_param(3))
 }
 
 // Native: IsInfectionRound
