@@ -3361,7 +3361,7 @@ public _GameMenu(id, menu, item)
 		case 1: menu_display(id, g_iZombieClassMenu, 0)
 		case 2:
 			{
-				if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
+				if (g_isalive[id])
 					menu_display(id, g_iPointShopMenu, 0)
 				else client_print_color(id, print_team_grey, "%s Points shop is unavailbale right now.", CHAT_PREFIX)
 			}
@@ -5522,25 +5522,158 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	// InformerX function
 	static iZombies; iZombies = fnGetZombies()
 	static iHumans; iHumans = fnGetHumans()
+	static iNemesis; iNemesis = fnGetNemesis()
+	static iAssasin; iAssasin = fnGetAssassin()
+	static iSurvivors; iSurvivors = fnGetSurvivors()
+	static iSnipers; iSnipers = fnGetSnipers()
+	static iSamurai; iSamurai = fnGetSamurai()
+	static iBombardier; iBombardier = fnGetBombardier()
 
 	if (!iHumans || !iZombies) return
 
-	if (CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI))
+
+	if (CheckBit(g_currentmode, MODE_INFECTION) || CheckBit(g_currentmode, MODE_MULTI_INFECTION) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SWARM))
 	{
-		if (iZombies != 1)
+		if (CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
 		{
-			set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1) 
-			ShowSyncHudMsg(0, g_MsgSync7, "%d Zombies Remaining...", iZombies)
+			if (iZombies > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1) 
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Zombies Remaining...", iZombies)
+			}
 		}
 	}
 	else if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER))
 	{
-		if (iHumans != 1)
+		if (CheckBit(g_playerTeam[victim], TEAM_HUMAN))
 		{
-			set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
-			ShowSyncHudMsg(0, g_MsgSync7, "%d Humans Remaining...", iHumans)
+			if (iHumans > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Humans Remaining...", iHumans)
+			}
 		}
 	}
+	else if (CheckBit(g_currentmode, MODE_SWARM))
+	{
+		if (CheckBit(g_playerTeam[victim], TEAM_HUMAN))
+		{
+			if (iHumans > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Humans Remaining...", iHumans)
+			}
+		}
+
+		if (CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
+		{
+			if (iZombies > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1) 
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Zombies Remaining...", iZombies)
+			}
+		}
+	}
+	else if (CheckBit(g_currentmode, MODE_NIGHTMARE))
+	{
+		if (CheckBit(g_playerClass[victim], CLASS_SURVIVOR))
+		{
+			if (iSurvivors > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Survivors Remaining...", iSurvivors)
+			}
+		}
+		
+		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS))
+		{
+			if (iNemesis > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Nemesis Remaining...", iNemesis)
+			}
+		}
+		
+		if (CheckBit(g_playerClass[victim], CLASS_ASSASIN))
+		{
+			if (iAssasin > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Assasins Remaining...", iAssasin)
+			}
+		}
+		
+		if (CheckBit(g_playerClass[victim], CLASS_SNIPER))
+		{
+			if (iSnipers > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Snipers Remaining...", iSnipers)
+			}
+		}
+	}
+	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS))
+	{
+		if (CheckBit(g_playerClass[victim], CLASS_SURVIVOR))
+		{
+			if (iSurvivors > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Survivors Remaining...", iSurvivors)
+			}
+		}
+		
+		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS))
+		{
+			if (iNemesis > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Nemesis Remaining...", iNemesis)
+			}
+		}
+	}
+	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS))
+	{
+		if (CheckBit(g_playerClass[victim], CLASS_SNIPER))
+		{
+			if (iSnipers > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Snipers Remaining...", iSnipers)
+			}
+		}
+		
+		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS))
+		{
+			if (iNemesis > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Nemesis Remaining...", iNemesis)
+			}
+		}
+		
+	}
+	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN))
+	{
+		if (CheckBit(g_playerClass[victim], CLASS_SNIPER))
+		{
+			if (iSnipers > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Snipers Remaining...", iSnipers)
+			}
+		}
+		
+		if (CheckBit(g_playerClass[victim], CLASS_ASSASIN))
+		{
+			if (iAssasin > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Assasins Remaining...", iAssasin)
+			}
+		}
+	}
+
 	if (iZombies == 1 && iHumans == 1)
 	{
 		set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 1, 0.01, 1.75, 1.00, 1.00, -1)
@@ -7826,33 +7959,12 @@ public MainAdminMenuHandler(id, menu, item)
 
     switch (choice)
     {
-        case 0: 
-		{ 
-			ADMIN_MENU_ACTION = ACTION_RESPAWN_PLAYER
-			PL_MENU_BACK_ACTION = MENU_BACK_RESPAWN_PLAYERS
-			ShowPlayersMenu(id)
-		}
-        case 1: 
-		{ 
-			ShowMakeHumanClassMenu(id)
-		} 
-        case 2: 
-		{ 
-			ShowMakeZombieClassMenu(id)
-		} 
-        case 3: 
-		{ 
-			ShowStartNormalModesMenu(id)
-		} 
-        case 4: 
-		{ 
-			ShowStartSpecialModesMenu(id)
-		} 
-        case 5: 
-		{ 
-			client_print_color(id, print_team_grey, "^3You have access to this command")
-			return PLUGIN_HANDLED 
-		}
+        case 0: { ADMIN_MENU_ACTION = ACTION_RESPAWN_PLAYER; PL_MENU_BACK_ACTION = MENU_BACK_RESPAWN_PLAYERS; ShowPlayersMenu(id); }
+        case 1: { ShowMakeHumanClassMenu(id); }
+        case 2: { ShowMakeZombieClassMenu(id); }
+        case 3: { ShowStartNormalModesMenu(id); }
+        case 4: { ShowStartSpecialModesMenu(id); }
+        case 5: { client_print_color(id, print_team_grey, "^3You have access to this command"); return PLUGIN_HANDLED; }
     }
 
 	return PLUGIN_CONTINUE
@@ -7869,38 +7981,12 @@ public MakeHumanClassMenuHandler(id, menu, item)
 
 	switch (choice)
 	{
-		case MAKE_HUMAN:	
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_HUMAN
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; 
-			ShowPlayersMenu(id) 
-		}
-		case MAKE_SURVIVOR: 
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_SURVIVOR
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS
-			ShowPlayersMenu(id)
-		}
-		case MAKE_SNIPER:	
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_SNIPER
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS
-			ShowPlayersMenu(id) 
-		}
-		case MAKE_SAMURAI:	
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_SAMURAI
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS 
-			ShowPlayersMenu(id) 
-		}
-        case MAKE_TERMINATOR: 
-		{ 
-			return PLUGIN_HANDLED
-		}
-        case MAKE_BOMBER: 
-		{ 
-			return PLUGIN_HANDLED
-		}
+		case MAKE_HUMAN: { ADMIN_MENU_ACTION = ACTION_MAKE_HUMAN; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
+		case MAKE_SURVIVOR: { ADMIN_MENU_ACTION = ACTION_MAKE_SURVIVOR; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
+		case MAKE_SNIPER: { ADMIN_MENU_ACTION = ACTION_MAKE_SNIPER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
+		case MAKE_SAMURAI: { ADMIN_MENU_ACTION = ACTION_MAKE_SAMURAI; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
+        case MAKE_TERMINATOR: { return PLUGIN_HANDLED; }
+        case MAKE_BOMBER: { return PLUGIN_HANDLED; }
 	}
 
 	return PLUGIN_CONTINUE
@@ -7917,38 +8003,12 @@ public MakeZombieClassMenuHandler(id, menu, item)
 
     switch (choice)
     {
-        case MAKE_ZOMBIE: 
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_ZOMBIE
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS
-			ShowPlayersMenu(id)
-		}
-        case MAKE_ASSASIN: 
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_ASSASIN
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS
-			ShowPlayersMenu(id)
-		}
-        case MAKE_NEMESIS: 
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_NEMESIS
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS 
-			ShowPlayersMenu(id)
-		}
-        case MAKE_BOMBARDIER: 
-		{ 
-			ADMIN_MENU_ACTION = ACTION_MAKE_BOMBARDIER
-			PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS
-			ShowPlayersMenu(id)
-		}
-        case MAKE_HYBREED: 
-		{ 
-			return PLUGIN_HANDLED
-		}
-        case MAKE_DRAGON: 
-		{ 
-			return PLUGIN_HANDLED
-		}
+        case MAKE_ZOMBIE: { ADMIN_MENU_ACTION = ACTION_MAKE_ZOMBIE; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
+        case MAKE_ASSASIN: { ADMIN_MENU_ACTION = ACTION_MAKE_ASSASIN; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
+        case MAKE_NEMESIS: { ADMIN_MENU_ACTION = ACTION_MAKE_NEMESIS; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
+        case MAKE_BOMBARDIER: { ADMIN_MENU_ACTION = ACTION_MAKE_BOMBARDIER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
+        case MAKE_HYBREED: { return PLUGIN_HANDLED; }
+        case MAKE_DRAGON: { return PLUGIN_HANDLED; }
     }
 
     return PLUGIN_CONTINUE
@@ -7967,19 +8027,82 @@ public StartNormalModesMenuHandler(id, menu, item)
     {
         case START_INFECTION: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a') && !g_modestarted)
+			{
+				if (!g_modestarted)
+				{
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_INFECTION, fnGetRandomAlive(random_num(1, fnGetAlive())))
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Infection ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
+				} 
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_MULTIPLE_INFECTION: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_multi())
+				{
+					// Start Multi-infection Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_MULTI_INFECTION, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_SWARM: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_swarm())
+				{
+					// Start Swarm Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SWARM, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_SWARM, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_PLAGUE: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_plague())
+				{
+					// Start Plague Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_PLAGUE, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_PLAGUE, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_SYNAPSIS: 
 		{ 
@@ -8003,19 +8126,83 @@ public StartSpecialModesMenuHandler(id, menu, item)
     {
         case START_SURVIVOR_VS_NEMESIS: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_armageddon())
+				{
+					// Start Armageddon Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_NIGHTMARE: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_nightmare())
+				{
+					// Start Nightmare Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_NIGHTMARE, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_NIGHTMARE, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_SNIPER_VS_ASSASIN: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_apocalypse())
+				{
+					// Start Apocalypse Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SNIPER_VS_ASSASIN, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_SNIPER_VS_NEMESIS: 
 		{ 
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_devil())
+				{
+					// Start Devil Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SNIPER_VS_NEMESIS, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
         case START_SURVIVOR_VS_ASSASIN: 
 		{ 
@@ -8053,52 +8240,257 @@ public PlayersMenuHandler(id, menu, item)
     {
         case ACTION_RESPAWN_PLAYER: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_respawn(target))
+				{
+					// Respawn him
+					respawn_player_manually(target)
+
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_RESPAWN_PLAYER, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
         case ACTION_MAKE_HUMAN: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_human(target))
+				{
+					// Just cure
+					MakeHuman(target)
+	
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_HUMAN, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
         case ACTION_MAKE_SNIPER: 
 		{
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_sniper(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first 
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_SNIPER, target)
+					}
+					else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
+					
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_SNIPER, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
         case ACTION_MAKE_SURVIVOR: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_survivor(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first 
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_SURVIVOR, target)
+					}
+					else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
+					
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himslef a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_SURVIVOR, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
         case ACTION_MAKE_SAMURAI: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_samurai(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first 
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_SAMURAI, target)
+					}
+					else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
+					
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_SAMURAI, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
         case ACTION_MAKE_ZOMBIE: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_zombie(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first zombie
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_INFECTION, target)
+					}
+					else MakeZombie(target) // Just infect
+	
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_ZOMBIE, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
         case ACTION_MAKE_ASSASIN: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_assassin(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first Assassin
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_ASSASIN, target)
+					}
+					else MakeZombie(target, CLASS_ASSASIN)// Turn player into a Nemesis
+
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_ASSASIN, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id) 
 		}
         case ACTION_MAKE_NEMESIS: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_nemesis(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first nemesis
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_NEMESIS, target)
+					}
+					else MakeZombie(target, CLASS_NEMESIS) // Turn player into a Nemesis
+					
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					
+
+					// Log to file
+					LogToFile(LOG_MAKE_NEMESIS, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
         case ACTION_MAKE_BOMBARDIER: 
 		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_bombardier(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first nemesis
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_BOMBARDIER, target)
+					}
+					else MakeZombie(target, CLASS_BOMBARDIER) // Turn player into a Bombardier 
+					
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_BOMBARDIER, id, target)
+				} 
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
     }
 
-    return PLUGIN_CONTINUE;
+    return PLUGIN_CONTINUE
 }
 
 // CS Buy Menus
@@ -13116,14 +13508,14 @@ fnGetHumans()
 }
 
 // Get Nemesis -returns alive nemesis number-
-/*fnGetNemesis()
+fnGetNemesis()
 {
 	static iNemesis, id
 	iNemesis = 0
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_nemesis[id]) iNemesis++
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_NEMESIS)) iNemesis++
 	}
 	
 	return iNemesis
@@ -13132,15 +13524,15 @@ fnGetHumans()
 // Get Assassin -returns alive assassin number-
 fnGetAssassin()
 {
-	static iAssassin, id
-	iAssassin = 0
+	static iAssasin, id
+	iAssasin = 0
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_assassin[id]) iAssassin++
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_ASSASIN)) iAssasin++
 	}
 	
-	return iAssassin
+	return iAssasin
 }
 
 // Bombardier -- Abhinash
@@ -13152,7 +13544,7 @@ fnGetBombardier()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_bombardier[id]) iBombardier++
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) iBombardier++
 	}
 	
 	return iBombardier
@@ -13166,7 +13558,7 @@ fnGetSurvivors()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_survivor[id]) iSurvivors++
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_SURVIVOR)) iSurvivors++
 	}
 	
 	return iSurvivors
@@ -13180,7 +13572,7 @@ fnGetSnipers()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_sniper[id]) iSnipers++
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_SNIPER)) iSnipers++
 	}
 	
 	return iSnipers
@@ -13195,11 +13587,11 @@ fnGetSamurai()
 	
 	for (id = 1; id <= g_maxplayers; id++)
 	{
-		if (g_isalive[id] && g_samurai[id]) iSamurai++
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_SAMURAI)) iSamurai++
 	}
 	
 	return iSamurai
-}*/
+}
 
 // Get Alive -returns alive players number-
 fnGetAlive()
