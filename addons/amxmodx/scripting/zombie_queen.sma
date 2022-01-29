@@ -6094,7 +6094,7 @@ public OnTakeDamagePost(victim)
 	// Check if proper CVARs are enabled
 	if (CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
 	{
-		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS)) if (!NemesisPainfree) return
+		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS)) if (!NemesisPainfree && !(pev(victim, pev_button) & (IN_JUMP | IN_DUCK))) return
 		else if (CheckBit(g_playerClass[victim], CLASS_ASSASIN)) if (!AssassinPainfree) return
 		else if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) if (!BombardierPainfree) return
 		else
@@ -6150,7 +6150,7 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	
 	// Get whether the victim is in a crouch state
 	static ducking
-	ducking = ((pev(victim, pev_flags) & (FL_DUCKING | FL_ONGROUND)) == (FL_DUCKING | FL_ONGROUND))
+	ducking = (pev(victim, pev_flags) & (FL_DUCKING | FL_ONGROUND)) == (FL_DUCKING | FL_ONGROUND)
 	
 	// Zombie knockback when ducking disabled
 	if (ducking && KnockbackDucking == 0.0) 
@@ -7714,6 +7714,11 @@ public Client_Say(id)
 		else if (CheckBit(g_playerClass[id], CLASS_SNIPER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Sniper")
 		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Samurai")
 		else if (CheckBit(g_playerClass[id], CLASS_TRYDER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Tryder")
+	}
+	else if (equali(cMessage, "team", 4))
+	{
+		if (CheckBit(g_playerTeam[id], TEAM_HUMAN)) client_print_color(id, print_team_grey, "^4Your team: ^3Human")
+		else client_print_color(id, print_team_grey, "^4Your team: ^3Zombie")
 	}
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
