@@ -1155,20 +1155,22 @@ new g_cModesMenu[][MMenuData] =
 	{"Nightcrawler round", 				"\r[500 round]",  500}
 }
 
-enum _:aCMenuData
+// create the structure for each item
+// we need the item name and cost
+enum _:ItemData
 {
-	aCItemName[32],
-	aCItemTag[32],
-	aCPoints
-}
+    ItemName[ 32 ],
+    ItemCost
+};
 
-new g_cWeaponsMenu[][aCMenuData] =
-{
-	{"Balrog 7\y(comming soon)", "\r[2250 points]",  2250},
-	{"Janus 7 \y(comming soon)", 	"\r[10000 points]", 10000},
-	{"RPG 7 VIP\y(comming soon)",  "\r[20000 points]", 20000},
-	{"Milkor MG32 VIP\y(comming soon)", "\r[40000 points]", 40000}
-}
+// create a dynamic array to hold all the items
+new Array:g_aItems;
+
+// this will tell how many are in the array instead of using ArraySize()
+new g_iTotalItems;
+
+// create a forward for when player selects an item
+new g_hSelectItemForward;
 
 enum _: structExtrasTeam (<<=1)
 {
@@ -1283,7 +1285,7 @@ new g_iPointShopMenu
 new g_iAmmoMenu
 new g_iFeaturesMenu
 new g_iModesMenu
-new g_iWeaponsMenu
+//new g_iWeaponsMenu
 
 new g_PrimaryMenu
 new g_SecondaryMenu
@@ -2064,6 +2066,114 @@ public plugin_natives()
 	register_native("StartDevilRound", 			"native_start_devil_round", 1)
 	register_native("IsNightmareRound", 	 	"native_is_nightmare_round", 1)
 	register_native("StartNightmareRound", 		"native_start_nightmare_round", 1)
+
+	// create a native to allow other plugins to add items
+    register_native( "shop_item_add", "_item_add" );
+}
+
+public _item_add( iPlugin, iParams )
+{
+    // create an array to hold our item data
+    new eItemData[ ItemData ];
+    
+    // get item name from function
+    get_string( 1, eItemData[ ItemName ], charsmax( eItemData[ ItemName ] ) );
+    
+    // get item cost from function
+    eItemData[ ItemCost ] = get_param( 2 );
+    
+    // add item to array and increase size
+    ArrayPushArray( g_aItems, eItemData );
+    g_iTotalItems++;
+    
+    // return the index of this item in the array
+    // this creates the unique item index
+    return ( g_iTotalItems - 1 );
+}
+
+ShowShopMenu( iPlayer, iPage )
+{
+    // check if there are no items
+    if( !g_iTotalItems )
+    {
+        return;
+    }
+    
+    // clamp page to valid range of pages
+    iPage = clamp( iPage, 0, ( g_iTotalItems - 1 ) / 7 );
+    
+    // create menu
+    new hMenu = menu_create( "Shop Menu", "MenuShop" );
+    
+    // used to display item in the menu
+    new eItemData[ ItemData ];
+    new szItem[ 64 ];
+    
+    // used for array index to menu
+    new szNum[ 3 ];
+    
+    // loop through each item
+    for( new i = 0; i < g_iTotalItems; i++ )
+    {
+        // get item data from array
+        ArrayGetArray( g_aItems, i, eItemData );
+        
+        // format item for menu
+        formatex( szItem, charsmax( szItem ), "%s\R\y%i", eItemData[ ItemName ], eItemData[ ItemCost ] );
+        
+        // pass array index to menu to find information about it later
+        num_to_str( i, szNum, charsmax( szNum ) );
+        
+        // add item to menu
+        menu_additem( hMenu, szItem, szNum );
+    }
+    
+    // display menu to player
+    menu_display( iPlayer, hMenu, iPage );
+}
+
+public MenuShop( iPlayer, hMenu, iItem )
+{
+    if( iItem == MENU_EXIT )
+    {
+        menu_destroy( hMenu );
+        return;
+    }
+    
+    new iAccess, szNum[ 3 ], hCallback;
+    menu_item_getinfo( hMenu, iItem, iAccess, szNum, charsmax( szNum ), _, _, hCallback );
+    menu_destroy( hMenu );
+    
+    // get item index from menu
+    new iItemIndex = str_to_num( szNum );
+    
+    // get item data from array
+    new eItemData[ ItemData ];
+    ArrayGetArray( g_aItems, iItemIndex, eItemData );
+    
+    // get player money and subtract the cost
+    g_points[iPlayer] -= eItemData[ ItemCost ];
+	MySQL_UPDATE_DATABASE(iPlayer)
+    
+    // result money will be < 0 if not enough money
+    if( g_points[iPlayer] < 0 )
+    {
+        // notify player
+        client_print( iPlayer, print_chat, "* You need $%i more to buy this item!", ( g_points[iPlayer] * -1 ) );
+    }
+    else
+    {
+        // set player money
+        g_points[iPlayer] += eItemData[ ItemCost ]
+		MySQL_UPDATE_DATABASE(iPlayer)
+
+        
+        // notify plugins that the player bought this item
+        new iReturn;
+        ExecuteForward( g_hSelectItemForward, iReturn, iPlayer, iItemIndex );
+    }
+    
+    ShowShopMenu( iPlayer, .iPage = ( iItemIndex / 7 ) );
 }
 
 public plugin_precache()
@@ -2653,6 +2763,12 @@ public plugin_init()
 	g_forwards[USER_LAST_ZOMBIE] = CreateMultiForward("OnLastZombie", ET_IGNORE, FP_CELL)
 	g_forwards[USER_LAST_HUMAN] = CreateMultiForward("OnLastHuman", ET_IGNORE, FP_CELL)
 	g_forwards[ADMIN_MODE_START] = CreateMultiForward("OnAdminModeStart", ET_IGNORE, FP_CELL, FP_CELL)
+
+	// create our array with the size of the item structure
+    g_aItems = ArrayCreate( ItemData );
+
+	// create our forward
+    g_hSelectItemForward = CreateMultiForward( "shop_item_selected", ET_IGNORE, FP_CELL, FP_CELL );
 	
 	// CVARS - Others
 	cvar_botquota = get_cvar_pointer("bot_quota")
@@ -2707,7 +2823,7 @@ public plugin_init()
 	g_iAmmoMenu = menu_create("Buy Ammo Packs", "_AmmoMenu", 0)	// Ammo shop menu
 	g_iFeaturesMenu = menu_create("Buy Features", "_Features", 0)	// Features menu
 	g_iModesMenu = menu_create("Buy Modes", "_Modes", 0)	// Modes menu
-	g_iWeaponsMenu = menu_create("Buy Access", "_Weapons", 0)	// Buy access menu
+	//g_iWeaponsMenu = menu_create("Buy Weapons", "_Weapons", 0)	// Buy access menu
 	
 	// Main Game menu
 	menu_additem(g_iGameMenu, "Buy extra items", "0", 0, -1)
@@ -2762,12 +2878,12 @@ public plugin_init()
 	}
 	
 	// Access menu
-	for (new i; i < sizeof(g_cWeaponsMenu); i++)
+	/*for (new i; i < sizeof(g_cWeaponsMenu); i++)
 	{
 		formatex(cLine, 128, "%s %s", g_cWeaponsMenu[i][aCItemName], g_cWeaponsMenu[i][aCItemTag])
 		num_to_str(i, cNumber, 3)
 		menu_additem(g_iWeaponsMenu, cLine, cNumber, 0, -1)
-	}
+	}*/
 	
 	g_PrimaryMenu = menu_create("Primary Weapons", "PrimaryHandler")
 	for(new i; i < sizeof g_PrimaryWeapons; i++)
@@ -4178,7 +4294,7 @@ public _PointShop(id, menu, item)
 			case 0: menu_display(id, g_iAmmoMenu, 0)
 			case 1: menu_display(id, g_iFeaturesMenu, 0)
 			case 2: menu_display(id, g_iModesMenu, 0)
-			case 3: menu_display(id, g_iWeaponsMenu, 0)
+			case 3: ShowShopMenu(id, .iPage = 0)
 		}
 	}
 	return PLUGIN_CONTINUE
