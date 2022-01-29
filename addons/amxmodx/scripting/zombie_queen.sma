@@ -86,6 +86,54 @@ enum _: menuBackActions
 
 new g_mainAdminMenuCallback, g_makeHumanClassMenuCallback, g_makeZombieClassMenuCallback, g_startNormalModesCallback, g_startSpecialModesCallback, g_playersMenuCallback
 
+// Forward enums
+enum _: forwardNames
+{
+	ROUND_START = 0,
+	ROUND_END,
+	INFECT_ATTEMP,
+	INFECTED_PRE,
+	INFECTED_POST,
+	HUMANIZE_ATTEMP,
+	HUMANIZED_PRE,
+	HUMANIZED_POST,
+	USER_LAST_ZOMBIE,
+	USER_LAST_HUMAN,
+	ADMIN_MODE_START,
+	MAX_FORWARDS
+	// PLAYER_SPAWN_POST,
+	// FROZEN_PRE,
+	// FROZEN_POST,
+	// USER_UNFROZEN,
+	// BURN_PRE,
+	// BURN_POST,
+	// INFECTED_BY_BOMB_PRE,
+	// INFECTED_BY_BOMB_POST,
+	// UNSTUCK_PRE,
+	// UNSTUCK_POST,
+	//ROUND_START_PRE,
+	//ITEM_SELECTED_PRE,
+	//ITEM_SELECTED_POST,
+	//CLASS_CHOOSED_PRE,
+	//CLASS_CHOOSED_POST,
+	//RESET_RENDERING_PRE,
+	//RESET_RENDERING_POST,
+	//MODEL_CHANGE_PRE,
+	//MODEL_CHANGE_POST,
+	//HM_SP_CHOSSED_PRE,
+	//ZM_SP_CHOSSED_PRE,
+	//HM_SP_CHOSSED_POST,
+	//ZM_SP_CHOSSED_POST,
+	//GM_SELECTED_PRE,
+	//WEAPON_SELECTED_PRE,
+	//WEAPON_SELECTED_POST,
+}
+new g_forwards[MAX_FORWARDS], g_forwardRetVal
+
+// Custom forward return values
+const ZP_PLUGIN_HANDLED = 97
+const ZP_PLUGIN_SUPERCEDE = 98
+
 // Jetapck
 native set_user_jetpack(id, jetpack)
 native get_user_jetpack(id)
@@ -1285,10 +1333,11 @@ new g_playerTeam[33]
 new g_playerClass[33]
 
 // Player Team names
-enum _: playerTeams (<<=1)
+enum _: playerTeams 
 {
 	TEAM_HUMAN = 1,
-	TEAM_ZOMBIE
+	TEAM_ZOMBIE,
+	TEAM_NONE
 }
 
 // Zombie Sub-class Names
@@ -1901,6 +1950,7 @@ new g_hamczbots // whether ham forwards are registered for CZ bots
 new UnregisterFwSpawn, UnregisterFwPrecacheSound // spawn and precache sound forward handles
 new g_switchingteam // flag for whenever a player's team change emessage is sent
 new g_buyzone_ent // custom buyzone entity
+new g_lastplayerleaving // flag for whenever a player leaves and another takes his place
 
 // Temporary Database vars (used to restore players stats in case they get disconnected)
 new db_name[MAX_STATS_SAVED][32] // player name
@@ -2589,6 +2639,20 @@ public plugin_init()
 	set_msg_block(get_user_msgid("Radar"), BLOCK_SET) 
 	set_msg_block(get_user_msgid("WeapPickup"), BLOCK_SET) 
 	set_msg_block(get_user_msgid("AmmoPickup"), BLOCK_SET)
+
+	// Forwards 
+	g_forwards[ROUND_START] = CreateMultiForward("OnRoundStart", ET_IGNORE, FP_CELL, FP_CELL)
+	//g_forwards[ROUND_START_PRE] = CreateMultiForward("OnRoundStartedPre", ET_CONTINUE, FP_CELL)
+	g_forwards[ROUND_END] = CreateMultiForward("OnRoundEnd", ET_IGNORE, FP_CELL)
+	g_forwards[INFECT_ATTEMP] = CreateMultiForward("OnInfectAttempt", ET_CONTINUE, FP_CELL, FP_CELL, FP_CELL)
+	g_forwards[INFECTED_PRE] = CreateMultiForward("OnInfectedPre", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL)
+	g_forwards[INFECTED_POST] = CreateMultiForward("OnInfectedPost", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL)
+	g_forwards[HUMANIZE_ATTEMP] = CreateMultiForward("OnHumanizeAttempt", ET_CONTINUE, FP_CELL, FP_CELL)
+	g_forwards[HUMANIZED_PRE] = CreateMultiForward("OnHumanizedPre", ET_IGNORE, FP_CELL, FP_CELL)
+	g_forwards[HUMANIZED_POST] = CreateMultiForward("OnHumanizedPost", ET_IGNORE, FP_CELL, FP_CELL)
+	g_forwards[USER_LAST_ZOMBIE] = CreateMultiForward("OnLastZombie", ET_IGNORE, FP_CELL)
+	g_forwards[USER_LAST_HUMAN] = CreateMultiForward("OnLastHuman", ET_IGNORE, FP_CELL)
+	g_forwards[ADMIN_MODE_START] = CreateMultiForward("OnAdminModeStart", ET_IGNORE, FP_CELL, FP_CELL)
 	
 	// CVARS - Others
 	cvar_botquota = get_cvar_pointer("bot_quota")
@@ -4759,10 +4823,7 @@ public logevent_round_end()
 
 		LIMIT[id][TRYDER] = 0
 
-		if (g_allheadshots[id])
-		{
-			g_allheadshots[id] = false
-		}
+		if (g_allheadshots[id]) g_allheadshots[id] = false
 	}
 	
 	// Round ended
@@ -4773,8 +4834,7 @@ public logevent_round_end()
 	remove_task(TASK_MAKEZOMBIE)
 
 	// Remove Reminder Task
-	if (task_exists(TASK_REMINDER))
-	remove_task(TASK_REMINDER)
+	if (task_exists(TASK_REMINDER)) remove_task(TASK_REMINDER)
 	
 	// Stop ambience sounds
 	remove_task(TASK_AMBIENCESOUNDS)
@@ -4794,6 +4854,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -4804,6 +4867,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -4813,6 +4879,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_SWARM, MODE_PLAGUE:
@@ -4826,6 +4895,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -4836,6 +4908,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -4845,6 +4920,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_SURVIVOR_VS_NEMESIS, MODE_SNIPER_VS_NEMESIS, MODE_SNIPER_VS_ASSASIN:
@@ -4858,6 +4936,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -4868,6 +4949,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -4877,6 +4961,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_NIGHTMARE:
@@ -4890,6 +4977,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -4900,6 +4990,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -4909,6 +5002,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_ASSASIN:
@@ -4922,6 +5018,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -4932,6 +5031,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -4941,6 +5043,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_NEMESIS:
@@ -4954,6 +5059,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -4964,6 +5072,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -4973,6 +5084,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_BOMBARDIER:
@@ -4986,6 +5100,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -4996,6 +5113,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -5005,6 +5125,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_SURVIVOR:
@@ -5018,6 +5141,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -5029,6 +5155,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -5038,6 +5167,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_SNIPER:
@@ -5051,6 +5183,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -5061,6 +5196,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -5070,6 +5208,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 		case MODE_SAMURAI:
@@ -5083,6 +5224,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
 				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
 			}
 			else if (!fnGetHumans())
 			{
@@ -5093,6 +5237,9 @@ public logevent_round_end()
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
 				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
 			}
 			else
 			{
@@ -5102,6 +5249,9 @@ public logevent_round_end()
 				
 				// Play win sound
 				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
 	}
@@ -8039,6 +8189,9 @@ public StartNormalModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_INFECTION, id)
 				} 
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8059,6 +8212,9 @@ public StartNormalModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_MULTI_INFECTION, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8079,6 +8235,9 @@ public StartNormalModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_SWARM, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SWARM, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8099,6 +8258,9 @@ public StartNormalModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_PLAGUE, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_PLAGUE, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8106,6 +8268,8 @@ public StartNormalModesMenuHandler(id, menu, item)
 		}
         case START_SYNAPSIS: 
 		{ 
+			// Execute our forward
+			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
 			return PLUGIN_HANDLED
 		}
     }
@@ -8139,6 +8303,9 @@ public StartSpecialModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8159,6 +8326,9 @@ public StartSpecialModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_NIGHTMARE, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NIGHTMARE, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8179,6 +8349,9 @@ public StartSpecialModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8199,6 +8372,9 @@ public StartSpecialModesMenuHandler(id, menu, item)
 
 					// Log to file
 					LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_NEMESIS, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8206,10 +8382,14 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
         case START_SURVIVOR_VS_ASSASIN: 
 		{ 
+			// Execute our forward
+			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
 			return PLUGIN_HANDLED
 		}
         case START_BOMBARDIER_VS_BOMBER: 
 		{ 
+			// Execute our forward
+			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
 			return PLUGIN_HANDLED
 		}
     }
@@ -9603,6 +9783,9 @@ public cmd_zombie(id)
 		
 		// Log to file
 		LogToFile(LOG_MAKE_ZOMBIE, id, target)
+
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_INFECTION, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -9659,8 +9842,6 @@ public cmd_human(id)
 		
 		// Turn to human
 		MakeHuman(target)
-
-		return PLUGIN_HANDLED
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -9724,7 +9905,8 @@ public cmd_survivor(id)
 		// Log to file
 		LogToFile(LOG_MAKE_SURVIVOR, id, target)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -9788,7 +9970,8 @@ public cmd_sniper(id)
 		// Log to file
 		LogToFile(LOG_MAKE_SNIPER, id, target)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -9852,7 +10035,8 @@ public cmd_samurai(id)
 		// Log to file
 		LogToFile(LOG_MAKE_SAMURAI, id, target)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SAMURAI, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -9916,7 +10100,8 @@ public cmd_nemesis(id)
 		// Log to file
 		LogToFile(LOG_MAKE_NEMESIS, id, target)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NEMESIS, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -9980,7 +10165,8 @@ public cmd_assassin(id)
 		// Log to file
 		LogToFile(LOG_MAKE_ASSASIN, id, target)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_ASSASIN, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10044,7 +10230,8 @@ public cmd_bombardier(id)
 		// Log to file
 		LogToFile(LOG_MAKE_BOMBARDIER, id, target)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_BOMBARDIER, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10131,7 +10318,8 @@ public cmd_swarm(id)
 		// Log to file
 		LogToFile(LOG_MODE_SWARM, id)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SWARM, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10161,7 +10349,8 @@ public cmd_multi(id)
 		// Log to file
 		LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_MULTI_INFECTION, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10191,7 +10380,8 @@ public cmd_plague(id)
 		// Log to file
 		LogToFile(LOG_MODE_PLAGUE, id)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_PLAGUE, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10221,7 +10411,8 @@ public cmd_armageddon(id)
 		// Log to file
 		LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10251,7 +10442,8 @@ public cmd_apocalypse(id)
 		// Log to file
 		LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10281,7 +10473,8 @@ public cmd_nightmare(id)
 		// Log to file
 		LogToFile(LOG_MODE_NIGHTMARE, id)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NIGHTMARE, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10311,7 +10504,8 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 		// Log to file
 		LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
 
-		return PLUGIN_HANDLED
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_NEMESIS, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10830,8 +11024,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR, forward_id)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SniperChance) == SniperEnabled && iPlayersnum >= SniperMinPlayers) || mode == MODE_SNIPER)
 	{
@@ -10882,8 +11078,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER, forward_id)
 	}
 	// Abhinash
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SamuraiChance) == SamuraiEnabled && iPlayersnum >= SamuraiMinPlayers) || mode == MODE_SAMURAI)
@@ -10935,8 +11133,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SAMURAI, forward_id)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SwarmChance) == SwarmEnable && iPlayersnum >= SwarmMinPlayers) || mode == MODE_SWARM)
 	{		
@@ -10989,8 +11189,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SWARM, 0)
 	}
 	else if ((mode == MODE_NONE && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, MultiInfectionChance) == MultiInfectionEnable && floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil) >= 2 && floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil) < iPlayersnum && iPlayersnum >= MultiInfectionMinPlayers) || mode == MODE_MULTI_INFECTION)
 	{
@@ -11053,8 +11255,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_MULTI_INFECTION, 0)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, PlagueChance) == PlagueEnable && floatround((iPlayersnum - (PlagueNemesisCount+PlagueSurvivorCount)) * PlagueRatio, floatround_ceil) >= 1
 	&& iPlayersnum - (PlagueSurvivorCount + PlagueNemesisCount + floatround((iPlayersnum - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil)) >= 1 && iPlayersnum >= PlagueMinPlayers) || mode == MODE_PLAGUE)
@@ -11158,8 +11362,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_PLAGUE, 0)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, ArmageddonChance) == ArmageddonEnable && iPlayersnum >= ArmageddonMinPlayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
 	{
@@ -11216,8 +11422,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, 0)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, ApocalypseChance) == ApocalypseEnable && iPlayersnum >= ApocalypseMinPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
 	{
@@ -11274,8 +11482,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, 0)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, NightmareChance) == NightmareEnable && iPlayersnum >= NightmareMinPlayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
 	{
@@ -11356,8 +11566,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_NIGHTMARE, 0)
 	}
 	// Abhinash
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, DevilChance) == DevilEnable && iPlayersnum >= DevilMinPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
@@ -11415,8 +11627,10 @@ start_mode(mode, id)
 		// Mode fully started!
 		g_modestarted = true
 
-		if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER_VS_NEMESIS, 0)
 	}
 	else
 	{
@@ -11454,11 +11668,13 @@ start_mode(mode, id)
 			// Mode fully started!
 			g_modestarted = true
 
-			if (task_exists(TASK_COUNTDOWN))
-			remove_task(TASK_COUNTDOWN)
+			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
 			// Create Fog 
 			//CreateFog(0, 200, 200, 100, 0.0008)
+
+			// Execute out forward
+			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_NEMESIS, forward_id)
 		}
 		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, AssassinChance) == AssassinEnabled && iPlayersnum >= AssassinMinPlayers) || mode == MODE_ASSASIN)
 		{
@@ -11488,11 +11704,13 @@ start_mode(mode, id)
 			// Create Fog 
 			//CreateFog(0, 200, 200, 100, 0.0008)
 
-			if (task_exists(TASK_COUNTDOWN))
-				remove_task(TASK_COUNTDOWN)
+			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
 			// Mode fully started!
 			g_modestarted = true
+
+			// Execute out forward
+			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_ASSASIN, forward_id)
 		}
 		// Bombardier -- Abhinash
 		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, BombardierChance) == BombardierEnabled && iPlayersnum >= BombardierMinPlayers) || mode == MODE_BOMBARDIER)
@@ -11520,11 +11738,13 @@ start_mode(mode, id)
 			// Create Fog 
 			//CreateFog(0, 200, 200, 100, 0.0008)
 
-			if (task_exists(TASK_COUNTDOWN))
-				remove_task(TASK_COUNTDOWN)
+			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
 			// Mode fully started!
 			g_modestarted = true
+
+			// Execute out forward
+			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_BOMBARDIER, forward_id)
 		}
 		else 
 		{
@@ -11542,11 +11762,13 @@ start_mode(mode, id)
 			// Create Fog 
 			//CreateFog(0, 128, 175, 200, 0.0008)
 
-			if (task_exists(TASK_COUNTDOWN))
-				remove_task(TASK_COUNTDOWN)
+			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
 			// Mode fully started!
 			g_modestarted = true
+
+			// Execute out forward
+			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_INFECTION, forward_id)
 		}
 		
 		// Remaining players should be humans (CTs)
@@ -11581,6 +11803,15 @@ public TaskRemoveRender(infector)
 // Zombie Me Function (player id, infector, turn into a nemesis, silent mode, deathmsg and rewards)
 MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 {
+	ExecuteForward(g_forwards[INFECT_ATTEMP], g_forwardRetVal, victim, infector, class) // User infect attempt forward
+	
+	// One or more plugins blocked the infection. Only allow this after making sure it's
+	// not going to leave us with no zombies. Take into account a last player leaving case.
+	// BUGFIX: only allow after a mode has started, to prevent blocking first zombie e.g.
+	if (g_forwardRetVal >= ZP_PLUGIN_HANDLED && g_modestarted && fnGetZombies() > g_lastplayerleaving) return
+	
+	ExecuteForward(g_forwards[INFECTED_PRE], g_forwardRetVal, victim, infector, class) // Pre user infect forward
+
 	// Way to go...
 	g_playerTeam[victim] = TEAM_ZOMBIE
 	//SetBit(g_playerTeam[victim], TEAM_ZOMBIE)
@@ -11902,6 +12133,9 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	if (g_multijump[victim]) g_jumpnum[victim] = 0
 
 	g_norecoil[victim] = false
+
+	// Execute our post user infect forward
+	ExecuteForward(g_forwards[INFECTED_POST], g_forwardRetVal, victim, infector, class) 
 	
 	// Last Zombie Check
 	fnCheckLastZombie()
@@ -11910,6 +12144,15 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 // Function Human Me (player id, turn into a survivor, silent mode)
 MakeHuman(id, class = CLASS_HUMAN)
 {	
+	ExecuteForward(g_forwards[HUMANIZE_ATTEMP], g_forwardRetVal, id, class) // User humanize attempt forward
+	
+	// One or more plugins blocked the "humanization". Only allow this after making sure it's
+	// not going to leave us with no humans. Take into account a last player leaving case.
+	// BUGFIX: only allow after a mode has started, to prevent blocking first survivor e.g.
+	if (g_forwardRetVal >= ZP_PLUGIN_HANDLED && g_modestarted && fnGetHumans() > g_lastplayerleaving) return
+
+	ExecuteForward(g_forwards[HUMANIZED_PRE], g_forwardRetVal, id, class) // Pre user humanize forward
+
 	set_zombie(id, false)		// For module
 
 	// Remove previous tasks
@@ -12159,7 +12402,6 @@ MakeHuman(id, class = CLASS_HUMAN)
 		fm_user_team_update(id)
 	}
 	
-
 	// Set the right model, after checking that we don't already have it
 	static Float:current_time
 	current_time = get_gametime()
@@ -12191,6 +12433,9 @@ MakeHuman(id, class = CLASS_HUMAN)
 	// Crossbow
 	g_has_crossbow[id] = false
 	
+	// Execute our Humanized Post forward
+	ExecuteForward(g_forwards[HUMANIZED_POST], g_forwardRetVal, id, class)
+
 	// Last Zombie Check
 	fnCheckLastZombie()
 }
@@ -12373,11 +12618,17 @@ check_round(leaving_player)
 		// Show last zombie left notice
 		client_print_color(0, print_team_grey, "%s Last zombie has disconnected,^4 %s^1 is the last zombie!", CHAT_PREFIX, g_playername[id])
 
+		// Set player leaving flag
+		g_lastplayerleaving = true
+
 		// Turn into a Nemesis or just a zombie?
 		if (CheckBit(g_playerClass[leaving_player], CLASS_NEMESIS)) MakeZombie(id, CLASS_NEMESIS)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_ASSASIN)) MakeZombie(id, CLASS_ASSASIN)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_BOMBARDIER)) MakeZombie(id, CLASS_BOMBARDIER)
 		else MakeZombie(id)
+
+		// Remove player leaving flag
+		g_lastplayerleaving = false
 		
 		// If Nemesis, set chosen player's health to that of the one who's leaving
 		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_NEMESIS))
@@ -12402,13 +12653,19 @@ check_round(leaving_player)
 		while ((id = fnGetRandomAlive(random_num(1, iPlayersnum))) == leaving_player ) { /* keep looping */ }
 		
 		// Show last human left notice
-		client_print_color(0, print_team_grey, "%s Last human has disconnected,^4 %s^1 is the last human!", CHAT_PREFIX, g_playername[id]);
+		client_print_color(0, print_team_grey, "%s Last human has disconnected,^4 %s^1 is the last human!", CHAT_PREFIX, g_playername[id])
+
+		// Set player leaving flag
+		g_lastplayerleaving = true
 		
 		// Turn into a Survivor or just a human?
 		if (CheckBit(g_playerClass[leaving_player], CLASS_SURVIVOR)) MakeHuman(id, CLASS_SURVIVOR)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_SNIPER)) MakeHuman(id, CLASS_SNIPER)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_SAMURAI))	MakeHuman(id, CLASS_SAMURAI)
 		else MakeHuman(id)
+
+		// Remove player leaving flag
+		g_lastplayerleaving = false
 		
 		// If Survivor, set chosen player's health to that of the one who's leaving
 		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_SURVIVOR))
@@ -13740,13 +13997,17 @@ fnCheckLastZombie()
 	{
 		// Last zombie
 		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_ZOMBIE) && fnGetZombies() == 1) 
-		g_lastzombie[id] = true 
+		{
+			if(!g_lastzombie[id]) ExecuteForward(g_forwards[USER_LAST_ZOMBIE], g_forwardRetVal, id) // Last zombie forward
+			g_lastzombie[id] = true 
+		}
 		else g_lastzombie[id] = false 
 		
 		// Last human
 		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN) && fnGetHumans() == 1)
 		{
 			if (!g_lasthuman[id]) set_user_health(id, pev(id, pev_health) + LastHumanExtraHealth) // Reward extra hp 
+			ExecuteForward(g_forwards[USER_LAST_HUMAN], g_forwardRetVal, id) // Last human forward	
 			g_lasthuman[id] = true
 		}
 		else g_lasthuman[id] = false
