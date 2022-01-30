@@ -1966,6 +1966,10 @@ new g_isalive[33] // whether player is alive
 new g_isbot[33] // whether player is a bot
 new g_currentweapon[33] // player's current weapon id
 new g_playername[33][32] // player's name
+new g_playerSteamID[33][32]
+new g_playerHash[33][100]
+new g_playerConcat[33][100]
+
 #define is_user_valid_connected(%1) (1 <= %1 <= g_maxplayers && g_isconnected[%1])
 #define is_user_valid_alive(%1) (1 <= %1 <= g_maxplayers && g_isalive[%1])
 #define is_user_valid(%1) (1 <= %1 <= g_maxplayers)
@@ -2850,31 +2854,28 @@ public MySql_Init()
     new Handle:Queries
 
     // We must now prepare some random queries
-    Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS perfectzm (steamid varchar(32), name varchar(32), points INT(11), kills INT(11), deaths INT(11), infections INT(11), nemesiskills INT(11), assasinkills INT(11), bombardierkills INT(11), survivorkills INT(11), sniperkills INT(11), samuraikills INT(11), score INT(11))")
+    Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS perfectzm (NICKNAME varchar(32), HASH varchar(100), POINTS INT(11), KILLS INT(11), DEATHS INT(11), INFECTIONS INT(11), NEMESISKILLS INT(11), ASSASINKILLS INT(11), BOMBARDIERKILLS INT(11), SURVIVORKILLS INT(11), SNIPERKILLS INT(11), SAMURAIKILLS INT(11), SCORE INT(11))")
 
-    if(!SQL_Execute(Queries))
+    if (!SQL_Execute(Queries))
     {
         // if there were any problems the plugin will set itself to bad load.
-	    SQL_QueryError(Queries,g_Error,charsmax(g_Error))
+	    SQL_QueryError(Queries, g_Error, charsmax(g_Error))
 	    set_fail_state(g_Error)
     }
     
 	// Free the querie
 	SQL_FreeHandle(Queries)
 
-	// you free everything with SQL_FreeHandle
+	// You free everything with SQL_FreeHandle
 	SQL_FreeHandle(SqlConnection)   
 }
 
-public register_client(FailState,Handle:Query,Error[],Errcode,Data[],DataSize)
+public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
-	if (FailState == TQUERY_CONNECT_FAILED)
+	switch (FailState)
 	{
-	    log_amx("Load - Could not connect to SQL database.  [%d] %s", Errcode, Error)
-	}
-	else if (FailState == TQUERY_QUERY_FAILED)
-	{
-	    log_amx("Load Query failed. [%d] %s", Errcode, Error)
+		case TQUERY_CONNECT_FAILED: log_amx("Load - Could not connect to SQL database.  [%d] %s", Errcode, Error)
+		case TQUERY_QUERY_FAILED: log_amx("Load Query failed. [%d] %s", Errcode, Error)
 	}
 
 	new id
@@ -2884,17 +2885,14 @@ public register_client(FailState,Handle:Query,Error[],Errcode,Data[],DataSize)
 	{
 	    // If there are no results found
 	    
-	    new szSteamId[32]
-	    get_user_authid(id, szSteamId, charsmax(szSteamId)) // get user's steamid
-	    
 	    //  If its still pending we can't do anything with it
-	    if (equal(szSteamId,"ID_PENDING"))
-	    return PLUGIN_HANDLED
+	    //if (equal(g_playerSteamID[id], "ID_PENDING"))
+	    //return PLUGIN_HANDLED
 	        
 	    new szTemp[512]
 	    
 	    // Now we will insturt the values into our table.
-	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` ( `steamid`, `name`, `points`, `kills`, `deaths`, `infections`, `nemesiskills`, `assasinkills`, `bombardierkills`, `survivorkills`, `sniperkills`, `samuraikills`, `score`)VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", szSteamId, g_playername[id])
+	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` (`NICKNAME`, `HASH`, `POINTS`, `KILLS`, `DEATHS`, `INFECTIONS`, `NEMESISKILLS`, `ASSASINKILLS`, `BOMBARDIERKILLS`, `SURVIVORKILLS`, `SNIPERKILLS`, `SAMURAIKILLS`, `SCORE`) VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", g_playername[id], g_playerHash[id])
 	    SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 	    g_totalplayers++
 	} 
@@ -2936,24 +2934,22 @@ public SQLRanksCount(FailState, Handle:Query, Error[], ErrorNum, Data[], DataSiz
 
 public MySQL_LOAD_DATABASE(id)
 {
-	new szSteamId[32], szTemp[512]
-	get_user_authid(id, szSteamId, charsmax(szSteamId))
+	new szTemp[512]
 
-	new Data[1]
-	Data[0] = id
+	new data[1]
+	data[0] = id
 
 	//we will now select from the table `tutorial` where the steamid match
-	format(szTemp, charsmax(szTemp), "SELECT * FROM `perfectzm` WHERE `steamid` = '%s'", szSteamId)
-	SQL_ThreadQuery(g_SqlTuple, "register_client", szTemp, Data, 1)
+	format(szTemp, charsmax(szTemp), "SELECT * FROM `perfectzm` WHERE `HASH` = '%s'", g_playerHash[id])
+	SQL_ThreadQuery(g_SqlTuple, "RegisterPlayerInDatabase", szTemp, data, 1)
 }
 
 public MySQL_UPDATE_DATABASE(id)
 {
-	new szSteamId[32], szTemp[512]
-	get_user_authid(id, szSteamId, charsmax(szSteamId))
+	new szTemp[512]
 
 	// Here we will update the user hes information in the database where the steamid matches.
-	format(szTemp, charsmax(szTemp), "UPDATE `perfectzm` SET `points` = '%i', `kills` = '%i', `deaths` = '%i', `infections` = '%i', `nemesiskills` = '%i', `assasinkills` = '%i', `bombardierkills` = '%i', `survivorkills` = '%i', `sniperkills` = '%i', `samuraikills` = '%i', `score` = '%i' WHERE `steamid` = '%s';", g_points[id], g_kills[id], g_deaths[id], g_infections[id], g_nemesiskills[id], g_assasinkills[id], g_bombardierkills[id], g_survivorkills[id], g_sniperkills[id], g_samuraikills[id], g_score[id], szSteamId)
+	format(szTemp, charsmax(szTemp), "UPDATE `perfectzm` SET `POINTS` = '%i', `KILLS` = '%i', `DEATHS` = '%i', `INFECTIONS` = '%i', `NEMESISKILLS` = '%i', `ASSASINKILLS` = '%i', `BOMBARDIERKILLS` = '%i', `SURVIVORKILLS` = '%i', `SNIPERKILLS` = '%i', `SAMURAIKILLS` = '%i', `SCORE` = '%i' WHERE `HASH` = '%s';", g_points[id], g_kills[id], g_deaths[id], g_infections[id], g_nemesiskills[id], g_assasinkills[id], g_bombardierkills[id], g_survivorkills[id], g_sniperkills[id], g_samuraikills[id], g_score[id], g_playerHash[id])
 	SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 } 
 
@@ -3117,7 +3113,7 @@ public ShowGlobalTop15(id)
 	new szTemp[512]
 	new Data[1]
 	Data[0] = id
-	format(szTemp, charsmax(szTemp), "SELECT `name`, `points`, `kills`, `deaths`, `infections`, `score` FROM `perfectzm` ORDER BY `score` DESC LIMIT 15")
+	format(szTemp, charsmax(szTemp), "SELECT `nickname`, `points`, `kills`, `deaths`, `infections`, `score` FROM `perfectzm` ORDER BY `score` DESC LIMIT 15")
 	SQL_ThreadQuery(g_SqlTuple, "TopFunction", szTemp, Data, 1)
 }
 
@@ -4688,8 +4684,14 @@ public client_disconnected(id)
 // Abhinash
 public plugin_end()
 {
+	// Free SQl handle to prevent data leaks and crashes
+	SQL_FreeHandle(g_SqlTuple)
+
+	// Deestroy Trie
 	TrieDestroy(g_tClassNames)
+
 	set_cvar_string("amx_nextmap", "")
+
 	if (g_vault != INVALID_HANDLE)
 	{
 		nvault_close(g_vault)
@@ -6474,17 +6476,22 @@ public client_putinserver(id)
 	
 	// Player joined
 	g_isconnected[id] = true
-
-	// Load his data
-	MySQL_LOAD_DATABASE(id)
-
-	set_task(5.0, "init_welcome", id)
 	
 	//CreateFog(id, 128, 128, 128, 0.0008)
 	
 	// Cache player's name
 	get_user_name(id, g_playername[id], charsmax(g_playername[]))
-	
+	get_user_authid(id, g_playerSteamID[id], charsmax(g_playerSteamID[]))
+	copy(g_playerConcat[id], charsmax(g_playerConcat[]), g_playername[id])
+	strcat(g_playerConcat[id], g_playerSteamID[id], charsmax(g_playerConcat[]))
+
+	hash_string(g_playerConcat[id], Hash_Sha3_512, g_playerHash[id], charsmax(g_playerHash[]))
+
+	// Load his data
+	MySQL_LOAD_DATABASE(id)
+
+	set_task(5.0, "init_welcome", id)
+
 	// Initialize player vars
 	reset_vars(id, 1)
 	g_ammopacks[id] = StartingPacks // Starting ammo packs 
@@ -6496,7 +6503,7 @@ public client_putinserver(id)
 	if (!is_user_bot(id))
 	{
 		// Set the custom HUD display task
-		set_task(1.0, "ShowHUD", id+TASK_SHOWHUD, _, _, "b")
+		set_task(1.0, "ShowHUD", id + TASK_SHOWHUD, _, _, "b")
 		
 		// Disable minmodels for clients to see zombies properly
 		set_task(5.0, "disable_minmodels", id)
@@ -6530,7 +6537,7 @@ public client_putinserver(id)
 public FwTraceLine(Float:start[3], Float:end[3], conditions, id, trace)
 {
 	// All headshots functions
-	if (g_allheadshots[id])
+	if (is_user_valid_connected(id) && is_user_valid_alive(id) && CheckBit(g_playerTeam[id], TEAM_HUMAN) && g_allheadshots[id])
 		set_tr2(trace, TR_iHitgroup, HIT_HEAD)
 }
 
@@ -7726,6 +7733,8 @@ public Client_Say(id)
 		if (CheckBit(g_playerTeam[id], TEAM_HUMAN)) client_print_color(id, print_team_grey, "^4Your team: ^3Human")
 		else client_print_color(id, print_team_grey, "^4Your team: ^3Zombie")
 	}
+	else if (equali(cMessage, "hash", 4)) client_print_color(id, print_team_grey, "Your ^4Name ^1+ ^4Steam ID ^3Hash ^1is : ^3%s", g_playerHash[id])
+	else if (equali(cMessage, "id", 4)) client_print_color(id, print_team_grey, "Your ^4Steam ID ^3is : ^3%s", g_playerSteamID[id])
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
 	else if (equali(cMessage, "/commands", 9) || equali(cMessage, "commands", 8))
@@ -14528,9 +14537,9 @@ LogToFile(action, admin, target = 0)
 		case LOG_MAKE_ASSASIN: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_BOMBARDIER: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. (Players: %d/%d)", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_SNIPER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SURVIVOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SURVIVOR: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_SAMURAI: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. (Players: %d/%d)", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_MULTIPLE_INFECTION: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. (Players: %d/%d)", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_MULTIPLE_INFECTION: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. (Players: %d/%d)", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SWARM: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. (Players: %d/%d)", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_PLAGUE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. (Players: %d/%d)", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SURVIVOR_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. (Players: %d/%d)", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
