@@ -1,8 +1,8 @@
 #include <amxmodx>
 
-native shop_item_add( const szName[ ], const iCost );
+native RegisterPointsShopWeapon(const name[], const cost)
 
-forward shop_item_selected( iPlayer, iItemIndex );
+forward OnPointsShopWeaponSelected(id, item_id)
 
 new g_item1, g_item2
 
@@ -10,12 +10,12 @@ public plugin_init()
 {
     register_plugin("2 Test Items", "1.0", "Abhinash")
 
-    g_item1 = shop_item_add("Test item 1", 2000)
-    g_item2 = shop_item_add("Test item 2", 4000)
+    g_item1 = RegisterPointsShopWeapon("Test Weapon 1", 2000)
+    g_item2 = RegisterPointsShopWeapon("Test Weapon 2", 4000)
 }
 
-public shop_item_selected(id, itemid)
+public OnPointsShopWeaponSelected(id, item_id)
 {
-    if (itemid == g_item1) client_print_color(id, print_team_grey, "^4You selected ^3Test Item 1")
-    if (itemid == g_item2) client_print_color(id, print_team_grey, "^4You selected ^3Test Item 2")
+    if (item_id == g_item1) client_print_color(id, print_team_grey, "^4You selected ^3Test Weapon 1")
+    if (item_id == g_item2) client_print_color(id, print_team_grey, "^4You selected ^3Test Weapon 2")
 }

@@ -100,6 +100,7 @@ enum _: forwardNames
 	USER_LAST_ZOMBIE,
 	USER_LAST_HUMAN,
 	ADMIN_MODE_START,
+	POINTS_SHOP_WEAPON_SELECTED,
 	MAX_FORWARDS
 	// PLAYER_SPAWN_POST,
 	// FROZEN_PRE,
@@ -1155,22 +1156,18 @@ new g_cModesMenu[][MMenuData] =
 	{"Nightcrawler round", 				"\r[500 round]",  500}
 }
 
-// create the structure for each item
-// we need the item name and cost
-enum _:ItemData
+// Data structure for points shop weapons
+enum _:pointsShopDataStructure
 {
-    ItemName[ 32 ],
+    ItemName[32],
     ItemCost
-};
+}
 
 // create a dynamic array to hold all the items
-new Array:g_aItems;
+new Array:g_pointsShopWeapons;
 
 // this will tell how many are in the array instead of using ArraySize()
-new g_iTotalItems;
-
-// create a forward for when player selects an item
-new g_hSelectItemForward;
+new g_pointsShopTotalWeapons;
 
 enum _: structExtrasTeam (<<=1)
 {
@@ -2067,113 +2064,8 @@ public plugin_natives()
 	register_native("IsNightmareRound", 	 	"native_is_nightmare_round", 1)
 	register_native("StartNightmareRound", 		"native_start_nightmare_round", 1)
 
-	// create a native to allow other plugins to add items
-    register_native( "shop_item_add", "_item_add" );
-}
-
-public _item_add( iPlugin, iParams )
-{
-    // create an array to hold our item data
-    new eItemData[ ItemData ];
-    
-    // get item name from function
-    get_string( 1, eItemData[ ItemName ], charsmax( eItemData[ ItemName ] ) );
-    
-    // get item cost from function
-    eItemData[ ItemCost ] = get_param( 2 );
-    
-    // add item to array and increase size
-    ArrayPushArray( g_aItems, eItemData );
-    g_iTotalItems++;
-    
-    // return the index of this item in the array
-    // this creates the unique item index
-    return ( g_iTotalItems - 1 );
-}
-
-ShowShopMenu( iPlayer, iPage )
-{
-    // check if there are no items
-    if( !g_iTotalItems )
-    {
-        return;
-    }
-    
-    // clamp page to valid range of pages
-    iPage = clamp( iPage, 0, ( g_iTotalItems - 1 ) / 7 );
-    
-    // create menu
-    new hMenu = menu_create( "Shop Menu", "MenuShop" );
-    
-    // used to display item in the menu
-    new eItemData[ ItemData ];
-    new szItem[ 64 ];
-    
-    // used for array index to menu
-    new szNum[ 3 ];
-    
-    // loop through each item
-    for( new i = 0; i < g_iTotalItems; i++ )
-    {
-        // get item data from array
-        ArrayGetArray( g_aItems, i, eItemData );
-        
-        // format item for menu
-        formatex( szItem, charsmax( szItem ), "%s\R\y%i", eItemData[ ItemName ], eItemData[ ItemCost ] );
-        
-        // pass array index to menu to find information about it later
-        num_to_str( i, szNum, charsmax( szNum ) );
-        
-        // add item to menu
-        menu_additem( hMenu, szItem, szNum );
-    }
-    
-    // display menu to player
-    menu_display( iPlayer, hMenu, iPage );
-}
-
-public MenuShop( iPlayer, hMenu, iItem )
-{
-    if( iItem == MENU_EXIT )
-    {
-        menu_destroy( hMenu );
-        return;
-    }
-    
-    new iAccess, szNum[ 3 ], hCallback;
-    menu_item_getinfo( hMenu, iItem, iAccess, szNum, charsmax( szNum ), _, _, hCallback );
-    menu_destroy( hMenu );
-    
-    // get item index from menu
-    new iItemIndex = str_to_num( szNum );
-    
-    // get item data from array
-    new eItemData[ ItemData ];
-    ArrayGetArray( g_aItems, iItemIndex, eItemData );
-    
-    // get player money and subtract the cost
-    g_points[iPlayer] -= eItemData[ ItemCost ];
-	MySQL_UPDATE_DATABASE(iPlayer)
-    
-    // result money will be < 0 if not enough money
-    if( g_points[iPlayer] < 0 )
-    {
-        // notify player
-        client_print( iPlayer, print_chat, "* You need $%i more to buy this item!", ( g_points[iPlayer] * -1 ) );
-    }
-    else
-    {
-        // set player money
-        g_points[iPlayer] += eItemData[ ItemCost ]
-		MySQL_UPDATE_DATABASE(iPlayer)
-
-        
-        // notify plugins that the player bought this item
-        new iReturn;
-        ExecuteForward( g_hSelectItemForward, iReturn, iPlayer, iItemIndex );
-    }
-    
-    ShowShopMenu( iPlayer, .iPage = ( iItemIndex / 7 ) );
+	// Native for adding weapons to the Points shop weapons
+    register_native("RegisterPointsShopWeapon", "native_register_points_shop_weapon")
 }
 
 public plugin_precache()
@@ -2763,12 +2655,10 @@ public plugin_init()
 	g_forwards[USER_LAST_ZOMBIE] = CreateMultiForward("OnLastZombie", ET_IGNORE, FP_CELL)
 	g_forwards[USER_LAST_HUMAN] = CreateMultiForward("OnLastHuman", ET_IGNORE, FP_CELL)
 	g_forwards[ADMIN_MODE_START] = CreateMultiForward("OnAdminModeStart", ET_IGNORE, FP_CELL, FP_CELL)
+	g_forwards[POINTS_SHOP_WEAPON_SELECTED] = CreateMultiForward("OnPointsShopWeaponSelected", ET_IGNORE, FP_CELL, FP_CELL)
 
 	// create our array with the size of the item structure
-    g_aItems = ArrayCreate( ItemData );
-
-	// create our forward
-    g_hSelectItemForward = CreateMultiForward( "shop_item_selected", ET_IGNORE, FP_CELL, FP_CELL );
+    g_pointsShopWeapons = ArrayCreate(pointsShopDataStructure)
 	
 	// CVARS - Others
 	cvar_botquota = get_cvar_pointer("bot_quota")
@@ -4294,7 +4184,7 @@ public _PointShop(id, menu, item)
 			case 0: menu_display(id, g_iAmmoMenu, 0)
 			case 1: menu_display(id, g_iFeaturesMenu, 0)
 			case 2: menu_display(id, g_iModesMenu, 0)
-			case 3: ShowShopMenu(id, .iPage = 0)
+			case 3: ShowPointsShopWeaponsMenu(id)
 		}
 	}
 	return PLUGIN_CONTINUE
@@ -5792,10 +5682,10 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	static iAssasin; iAssasin = fnGetAssassin()
 	static iSurvivors; iSurvivors = fnGetSurvivors()
 	static iSnipers; iSnipers = fnGetSnipers()
-	static iSamurai; iSamurai = fnGetSamurai()
-	static iBombardier; iBombardier = fnGetBombardier()
+	//static iSamurai; iSamurai = fnGetSamurai()
+	//static iBombardier; iBombardier = fnGetBombardier()
 
-	if (!iHumans || !iZombies) return
+	if (!fnGetHumans() || !fnGetZombies()) return
 
 
 	if (CheckBit(g_currentmode, MODE_INFECTION) || CheckBit(g_currentmode, MODE_MULTI_INFECTION) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SWARM))
@@ -8167,6 +8057,47 @@ public ShowPlayersMenu(id)
     menu_display(id, menu, 0)
 }
 
+public ShowPointsShopWeaponsMenu(id)
+{
+    // Check if there are no items
+    if (!g_pointsShopTotalWeapons)
+    {
+		client_print_color(id, print_team_grey, "%s There are no ^3weapons ^1available right now", CHAT_PREFIX)
+        return PLUGIN_HANDLED
+    }
+    
+    // Create menu
+    new menu = menu_create("\yPremium Wepons", "PointsShopWeaponsMenuHandler")
+    
+    // Used to display item in the menu
+    new itemData[pointsShopDataStructure]
+    new item[64]
+    
+    // Used for array index to menu
+    new data[3]
+    
+    // Loop through each item
+    for (new i = 0; i < g_pointsShopTotalWeapons; i++)
+    {
+        // Get item data from array
+        ArrayGetArray(g_pointsShopWeapons, i, itemData)
+        
+        // Format item for menu
+        formatex(item, charsmax(item), "%s \r[ %s points ]", itemData[ItemName], AddCommas(itemData[ItemCost]))
+        
+        // Pass array index to menu to find information about it later
+        num_to_str(i, data, charsmax(data))
+        
+        // Add item to menu
+        menu_additem(menu, item, data)
+    }
+    
+    // Display menu to player
+    menu_display(id, menu, 0)
+
+	return PLUGIN_CONTINUE
+}
+
 /*================================================================================
 	[Menu Handlers]
 =================================================================================*/
@@ -8792,6 +8723,44 @@ public PlayersMenuHandler(id, menu, item)
     }
 
     return PLUGIN_CONTINUE
+}
+
+public PointsShopWeaponsMenuHandler(id, menu, item)
+{
+    if (item == MENU_EXIT)
+    {
+        menu_destroy(menu)
+        return PLUGIN_HANDLED
+    }
+    
+    new data[3]
+    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+    
+    // Get item index from menu
+    new itemIndex = str_to_num(data)
+    
+    // Get item data from array
+    new itemData[pointsShopDataStructure]
+    ArrayGetArray(g_pointsShopWeapons, itemIndex, itemData)
+    
+    // Check if player's points is less then the item's cost // If not then set the item
+    if (g_points[id] < itemData[ItemCost])
+    {
+        // notify player
+       client_print_color(id, print_team_grey, "%s You dont have enough ^3points ^1to buy this weapon...", CHAT_PREFIX)
+	   return PLUGIN_HANDLED
+    }
+    else
+    {
+		// Get player's points and subtract the cost
+		g_points[id] -= itemData[ItemCost]
+		MySQL_UPDATE_DATABASE(id)
+
+        // Notify plugins that the player bought this item
+        ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
+    }
+
+	return PLUGIN_CONTINUE
 }
 
 // CS Buy Menus
@@ -15347,6 +15316,27 @@ public native_start_nightmare_round()
 	start_mode(MODE_NIGHTMARE, 0)
 
 	return true
+}
+
+// Native: RegisterPointsShopWeapon
+public native_register_points_shop_weapon(plugin, param)
+{
+    // Create an array to hold our item data
+    new ItemData[pointsShopDataStructure]
+    
+    // Get item name from function
+    get_string(1, ItemData[ItemName], charsmax(ItemData[ItemName]))
+    
+    // Get item cost from function
+    ItemData[ItemCost] = get_param(2)
+    
+    // Add item to array and increase size
+    ArrayPushArray(g_pointsShopWeapons, ItemData)
+    g_pointsShopTotalWeapons++
+    
+    // Return the index of this item in the array
+    // This creates the unique item index
+    return (g_pointsShopTotalWeapons - 1)
 }
 
 /*================================================================================
