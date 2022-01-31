@@ -911,10 +911,7 @@ new Float:CROSSBOW_RECOIL = 0.80
 new CROSSBOW_CLIP = 50
 
 // Golden Weapons
-new bool:g_goldenak47[33]
-new bool:g_goldenm4a1[33]
-new bool:g_goldenxm1014[33]
-new bool:g_goldendeagle[33]
+new bool:g_goldenweapons[33]
 
 new bool:g_doubledamage[33]
 new bool:g_norecoil[33]
@@ -3916,7 +3913,29 @@ public _ExtraItems(id, menu, item)
 		{
 			if (CanBuy(EXTRA_HUMANS, EXTRA_GOLDEN_WEAPONS, id))
 			{
-				/* Coming soon */
+				if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
+				{
+					client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
+					return PLUGIN_HANDLED
+				}
+
+				g_goldenweapons[id] = true
+
+				if (!user_has_weapon(id, CSW_AK47))   { set_weapon(id, CSW_AK47, 10000); }
+				if (!user_has_weapon(id, CSW_M4A1))   { set_weapon(id, CSW_M4A1, 10000); }
+				if (!user_has_weapon(id, CSW_XM1014)) { set_weapon(id, CSW_XM1014, 10000); }
+				if (!user_has_weapon(id, CSW_DEAGLE))   { set_weapon(id, CSW_DEAGLE, 10000); }
+
+				switch (random_num(0, 2))
+				{		
+					case 0: { client_cmd(id, "weapon_ak47"); set_goldenak47(id); }
+					case 1: { client_cmd(id, "weapon_m4a1"); set_goldenm4a1(id); }
+					case 2: { client_cmd(id, "weapon_xm1014"); set_goldenxm1014(id); }
+				}
+				
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				ShowSyncHudMsg(0, g_MsgSync6, "%s now has Golden Weapons", g_playername[id])
+				g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 			}
 		}
 		case EXTRA_CLASS_NEMESIS:
@@ -5891,10 +5910,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	g_concussionbomb[victim] = 0
 	g_bubblebomb[victim] = 0
 	g_killingbomb[victim] = 0
-	g_goldenak47[victim] = false
-	g_goldenm4a1[victim] = false
-	g_goldenxm1014[victim] = false
-	g_goldendeagle[victim] = false
+	g_goldenweapons[victim] = false
 	
 	// Human killed zombie, add up the extra frags for kill
 	if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) && HumanFragsForKill > 1)
@@ -5980,24 +5996,22 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 			SetHamParamFloat(4, CROSSBOW_DAMAGE)
 		}
 
-		// Double damage
-		if (!g_bVip[attacker] && g_doubledamage[attacker] && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) && (damage_type & DMG_BULLET))
+		if (VipHasFlag(attacker, 'g') && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER)) && (damage_type & DMG_BULLET))
 		{
-			damage *= 2.0
+			if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE)) damage *= 1.5
+			else damage *= 2.0
+
 			SetHamParamFloat(4, damage)
 		}
-
-		// Vip Human Damage
-		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) && VipHasFlag(attacker, 'g') && (damage_type & DMG_BULLET))
+		else
 		{
-			damage *= 1.5
-			SetHamParamFloat(4, damage)
-		}
+			if (g_doubledamage[attacker] && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER)) && (damage_type & DMG_BULLET))
+			{
+				if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE)) damage *= 1.5
+				else damage *= 2.0
 
-		if (((g_goldenak47[attacker] && g_currentweapon[attacker] == CSW_AK47) || (g_goldenm4a1[attacker] && g_currentweapon[attacker] == CSW_M4A1) || (g_goldenxm1014[attacker] && g_currentweapon[attacker] == CSW_XM1014) || (g_goldendeagle[attacker] && g_currentweapon[attacker] == CSW_DEAGLE)) && !(damage_type & (DMG_BLAST | DMG_MORTAR)))
-		{
-			damage *= 2.0
-			SetHamParamFloat(4, damage)
+				SetHamParamFloat(4, damage)
+			}
 		}
 		
 		g_damagedealt_human[attacker] += floatround(damage)
@@ -6242,7 +6256,7 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	set_pev(victim, pev_velocity, direction)
 
 	// Golden Weapon functions
-	if ((g_goldenak47[attacker] && g_currentweapon[attacker] == CSW_AK47) || (g_goldenm4a1[attacker] && g_currentweapon[attacker] == CSW_M4A1) || (g_goldenxm1014[attacker] && g_currentweapon[attacker] == CSW_XM1014) || (g_goldendeagle[attacker] && g_currentweapon[attacker] == CSW_DEAGLE))
+	if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE))
 	{
 		SendTracers(attacker)
 		SendLightningTracers(attacker)
@@ -12202,10 +12216,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	g_firstzombie[victim] = false
 
 	set_zombie(victim, true)	// For Module
-	g_goldenak47[victim] = false
-	g_goldenm4a1[victim] = false
-	g_goldenxm1014[victim] = false
-	g_goldendeagle[victim] = false
+	g_goldenweapons[victim] = false
 
 	// Jetpack
 	if (get_user_jetpack(victim))
@@ -13909,10 +13920,10 @@ replace_weapon_models(id, weaponid)
 				set_pdata_float(id, 83, 1.0, OFFSET_LINUX)
 			}
 		}
-	case CSW_AK47: if (g_goldenak47[id]) set_goldenak47(id)   
-	case CSW_M4A1: if (g_goldenm4a1[id]) set_goldenm4a1(id) 
-	case CSW_XM1014: if (g_goldenxm1014[id]) set_goldenxm1014(id) 
-	case CSW_DEAGLE: if (g_goldendeagle[id]) set_goldendeagle(id)    
+	case CSW_AK47: if (g_goldenweapons[id]) set_goldenak47(id)   
+	case CSW_M4A1: if (g_goldenweapons[id]) set_goldenm4a1(id) 
+	case CSW_XM1014: if (g_goldenweapons[id]) set_goldenxm1014(id) 
+	case CSW_DEAGLE: if (g_goldenweapons[id]) set_goldendeagle(id)    
 	case CSW_HEGRENADE: // Infection bomb or Explode grenade
 		{
 			if (CheckBit(g_playerClass[id], CLASS_ZOMBIE)) set_pev(id, pev_viewmodel2, V_INFECTION_NADE)
@@ -13959,10 +13970,7 @@ reset_vars(id, resetall)
 		g_zombieclassnext[id] = -1
 		g_damagedealt_human[id] = 0
 		g_damagedealt_zombie[id] = 0
-		g_goldenak47[id] = false
-		g_goldenm4a1[id] = false
-		g_goldenxm1014[id] = false
-		g_goldendeagle[id] = false
+		g_goldenweapons[id] = false
 	}
 }
 
@@ -15639,7 +15647,7 @@ public native_is_survivor_vs_assasin_round()
 // Native: StartSurvivorVsAssasinRound
 public native_start_survivor_vs_assasin_round()
 {
-	if (!allowed_survivor_vs_assasin()) false
+	if (!allowed_survivor_vs_assasin()) return false
 
 	remove_task(TASK_MAKEZOMBIE)
 	start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
