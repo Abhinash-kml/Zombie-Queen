@@ -371,71 +371,79 @@ new InfectionParticles = 1
 new HUDIcons = 1
 
 // SWARM Mode Configs
-new SwarmEnable = 1
-new SwarmChance = 20
-new SwarmMinPlayers = 0
+new Swarm_enable = 1
+new Swarm_chance = 20
+new Swarm_minPlayers = 0
 
 // Multiple Infection Configs
-new MultiInfectionEnable = 1
-new MultiInfectionChance = 20
-new MultiInfectionMinPlayers = 0
-new Float:MultiInfectionRatio = 0.15
+new MultiInfection_enable = 1
+new MultiInfection_chance = 20
+new MultiInfection_minPlayers = 0
+new Float:MultiInfection_ratio = 0.15
 
 // Plague Mode configs
-new PlagueEnable = 1
-new PlagueChance = 30
-new PlagueMinPlayers = 5
-new Float:PlagueRatio = 0.5
-new PlagueNemesisCount = 1
-new Float:PlagueNemesisHealthMultiply = 0.5
-new PlagueSurvivorCount = 1
-new Float:PlagueSurvivorHealthMultiply = 2.0
+new Plague_enable = 1
+new Plague_chance = 30
+new Plague_minPlayers = 5
+new Float:Plague_ratio = 0.5
+new Plague_nemesisCount = 1
+new Float:Plague_nemesis_HealthMultiply = 0.5
+new Plague_survivorCount = 1
+new Float:Plague_survivor_HealthMultiply = 2.0
 
 // Armageddon Mode configs
-new ArmageddonEnable = 1
-new ArmageddonChance = 25
-new ArmageddonMinPlayers = 5
-new Float:ArmageddonRatio = 0.5
-new Float:ArmageddonNemesisHealthMultiply = 1.0
-new Float:ArmageddonSurvivorHealthMultiply = 2.0
+new Armageddon_enable = 1
+new Armageddon_chance = 25
+new Armageddon_minPlayers = 5
+new Float:Armageddon_ratio = 0.5
+new Float:Armageddon_nemesis_HealthMultiply = 1.0
+new Float:Armageddon_survivor_HealthMultiply = 2.0
 
 // Sniper vs Assassin mode configs
-new ApocalypseEnable = 1
-new ApocalypseChance = 25
-new ApocalypseMinPlayers = 5
-new Float:ApocalypseRatio = 0.5
-new Float:ApocalypseAssassinHealthMultiply = 0.7
-new Float:ApocalypseSniperHealthMultiply = 2.0
+new Apocalypse_enable = 1
+new Apocalypse_chance = 25
+new Apocalypse_minPlayers = 5
+new Float:Apocalypse_ratio = 0.5
+new Float:Apocalypse_assasin_HealthMultiply = 0.7
+new Float:Apocalypse_sniper_HealthMultiply = 2.0
 
 // Sniper vs Nemesis mode configs
-new DevilEnable = 1
-new DevilChance = 25
-new DevilMinPlayers = 5
-new Float:DevilRatio = 0.5
-new Float:DevilSniperHealthMultiply  = 2.0
-new Float:DevilSniperNemesisMultiply = 1.0
+new SniperVsNemesis_enable = 1
+new SniperVsNemesis_chance = 25
+new SniperVsNemesis_minPlayers = 5
+new Float:SniperVsNemesis_ratio = 0.5
+new Float:SniperVsNemesis_sniper_HealthMultiply  = 2.0
+new Float:SniperVsNemesis_nemesis_HealthMultiply = 1.0
 
 // Nightmare mode configs
-new NightmareEnable = 1
-new NightmareChance = 25
-new NightmareMinPlayers = 5
-new Float:NightmareRatio = 0.5
-new Float:NightmareAssassinHealthMultiply = 1.5
-new Float:NightmareNemesisHealthMultiply = 1.0
-new Float:NightmareSniperHealthMultiply = 1.5
-new Float:NightmareSurvivorHealthMultiply = 2.0
+new Nightmare_enable = 1
+new Nightmare_chance = 25
+new Nightmare_minPlayers = 5
+new Float:Nightmare_ratio = 0.5
+new Float:Nightmare_assasin_HealthMultiply = 1.5
+new Float:Nightmare_nemesis_HealthMultiply = 1.0
+new Float:Nightmare_sniper_HealthMultiply = 1.5
+new Float:Nightmare_survivor_HealthMultiply = 2.0
 
 // Synapsis mode configs
-new SynapsisEnable = 1
-new SynapsisChance = 25
-new SynapsisMinPlayers = 4
-new Float:SynapsisRatio = 0.5
-new SynapsisNemesisCount = 2
-new Float:SynapsisNemesisHealthMultiply = 0.5
-new SynapsisSurvivorCount = 2
-new Float:SynapsisSurvivorHealthMultiply = 0.5
-new SynapsisSniperCount = 2
-new Float:SynapsisSniperHealthMultiply = 0.5
+new Synapsis_enable = 1
+new Synapsis_chance = 25
+new Synapsis_minPlayers = 4
+new Float:Synapsis_ratio = 0.5
+new Synapsis_nemesisCount = 2
+new Float:Synapsis_nemesis_HealthMultiply = 0.5
+new Synapsis_survivorCount = 2
+new Float:Synapsis_survivor_HealthMultiply = 0.5
+new Synapsis_sniperCount = 2
+new Float:Synapsis_sniper_HealthMultiply = 0.5
+
+// Survivor vs Assasin configs
+new SurvivorVsAssasin_enable = 1
+new SurvivorVsAssasin_chance = 25
+new SurvivorVsAssasin_minPlayers = 2
+new Float:SurvivorVsAssasin_ratio = 0.5
+new Float:SurvivorVsAssasin_assasin_HealthMultiply = 0.5
+new Float:SurvivorVsAssasin_survivor_HealthMultiply = 0.5
 
 // Models stuff
 new Float:g_modelchange_delay = 0.2 
@@ -721,6 +729,10 @@ new const sound_devil[][] =
 	"PerfectZM/nemesis2.wav" 
 }
 new const sound_synapsis[][] = 
+{
+	"PerfectZM/nemesis2.wav" 
+}
+new const sound_survivor_vs_assasin[][] =
 {
 	"PerfectZM/nemesis2.wav" 
 }
@@ -2076,6 +2088,8 @@ public plugin_natives()
 	register_native("StartNightmareRound", 		"native_start_nightmare_round", 1)
 	register_native("IsSynapsisRound",          "native_is_synapsis_round", 1)
 	register_native("StartSynapsisRound",       "native_start_synapsis_round", 1)
+	register_native("IsSurvivorVsAssasinRound", "native_is_survivor_vs_assasin_round", 1)
+	register_native("StartSurvivorVsAssasinRound", "native_start_survivor_vs_assasin_round", 1)
 
 	// Native for adding weapons to the Points shop weapons
     register_native("RegisterPointsShopWeapon", "native_register_points_shop_weapon")
@@ -2336,6 +2350,10 @@ public plugin_precache()
 	for (i = 0; i < sizeof(sound_synapsis); i++)
 	{
 		engfunc(EngFunc_PrecacheSound, sound_synapsis[i])
+	}
+	for (i = 0; i < sizeof(sound_survivor_vs_assasin); i++)
+	{
+		engfunc(EngFunc_PrecacheSound, sound_survivor_vs_assasin[i])
 	}
 	for (i = 0; i < sizeof(grenade_infect); i++)
 	{
@@ -2632,6 +2650,8 @@ public plugin_init()
 	register_concmd("amx_synapsis", "cmd_synapsis", -1, _, -1)
 	register_concmd("zp_devil", "cmd_devil", -1, _, -1)
 	register_concmd("amx_devil", "cmd_devil", -1, _, -1)
+	register_concmd("zp_survivor_vs_assasin", "cmd_survivor_vs_assasin", -1, _, -1)
+	register_concmd("amx_survivor_vs_assasin", "cmd_survivor_vs_assasin", -1, _, -1)
 	register_concmd("zp_points", "cmd_points", -1, _, -1)
 	register_concmd("amx_points", "cmd_points", -1, _, -1)
 	register_concmd("zp_resetpoints", "cmd_resetpoints", -1, _, -1)
@@ -2869,7 +2889,7 @@ public MySql_Init()
     new Handle:Queries
 
     // We must now prepare some random queries
-    Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS perfectzm (NICKNAME varchar(32), HASH varchar(100), POINTS INT(11), KILLS INT(11), DEATHS INT(11), INFECTIONS INT(11), NEMESISKILLS INT(11), ASSASINKILLS INT(11), BOMBARDIERKILLS INT(11), SURVIVORKILLS INT(11), SNIPERKILLS INT(11), SAMURAIKILLS INT(11), SCORE INT(11))")
+    Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS `perfectzm` (NICKNAME varchar(32), HASH varchar(100), POINTS INT(11), KILLS INT(11), DEATHS INT(11), INFECTIONS INT(11), NEMESISKILLS INT(11), ASSASINKILLS INT(11), BOMBARDIERKILLS INT(11), SURVIVORKILLS INT(11), SNIPERKILLS INT(11), SAMURAIKILLS INT(11), SCORE INT(11))")
 
     if (!SQL_Execute(Queries))
     {
@@ -2943,7 +2963,7 @@ public MySql_TotalPlayers()
 
 public SQLRanksCount(FailState, Handle:Query, Error[], ErrorNum, Data[], DataSize)
 {
-	g_totalplayers = SQL_NumResults(Query);
+	g_totalplayers = SQL_NumResults(Query)
 	return PLUGIN_CONTINUE
 } 
 
@@ -3098,7 +3118,7 @@ public init_welcome(id)
 	new szTemp[512]
 	new Data[1]
 	Data[0] = id
-	format(szTemp,charsmax(szTemp),"SELECT DISTINCT `score` FROM `perfectzm` WHERE `score` >= %d ORDER BY `score` ASC", g_score[id])
+	format(szTemp,charsmax(szTemp),"SELECT DISTINCT `SCORE` FROM `perfectzm` WHERE `SCORE` >= %d ORDER BY `SCORE` ASC", g_score[id])
 	SQL_ThreadQuery(g_SqlTuple, "MySQL_WelcomeMessage", szTemp, Data, 1)
 }
 
@@ -4492,7 +4512,24 @@ public _Modes(id, menu, item)
 		{ 
 			if (CanBuy(PSHOP_MODES, PSHOP_MODE_SURVIVOR_VS_ASSASIN, id))
 			{
+				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SURVIVOR_VS_ASSASIN, id))
+				{
+					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					{
+						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
 
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
+
+					LIMIT[id][CUSTOM_MODES]++
+
+					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					show_hudmessage(0, "%s bought Survivor vs Assasin mode with points!", g_playername[id])
+					MySQL_UPDATE_DATABASE(id)
+				}
 			}
 		}
 		case PSHOP_MODE_SNIPER_VS_NEMESIS:
@@ -4921,7 +4958,7 @@ public logevent_round_end()
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
-		case MODE_SURVIVOR_VS_NEMESIS, MODE_SNIPER_VS_NEMESIS, MODE_SNIPER_VS_ASSASIN:
+		case MODE_SURVIVOR_VS_NEMESIS, MODE_SNIPER_VS_NEMESIS, MODE_SNIPER_VS_ASSASIN, MODE_SURVIVOR_VS_ASSASIN:
 		{
 			if (!fnGetZombies())
 			{
@@ -5720,7 +5757,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS))
+	else if (CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN))
 	{
 		if (CheckBit(g_playerClass[victim], CLASS_SURVIVOR))
 		{
@@ -6036,7 +6073,20 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	return HAM_SUPERCEDE
 	
 	// Last human or not an infection round
-	if (CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SYNAPSIS)|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) || fnGetHumans() == 1)
+	if (CheckBit(g_currentmode, MODE_SURVIVOR) 
+	|| CheckBit(g_currentmode, MODE_SNIPER) 
+	|| CheckBit(g_currentmode, MODE_NEMESIS) 
+	|| CheckBit(g_currentmode, MODE_ASSASIN) 
+	|| CheckBit(g_currentmode, MODE_BOMBARDIER) 
+	|| CheckBit(g_currentmode, MODE_SAMURAI) 
+	|| CheckBit(g_currentmode, MODE_SWARM) 
+	|| CheckBit(g_currentmode, MODE_PLAGUE) 
+	|| CheckBit(g_currentmode, MODE_SYNAPSIS)
+	|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) 
+	|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) 
+	|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) 
+	|| CheckBit(g_currentmode, MODE_NIGHTMARE) 
+	|| fnGetHumans() == 1)
 	return HAM_IGNORED // human is killed
 	
 	// Does human armor need to be reduced before infecting?
@@ -7687,6 +7737,7 @@ public Client_Say(id)
 		else if (CheckBit(g_currentmode, MODE_PLAGUE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
 		else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Synapsis")
 		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
+		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor vs Assasin")
 		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
 		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
 		else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
@@ -7795,10 +7846,8 @@ public Client_SayTeam(id)
 		}
 		return PLUGIN_HANDLED
 	}
-	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4))
-		ShowPlayerStatistics(id)
-	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3))
-		ShowGlobalTop15(id)
+	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
+	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3)) ShowGlobalTop15(id)
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
 		cs_set_user_deaths(id, 0)
@@ -8382,9 +8431,26 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
 		case START_SURVIVOR_VS_ASSASIN: 
 		{ 
-			// Execute our forward
-			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_survivor_vs_assasin())
+				{
+					// Start Survivor Vs Assasin Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_SURVIVOR_VS_ASSASIN, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_ASSASIN, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
 		case START_SNIPER_VS_NEMESIS: 
 		{ 
@@ -10649,6 +10715,37 @@ public cmd_synapsis(id) // Synapsis round
 	return PLUGIN_CONTINUE
 }
 
+// zp_survivor_vs_assasin
+public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
+{
+	// Check for access flag - Mode Apocalypse
+	if (g_bAdmin[id] && AdminHasFlag(id, 'n'))
+	{
+		// Apocalypse mode not allowed
+		if (!allowed_survivor_vs_assasin())
+		{
+			client_print(id, print_console, "[ZP] Unavailable command.")
+			return PLUGIN_HANDLED
+		}
+		
+		// Call Swarm Mode
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
+		
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1mode.", CHAT_PREFIX, g_playername[id])
+		
+		// Log to file
+		LogToFile(LOG_MODE_SURVIVOR_VS_ASSASIN, id)
+
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_ASSASIN, id)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
 // zp_points
 public cmd_points(id)
 {
@@ -11264,7 +11361,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SAMURAI, forward_id)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SwarmChance) == SwarmEnable && iPlayersnum >= SwarmMinPlayers) || mode == MODE_SWARM)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Swarm_chance) == Swarm_enable && iPlayersnum >= Swarm_minPlayers) || mode == MODE_SWARM)
 	{		
 		// Swarm Mode
 		SetBit(g_currentmode, MODE_SWARM)
@@ -11320,14 +11417,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SWARM, 0)
 	}
-	else if ((mode == MODE_NONE && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, MultiInfectionChance) == MultiInfectionEnable && floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil) >= 2 && floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil) < iPlayersnum && iPlayersnum >= MultiInfectionMinPlayers) || mode == MODE_MULTI_INFECTION)
+	else if ((mode == MODE_NONE && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, MultiInfection_chance) == MultiInfection_enable && floatround(iPlayersnum * MultiInfection_ratio, floatround_ceil) >= 2 && floatround(iPlayersnum * MultiInfection_ratio, floatround_ceil) < iPlayersnum && iPlayersnum >= MultiInfection_minPlayers) || mode == MODE_MULTI_INFECTION)
 	{
 		// Multi Infection Mode
 		SetBit(g_currentmode, MODE_MULTI_INFECTION)
 		g_lastmode = MODE_MULTI_INFECTION
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround(iPlayersnum * MultiInfectionRatio, floatround_ceil)
+		iMaxZombies = floatround(iPlayersnum * MultiInfection_ratio, floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into zombies
@@ -11386,8 +11483,8 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_MULTI_INFECTION, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, PlagueChance) == PlagueEnable && floatround((iPlayersnum - (PlagueNemesisCount+PlagueSurvivorCount)) * PlagueRatio, floatround_ceil) >= 1
-	&& iPlayersnum - (PlagueSurvivorCount + PlagueNemesisCount + floatround((iPlayersnum - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil)) >= 1 && iPlayersnum >= PlagueMinPlayers) || mode == MODE_PLAGUE)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Plague_chance) == Plague_enable && floatround((iPlayersnum - (Plague_nemesisCount+Plague_survivorCount)) * Plague_ratio, floatround_ceil) >= 1
+	&& iPlayersnum - (Plague_survivorCount + Plague_nemesisCount + floatround((iPlayersnum - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil)) >= 1 && iPlayersnum >= Plague_minPlayers) || mode == MODE_PLAGUE)
 	{
 		// Plague Mode
 		SetBit(g_currentmode, MODE_PLAGUE)
@@ -11395,7 +11492,7 @@ start_mode(mode, id)
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
-		iMaxSurvivors = PlagueSurvivorCount
+		iMaxSurvivors = Plague_survivorCount
 		iSurvivors = 0
 		
 		while (iSurvivors < iMaxSurvivors)
@@ -11411,12 +11508,12 @@ start_mode(mode, id)
 			iSurvivors++
 			
 			// Apply survivor health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * PlagueSurvivorHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Plague_survivor_HealthMultiply))
 		}
 		
 		// Turn specified amount of players into Nemesis
 		static iNemesis, iMaxNemesis
-		iMaxNemesis = PlagueNemesisCount
+		iMaxNemesis = Plague_nemesisCount
 		iNemesis = 0
 		
 		while (iNemesis < iMaxNemesis)
@@ -11433,11 +11530,11 @@ start_mode(mode, id)
 			iNemesis++
 			
 			// Apply nemesis health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * PlagueNemesisHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Plague_nemesis_HealthMultiply))
 		}
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into zombies
@@ -11493,8 +11590,8 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_PLAGUE, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 3) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SynapsisChance) == SynapsisEnable && floatround((iPlayersnum - (SynapsisNemesisCount + SynapsisSurvivorCount + SynapsisSniperCount)) * SynapsisRatio, floatround_ceil) >= 1
-	&& iPlayersnum - (SynapsisNemesisCount + SynapsisSurvivorCount + SynapsisSniperCount + floatround((iPlayersnum - (SynapsisNemesisCount + SynapsisSurvivorCount + SynapsisSniperCount)) * SynapsisRatio, floatround_ceil)) >= 1 && iPlayersnum >= SynapsisMinPlayers) || mode == MODE_SYNAPSIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 3) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Synapsis_chance) == Synapsis_enable && floatround((iPlayersnum - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil) >= 1
+	&& iPlayersnum - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount + floatround((iPlayersnum - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil)) >= 1 && iPlayersnum >= Synapsis_minPlayers) || mode == MODE_SYNAPSIS)
 	{
 		// Synapsis Mode
 		SetBit(g_currentmode, MODE_SYNAPSIS)
@@ -11502,7 +11599,7 @@ start_mode(mode, id)
 
 		// Turn specified amount of players into Nemesis
 		static iNemesis, iMaxNemesis
-		iMaxNemesis = SynapsisNemesisCount
+		iMaxNemesis = Synapsis_nemesisCount
 		iNemesis = 0
 		
 		while (iNemesis < iMaxNemesis)
@@ -11517,12 +11614,12 @@ start_mode(mode, id)
 			iNemesis++
 		
 			// Apply nemesis health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * SynapsisNemesisHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Synapsis_nemesis_HealthMultiply))
 		}
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
-		iMaxSurvivors = SynapsisSurvivorCount
+		iMaxSurvivors = Synapsis_survivorCount
 		iSurvivors = 0
 		
 		while (iSurvivors < iMaxSurvivors)
@@ -11538,12 +11635,12 @@ start_mode(mode, id)
 			iSurvivors++
 
 			// Apply survivor health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * SynapsisSurvivorHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Synapsis_survivor_HealthMultiply))
 		}
 
 		// Turn specified amount of players into Snipers
 		static iSnipers, iMaxSnipers
-		iMaxSnipers = SynapsisSniperCount
+		iMaxSnipers = Synapsis_sniperCount
 		iSnipers = 0
 		
 		while (iSnipers < iMaxSnipers)
@@ -11559,7 +11656,7 @@ start_mode(mode, id)
 			iSnipers++
 
 			// Apply survivor health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * SynapsisSniperHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Synapsis_sniper_HealthMultiply))
 		}
 		
 		// Turn the remaining players into humans
@@ -11590,14 +11687,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SYNAPSIS, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, ArmageddonChance) == ArmageddonEnable && iPlayersnum >= ArmageddonMinPlayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Armageddon_chance) == Armageddon_enable && iPlayersnum >= Armageddon_minPlayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
 	{
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
 		g_lastmode = MODE_SURVIVOR_VS_NEMESIS
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * ArmageddonRatio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * Armageddon_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Nemesis
@@ -11615,7 +11712,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Nemesis
 				MakeZombie(id, CLASS_NEMESIS)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * ArmageddonNemesisHealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * Armageddon_nemesis_HealthMultiply))
 				iZombies++
 			}
 		}
@@ -11629,7 +11726,7 @@ start_mode(mode, id)
 			
 			// Turn into a Survivor
 			MakeHuman(id, CLASS_SURVIVOR)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * ArmageddonSurvivorHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Armageddon_survivor_HealthMultiply))
 		}
 		
 		// Play armageddon sound
@@ -11650,14 +11747,74 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, ApocalypseChance) == ApocalypseEnable && iPlayersnum >= ApocalypseMinPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SurvivorVsAssasin_chance) == SurvivorVsAssasin_enable && iPlayersnum >= SurvivorVsAssasin_minPlayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_ASSASIN)
+	{
+		// Armageddon Mode
+		SetBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
+		g_lastmode = MODE_SURVIVOR_VS_ASSASIN
+		
+		// iMaxZombies is rounded up, in case there aren't enough players
+		iMaxZombies = floatround((iPlayersnum * SurvivorVsAssasin_ratio), floatround_ceil)
+		iZombies = 0
+		
+		// Randomly turn iMaxZombies players into Assasin
+		while (iZombies < iMaxZombies)
+		{
+			// Keep looping through all players
+			if (++id > g_maxplayers) id = 1
+			
+			// Dead or already a zombie or survivor
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
+				continue
+			
+			// Random chance
+			if (random_num(0, 1))
+			{
+				// Turn into a Assasin
+				MakeZombie(id, CLASS_ASSASIN)	
+				set_user_health(id, floatround(float(pev(id, pev_health)) * SurvivorVsAssasin_assasin_HealthMultiply))
+				iZombies++
+			}
+		}
+		
+		// Turn the remaining players into survivors
+		for (id = 1; id <= g_maxplayers; id++)
+		{
+			// Only those of them who arent zombies or survivor
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_SURVIVOR))
+				continue
+			
+			// Turn into a Survivor
+			MakeHuman(id, CLASS_SURVIVOR)
+			set_user_health(id, floatround(float(pev(id, pev_health)) * SurvivorVsAssasin_survivor_HealthMultiply))
+		}
+		
+		// Play armageddon sound
+		PlaySound(sound_survivor_vs_assasin[random(sizeof sound_survivor_vs_assasin)])
+		
+		// Show Armageddon HUD notice
+		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
+		ShowSyncHudMsg(0, g_MsgSync, "Survivor vs Assasin mode !!!")
+		
+		// Create Fog 
+		//CreateFog(0, 150, 128, 1128, 0.0008)
+		
+		// Mode fully started!
+		g_modestarted = true
+
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR_VS_ASSASIN, 0)
+	}
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Apocalypse_chance) == Apocalypse_enable && iPlayersnum >= Apocalypse_minPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
 	{
 		// Apocalypse Mode
 		SetBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
 		g_lastmode = MODE_SNIPER_VS_ASSASIN
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * ApocalypseRatio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * Apocalypse_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Assassin
@@ -11675,7 +11832,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Assassin
 				MakeZombie(id, CLASS_ASSASIN)
-				set_user_health(id, floatround(float(pev(id, pev_health)) * ApocalypseAssassinHealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * Apocalypse_assasin_HealthMultiply))
 				iZombies++
 			}
 		}
@@ -11689,7 +11846,7 @@ start_mode(mode, id)
 			
 			// Turn into a Sniper
 			MakeHuman(id, CLASS_SNIPER)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * ApocalypseSniperHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Apocalypse_sniper_HealthMultiply))
 		}
 		
 		// Play apocalypse sound
@@ -11710,7 +11867,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, NightmareChance) == NightmareEnable && iPlayersnum >= NightmareMinPlayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Nightmare_chance) == Nightmare_enable && iPlayersnum >= Nightmare_minPlayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
 	{
 		// Nightmare mode
 		SetBit(g_currentmode, MODE_NIGHTMARE)
@@ -11728,7 +11885,7 @@ start_mode(mode, id)
 			if (random_num(1, 5) == 1)
 			{
 				MakeZombie(id, CLASS_ASSASIN)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * NightmareAssassinHealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_assasin_HealthMultiply))
 				iZombies++
 			}
 		}
@@ -11745,7 +11902,7 @@ start_mode(mode, id)
 			if (random_num(1, 5) == 1)
 			{
 				MakeZombie(id, CLASS_NEMESIS)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * NightmareNemesisHealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_nemesis_HealthMultiply))
 				iZombies++
 			}
 		}
@@ -11762,7 +11919,7 @@ start_mode(mode, id)
 			if (random_num(1, 5) == 1)
 			{
 				MakeHuman(id, CLASS_SURVIVOR)
-				set_user_health(id, floatround(float(pev(id, pev_health)) * NightmareSurvivorHealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_survivor_HealthMultiply))
 				iZombies++
 			}
 		}
@@ -11773,7 +11930,7 @@ start_mode(mode, id)
 				continue
 
 			MakeHuman(id, CLASS_SNIPER)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * NightmareSniperHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_sniper_HealthMultiply))
 		}
 		
 		// Play nightmare sound
@@ -11795,14 +11952,14 @@ start_mode(mode, id)
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_NIGHTMARE, 0)
 	}
 	// Abhinash
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, DevilChance) == DevilEnable && iPlayersnum >= DevilMinPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SniperVsNemesis_chance) == SniperVsNemesis_enable && iPlayersnum >= SniperVsNemesis_minPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
 	{
 		// Devil Mode ( Sniper vs Nemesis)
 		SetBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 		g_lastmode = MODE_SNIPER_VS_NEMESIS
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * DevilRatio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * SniperVsNemesis_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Nemesis
@@ -11820,7 +11977,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Nemesis
 				MakeZombie(id, CLASS_NEMESIS)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * DevilSniperNemesisMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * SniperVsNemesis_nemesis_HealthMultiply))
 				iZombies++
 			}
 		}
@@ -11834,7 +11991,7 @@ start_mode(mode, id)
 			
 			// Turn into a Sniper
 			MakeHuman(id, CLASS_SNIPER)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * DevilSniperHealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * SniperVsNemesis_sniper_HealthMultiply))
 		}
 		
 		// Play devil sound
@@ -12926,6 +13083,7 @@ public ambience_sound_effects(taskid)
 	else if (CheckBit(g_currentmode, MODE_PLAGUE)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) PlaySound("PerfectZM/ambience_normal.wav")
@@ -13295,8 +13453,7 @@ public DeleteEntityGrenade(taskid)
 {
 	new entity = taskid - TASK_REMOVE_FORECEFIELD
 
-	if (is_valid_ent(entity))
-		remove_entity(entity)
+	if (is_valid_ent(entity)) remove_entity(entity)
 }
 
 public antidote_explode(ent)
@@ -14359,7 +14516,7 @@ allowed_swarm()
 // Checks if multi infection mode is allowed
 allowed_multi()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * MultiInfectionRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * MultiInfectionRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * MultiInfection_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * MultiInfection_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14368,8 +14525,8 @@ allowed_multi()
 // Checks if plague mode is allowed
 allowed_plague()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil) < 1
-			|| fnGetAlive() - (PlagueSurvivorCount + PlagueNemesisCount + floatround((fnGetAlive() - (PlagueNemesisCount + PlagueSurvivorCount)) * PlagueRatio, floatround_ceil)) < 1)
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil) < 1
+			|| fnGetAlive() - (Plague_survivorCount + Plague_nemesisCount + floatround((fnGetAlive() - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil)) < 1)
 	return false
 	
 	return true
@@ -14378,8 +14535,8 @@ allowed_plague()
 // Checks if synapsis mode is allowed
 allowed_synapsis()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (SynapsisNemesisCount + SynapsisSurvivorCount + SynapsisSniperCount)) * SynapsisRatio, floatround_ceil) < 1
-			|| fnGetAlive() - (SynapsisNemesisCount + SynapsisSurvivorCount + SynapsisSniperCount + floatround((fnGetAlive() - (SynapsisNemesisCount + SynapsisSurvivorCount + SynapsisSniperCount)) * SynapsisRatio, floatround_ceil)) < 1)
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil) < 1
+			|| fnGetAlive() - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount + floatround((fnGetAlive() - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil)) < 1)
 	return false
 	
 	return true
@@ -14388,7 +14545,16 @@ allowed_synapsis()
 // Checks if armageddon mode is allowed
 allowed_armageddon()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * ArmageddonRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * ArmageddonRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * Armageddon_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * Armageddon_ratio, floatround_ceil) >= fnGetAlive())
+	return false
+	
+	return true
+}
+
+// Checks if survivor vs assasin mode is allowed
+allowed_survivor_vs_assasin()
+{
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * SurvivorVsAssasin_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * SurvivorVsAssasin_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14397,7 +14563,7 @@ allowed_armageddon()
 // Checks if apocalypse mode is allowed
 allowed_apocalypse()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * ApocalypseRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * ApocalypseRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * Apocalypse_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * Apocalypse_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14406,7 +14572,7 @@ allowed_apocalypse()
 // Checks if nightmare mode is allowed
 allowed_nightmare()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * NightmareRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * NightmareRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * Nightmare_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * Nightmare_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14416,7 +14582,7 @@ allowed_nightmare()
 // Checks if devil mode is allowed
 allowed_devil()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * DevilRatio, floatround_ceil) < 2 || floatround(fnGetAlive() * DevilRatio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * SniperVsNemesis_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * SniperVsNemesis_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -14516,14 +14682,14 @@ CanBuy(category, item, id)
 			{
 				case EXTRA_INFECTION_NADE:
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS))
+					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS))
 						return false
 					else return true
 				}
 				case EXTRA_CONCUSSION_NADE: return true 
 				case EXTRA_ANTIDOTE:
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS) || fnGetZombies() <= 1)
+					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS) || fnGetZombies() <= 1)
 						return false
 					else return true 
 				}
@@ -14661,7 +14827,8 @@ LogToFile(action, admin, target = 0)
 		case LOG_MODE_SWARM: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_PLAGUE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SYNAPSIS: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Synapsis mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SURVIVOR_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Survivor vs Assasin mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_NEMESIS: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_NIGHTMARE: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SNIPER_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SNIPER_VS_NEMESIS: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
@@ -15459,6 +15626,23 @@ public native_start_synapsis_round()
 
 	remove_task(TASK_MAKEZOMBIE)
 	start_mode(MODE_SYNAPSIS, 0)
+
+	return true
+}
+
+// Native: IsSurvivorVsAssasinRound
+public native_is_survivor_vs_assasin_round()
+{
+	return CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
+}
+
+// Native: StartSurvivorVsAssasinRound
+public native_start_survivor_vs_assasin_round()
+{
+	if (!allowed_survivor_vs_assasin()) false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
 
 	return true
 }
