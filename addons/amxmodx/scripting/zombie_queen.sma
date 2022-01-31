@@ -3119,7 +3119,7 @@ public ShowPlayerStatistics(id)
 	new szTemp[512]
 	new Data[1]
 	Data[0] = id
-	format(szTemp, charsmax(szTemp), "SELECT DISTINCT `score` FROM `perfectzm` WHERE `score` >= %d ORDER BY `score` ASC", g_score[id])
+	format(szTemp, charsmax(szTemp), "SELECT DISTINCT `SCORE` FROM `perfectzm` WHERE `SCORE` >= %d ORDER BY `SCORE` ASC", g_score[id])
 	SQL_ThreadQuery(g_SqlTuple, "MySQL_GetStatistics", szTemp, Data, 1)
 }
 
@@ -3128,7 +3128,7 @@ public ShowGlobalTop15(id)
 	new szTemp[512]
 	new Data[1]
 	Data[0] = id
-	format(szTemp, charsmax(szTemp), "SELECT `nickname`, `points`, `kills`, `deaths`, `infections`, `score` FROM `perfectzm` ORDER BY `score` DESC LIMIT 15")
+	format(szTemp, charsmax(szTemp), "SELECT `NICKNAME`, `POINTS`, `KILLS`, `DEATHS`, `INFECTIONS`, `SCORE` FROM `perfectzm` ORDER BY `SCORE` DESC LIMIT 15")
 	SQL_ThreadQuery(g_SqlTuple, "TopFunction", szTemp, Data, 1)
 }
 
@@ -5975,9 +5975,9 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		}
 
 		// Bullet damage
-		if (damage > 1) // Dummy check
+		if (damage) // Dummy check
 		{
-			if(++iPosition[attacker] == sizeof(g_flCoords))
+			if (++iPosition[attacker] == sizeof(g_flCoords))
 			{
 				iPosition[attacker] = 0
 			}
@@ -7995,12 +7995,12 @@ public ShowStartNormalModesMenu(id)
 public ShowStartSpecialModesMenu(id)
 {
     new g_startSpecialModesMenu = menu_create("\yStart Special Modes", "StartSpecialModesMenuHandler", 0)
-    menu_additem(g_startSpecialModesMenu, "Armageddon", "0", 0, g_startSpecialModesCallback)
-    menu_additem(g_startSpecialModesMenu, "Nightmare", "1", 0, g_startSpecialModesCallback)
-    menu_additem(g_startSpecialModesMenu, "Sniper vs Assasin", "2", 0, g_startSpecialModesCallback)
-    menu_additem(g_startSpecialModesMenu, "Sniper vs Nemesis", "3", 0, g_startSpecialModesCallback)
-    menu_additem(g_startSpecialModesMenu, "Survivor vs Assasin", "4", 0, g_startSpecialModesCallback)
-    menu_additem(g_startSpecialModesMenu, "Bombardier vs Bomber", "5", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Survivor vs Nemesis \y( \rArmageddon \y)", "0", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Survivor vs Assasin", "1", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Sniper vs Nemesis", "2", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Sniper vs Assasin", "3", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Bombardier vs Bomber", "4", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Nightmare", "5", 0, g_startSpecialModesCallback)
 
     menu_display(id, g_startSpecialModesMenu, 0)
 }
@@ -8348,6 +8348,13 @@ public StartSpecialModesMenuHandler(id, menu, item)
 	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
 	new choice = str_to_num(data)
 
+	///START_SURVIVOR_VS_NEMESIS = 0,
+   //START_SURVIVOR_VS_ASSASIN,
+   // START_SNIPER_VS_NEMESIS,
+  //  START_SNIPER_VS_ASSASIN,
+  //  START_BOMBARDIER_VS_BOMBER,
+  //  START_NIGHTMARE
+
     switch (choice)
     {
         case START_SURVIVOR_VS_NEMESIS: 
@@ -8373,24 +8380,30 @@ public StartSpecialModesMenuHandler(id, menu, item)
 			}
 			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
-        case START_NIGHTMARE: 
+		case START_SURVIVOR_VS_ASSASIN: 
+		{ 
+			// Execute our forward
+			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
+			return PLUGIN_HANDLED
+		}
+		case START_SNIPER_VS_NEMESIS: 
 		{ 
 			if (AdminHasFlag(id, 'a'))
 			{
-				if (allowed_nightmare())
+				if (allowed_devil())
 				{
-					// Start Nightmare Mode
+					// Start Devil Mode
 					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_NIGHTMARE, 0)
+					start_mode(MODE_SNIPER_VS_NEMESIS, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playername[id])
 
 					// Log to file
-					LogToFile(LOG_MODE_NIGHTMARE, id)
+					LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
 
 					// Execute our forward
-					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NIGHTMARE, id)
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_NEMESIS, id)
 				}
 				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
 			}
@@ -8419,40 +8432,34 @@ public StartSpecialModesMenuHandler(id, menu, item)
 			}
 			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
-        case START_SNIPER_VS_NEMESIS: 
-		{ 
-			if (AdminHasFlag(id, 'a'))
-			{
-				if (allowed_devil())
-				{
-					// Start Devil Mode
-					remove_task(TASK_MAKEZOMBIE)
-					start_mode(MODE_SNIPER_VS_NEMESIS, 0)
-
-					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playername[id])
-
-					// Log to file
-					LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
-
-					// Execute our forward
-					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_NEMESIS, id)
-				}
-				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
-			}
-			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
-		}
-        case START_SURVIVOR_VS_ASSASIN: 
-		{ 
-			// Execute our forward
-			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
-			return PLUGIN_HANDLED
-		}
         case START_BOMBARDIER_VS_BOMBER: 
 		{ 
 			// Execute our forward
 			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
 			return PLUGIN_HANDLED
+		}
+		case START_NIGHTMARE: 
+		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_nightmare())
+				{
+					// Start Nightmare Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_NIGHTMARE, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_NIGHTMARE, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NIGHTMARE, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
     }
 
@@ -8880,7 +8887,7 @@ public StartSpecialModesCallBack(id, menu, item)
 		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
 		case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
 		case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
-		case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+		case 5: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
     }
 
     return ITEM_IGNORE
