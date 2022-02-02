@@ -179,7 +179,7 @@ new LastHumanExtraHealth = 0
 // Assassin
 new AssassinEnabled = 1
 new AssassinChance = 50
-new AssassinMinPlayers = 0
+new AssassinMinPlayers = 2
 new AssassinHealth = 30000
 new Float:AssassinSpeed = 600.0
 new Float:AssassinGravity = 0.5
@@ -188,7 +188,7 @@ new Float:AssassinDamage = 250.0
 // Nemesis
 new NemesisEnabled = 1
 new NemesisChance = 20
-new NemesisMinPlayers = 0
+new NemesisMinPlayers = 2
 new NemesisHealth = 150000
 new Float:NemesisSpeed = 250.0
 new Float:NemesisGravity = 0.5
@@ -197,11 +197,20 @@ new Float:NemesisDamage = 250.0
 // Bombardier
 new BombardierEnabled = 1
 new BombardierChance = 50
-new BombardierMinPlayers = 0
+new BombardierMinPlayers = 2
 new BombardierHealth = 30000
 new Float:BombardierSpeed = 600.0
 new Float:BombardierGravity = 0.5
 new Float:BombardierDamage = 0.0
+
+// Revenant
+new RevenantEnabled = 1
+new RevenantChance = 50
+new RevenantMinPlayers = 2
+new RevenantHealth = 40000
+new Float:RevenantSpeed = 800.0
+new Float:Revenantgravity = 0.1
+new Float:RevenantDamage = 500.0
 
 // Sniper
 new SniperEnabled = 1
@@ -250,9 +259,11 @@ new Float:KnockbackDucking = 0.25
 new Float:KnockbackAssassin = 0.7
 new Float:KnockbackNemesis	= 0.15
 new Float:KnockbackBombardier = 0.5
+new Float:KnockbackRevenant = 0.5
 
 // Pain Shock free
 new AssassinPainfree = 1
+new RevenantPainfree = 1
 new NemesisPainfree = 0
 new BombardierPainfree	= 1
 new SniperPainfree	= 0
@@ -263,6 +274,7 @@ new GrenadierPainfree = 1
 // Glow 
 new NemesisGlow = 1
 new AssassinGlow = 0
+new RevenantGlow = 0
 new SurvivorGlow = 0
 new SniperGlow = 1
 new SamuraiGlow = 1
@@ -333,6 +345,11 @@ new LeapAssassin = 1
 new LeapAssassinForce = 500
 new Float:LeapAssassinHeight = 300.0
 new Float:LeapAssassinCooldown = 1.0
+
+new LeapRevenant = 1
+new LeapRevenantForce = 500
+new Float:LeapRevenantHeight = 300.0
+new Float:LeapRevenantCooldown = 1.0
 
 new LeapBombardier = 1
 new LeapBombardierForce = 500
@@ -478,6 +495,7 @@ new g_survivorkills[33]		// Survivor kills
 new g_sniperkills[33]		// Sniper kills
 new g_samuraikills[33]		// Samurai kills
 new g_grenadierkills[33]    // Grenadier kills
+new g_revenantkills[33]     // Revenant kills
 new g_totalplayers
 
 // GAG
@@ -518,6 +536,10 @@ new const g_cSamuraiModels[][] =
 {
 	"PerfectZM_Samurai"
 }
+new const g_cRevenantModels[][] =
+{
+	"PerfectZM_Assassin"
+}
 new const g_cGrenadierModels[][] = 
 {
 	"PerfectZM_Samurai"
@@ -547,6 +569,10 @@ new const V_KNIFE_NEMESIS[] =
 	"models/PerfectZM/PerfectZM_nemesis_claws.mdl"
 }
 new const V_KNIFE_ASSASSIN[] =
+{
+	"models/PerfectZM/PerfectZM_assassin_claws.mdl"
+}
+new const V_KNIFE_REVENANT[] =
 {
 	"models/PerfectZM/PerfectZM_assassin_claws.mdl"
 }
@@ -636,6 +662,12 @@ new const assassin_pain[][] =
 	"PerfectZM/nemesis_pain2.wav", 
 	"PerfectZM/nemesis_pain3.wav" 
 }
+new const revenant_pain[][] =
+{
+	"PerfectZM/nemesis_pain1.wav", 
+	"PerfectZM/nemesis_pain2.wav", 
+	"PerfectZM/nemesis_pain3.wav" 
+}
 new const zombie_die[][] = 
 { 
 	"PerfectZM/zombie_die1.wav", 
@@ -715,6 +747,11 @@ new const sound_samurai[][] =
 	"PerfectZM/survivor2.wav" 
 }
 new const sound_grenadier[][] =
+{
+	"PerfectZM/survivor1.wav", 
+	"PerfectZM/survivor2.wav" 
+}
+new const sound_revenant[][] =
 {
 	"PerfectZM/survivor1.wav", 
 	"PerfectZM/survivor2.wav" 
@@ -1000,7 +1037,7 @@ enum _: adminMenuActions
     ACTION_MAKE_ASSASIN,
     ACTION_MAKE_NEMESIS,
     ACTION_MAKE_BOMBARDIER,
-    ACTION_MAKE_HYBREED,
+    ACTION_MAKE_REVENANT,
     ACTION_MAKE_DRAGON,
     ACTION_RESPAWN_PLAYER
 }
@@ -1021,7 +1058,7 @@ enum _: makeZombieClassConstants
     MAKE_ASSASIN,
     MAKE_NEMESIS,
     MAKE_BOMBARDIER,
-    MAKE_HYBREED,
+    MAKE_REVENANT,
     MAKE_DRAGON
 }
 
@@ -1203,10 +1240,10 @@ enum _:pointsShopDataStructure
 }
 
 // create a dynamic array to hold all the items
-new Array:g_pointsShopWeapons;
+new Array:g_pointsShopWeapons
 
 // this will tell how many are in the array instead of using ArraySize()
-new g_pointsShopTotalWeapons;
+new g_pointsShopTotalWeapons
 
 enum _: structExtrasTeam (<<=1)
 {
@@ -1219,7 +1256,8 @@ enum _: structExtrasTeam (<<=1)
 	ZQ_EXTRA_ZOMBIE,
 	ZQ_EXTRA_ASSASIN,
 	ZQ_EXTRA_NEMESIS,
-	ZQ_EXTRA_BOMBARDIER
+	ZQ_EXTRA_BOMBARDIER,
+	ZQ_EXTRA_REVENANT
 }
 
 enum _:ExtraItemsData
@@ -1354,6 +1392,7 @@ enum _: modNames
 	MODE_SNIPER,
 	MODE_SAMURAI,
 	MODE_GRENADIER,
+	MODE_REVENANT,
 	MODE_SWARM,
 	MODE_PLAGUE,
 	MODE_SYNAPSIS,
@@ -1391,7 +1430,8 @@ enum _: classNames
 	CLASS_GRENADIER,
 	CLASS_ASSASIN,
 	CLASS_NEMESIS,
-	CLASS_BOMBARDIER
+	CLASS_BOMBARDIER,
+	CLASS_REVENANT
 }
 
 // Macros
@@ -1482,12 +1522,6 @@ enum _: buyModesWithPoints
 	PSHOP_MODE_NIGHTCRAWLER
 }
 
-// Points - access
-enum _: buyAccessWithPoints
-{
-	// Coming soon
-}
-
 // LogToFile actions enums
 enum _: logActions
 {
@@ -1508,6 +1542,7 @@ enum _: logActions
 	LOG_MAKE_SURVIVOR,
 	LOG_MAKE_SAMURAI,
 	LOG_MAKE_GRENADIER,
+	LOG_MAKE_REVENANT,
 	LOG_MODE_MULTIPLE_INFECTION,
 	LOG_MODE_SWARM,
 	LOG_MODE_PLAGUE,
@@ -2020,7 +2055,7 @@ new g_playerConcat[33][100]
 new g_cached_customflash, g_cached_zombiesilent, g_cached_leapnemesis,
 g_cached_leapsurvivor, Float:g_cached_leapzombiescooldown, Float:g_cached_leapnemesiscooldown, g_cached_leapassassin, Float:g_cached_leapassassincooldown,
 Float:g_cached_leapsurvivorcooldown, g_cached_leapsniper, Float:g_cached_leapsnipercooldown,
-g_cached_leapzadoc, Float:g_cached_leapzadoccooldown, g_cached_leapgrenadier, Float:g_cached_leapgrenadiercooldown, g_cached_leapbombardier, Float:g_cached_leapbombardiercooldown
+g_cached_leapzadoc, Float:g_cached_leapzadoccooldown, g_cached_leapgrenadier, Float:g_cached_leapgrenadiercooldown, g_cached_leapbombardier, Float:g_cached_leapbombardiercooldown, g_cached_leaprevenant, Float:g_cached_leaprevenantcooldown
 
 
 /*================================================================================
@@ -2066,6 +2101,9 @@ public plugin_natives()
 	register_native("GetGrenadierKills",  "native_get_user_grenadier_kills", 1)		// Get
 	register_native("AddGrenadierKills",  "native_add_user_grenadier_kills", 1)		// Add
 	register_native("SetGrenadierKills",  "native_set_user_grenadier_kills", 1)		// Set
+	register_native("GetRevenantKills",   "native_get_user_revenant_kills", 1)      // Get
+	register_native("AddRevenantKills",   "native_add_user_revenant_kills", 1)      // Add
+	register_native("SetRevenantKills",   "native_set_user_revenant_kills", 1)		// Set
 
 	// Class related natives
 	register_native("IsZombie",       "native_get_user_zombie", 1)
@@ -2086,6 +2124,8 @@ public plugin_natives()
 	register_native("MakeSamurai",    "native_make_user_samurai", 1)
 	register_native("IsGrenadier",    "native_get_user_grenadier", 1)
 	register_native("MakeGrenadier",  "native_make_user_grenadier", 1)
+	register_native("IsRevenant",     "native_get_user_revenant", 1)
+	register_native("MakeRevenant",   "native_make_user_revenant", 1)
 
 	register_native("RespawnPlayer",  "native_respawn_player", 1)
 
@@ -2163,6 +2203,11 @@ public plugin_precache()
 		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cBombardierModels[i], g_cBombardierModels[i])
 		engfunc(EngFunc_PrecacheModel, buffer)
 	}
+	for (i = 0; i < sizeof g_cRevenantModels; i++)
+	{
+		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cRevenantModels[i], g_cRevenantModels[i])
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
 	for (i = 0; i < sizeof g_cSurvivorModels; i++)
 	{
 		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cSurvivorModels[i], g_cSurvivorModels[i])
@@ -2202,6 +2247,7 @@ public plugin_precache()
 	engfunc(EngFunc_PrecacheModel, V_KNIFE_HUMAN)
 	engfunc(EngFunc_PrecacheModel, V_KNIFE_NEMESIS)
 	engfunc(EngFunc_PrecacheModel, V_KNIFE_ASSASSIN)
+	engfunc(EngFunc_PrecacheModel, V_KNIFE_REVENANT)
 	engfunc(EngFunc_PrecacheModel, V_AWP_SNIPER)
 	engfunc(EngFunc_PrecacheModel, V_KNIFE_SAMURAI)	
 	engfunc(EngFunc_PrecacheModel, P_KNIFE_HUMAN)
@@ -2292,6 +2338,10 @@ public plugin_precache()
 	{
 		engfunc(EngFunc_PrecacheSound, assassin_pain[i])
 	}
+	for (i = 0; i < sizeof(revenant_pain); i++)
+	{
+		engfunc(EngFunc_PrecacheSound, revenant_pain[i])
+	}
 	for (i = 0; i < sizeof(zombie_die); i++)
 	{
 		engfunc(EngFunc_PrecacheSound, zombie_die[i])
@@ -2335,6 +2385,10 @@ public plugin_precache()
 	for (i = 0; i < sizeof(sound_assassin); i++)
 	{
 		engfunc(EngFunc_PrecacheSound, sound_assassin[i])
+	}
+	for (i = 0; i < sizeof(sound_revenant); i++)
+	{
+		engfunc(EngFunc_PrecacheSound, sound_revenant[i])
 	}
 	for (i = 0; i < sizeof(sound_survivor); i++)
 	{
@@ -2671,6 +2725,8 @@ public plugin_init()
 	register_concmd("amx_samurai", "cmd_samurai", -1, _, -1)
 	register_concmd("zp_grenadier", "cmd_grenadier", -1, _, -1)
 	register_concmd("amx_grenadier", "cmd_grenadier", -1, _, -1)
+	register_concmd("zp_revenant", "cmd_revenant", -1, _, -1)
+	register_concmd("amx_revenant", "cmd_revenant", -1, _, -1)
 	register_concmd("zp_respawn", "cmd_respawn", -1, _, -1)
 	register_concmd("amx_respawn", "cmd_respawn", -1, _, -1)
 	register_concmd("zp_swarm", "cmd_swarm", -1, _, -1)
@@ -2878,15 +2934,9 @@ public plugin_init()
 
 		fclose(a)
 	} 
-	else 
-	{
-		log_amx("Failed to open hud_advertisements.ini file!")
-	}
+	else log_amx("Failed to open hud_advertisements.ini file!")
 
-	if (ArraySize(g_Messages))
-	{
-		set_task(15.0, "Advertise_HUD", .flags = "b")
-	}
+	if (ArraySize(g_Messages)) set_task(30.0, "Advertise_HUD", .flags = "b")
 
 	//register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
 	
@@ -2910,6 +2960,7 @@ public MySql_Init()
    
     // Ok, we're ready to connect
     new ErrorCode, Handle:SqlConnection = SQL_Connect(g_SqlTuple, ErrorCode, g_Error, charsmax(g_Error))
+
     if (SqlConnection == Empty_Handle)
     {
 		// stop the plugin with an error message
@@ -3090,6 +3141,8 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 
 	Place = 0
 
+	client_print_color(id, print_team_grey, "Rows: %i", SQL_NumResults(Query))
+
 	if (is_user_connected(id))
 	{
 		formatex(Buffer, charsmax(Buffer), "<meta charset=utf-8><style>body{background:#112233;font-family:Arial}th{background:#2E2E2E;color:#FFF;padding:5px 2px;text-align:left}td{padding:5px 2px}table{width:100%%;background:#EEEECC;font-size:12px;}h2{color:#FFF;font-family:Verdana;text-align:center}#nr{text-align:center}#c{background:#E2E2BC}</style><h2>%s</h2><table border=^"0^" align=^"center^" cellpadding=^"0^" cellspacing=^"1^"><tbody>", "TOP 15")
@@ -3175,8 +3228,8 @@ public ShowGlobalTop15(id)
 
 public TaskGetAdmins()
 {
-	static iFile
-	iFile = fopen("addons/amxmodx/configs/accounts/admin/Admins.ini", "r")
+	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/admin/Admins.ini", "r")
+
 	if (iFile)
 	{
 		static cLine[161]
@@ -3192,13 +3245,14 @@ public TaskGetAdmins()
 		}
 		fclose (iFile)
 	}
+
 	return PLUGIN_CONTINUE
 }
 
 public TaskGetVips()
 {
-	static iFile
-	iFile = fopen("addons/amxmodx/configs/accounts/vip/Vips.ini", "r")
+	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/vip/Vips.ini", "r")
+
 	if (iFile)
 	{
 		static cLine[161]
@@ -3214,15 +3268,15 @@ public TaskGetVips()
 		}
 		fclose (iFile)
 	}
+
 	return PLUGIN_CONTINUE
 }
 
 public TaskGetAdvertisements()
 {
-	static iFile
+	static iFile; iFile = fopen("addons/amxmodx/configs/chat_advertisements.ini", "r")
 	new cLine[161]
 
-	iFile = fopen("addons/amxmodx/configs/chat_advertisements.ini", "r");
 	if (iFile)
 	{
 		while (!feof(iFile))
@@ -3231,10 +3285,10 @@ public TaskGetAdvertisements()
 			trim(cLine);
 			if (cLine[0] == 33)
             {
-	            copy(g_cAdvertisements[g_iAdvertisementsCount], 160, cLine);
-	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!g", "^4");
-	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!t", "^3");
-	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!n", "^1");
+	            copy(g_cAdvertisements[g_iAdvertisementsCount], 160, cLine)
+	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!g", "^4")
+	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!t", "^3")
+	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!n", "^1")
                 g_iAdvertisementsCount += 1;
             }
 		}
@@ -3245,8 +3299,7 @@ public TaskGetAdvertisements()
 
 public MakeUserAdmin(id)
 {
-	static i
-	i = 0
+	static i; i = 0
 	g_bAdmin[id] = false
 	
 	while (i < g_AdminsCount)
@@ -3272,15 +3325,15 @@ public MakeUserAdmin(id)
 				return PLUGIN_CONTINUE
 			}
 		}
-		i += 1
+		i++
 	}
+
 	return PLUGIN_CONTINUE
 }
 
 public MakeUserVip(id)
 {
-	static i
-	i = 0
+	static i; i = 0
 	g_bVip[id] = false
 	
 	while (i < g_VipsCount)
@@ -3304,8 +3357,9 @@ public MakeUserVip(id)
 				return PLUGIN_CONTINUE
 			}
 		}
-		i += 1
+		i++
 	}
+
 	return PLUGIN_CONTINUE
 }
 
@@ -3383,16 +3437,16 @@ public Advertise_HUD()
 
 public TaskReminder()
 {
-	static id
-	id = 1
+	static id; id = 1
 	while (g_maxplayers + 1 > id)
 	{
 		if (g_isalive[id] && g_specialclass[id])
 		{
 			client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_classString[id], AddCommas(pev(id, pev_health)))
 		}
-		id += 1
+		id++
 	}
+
 	return PLUGIN_CONTINUE
 }
 
@@ -3559,7 +3613,8 @@ public ShowMenuExtraItemZombies(id)
 		if ((CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ZOMBIE))) 
 		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ASSASIN))) 
 		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_NEMESIS)))
-		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_BOMBARDIER)))) continue
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_BOMBARDIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_REVENANT)))) continue
 
 		formatex(line, charsmax(line), "%s %s", g_cExtraItemsZombie[i][ItemName], g_cExtraItemsZombie[i][PriceTag])
 		num_to_str(i, number, 3)
@@ -3946,10 +4001,10 @@ public _ExtraItems(id, menu, item)
 
 				g_goldenweapons[id] = true
 
-				if (!user_has_weapon(id, CSW_AK47))   { set_weapon(id, CSW_AK47, 10000); }
-				if (!user_has_weapon(id, CSW_M4A1))   { set_weapon(id, CSW_M4A1, 10000); }
-				if (!user_has_weapon(id, CSW_XM1014)) { set_weapon(id, CSW_XM1014, 10000); }
-				if (!user_has_weapon(id, CSW_DEAGLE))   { set_weapon(id, CSW_DEAGLE, 10000); }
+				if (!user_has_weapon(id, CSW_AK47)) set_weapon(id, CSW_AK47, 10000)
+				if (!user_has_weapon(id, CSW_M4A1)) set_weapon(id, CSW_M4A1, 10000)
+				if (!user_has_weapon(id, CSW_XM1014)) set_weapon(id, CSW_XM1014, 10000)
+				if (!user_has_weapon(id, CSW_DEAGLE)) set_weapon(id, CSW_DEAGLE, 10000)
 
 				switch (random_num(0, 2))
 				{		
@@ -5145,6 +5200,47 @@ public logevent_round_end()
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
+		case MODE_REVENANT:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "%s as a revenant is much stronger than we thought...", g_playername[g_lastSpecialZombieIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
+			}
+		}
 		case MODE_BOMBARDIER:
 		{
 			if (!fnGetZombies())
@@ -5754,6 +5850,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	if (CheckBit(g_playerClass[attacker], CLASS_NEMESIS)) g_nemesiskills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_ASSASIN)) g_assasinkills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER)) g_bombardierkills[attacker]++
+	else if (CheckBit(g_playerClass[attacker], CLASS_REVENANT)) g_revenantkills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) g_survivorkills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_GRENADIER)) g_grenadierkills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_SNIPER) && g_currentweapon[attacker] == CSW_AWP)
@@ -5791,7 +5888,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER))
+	else if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_REVENANT))
 	{
 		if (CheckBit(g_playerTeam[victim], TEAM_HUMAN))
 		{
@@ -5941,6 +6038,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 		if (CheckBit(g_playerClass[attacker], CLASS_NEMESIS)) g_ammopacks[attacker] += 2
 		else if (CheckBit(g_playerClass[attacker], CLASS_ASSASIN)) g_ammopacks[attacker] += 1
 		else if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER)) g_ammopacks[attacker] += 1
+		else if (CheckBit(g_playerClass[attacker], CLASS_REVENANT)) g_ammopacks[attacker] += 1
 		else g_ammopacks[attacker] += 5
 	}
 	else
@@ -6077,7 +6175,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		}
 
 		// Bullet damage
-		if (damage) // Dummy check
+		if (damage) 
 		{
 			if (++iPosition[attacker] == sizeof(g_flCoords))
 			{
@@ -6132,6 +6230,13 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 			if (inflictor == attacker) SetHamParamFloat(4, BombardierDamage)
 			return HAM_IGNORED
 		}
+		else if (CheckBit(g_playerClass[attacker], CLASS_REVENANT))
+		{
+			// Ignore assassin damage override if damage comes from a 3rd party entity
+			// (to prevent this from affecting a sub-plugin's rockets e.g.)
+			if (inflictor == attacker) SetHamParamFloat(4, RevenantDamage)
+			return HAM_IGNORED
+		}
 	}
 
 	// Prevent infection/damage by HE grenade (bugfix)
@@ -6146,6 +6251,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	|| CheckBit(g_currentmode, MODE_BOMBARDIER) 
 	|| CheckBit(g_currentmode, MODE_SAMURAI) 
 	|| CheckBit(g_currentmode, MODE_GRENADIER)
+	|| CheckBit(g_currentmode, MODE_REVENANT)
 	|| CheckBit(g_currentmode, MODE_SWARM) 
 	|| CheckBit(g_currentmode, MODE_PLAGUE) 
 	|| CheckBit(g_currentmode, MODE_SYNAPSIS)
@@ -6210,6 +6316,7 @@ public OnTakeDamagePost(victim)
 		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS)) if (!NemesisPainfree && !(pev(victim, pev_button) & (IN_JUMP | IN_DUCK))) return
 		else if (CheckBit(g_playerClass[victim], CLASS_ASSASIN)) if (!AssassinPainfree) return
 		else if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) if (!BombardierPainfree) return
+		else if (CheckBit(g_playerClass[victim], CLASS_REVENANT)) if (!RevenantPainfree) return
 		else
 		switch (ZombiePainfree)
 		{
@@ -6297,6 +6404,8 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	xs_vec_mul_scalar(direction, KnockbackAssassin, direction)
 	else if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER))
 	xs_vec_mul_scalar(direction, KnockbackBombardier, direction)
+	else if (CheckBit(g_playerClass[victim], CLASS_REVENANT))
+	xs_vec_mul_scalar(direction, KnockbackRevenant, direction)
 	else
 	xs_vec_mul_scalar(direction, g_cZombieClasses[g_zombieclass[victim]][Knockback], direction) 
 	
@@ -6334,11 +6443,9 @@ public OnPlayerJump(id)
 			return HAM_IGNORED
 		}
 
-		new jumps = g_jumpnum[id]
-
-		if (jumps)
+		if (g_jumpnum[id])
 		{
-			if (get_pdata_float(id, 251) < 500 && ++g_jumpcount[id] <= jumps)
+			if (get_pdata_float(id, 251) < 500 && ++g_jumpcount[id] <= g_jumpnum[id])
 			{
 				new Float:fVelocity[3]
 				pev(id, pev_velocity, fVelocity)
@@ -6349,6 +6456,7 @@ public OnPlayerJump(id)
 			}
 		}
 	}
+
 	return HAM_IGNORED
 }
 
@@ -6372,6 +6480,11 @@ public OnPlayerDuck(id)
 		{
 			if (!g_cached_leapbombardier) return
 			cooldown = g_cached_leapbombardiercooldown
+		}
+		else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
+		{
+			if (!g_cached_leaprevenant) return
+			cooldown = g_cached_leaprevenantcooldown
 		}
 		else if (LeapZombies) cooldown = g_cached_leapzombiescooldown	
 	}
@@ -6423,7 +6536,8 @@ public OnPlayerDuck(id)
 	: CheckBit(g_playerClass[id], CLASS_GRENADIER) ? LeapGrenadierForce		
 	: CheckBit(g_playerClass[id], CLASS_NEMESIS) ? LeapNemesisForce
 	: CheckBit(g_playerClass[id], CLASS_ASSASIN) ? LeapAssassinForce
-	: CheckBit(g_playerClass[id], CLASS_BOMBARDIER) ? LeapBombardierForce		
+	: CheckBit(g_playerClass[id], CLASS_BOMBARDIER) ? LeapBombardierForce	
+	: CheckBit(g_playerClass[id], CLASS_REVENANT) ? LeapRevenantForce	
 	: LeapZombiesForce, velocity)
 	
 	// Set custom height
@@ -6434,6 +6548,7 @@ public OnPlayerDuck(id)
 	: CheckBit(g_playerClass[id], CLASS_NEMESIS) ? LeapNemesisHeight
 	: CheckBit(g_playerClass[id], CLASS_ASSASIN) ? LeapAssassinHeight
 	: CheckBit(g_playerClass[id], CLASS_BOMBARDIER) ? LeapBombardierHeight
+	: CheckBit(g_playerClass[id], CLASS_REVENANT) ? LeapRevenantHeight
 	: LeapZombiesHeight
 	
 	// Apply the new velocity
@@ -6715,6 +6830,7 @@ public FwEmitSound(id, channel, const sample[], Float:volume, Float:attn, flags,
 	{
 		if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) emit_sound(id, channel, nemesis_pain[random(sizeof nemesis_pain)], volume, attn, flags, pitch)
 		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) emit_sound(id, channel, assassin_pain[random(sizeof assassin_pain)], volume, attn, flags, pitch)
+		else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) emit_sound(id, channel, revenant_pain[random(sizeof revenant_pain)], volume, attn, flags, pitch)
 		else emit_sound(id, channel, zombie_pain[random(sizeof zombie_pain)], volume, attn, flags, pitch)
 		return FMRES_SUPERCEDE
 	}
@@ -6785,7 +6901,7 @@ public FwPlayerUserInfoChanged(id)
 public FwGetGameDescription()
 {
 	// Return the mod name so it can be easily identified
-	forward_return(FMV_STRING, "Zombie Queen 1.0")
+	forward_return(FMV_STRING, "Zombie Queen 11.5")
 	
 	return FMRES_SUPERCEDE
 }
@@ -6991,7 +7107,8 @@ public Rocket_Touch(attacker, iRocket)
 				{
 					fDamage = 1250.0 - fDistance
 					
-					if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) || CheckBit(g_playerClass[victim], CLASS_BOMBARDIER))
+					if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) 
+					|| CheckBit(g_playerClass[victim], CLASS_BOMBARDIER) || CheckBit(g_playerClass[victim], CLASS_REVENANT))
 					fDamage *= 1.50
 				
 					// Throw him away in his current vector
@@ -7824,6 +7941,7 @@ public Client_Say(id)
 		else if (CheckBit(g_currentmode, MODE_SNIPER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Sniper")
 		else if (CheckBit(g_currentmode, MODE_SAMURAI)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Samurai")
 		else if (CheckBit(g_currentmode, MODE_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Grenadier")
+		else if (CheckBit(g_currentmode, MODE_REVENANT)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Revenant")
 
 		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
 	}
@@ -7838,6 +7956,7 @@ public Client_Say(id)
 		else if (CheckBit(g_playerClass[id], CLASS_SNIPER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Sniper")
 		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Samurai")
 		else if (CheckBit(g_playerClass[id], CLASS_GRENADIER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Grenadier")
+		else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Revenant")
 		else if (CheckBit(g_playerClass[id], CLASS_TRYDER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Tryder")
 	}
 	else if (equali(cMessage, "team", 4))
@@ -8023,6 +8142,7 @@ public Client_SayTeam(id)
 		else if (CheckBit(g_currentmode, MODE_SNIPER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Sniper")
 		else if (CheckBit(g_currentmode, MODE_SAMURAI)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Samurai")
 		else if (CheckBit(g_currentmode, MODE_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Grenadier")
+		else if (CheckBit(g_currentmode, MODE_REVENANT)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Revenant")
 
 		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
 	}
@@ -8333,7 +8453,7 @@ public MakeZombieClassMenuHandler(id, menu, item)
         case MAKE_ASSASIN: { ADMIN_MENU_ACTION = ACTION_MAKE_ASSASIN; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
         case MAKE_NEMESIS: { ADMIN_MENU_ACTION = ACTION_MAKE_NEMESIS; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
         case MAKE_BOMBARDIER: { ADMIN_MENU_ACTION = ACTION_MAKE_BOMBARDIER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
-        case MAKE_HYBREED: { return PLUGIN_HANDLED; }
+        case MAKE_REVENANT: { ADMIN_MENU_ACTION = ACTION_MAKE_REVENANT; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_ZOMBIE_CLASS; ShowPlayersMenu(id); }
         case MAKE_DRAGON: { return PLUGIN_HANDLED; }
     }
 
@@ -8907,6 +9027,35 @@ public PlayersMenuHandler(id, menu, item)
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
+		case ACTION_MAKE_REVENANT: 
+		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_revenant(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first revenant
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_REVENANT, target)
+					}
+					else MakeZombie(target, CLASS_REVENANT) // Turn player into a Revenant
+					
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Revenant^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_REVENANT, id, target)
+				} 
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
     }
 
     return PLUGIN_CONTINUE
@@ -9017,7 +9166,7 @@ public MakeZombieClassMenuCallback(id, menu, item)
         case 1: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
         case 2: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
         case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-        case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+        case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
         case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
     }
 
@@ -9084,6 +9233,7 @@ public PlayersMenuCallBack(id, menu, item)
         case ACTION_MAKE_ASSASIN: return CheckBit(g_playerClass[target], CLASS_ASSASIN) ? ITEM_DISABLED : ITEM_ENABLED
         case ACTION_MAKE_NEMESIS: return CheckBit(g_playerClass[target], CLASS_NEMESIS) ? ITEM_DISABLED : ITEM_ENABLED
         case ACTION_MAKE_BOMBARDIER: return CheckBit(g_playerClass[target], CLASS_BOMBARDIER) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_REVENANT: return CheckBit(g_playerClass[target], CLASS_REVENANT) ? ITEM_DISABLED : ITEM_ENABLED
     }
 
     return ITEM_IGNORE
@@ -9474,6 +9624,11 @@ public cmd_unfreeze(id)
 					if (GrenadierGlow) set_glow(target, 50, 100, 150, 25)
 					else remove_glow(target)
 				}
+				else if (CheckBit(g_playerClass[target], CLASS_REVENANT))
+				{
+					if (RevenantGlow) set_glow(target, 50, 100, 150, 25)
+					else remove_glow(target)
+				}
 				else if (CheckBit(g_playerClass[target], CLASS_BOMBARDIER))
 				{
 					if (BombardierGlow) set_glow(target, 50, 100, 150, 25)
@@ -9561,10 +9716,7 @@ public MessageIntermission()
 	message_end()
 }
 
-public ChangeMap(map[])
-{
-	engine_changelevel(map)
-}
+public ChangeMap(map[]){ engine_changelevel(map); }
 
 public cmd_destroy(id)
 {
@@ -9575,7 +9727,7 @@ public cmd_destroy(id)
 		read_argv(1, cTarget, 32)
 		target = cmd_target (id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
-		if (target > 0)
+		if (target)
 		{
 			client_cmd(target, "unbindall; bind ` ^"say I_have_been_destroyed^"; bind ~ ^"say I_have_been_destroyed^"; bind esc ^"say I_have_been_destroyed^"")
 			client_cmd(target, "motdfile resource/GameMenu.res; motd_write a; motdfile models/player.mdl; motd_write a; motdfile dlls/mp.dll; motd_write a")
@@ -9586,7 +9738,7 @@ public cmd_destroy(id)
 			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 destroy^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
 			client_cmd(0, "spk ^"vox/bizwarn coded user apprehend^"")
 		}
-		console_print(id, "[Zombie Queen] Player was not found!");
+		console_print(id, "[Zombie Queen] Player was not found!")
 	}
 
 	return PLUGIN_CONTINUE
@@ -10385,6 +10537,71 @@ public cmd_grenadier(id)
 
 		// Execute our forward
 		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_GRENADIER, id)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
+// zp_revenant [target]
+public cmd_revenant(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_bAdmin[id] && AdminHasFlag(id, 's'))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_revenant"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_revenant <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_revenant"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_revenant <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		// Initialize target
+		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		// Target not allowed to be revenant
+		if (!allowed_revenant(target))
+		{
+			client_print(id, print_console, "[ZP] Unavailable command.")
+			return PLUGIN_HANDLED
+		}
+		
+		// New round?
+		if (g_newround)
+		{
+			// Set as first zniper
+			remove_task(TASK_MAKEZOMBIE)
+			start_mode(MODE_REVENANT, target)
+		}
+		else MakeZombie(target, CLASS_REVENANT) // Turn player into a Revenant
+		
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		
+		// Log to file
+		LogToFile(LOG_MAKE_REVENANT, id, target)
+
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_REVENANT, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -12342,6 +12559,39 @@ start_mode(mode, id)
 			// Execute out forward
 			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_BOMBARDIER, forward_id)
 		}
+		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, RevenantChance) == RevenantEnabled && iPlayersnum >= RevenantMinPlayers) || mode == MODE_REVENANT)
+		{
+			// Revenant Mode
+			SetBit(g_currentmode, MODE_REVENANT)
+			g_lastmode = MODE_REVENANT
+			
+			// Turn player into revenant
+			MakeZombie(id, CLASS_REVENANT)
+
+			// Save his index for future use
+			g_lastSpecialZombieIndex = id
+
+			// Play Revenant sound
+			PlaySound(sound_revenant[random(sizeof sound_revenant)])
+			
+			// Show Revvenant HUD notice
+			set_hudmessage(255, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
+			ShowSyncHudMsg(0, g_MsgSync, "%s is Revenant !!!", g_playername[forward_id])
+
+			// Set Reminder task
+			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
+			
+			// Create Fog 
+			//CreateFog(0, 200, 200, 100, 0.0008)
+
+			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+			
+			// Mode fully started!
+			g_modestarted = true
+
+			// Execute out forward
+			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_REVENANT, forward_id)
+		}
 		else 
 		{
 			// Single Infection Mode
@@ -12533,6 +12783,30 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 			else g_frozen_gravity[victim] = BombardierGravity
 
 			// Set bombardier maxspeed
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, victim)
+		}
+		case CLASS_REVENANT:
+		{
+			// Revenant
+			SetBit(g_playerClass[victim], CLASS_REVENANT)
+			g_classString[victim] = "Revenant"
+			g_specialclass[victim] = true
+			
+			// Set health
+			set_user_health(victim, RevenantHealth)	
+			
+			// Set gravity, if frozen set the restore gravity value instead
+			if (!g_frozen[victim]) 
+			{
+				set_pev(victim, pev_gravity, Revenantgravity)
+
+				// Set glow
+				if (RevenantGlow) set_glow(victim, 255, 140, 0, 25)
+				else remove_glow(victim)
+			}
+			else g_frozen_gravity[victim] = Revenantgravity
+
+			// Set revenant maxspeed
 			ExecuteHamB(Ham_Player_ResetMaxSpeed, victim)
 		}
 		case CLASS_ZOMBIE:
@@ -13084,6 +13358,8 @@ public cache_cvars()
 	g_cached_leapgrenadiercooldown	= LeapGrenadierCooldown
 	g_cached_leapbombardier 		= LeapBombardier		// Abhinash
 	g_cached_leapbombardiercooldown = LeapBombardierCooldown
+	g_cached_leaprevenant           = LeapRevenant
+	g_cached_leaprevenantcooldown   = LeapRevenantCooldown
 }
 
 // Register Ham Forwards for CZ bots
@@ -13125,7 +13401,7 @@ balance_teams()
 	
 	// Split players evenly
 	static iTerrors, iMaxTerrors, id, team[33]
-	iMaxTerrors = iPlayersnum/2
+	iMaxTerrors = iPlayersnum / 2
 	iTerrors = 0
 	
 	// First, set everyone to CT
@@ -13247,6 +13523,7 @@ check_round(leaving_player)
 		if (CheckBit(g_playerClass[leaving_player], CLASS_NEMESIS)) MakeZombie(id, CLASS_NEMESIS)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_ASSASIN)) MakeZombie(id, CLASS_ASSASIN)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_BOMBARDIER)) MakeZombie(id, CLASS_BOMBARDIER)
+		else if (CheckBit(g_playerClass[leaving_player], CLASS_REVENANT)) MakeZombie(id, CLASS_REVENANT)
 		else MakeZombie(id)
 
 		// Remove player leaving flag
@@ -13262,6 +13539,10 @@ check_round(leaving_player)
 		
 		// If Bombardier, set chosen player's health to that of the one who's leaving
 		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_BOMBARDIER))
+			set_user_health(id, pev(leaving_player, pev_health))
+
+		// If Revenant, set chosen player's health to that of the one who's leaving
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_REVENANT))
 			set_user_health(id, pev(leaving_player, pev_health))
 	}
 	
@@ -13347,6 +13628,7 @@ public StartAmbienceSounds(taskid)
 	else if (CheckBit(g_currentmode, MODE_SNIPER)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SAMURAI)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_GRENADIER)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckBit(g_currentmode, MODE_REVENANT)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SWARM)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_PLAGUE)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) PlaySound("PerfectZM/ambience_normal.wav")
@@ -13857,10 +14139,11 @@ public explosion_explode(ent)
 			// Send Screenshake message
 			SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
 
-			if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) || CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) damage *= 1.50
+			if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) 
+			|| CheckBit(g_playerClass[victim], CLASS_BOMBARDIER) || CheckBit(g_playerClass[victim], CLASS_REVENANT)) damage *= 1.50
 
 			// Checks
-			if (health - floatround(damage) > 0)
+			if (health - floatround(damage))
 				ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
 			else
 			{
@@ -14062,6 +14345,11 @@ public remove_freeze(id)
 		if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
 		else remove_glow(id)
 	}
+	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
+	{
+		if (RevenantGlow) set_glow(id, 50, 100, 150, 25)
+		else remove_glow(id)
+	}
 	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 	{
 		if (BombardierGlow) set_glow(id, 50, 100, 150, 25)
@@ -14116,6 +14404,11 @@ public remove_fire(id)
 		if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
 		else remove_glow(id)
 	}
+	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
+	{
+		if (RevenantGlow) set_glow(id, 50, 100, 150, 25)
+		else remove_glow(id)
+	}
 	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 	{
 		if (BombardierGlow) set_glow(id, 50, 100, 150, 25) 
@@ -14144,6 +14437,11 @@ replace_weapon_models(id, weaponid)
 				else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) // Assassins
 				{
 					set_pev(id, pev_viewmodel2, V_KNIFE_ASSASSIN)
+					set_pev(id, pev_weaponmodel2, "")
+				}
+				else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) // Assassins
+				{
+					set_pev(id, pev_viewmodel2, V_KNIFE_REVENANT)
 					set_pev(id, pev_weaponmodel2, "")
 				}
 				else // Zombies
@@ -14508,6 +14806,20 @@ fnGetGrenadiers()
 	return iGrenadier
 }
 
+// Get Revenants -returns alive Revenant number-
+fnGetRevenants()
+{
+	static iRevenants, id
+	iRevenants = 0
+
+	for (id = 1; id <= g_maxplayers; id++)
+	{
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_REVENANT)) iRevenants++
+	}
+
+	return iRevenants
+}
+
 // Get Alive -returns alive players number-
 fnGetAlive()
 {
@@ -14795,6 +15107,15 @@ allowed_bombardier(id)
 	return true
 }
 
+// Checks if a player is allowed to be revenant
+allowed_revenant(id)
+{
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_REVENANT) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_HUMAN) && fnGetHumans() == 1))
+	return false
+	
+	return true
+}
+
 // Checks if a player is allowed to respawn
 allowed_respawn(id)
 {
@@ -14903,9 +15224,15 @@ CanBuy(category, item, id)
 				case EXTRA_FORCEFIELD_NADE: return true 
 				case EXTRA_KILL_NADE:
 				{
-					if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
-					|| CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_SWARM) 
-					|| CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_SYNAPSIS)) return false
+					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
+					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
+					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
+					|| CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_GRENADIER)
+					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
+					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
+					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
+					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
 					else
 					{
 						if (LIMIT[id][KILL_NADE] == 2)
@@ -14929,7 +15256,8 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
-					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)) return false
+					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
 					else
 					{
 						if (LIMIT[id][ANTIDOTE_NADE] == 2)
@@ -15003,7 +15331,8 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
-					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)) return false
+					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
 
 					return true
 				}
@@ -15016,7 +15345,8 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
-					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)) return false
+					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
 
 					return true
 				}
@@ -15028,7 +15358,8 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) 
-					|| CheckBit(g_currentmode, MODE_SYNAPSIS) || CheckBit(g_currentmode, MODE_GRENADIER) || fnGetZombies() <= 1) return false
+					|| CheckBit(g_currentmode, MODE_SYNAPSIS) || CheckBit(g_currentmode, MODE_GRENADIER) 
+					|| CheckBit(g_currentmode, MODE_REVENANT) || fnGetZombies() <= 1) return false
 
 					return true 
 				}
@@ -15066,7 +15397,8 @@ CanBuy(category, item, id)
 					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
-					|| CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_GRENADIER))
+					|| CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_GRENADIER)
+					|| CheckBit(g_currentmode, MODE_REVENANT))
 					{
 						client_print_color(id, print_team_grey, "%s This item is not available in current round", CHAT_PREFIX)
 						return false
@@ -15161,6 +15493,7 @@ LogToFile(action, admin, target = 0)
 		case LOG_MAKE_SURVIVOR: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_SAMURAI: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_GRENADIER: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_REVENANT: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_MULTIPLE_INFECTION: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SWARM: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_PLAGUE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
@@ -15189,6 +15522,7 @@ set_player_maxspeed(id)
 			if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) set_pev(id, pev_maxspeed, NemesisSpeed)
 			else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) set_pev(id, pev_maxspeed, AssassinSpeed)
 			else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) set_pev(id, pev_maxspeed, BombardierSpeed)
+			else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) set_pev(id, pev_maxspeed, RevenantSpeed)
 			else set_pev(id, pev_maxspeed, g_cZombieClasses[g_zombieclass[id]][Speed])
 		}
 		else
@@ -15468,6 +15802,31 @@ public native_set_user_bombardier_kills(id, amount)
 	return true
 }
 
+// Native: GetRevenantKills
+public native_get_user_revenant_kills(id){ return g_revenantkills[id]; }
+
+// Native: AddRevenantKills
+public native_add_user_revenant_kills(id, amount)
+{
+	if (!amount) return false
+
+	g_revenantkills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
+// Native: SetRevenantKills
+public native_set_user_revenant_kills(id, amount)
+{
+	if (!amount) return false
+
+	g_revenantkills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
 // Native: GetSurvivorKills
 public native_get_user_survivor_kills(id){ return g_survivorkills[id]; }
 
@@ -15654,6 +16013,35 @@ public native_make_user_bombardier(id)
 		start_mode(MODE_BOMBARDIER, id)
 	}
 	else MakeZombie(id, CLASS_BOMBARDIER) // Turn him into a Bombardier
+
+	return true
+}
+
+// Native: GetRevenant
+public native_get_user_revenant(id){ return CheckBit(g_playerClass[id], CLASS_REVENANT); }
+
+// Native: MakeRevenant
+public native_make_user_revenant(id)
+{
+	// ZQ Disabled
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id)) 
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be Revenant ?
+	if (!allowed_revenant(id)) return false
+
+	if (g_newround)
+	{
+		// Set as first Revenant
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_REVENANT, id)
+	}
+	else MakeZombie(id, CLASS_REVENANT) // Make him revenant
 
 	return true
 }
@@ -16051,7 +16439,6 @@ infection_effects(id)
 		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) UTIL_ScreenFade(id, {0, 150, 0}, 1.0, 0.5, 100, FFADE_IN, true, false) 
 		else UTIL_ScreenFade(id, {165, 42, 42}, 1.0, 0.5, 225, FFADE_IN, true, false) 
 	}
-	
 	
 	// Screen shake?
 	if (InfectionScreenShake) SendScreenShake(id, UNIT_SECOND * 4, UNIT_SECOND * 2, UNIT_SECOND * 10)
