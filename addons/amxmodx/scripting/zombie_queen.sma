@@ -247,6 +247,14 @@ new Float:GrenadierSpeed = 300.0
 new Float:GrenadierGravity = 1.0
 new Float:GrenadierDamage = 0.0
 
+// Terminator
+new TerminatorEnabled = 1
+new TerminatorChance = 50
+new TerminatorMinPlayers = 2
+new TerminatorHealth = 20000
+new Float:TerminatorSpeed = 400.0
+new Float:TerminatorGravity = 1.0
+
 // Tryder
 new TryderHealth = 777
 new Float:TryderSpeed = 300.0
@@ -270,6 +278,7 @@ new SniperPainfree	= 0
 new SurvivorPainfree = 0
 new SamuraiPainfree = 1
 new GrenadierPainfree = 1
+new TerminatorPainfree = 1
 
 // Glow 
 new NemesisGlow = 1
@@ -279,6 +288,7 @@ new SurvivorGlow = 0
 new SniperGlow = 1
 new SamuraiGlow = 1
 new GrenadierGlow = 1
+new TerminatorGlow = 1
 new BombardierGlow	= 0
 new TryderGlow = 1
 
@@ -375,6 +385,11 @@ new LeapGrenadier = 1
 new LeapGrenadierForce = 700
 new Float:LeapGrenadierHeight = 300.0
 new Float:LeapGrenadierCooldown = 1.0
+
+new LeapTerminator = 1
+new LeapTerminatorForce = 700
+new Float:LeapTerminatorHeight = 400.0
+new Float:LeapTerminatorCooldown = 1.0
 
 // Custom grenades configs
 new FireDuration  = 10
@@ -496,6 +511,7 @@ new g_sniperkills[33]		// Sniper kills
 new g_samuraikills[33]		// Samurai kills
 new g_grenadierkills[33]    // Grenadier kills
 new g_revenantkills[33]     // Revenant kills
+new g_terminatorkills[33]   // Terminator kills
 new g_totalplayers
 
 // GAG
@@ -541,6 +557,10 @@ new const g_cRevenantModels[][] =
 	"PerfectZM_Assassin"
 }
 new const g_cGrenadierModels[][] = 
+{
+	"PerfectZM_Samurai"
+}
+new const g_cTerminatorModels[][] =
 {
 	"PerfectZM_Samurai"
 }
@@ -747,6 +767,11 @@ new const sound_samurai[][] =
 	"PerfectZM/survivor2.wav" 
 }
 new const sound_grenadier[][] =
+{
+	"PerfectZM/survivor1.wav", 
+	"PerfectZM/survivor2.wav" 
+}
+new const sound_terminator[][] =
 {
 	"PerfectZM/survivor1.wav", 
 	"PerfectZM/survivor2.wav" 
@@ -1253,6 +1278,7 @@ enum _: structExtrasTeam (<<=1)
 	ZQ_EXTRA_SNIPER,
 	ZQ_EXTRA_SAMURAI,
 	ZQ_EXTRA_GRENADIER,
+	ZQ_EXTRA_TERMINATOR,
 	ZQ_EXTRA_ZOMBIE,
 	ZQ_EXTRA_ASSASIN,
 	ZQ_EXTRA_NEMESIS,
@@ -1392,6 +1418,7 @@ enum _: modNames
 	MODE_SNIPER,
 	MODE_SAMURAI,
 	MODE_GRENADIER,
+	MODE_TERMINATOR,
 	MODE_REVENANT,
 	MODE_SWARM,
 	MODE_PLAGUE,
@@ -1428,6 +1455,7 @@ enum _: classNames
 	CLASS_SNIPER,
 	CLASS_SAMURAI,
 	CLASS_GRENADIER,
+	CLASS_TERMINATOR,
 	CLASS_ASSASIN,
 	CLASS_NEMESIS,
 	CLASS_BOMBARDIER,
@@ -1542,6 +1570,7 @@ enum _: logActions
 	LOG_MAKE_SURVIVOR,
 	LOG_MAKE_SAMURAI,
 	LOG_MAKE_GRENADIER,
+	LOG_MAKE_TERMINATOR,
 	LOG_MAKE_REVENANT,
 	LOG_MODE_MULTIPLE_INFECTION,
 	LOG_MODE_SWARM,
@@ -2052,11 +2081,16 @@ new g_playerConcat[33][100]
 #define is_user_valid(%1) (1 <= %1 <= g_maxplayers)
 
 // Cached CVARs
-new g_cached_customflash, g_cached_zombiesilent, g_cached_leapnemesis,
-g_cached_leapsurvivor, Float:g_cached_leapzombiescooldown, Float:g_cached_leapnemesiscooldown, g_cached_leapassassin, Float:g_cached_leapassassincooldown,
-Float:g_cached_leapsurvivorcooldown, g_cached_leapsniper, Float:g_cached_leapsnipercooldown,
-g_cached_leapzadoc, Float:g_cached_leapzadoccooldown, g_cached_leapgrenadier, Float:g_cached_leapgrenadiercooldown, g_cached_leapbombardier, Float:g_cached_leapbombardiercooldown, g_cached_leaprevenant, Float:g_cached_leaprevenantcooldown
-
+new g_cached_customflash, g_cached_zombiesilent, Float:g_cached_leapzombiescooldown,
+g_cached_leapnemesis, Float:g_cached_leapnemesiscooldown,
+g_cached_leapsurvivor, Float:g_cached_leapsurvivorcooldown,  
+g_cached_leapassassin, Float:g_cached_leapassassincooldown,
+g_cached_leapsniper, Float:g_cached_leapsnipercooldown,
+g_cached_leapzadoc, Float:g_cached_leapzadoccooldown, 
+g_cached_leapgrenadier, Float:g_cached_leapgrenadiercooldown, 
+g_cached_leapbombardier, Float:g_cached_leapbombardiercooldown, 
+g_cached_leaprevenant, Float:g_cached_leaprevenantcooldown,
+g_cached_leapterminator, Float:g_cached_leapterminatorcooldown
 
 /*================================================================================
 	[Natives and Init]
@@ -2104,6 +2138,9 @@ public plugin_natives()
 	register_native("GetRevenantKills",   "native_get_user_revenant_kills", 1)      // Get
 	register_native("AddRevenantKills",   "native_add_user_revenant_kills", 1)      // Add
 	register_native("SetRevenantKills",   "native_set_user_revenant_kills", 1)		// Set
+	register_native("GetTerminatorKills", "native_get_user_terminator_kills", 1)	// Get
+	register_native("AddTerminatorKills", "native_add_user_terminator_kills", 1)	// Add
+	register_native("SetTerminatorKills", "native_set_user_terminator_kills", 1)	// Set
 
 	// Class related natives
 	register_native("IsZombie",       "native_get_user_zombie", 1)
@@ -2126,6 +2163,8 @@ public plugin_natives()
 	register_native("MakeGrenadier",  "native_make_user_grenadier", 1)
 	register_native("IsRevenant",     "native_get_user_revenant", 1)
 	register_native("MakeRevenant",   "native_make_user_revenant", 1)
+	register_native("IsTerminator",   "native_get_user_terminator", 1)
+	register_native("MakeTerminator", "native_make_user_terminator", 1)
 
 	register_native("RespawnPlayer",  "native_respawn_player", 1)
 
@@ -2226,6 +2265,11 @@ public plugin_precache()
 	for (i = 0; i < sizeof g_cGrenadierModels; i++)
 	{
 		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cGrenadierModels[i], g_cGrenadierModels[i])
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+	for (i = 0; i < sizeof g_cTerminatorModels; i++)
+	{
+		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cTerminatorModels[i], g_cTerminatorModels[i])
 		engfunc(EngFunc_PrecacheModel, buffer)
 	}
 	for (i = 0; i < sizeof g_cOwnerModels; i++)
@@ -2405,6 +2449,10 @@ public plugin_precache()
 	for (i = 0; i < sizeof(sound_grenadier); i++)
 	{
 		engfunc(EngFunc_PrecacheSound, sound_grenadier[i])
+	}
+	for (i = 0; i < sizeof(sound_terminator); i++)
+	{
+		engfunc(EngFunc_PrecacheSound, sound_terminator[i])
 	}
 	for (i = 0; i < sizeof(sound_bombardier); i++)
 	{
@@ -2725,6 +2773,8 @@ public plugin_init()
 	register_concmd("amx_samurai", "cmd_samurai", -1, _, -1)
 	register_concmd("zp_grenadier", "cmd_grenadier", -1, _, -1)
 	register_concmd("amx_grenadier", "cmd_grenadier", -1, _, -1)
+	register_concmd("zp_terminator", "cmd_terminator", -1, _, -1)
+	register_concmd("amx_terminator", "cmd_terminator", -1, _, -1)
 	register_concmd("zp_revenant", "cmd_revenant", -1, _, -1)
 	register_concmd("amx_revenant", "cmd_revenant", -1, _, -1)
 	register_concmd("zp_respawn", "cmd_respawn", -1, _, -1)
@@ -2994,8 +3044,7 @@ public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[
 		case TQUERY_QUERY_FAILED: log_amx("Load Query failed. [%d] %s", Errcode, Error)
 	}
 
-	new id
-	id = Data[0]
+	new id; id = Data[0]
 
 	if (SQL_NumResults(Query) < 1) 
 	{
@@ -3196,10 +3245,7 @@ public init_welcome(id)
 	SQL_ThreadQuery(g_SqlTuple, "MySQL_WelcomeMessage", szTemp, Data, 1)
 }
 
-public EmptyPanel(id, iMenu, iItem)
-{
-	return PLUGIN_CONTINUE
-}
+public EmptyPanel(id, iMenu, iItem){ return PLUGIN_CONTINUE; }
 
 public IgnoreHandle(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
@@ -3592,7 +3638,8 @@ ShowMenuExtraItemHumans(id)
 		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SURVIVOR)))
 		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SNIPER)))
 		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SAMURAI)))
-		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_GRENADIER)))) continue
+		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_GRENADIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_TERMINATOR)))) continue
 		
 		formatex(line, charsmax(line), "%s %s", g_cExtraItems[i][ItemName], g_cExtraItems[i][PriceTag])
 		num_to_str(i, number, 3)
@@ -5447,6 +5494,47 @@ public logevent_round_end()
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
+		case MODE_TERMINATOR:
+		{
+			if (!fnGetZombies())
+			{
+				// Human team wins
+				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "%s's terminates on an extreme level....", g_playername[g_lastSpecialHumanIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				if (!g_gamecommencing) g_scorehumans++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_HUMAN)
+			}
+			else if (!fnGetHumans())
+			{
+				// Zombie team wins
+				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to try hard next time^n%s", g_playername[g_lastSpecialHumanIndex])
+				
+				// Play win sound and increase score, unless game commencing
+				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				if (!g_gamecommencing) g_scorezombies++
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_ZOMBIE)
+			}
+			else
+			{
+				// No one wins
+				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
+				
+				// Play win sound
+				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+
+				// Execute our forward
+				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
+			}
+		}
 	}
 
 	static iFrags
@@ -5593,35 +5681,30 @@ public event_show_status(id)
 }
 
 // Remove the aim-info message
-public event_hide_status(id)
-{
-	ClearSyncHud(id, g_MsgSync3)
-}
+public event_hide_status(id){ ClearSyncHud(id, g_MsgSync3); }
 
 // Countdown function
 public Countdown()
 {
-	if (countdown_timer > 0)
+	if (countdown_timer)
 	{ 
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
 		
 		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
-		if (countdown_timer != 0)
 		ShowSyncHudMsg(0, g_MsgSync4, "Infection in %i", countdown_timer)
 	}
+
 	--countdown_timer
 	
-	if (countdown_timer == 0)
+	if (!countdown_timer)
 	{
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
 		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 2.0, 0.01, 0.1, 10)
 		ShowSyncHudMsg(0, g_MsgSync4, "Warning: Biohazard detected")
 	}
 
-	if(countdown_timer >= 1)
-	set_task(1.0, "Countdown", TASK_COUNTDOWN)
-	else if (task_exists(TASK_COUNTDOWN))
-	remove_task(TASK_COUNTDOWN)
+	if (countdown_timer >= 1) set_task(1.0, "Countdown", TASK_COUNTDOWN)
+	else if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 }
 
 /*================================================================================
@@ -5807,7 +5890,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	// Disable nightvision when killed (bugfix)
 	if ((!NightVisionEnabled) && g_nvision[victim])
 	{
-		if (CustomNightVision) remove_task(victim+TASK_NVISION)
+		if (CustomNightVision) remove_task(victim + TASK_NVISION)
 		else if (g_nvisionenabled[victim]) set_user_gnvision(victim, 0)
 		g_nvision[victim] = false
 		g_nvisionenabled[victim] = false
@@ -5853,6 +5936,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	else if (CheckBit(g_playerClass[attacker], CLASS_REVENANT)) g_revenantkills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_SURVIVOR)) g_survivorkills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_GRENADIER)) g_grenadierkills[attacker]++
+	else if (CheckBit(g_playerClass[attacker], CLASS_TERMINATOR)) g_terminatorkills[attacker]++
 	else if (CheckBit(g_playerClass[attacker], CLASS_SNIPER) && g_currentweapon[attacker] == CSW_AWP)
 	{
 		g_sniperkills[attacker]++
@@ -5877,7 +5961,10 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	if (!fnGetHumans() || !fnGetZombies()) return
 
 
-	if (CheckBit(g_currentmode, MODE_INFECTION) || CheckBit(g_currentmode, MODE_MULTI_INFECTION) || CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_GRENADIER))
+	if (CheckBit(g_currentmode, MODE_INFECTION) || CheckBit(g_currentmode, MODE_MULTI_INFECTION) 
+	|| CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_SURVIVOR) 
+	|| CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SWARM) 
+	|| CheckBit(g_currentmode, MODE_GRENADIER) || CheckBit(g_currentmode, MODE_TERMINATOR))
 	{
 		if (CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
 		{
@@ -5888,7 +5975,8 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) || CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_REVENANT))
+	else if (CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
+	|| CheckBit(g_currentmode, MODE_BOMBARDIER) || CheckBit(g_currentmode, MODE_REVENANT))
 	{
 		if (CheckBit(g_playerTeam[victim], TEAM_HUMAN))
 		{
@@ -6047,6 +6135,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 		else if (CheckBit(g_playerClass[attacker], CLASS_SNIPER)) g_ammopacks[attacker] += 3
 		else if (CheckBit(g_playerClass[attacker], CLASS_SAMURAI)) g_ammopacks[attacker] += 4
 		else if (CheckBit(g_playerClass[attacker], CLASS_GRENADIER)) g_ammopacks[attacker] += 4
+		else if (CheckBit(g_playerClass[attacker], CLASS_TERMINATOR)) g_ammopacks[attacker] += 4
 		else g_ammopacks[attacker] += 5
 	}
 
@@ -6095,24 +6184,19 @@ public OnPlayerKilledPost(victim, attacker, shouldgib)
 // Ham Take Damage Forward
 public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 {
-	if (damage_type & DMG_FALL && VipHasFlag(victim, 'f'))
-	return HAM_SUPERCEDE
+	if (damage_type & DMG_FALL && VipHasFlag(victim, 'f')) return HAM_SUPERCEDE
 
 	// Non-player damage or self damage
-	if (victim == attacker || !is_user_valid_connected(attacker))
-	return HAM_IGNORED
+	if (victim == attacker || !is_user_valid_connected(attacker)) return HAM_IGNORED
 	
 	// New round starting or round ended
-	if (g_newround || g_endround)
-	return HAM_SUPERCEDE
+	if (g_newround || g_endround) return HAM_SUPERCEDE
 	
 	// Victim shouldn't take damage 
-	if (g_nodamage[victim])
-	return HAM_SUPERCEDE
+	if (g_nodamage[victim]) return HAM_SUPERCEDE
 	
 	// Prevent friendly fire
-	if (CheckBit(g_playerTeam[attacker], TEAM_ZOMBIE) == CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
-	return HAM_SUPERCEDE
+	if (CheckBit(g_playerTeam[attacker], TEAM_ZOMBIE) == CheckBit(g_playerTeam[victim], TEAM_ZOMBIE)) return HAM_SUPERCEDE
 	
 	// Reward ammo packs to human classes
 	
@@ -6165,7 +6249,9 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		
 		g_damagedealt_human[attacker] += floatround(damage)
 		
-		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER) || CheckBit(g_playerClass[attacker], CLASS_GRENADIER))
+		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) 
+		|| CheckBit(g_playerClass[attacker], CLASS_TRYDER) || CheckBit(g_playerClass[attacker], CLASS_GRENADIER)
+		|| CheckBit(g_playerClass[attacker], CLASS_TERMINATOR))
 		{
 			while (g_damagedealt_human[attacker] >= 500)
 			{
@@ -6196,7 +6282,8 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 				SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
 			}
 			else if ((CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) 
-			|| CheckBit(g_playerClass[attacker], CLASS_TRYDER) || CheckBit(g_playerClass[attacker], CLASS_GRENADIER)) && (damage_type & DMG_BULLET))
+			|| CheckBit(g_playerClass[attacker], CLASS_TRYDER) || CheckBit(g_playerClass[attacker], CLASS_GRENADIER)
+			|| CheckBit(g_playerClass[attacker], CLASS_TERMINATOR)) && (damage_type & DMG_BULLET))
 			{
 				set_hudmessage(0, 40, 80, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
 				show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))	
@@ -6240,8 +6327,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	}
 
 	// Prevent infection/damage by HE grenade (bugfix)
-	if (damage_type & DMG_HEGRENADE)
-	return HAM_SUPERCEDE
+	if (damage_type & DMG_HEGRENADE) return HAM_SUPERCEDE
 	
 	// Last human or not an infection round
 	if (CheckBit(g_currentmode, MODE_SURVIVOR) 
@@ -6251,6 +6337,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	|| CheckBit(g_currentmode, MODE_BOMBARDIER) 
 	|| CheckBit(g_currentmode, MODE_SAMURAI) 
 	|| CheckBit(g_currentmode, MODE_GRENADIER)
+	|| CheckBit(g_currentmode, MODE_TERMINATOR)
 	|| CheckBit(g_currentmode, MODE_REVENANT)
 	|| CheckBit(g_currentmode, MODE_SWARM) 
 	|| CheckBit(g_currentmode, MODE_PLAGUE) 
@@ -6259,8 +6346,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) 
 	|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) 
 	|| CheckBit(g_currentmode, MODE_NIGHTMARE) 
-	|| fnGetHumans() == 1)
-	return HAM_IGNORED // human is killed
+	|| fnGetHumans() == 1) return HAM_IGNORED // human is killed
 	
 	// Does human armor need to be reduced before infecting?
 	if (HumanArmorProtect && (CheckBit(g_playerClass[victim], CLASS_HUMAN) || CheckBit(g_playerClass[victim], CLASS_TRYDER)))
@@ -6331,12 +6417,12 @@ public OnTakeDamagePost(victim)
 		else if (CheckBit(g_playerClass[victim], CLASS_SNIPER)) if (!SniperPainfree) return
 		else if (CheckBit(g_playerClass[victim], CLASS_SAMURAI)) if (!SamuraiPainfree) return
 		else if (CheckBit(g_playerClass[victim], CLASS_GRENADIER)) if (!GrenadierPainfree) return
+		else if (CheckBit(g_playerClass[victim], CLASS_TERMINATOR)) if (!TerminatorPainfree) return
 		else return
 	}
 	
 	// Prevent server crash if entity's private data not initalized
-	if (pev_valid(victim) != PDATA_SAFE)
-	return
+	if (pev_valid(victim) != PDATA_SAFE) return
 	
 	// Set pain shock free offset
 	set_pdata_float(victim, OFFSET_PAINSHOCK, 1.0, OFFSET_LINUX)
@@ -6346,36 +6432,28 @@ public OnTakeDamagePost(victim)
 public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], tracehandle, damage_type, ptr)
 {
 	// Non-player damage or self damage
-	if (victim == attacker || !is_user_valid_connected(attacker))
-	return HAM_IGNORED
+	if (victim == attacker || !is_user_valid_connected(attacker)) return HAM_IGNORED
 	
 	// New round starting or round ended
-	if (g_newround || g_endround)
-	return HAM_SUPERCEDE
+	if (g_newround || g_endround) return HAM_SUPERCEDE
 	
 	// Victim shouldn't take damage or victim is frozen
-	if (g_nodamage[victim])
-	return HAM_SUPERCEDE
+	if (g_nodamage[victim]) return HAM_SUPERCEDE
 	
 	// Prevent friendly fire
-	if (CheckBit(g_playerTeam[attacker], TEAM_ZOMBIE) == CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
-	return HAM_SUPERCEDE
+	if (CheckBit(g_playerTeam[attacker], TEAM_ZOMBIE) == CheckBit(g_playerTeam[victim], TEAM_ZOMBIE)) return HAM_SUPERCEDE
 	
 	// Victim isn't a zombie or not bullet damage, nothing else to do here
-	if (CheckBit(g_playerTeam[victim], TEAM_HUMAN) || !(damage_type & DMG_BULLET))
-	return HAM_IGNORED
+	if (CheckBit(g_playerTeam[victim], TEAM_HUMAN) || !(damage_type & DMG_BULLET)) return HAM_IGNORED
 	
 	// Knockback disabled, nothing else to do here
-	if (!KnockbackEnabled)
-	return HAM_IGNORED
+	if (!KnockbackEnabled) return HAM_IGNORED
 	
 	// Get whether the victim is in a crouch state
-	static ducking
-	ducking = (pev(victim, pev_flags) & (FL_DUCKING | FL_ONGROUND)) == (FL_DUCKING | FL_ONGROUND)
+	static ducking; ducking = (pev(victim, pev_flags) & (FL_DUCKING | FL_ONGROUND)) == (FL_DUCKING | FL_ONGROUND)
 	
 	// Zombie knockback when ducking disabled
-	if (ducking && KnockbackDucking == 0.0) 
-	return HAM_IGNORED
+	if (ducking && KnockbackDucking == 0.0) return HAM_IGNORED
 	
 	// Get distance between players
 	static origin1[3], origin2[3]
@@ -6383,8 +6461,7 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	get_user_origin(attacker, origin2)
 	
 	// Max distance exceeded
-	if (get_distance(origin1, origin2) > KnockbackDistance)
-	return HAM_IGNORED
+	if (get_distance(origin1, origin2) > KnockbackDistance) return HAM_IGNORED
 	
 	// Get victim's velocity
 	static Float:velocity[3]
@@ -6510,22 +6587,24 @@ public OnPlayerDuck(id)
 			if (!g_cached_leapgrenadier) return
 			cooldown = g_cached_leapgrenadiercooldown
 		}
+		else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
+		{
+			if (!g_cached_leapterminator) return
+			cooldown = g_cached_leapterminatorcooldown
+		}
 		else return
 	}
 	
 	current_time = get_gametime()
 	
 	// Cooldown not over yet
-	if (current_time - g_lastleaptime[id] < cooldown)
-	return
+	if (current_time - g_lastleaptime[id] < cooldown) return
 	
 	// Not doing a longjump (don't perform check for bots, they leap automatically)
-	if (!g_isbot[id] && !(pev(id, pev_button) & (IN_JUMP | IN_DUCK) == (IN_JUMP | IN_DUCK)))
-	return
+	if (!g_isbot[id] && !(pev(id, pev_button) & (IN_JUMP | IN_DUCK) == (IN_JUMP | IN_DUCK))) return
 	
 	// Not on ground or not enough speed
-	if (!(pev(id, pev_flags) & FL_ONGROUND) || fm_get_speed(id) < 80)
-	return
+	if (!(pev(id, pev_flags) & FL_ONGROUND) || fm_get_speed(id) < 80) return
 	
 	static Float:velocity[3]
 	
@@ -6538,6 +6617,7 @@ public OnPlayerDuck(id)
 	: CheckBit(g_playerClass[id], CLASS_ASSASIN) ? LeapAssassinForce
 	: CheckBit(g_playerClass[id], CLASS_BOMBARDIER) ? LeapBombardierForce	
 	: CheckBit(g_playerClass[id], CLASS_REVENANT) ? LeapRevenantForce	
+	: CheckBit(g_playerClass[id], CLASS_TERMINATOR) ? LeapTerminatorForce
 	: LeapZombiesForce, velocity)
 	
 	// Set custom height
@@ -6549,6 +6629,7 @@ public OnPlayerDuck(id)
 	: CheckBit(g_playerClass[id], CLASS_ASSASIN) ? LeapAssassinHeight
 	: CheckBit(g_playerClass[id], CLASS_BOMBARDIER) ? LeapBombardierHeight
 	: CheckBit(g_playerClass[id], CLASS_REVENANT) ? LeapRevenantHeight
+	: CheckBit(g_playerClass[id], CLASS_TERMINATOR) ? LeapTerminatorHeight
 	: LeapZombiesHeight
 	
 	// Apply the new velocity
@@ -6611,8 +6692,7 @@ public OnResetMaxSpeedPost(id)
 public OnUseStationary(entity, caller, activator, use_type)
 {
 	// Prevent zombies from using stationary guns
-	if (use_type == USE_USING && is_user_valid_connected(caller) && CheckBit(g_playerTeam[caller], TEAM_ZOMBIE))
-	return HAM_SUPERCEDE
+	if (use_type == USE_USING && is_user_valid_connected(caller) && CheckBit(g_playerTeam[caller], TEAM_ZOMBIE)) return HAM_SUPERCEDE
 	
 	return HAM_IGNORED
 }
@@ -6629,12 +6709,10 @@ public OnUseStationaryPost(entity, caller, activator, use_type)
 public OnTouchWeapon(weapon, id)
 {
 	// Not a player
-	if (!is_user_valid_connected(id))
-	return HAM_IGNORED
+	if (!is_user_valid_connected(id)) return HAM_IGNORED
 	
 	// Dont pickup weapons if zombie or survivor (+PODBot MM fix)
-	if (g_isalive[id])
-	return HAM_SUPERCEDE
+	if (g_isalive[id]) return HAM_SUPERCEDE
 	
 	return HAM_IGNORED
 }
@@ -6643,15 +6721,13 @@ public OnTouchWeapon(weapon, id)
 public OnAddPlayerItem(id, weapon_ent)
 {
 	// HACK: Retrieve our custom extra ammo from the weapon
-	static extra_ammo
-	extra_ammo = pev(weapon_ent, PEV_ADDITIONAL_AMMO)
+	static extra_ammo; extra_ammo = pev(weapon_ent, PEV_ADDITIONAL_AMMO)
 	
 	// If present
 	if (extra_ammo)
 	{
 		// Get weapon's id
-		static weaponid
-		weaponid = cs_get_weapon_id(weapon_ent)
+		static weaponid; weaponid = cs_get_weapon_id(weapon_ent)
 		
 		// Add to player's bpammo
 		ExecuteHamB(Ham_GiveAmmo, id, extra_ammo, AMMOTYPE[weaponid], MAXBPAMMO[weaponid])
@@ -6666,12 +6742,10 @@ public OnWeaponDeploy(weapon_ent)
 	new id = get_pdata_cbase(weapon_ent, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS)
 	
 	// Valid owner?
-	if (!pev_valid(id))
-	return;
+	if (!pev_valid(id)) return
 	
 	// Get weapon's id
-	static weaponid
-	weaponid = cs_get_weapon_id(weapon_ent)
+	static weaponid; weaponid = cs_get_weapon_id(weapon_ent)
 	
 	// Store current weapon's id for reference
 	g_currentweapon[id] = weaponid
@@ -7133,13 +7207,12 @@ public Rocket_Touch(attacker, iRocket)
 
 public OnKnifeBlinkAttack(entity)
 {
-	static owner
-	owner = pev(entity, pev_owner);
+	static owner; owner = pev(entity, pev_owner);
 	if (CheckBit(g_playerClass[owner], CLASS_ZOMBIE) && g_blinks[owner])
 	{
 		if (get_target_and_attack(owner))
 		{
-			client_print_color(0, print_team_grey, "%s ^3%s^1 just used a knife blink ^4[ ^1remaining: ^3%i ^4]", CHAT_PREFIX, g_playername[owner], g_blinks[owner])
+			client_print_color(0, print_team_grey, "%s ^3%s^1 just used a knife blink ^4[ ^3%i ^1remaining ^4]", CHAT_PREFIX, g_playername[owner], g_blinks[owner])
 			g_blinks[owner]--
 		}
 	}
@@ -7149,10 +7222,9 @@ public OnKnifeBlinkAttack(entity)
 
 public OnCrossbowAddToPlayer(Aug, id)
 {
-	if(!is_valid_ent(Aug) || !g_isconnected[id])
-		return HAM_IGNORED
+	if (!is_valid_ent(Aug) || !g_isconnected[id]) return HAM_IGNORED
 	
-	if(entity_get_int(Aug, EV_INT_impulse) == 35481)
+	if (entity_get_int(Aug, EV_INT_impulse) == 35481)
 	{
 		g_has_crossbow[id] = true		
 		entity_set_int(Aug, EV_INT_impulse, 0)		
@@ -7166,8 +7238,8 @@ public OnCrossbowAddToPlayer(Aug, id)
 public OnCrossbowPrimaryAttack(Weapon)
 {
 	new id = get_pdata_cbase(Weapon, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS)
+
 	if (!pev_valid(id)) return
-	
 	if (!g_has_crossbow[id]) return
 	
 	g_IsInPrimaryAttack = 1
@@ -7181,9 +7253,10 @@ public OnCrossbowPrimaryAttackPost(Weapon)
 	g_IsInPrimaryAttack = 0
 
 	new id = get_pdata_cbase(Weapon, OFFSET_WEAPONOWNER, OFFSET_LINUX_WEAPONS)
+
 	if (!pev_valid(id)) return
 	
-	if(g_has_crossbow[id])
+	if (g_has_crossbow[id])
 	{
 		if (!g_clip_ammo[id]) return
 
@@ -7211,9 +7284,8 @@ public OnCrossbowPostFrame(weapon_entity)
 
 	if (!g_has_crossbow[id]) return HAM_IGNORED
 	
-	static iClipExtra
+	static iClipExtra; iClipExtra = CROSSBOW_CLIP
 
-	iClipExtra = CROSSBOW_CLIP
 	new Float:flNextAttack = get_pdata_float(id, 83, OFFSET_LINUX)
 	new iBpAmmo = cs_get_user_bpammo(id, CSW_SG550)
 	new iClip = get_pdata_int(weapon_entity, 51, OFFSET_LINUX_WEAPONS)
@@ -7241,8 +7313,7 @@ public OnCrossbowReload(weapon_entity)
 
 	if (!g_has_crossbow[id]) return HAM_IGNORED
 
-	static iClipExtra
-	iClipExtra = CROSSBOW_CLIP
+	static iClipExtra; iClipExtra = CROSSBOW_CLIP
 
 	g_crossbow_TmpClip[id] = -1
 
@@ -7280,8 +7351,7 @@ public OnCrossbowReloadPost(weapon_entity)
 
 public FwUpdateClientDataPost(Player, SendWeapons, CD_Handle)
 {
-	if(!is_user_alive(Player) || (get_user_weapon(Player) != CSW_SG550 || !g_has_crossbow[Player]))
-		return FMRES_IGNORED
+	if (!is_user_alive(Player) || (get_user_weapon(Player) != CSW_SG550 || !g_has_crossbow[Player])) return FMRES_IGNORED
 	
 	set_cd(CD_Handle, CD_flNextAttack, halflife_time () + 0.001)
 
@@ -7290,11 +7360,9 @@ public FwUpdateClientDataPost(Player, SendWeapons, CD_Handle)
 
 public FwPlaybackEvent(flags, invoker, eventid, Float:delay, Float:origin[3], Float:angles[3], Float:fparam1, Float:fparam2, iParam1, iParam2, bParam1, bParam2)
 {
-	if ((eventid != g_orig_event_crossbow) || !g_IsInPrimaryAttack)
-		return FMRES_IGNORED
+	if ((eventid != g_orig_event_crossbow) || !g_IsInPrimaryAttack) return FMRES_IGNORED
 
-	if (!(1 <= invoker <= g_maxplayers))
-    	return FMRES_IGNORED
+	if (!(1 <= invoker <= g_maxplayers)) return FMRES_IGNORED
 
 	playback_event(flags | FEV_HOSTONLY, invoker, eventid, delay, origin, angles, fparam1, fparam2, iParam1, iParam2, bParam1, bParam2)
 	return FMRES_SUPERCEDE
@@ -7738,8 +7806,7 @@ public clcmd_drop(id)
 		user_drop_jetpack(id, 0)
 
 	// Survivor should stick with its weapon
-	if (CheckBit(g_playerClass[id], CLASS_SURVIVOR) || CheckBit(g_playerClass[id], CLASS_SNIPER))
-		return PLUGIN_HANDLED
+	if (CheckBit(g_playerClass[id], CLASS_SURVIVOR) || CheckBit(g_playerClass[id], CLASS_SNIPER)) return PLUGIN_HANDLED
 
 	return PLUGIN_CONTINUE
 }
@@ -7750,8 +7817,7 @@ public clcmd_changeteam(id)
 	static team; team = fm_cs_get_user_team(id)
 	
 	// Unless it's a spectator joining the game
-	if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED)
-		return PLUGIN_CONTINUE
+	if (team == FM_CS_TEAM_SPECTATOR || team == FM_CS_TEAM_UNASSIGNED) return PLUGIN_CONTINUE
 	
 	// Pressing 'M' (chooseteam) ingame should show the main menu instead
 	menu_display(id, g_iGameMenu, 0)
@@ -7764,8 +7830,7 @@ public Client_Say(id)
 {
 	if (!g_isconnected[id]) return PLUGIN_HANDLED
 
-	static Float:fGameTime
-	fGameTime = get_gametime()
+	static Float:fGameTime; fGameTime = get_gametime()
 
 	if (g_fGagTime[id] > fGameTime)
 	{
@@ -7777,8 +7842,7 @@ public Client_Say(id)
 	read_args(cMessage, 149)
 	remove_quotes(cMessage)
 
-	if (!cMessage[0] || strlen(cMessage) > 147)
-		return PLUGIN_HANDLED
+	if (!cMessage[0] || strlen(cMessage) > 147) return PLUGIN_HANDLED
 
 	if (cMessage[0] == '@' && g_bAdmin[id])
 	{
@@ -7787,7 +7851,8 @@ public Client_Say(id)
 		static red, green, blue
 		static i
 
-		g_iMessagePosition += 1
+		g_iMessagePosition++
+
 		if (g_iMessagePosition > 3) g_iMessagePosition = 0
 
 		switch (g_iMessagePosition)
@@ -7830,8 +7895,9 @@ public Client_Say(id)
 				set_hudmessage(red, green, blue, 0.02, fVertical, 0, 6.00, 6.00, 0.50, 0.15, -1)
 				ShowSyncHudMsg(i, g_MsgSync5[g_iMessagePosition], "%s :  %s", g_playername[id], cMessage[1])
 			}
-			i += 1
+			i++
 		}
+
 		return PLUGIN_HANDLED
 	}
 
@@ -7942,6 +8008,7 @@ public Client_Say(id)
 		else if (CheckBit(g_currentmode, MODE_SAMURAI)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Samurai")
 		else if (CheckBit(g_currentmode, MODE_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Grenadier")
 		else if (CheckBit(g_currentmode, MODE_REVENANT)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Revenant")
+		else if (CheckBit(g_currentmode, MODE_TERMINATOR)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Terminator")
 
 		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
 	}
@@ -7956,6 +8023,7 @@ public Client_Say(id)
 		else if (CheckBit(g_playerClass[id], CLASS_SNIPER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Sniper")
 		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Samurai")
 		else if (CheckBit(g_playerClass[id], CLASS_GRENADIER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Grenadier")
+		else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Terminator")
 		else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Revenant")
 		else if (CheckBit(g_playerClass[id], CLASS_TRYDER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Tryder")
 	}
@@ -7987,11 +8055,9 @@ public Client_SayTeam(id)
 		return PLUGIN_HANDLED
 	}
 
-	static Float:fGameTime
-	fGameTime = get_gametime()
+	static Float:fGameTime; fGameTime = get_gametime()
 
-	if (g_fGagTime[id] > fGameTime)
-		return PLUGIN_HANDLED
+	if (g_fGagTime[id] > fGameTime) return PLUGIN_HANDLED
 
 	static cMessage[150]
 	read_args(cMessage, 149)
@@ -8004,45 +8070,33 @@ public Client_SayTeam(id)
 	{
 		if (g_bAdmin[id] && g_bVip[id])
 		{
-			static i
-			i = 1
+			static i; i = 1
 			while (g_maxplayers + 1 > i)
 			{
 				if (g_isconnected[i] && g_bAdmin[i] && AdminHasFlag(i, 'a'))
 				{
 					client_print_color(i, print_team_grey, "^4[VIP]^3 %s^1 :  %s", g_playername[id], cMessage[1])
 				}
-				i += 1
+				i++
 			}
 		}
 		else if (g_bAdmin[id] && !g_bVip[id])
 		{
-			static i
-			i = 1
+			static i; i = 1
 			while (g_maxplayers + 1 > i)
 			{
 				if (g_isconnected[i] && g_bAdmin[i] && AdminHasFlag(i, 'a'))
 				{
 					client_print_color(i, print_team_grey, "^4[ADMINS]^3 %s^1 :  %s", g_playername[id], cMessage[1])
 				}
-				i += 1
+				i++
 			}
 		}
-		else
-		{
-			static i
-			i = 1
-			while (g_maxplayers + 1 > i)
-			{
-				if (g_isconnected[i] && (g_bAdmin[i] || id != i))
-				{
-					client_print_color(i, print_team_grey, "^3(PLAYER) %s^1 :  %s", g_playername[id], cMessage[1])
-				}
-				i += 1
-			}
-		}
+		else client_print_color(0, print_team_grey, "^3[PLAYER] %s^1 :  %s", g_playername[id], cMessage[1])	
+
 		return PLUGIN_HANDLED
 	}
+
 	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
 	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3)) ShowGlobalTop15(id)
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
@@ -8143,6 +8197,7 @@ public Client_SayTeam(id)
 		else if (CheckBit(g_currentmode, MODE_SAMURAI)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Samurai")
 		else if (CheckBit(g_currentmode, MODE_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Grenadier")
 		else if (CheckBit(g_currentmode, MODE_REVENANT)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Revenant")
+		else if (CheckBit(g_currentmode, MODE_TERMINATOR)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Terminator")
 
 		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
 	}
@@ -8154,6 +8209,7 @@ public Client_SayTeam(id)
 		show_motd(id, "http://perfectzm0.000webhostapp.com/privileges.html", "Privileges")
 	else if (equali(cMessage, "/rules", 6) || equali(cMessage, "rules", 5))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -8266,10 +8322,13 @@ public ShowPlayersMenu(id)
         case ACTION_MAKE_SURVIVOR: formatex(buffer, charsmax(buffer), "\yMake Survivor")
         case ACTION_MAKE_SNIPER: formatex(buffer, charsmax(buffer), "\yMake Sniper")
         case ACTION_MAKE_SAMURAI: formatex(buffer, charsmax(buffer), "\yMake Samurai")
+        case ACTION_MAKE_GRENADIER: formatex(buffer, charsmax(buffer), "\yMake Grenadier")
+        case ACTION_MAKE_TERMINATOR: formatex(buffer, charsmax(buffer), "\yMake Terminator")
         case ACTION_MAKE_ZOMBIE: formatex(buffer, charsmax(buffer), "\yMake Zombie")
         case ACTION_MAKE_ASSASIN: formatex(buffer, charsmax(buffer), "\yMake Assasin")
         case ACTION_MAKE_NEMESIS: formatex(buffer, charsmax(buffer), "\yMake Nemesis")
         case ACTION_MAKE_BOMBARDIER: formatex(buffer, charsmax(buffer), "\yMake Bombardier")
+        case ACTION_MAKE_REVENANT: formatex(buffer, charsmax(buffer), "\yMake Revenant")
         case ACTION_RESPAWN_PLAYER: formatex(buffer, charsmax(buffer), "\yRespawn Players")
     }
 
@@ -8284,20 +8343,20 @@ public ShowPlayersMenu(id)
 
     for (new i = 0; i < pnum; i++)
     {
-        //Save a tempid so we do not re-index
+        // Save a tempid so we do not re-index
         tempid = players[i]
 
-        //Get the players name and class
+        // Get the players name and class
         formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playername[tempid], g_classString[tempid])
         
-        //We will use the data parameter to send the userid, so we can identify which player was selected in the handler
+        // We will use the data parameter to send the userid, so we can identify which player was selected in the handler
         formatex(userid, charsmax(userid), "%d", get_user_userid(tempid))
 
-        //Add the item for this player
+        // Add the item for this player
         menu_additem(menu, szString, userid, 0, g_playersMenuCallback)
     }
 
-    //We now have all players in the menu, lets display the menu
+    // We now have all players in the menu, lets display the menu
     menu_display(id, menu, 0)
 }
 
@@ -8431,7 +8490,7 @@ public MakeHumanClassMenuHandler(id, menu, item)
 		case MAKE_SURVIVOR: { ADMIN_MENU_ACTION = ACTION_MAKE_SURVIVOR; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
 		case MAKE_SNIPER: { ADMIN_MENU_ACTION = ACTION_MAKE_SNIPER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
 		case MAKE_SAMURAI: { ADMIN_MENU_ACTION = ACTION_MAKE_SAMURAI; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
-        case MAKE_TERMINATOR: { return PLUGIN_HANDLED; }
+        case MAKE_TERMINATOR: { ADMIN_MENU_ACTION = ACTION_MAKE_TERMINATOR; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
         case MAKE_GRENADIER: { ADMIN_MENU_ACTION = ACTION_MAKE_GRENADIER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
 	}
 
@@ -8910,6 +8969,35 @@ public PlayersMenuHandler(id, menu, item)
 			menu_destroy(menu)
 			ShowPlayersMenu(id)
 		}
+		case ACTION_MAKE_TERMINATOR: 
+		{ 
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_terminator(target))
+				{
+					// New round?
+					if (g_newround)
+					{
+						// Set as first 
+						remove_task(TASK_MAKEZOMBIE)
+						start_mode(MODE_TERMINATOR, target)
+					}
+					else MakeHuman(target, CLASS_TERMINATOR) // Turn player into a Terminator
+					
+					// Print in chat
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Terminator^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+
+					// Log to file
+					LogToFile(LOG_MAKE_TERMINATOR, id, target)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
+
+			menu_destroy(menu)
+			ShowPlayersMenu(id)
+		}
         case ACTION_MAKE_ZOMBIE: 
 		{ 
 			if (AdminHasFlag(id, 'a'))
@@ -9146,7 +9234,7 @@ public MakeHumanClassMenuCallback(id, menu, item)
 		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
 		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
 		case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+		case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
 		case 5: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
 	}
 
@@ -9229,6 +9317,7 @@ public PlayersMenuCallBack(id, menu, item)
         case ACTION_MAKE_SURVIVOR: return CheckBit(g_playerClass[target], CLASS_SURVIVOR) ? ITEM_DISABLED : ITEM_ENABLED
         case ACTION_MAKE_SAMURAI: return CheckBit(g_playerClass[target], CLASS_SAMURAI) ? ITEM_DISABLED : ITEM_ENABLED
         case ACTION_MAKE_GRENADIER: return CheckBit(g_playerClass[target], CLASS_GRENADIER) ? ITEM_DISABLED : ITEM_ENABLED
+        case ACTION_MAKE_TERMINATOR: return CheckBit(g_playerClass[target], CLASS_TERMINATOR) ? ITEM_DISABLED : ITEM_ENABLED
         case ACTION_MAKE_ZOMBIE: return CheckBit(g_playerClass[target], CLASS_ZOMBIE) ? ITEM_DISABLED : ITEM_ENABLED
         case ACTION_MAKE_ASSASIN: return CheckBit(g_playerClass[target], CLASS_ASSASIN) ? ITEM_DISABLED : ITEM_ENABLED
         case ACTION_MAKE_NEMESIS: return CheckBit(g_playerClass[target], CLASS_NEMESIS) ? ITEM_DISABLED : ITEM_ENABLED
@@ -9624,6 +9713,11 @@ public cmd_unfreeze(id)
 					if (GrenadierGlow) set_glow(target, 50, 100, 150, 25)
 					else remove_glow(target)
 				}
+				else if (CheckBit(g_playerClass[target], CLASS_TERMINATOR))
+				{
+					if (TerminatorGlow) set_glow(target, 50, 100, 150, 25)
+					else remove_glow(target)
+				}
 				else if (CheckBit(g_playerClass[target], CLASS_REVENANT))
 				{
 					if (RevenantGlow) set_glow(target, 50, 100, 150, 25)
@@ -9704,8 +9798,8 @@ public InformEveryone(){ client_print_color(0, print_team_grey, "%s Shutting dow
 
 public ShutDownSQL()
 {
-	// free the tuple - note that this does not close the connection,
-    // since it wasn't connected in the first place
+	// Free the tuple - note that this does not close the connection,
+    // Since it wasn't connected in the first place
 	SQL_FreeHandle(g_SqlTuple)
 }
 
@@ -9795,8 +9889,7 @@ public cmd_reloadadmins(id)
 
 		while (g_maxplayers + 1 > i)
 		{
-			if (g_isconnected[i] && !g_bot[i])
-				MakeUserAdmin(i)
+			if (g_isconnected[i] && !g_bot[i]) MakeUserAdmin(i)
 			i++
 		}
 		console_print(id, "[PerfectZM] Successfully loaded %d acounts from file", g_AdminsCount)
@@ -9846,8 +9939,7 @@ stock InsertInfo(id)
 		{
 			last = g_Tracker - 1
 			
-			if (last < 0)
-				last = g_Size - 1
+			if (last < 0) last = g_Size - 1
 		}
 		
 		if (equal(auth, g_SteamIDs[last]) && equal(ip, g_IPs[last]))
@@ -9872,8 +9964,7 @@ stock InsertInfo(id)
 		
 		++g_Tracker
 
-		if (g_Tracker == sizeof(g_SteamIDs))
-			g_Tracker = 0
+		if (g_Tracker == sizeof(g_SteamIDs)) g_Tracker = 0
 	}
 	
 	get_user_authid(id, g_SteamIDs[target], charsmax(g_SteamIDs[]))
@@ -9883,8 +9974,7 @@ stock InsertInfo(id)
 
 stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 {
-	if (i >= g_Size)
-		abort(AMX_ERR_NATIVE, "GetInfo: Out of bounds (%d:%d)", i, g_Size)
+	if (i >= g_Size) abort(AMX_ERR_NATIVE, "GetInfo: Out of bounds (%d:%d)", i, g_Size)
 	
 	new target = (g_Tracker + i) % sizeof(g_SteamIDs)
 	
@@ -10537,6 +10627,71 @@ public cmd_grenadier(id)
 
 		// Execute our forward
 		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_GRENADIER, id)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
+// zp_terminator [target]
+public cmd_terminator(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_bAdmin[id] && AdminHasFlag(id, 's'))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_terminator"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_terminator <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_terminator"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_terminator <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		// Initialize target
+		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		// Target not allowed to be termiator
+		if (!allowed_terminator(target))
+		{
+			client_print(id, print_console, "[ZP] Unavailable command.")
+			return PLUGIN_HANDLED
+		}
+		
+		// New round?
+		if (g_newround)
+		{
+			// Set as first terminator
+			remove_task(TASK_MAKEZOMBIE)
+			start_mode(MODE_TERMINATOR, target)
+		}
+		else MakeHuman(target, CLASS_TERMINATOR) // Turn player into a Terminator
+		
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		
+		// Log to file
+		LogToFile(LOG_MAKE_TERMINATOR, id, target)
+
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_TERMINATOR, id)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -11279,12 +11434,10 @@ public cmd_resetpoints(id)
 public message_cur_weapon(msg_id, msg_dest, msg_entity)
 {
 	// Not alive or zombie
-	if (!g_isalive[msg_entity] || CheckBit(g_playerTeam[msg_entity], TEAM_ZOMBIE))
-		return
+	if (!g_isalive[msg_entity] || CheckBit(g_playerTeam[msg_entity], TEAM_ZOMBIE)) return
 	
 	// Not an active weapon
-	if (get_msg_arg_int(1) != 1)
-		return
+	if (get_msg_arg_int(1) != 1) return
 	
 	// Get weapon's id
 	static weapon; weapon = get_msg_arg_int(2)
@@ -11293,9 +11446,7 @@ public message_cur_weapon(msg_id, msg_dest, msg_entity)
 	if (MAXBPAMMO[weapon] > 2)
 	{
 		// Max out clip ammo
-		static weapon_ent
-
-		weapon_ent = fm_cs_get_current_weapon_ent(msg_entity)
+		static weapon_ent; weapon_ent = fm_cs_get_current_weapon_ent(msg_entity)
 		
 		if (pev_valid(weapon_ent)) cs_set_weapon_ammo(weapon_ent, MAXCLIP[weapon])
 		
@@ -11319,8 +11470,7 @@ public message_money(msg_id, msg_dest, msg_entity)
 public message_health(msg_id, msg_dest, msg_entity)
 {
 	// Get player's health
-	static health
-	health = get_msg_arg_int(1)
+	static health; health = get_msg_arg_int(1)
 	
 	// Don't bother
 	if (health < 256) return
@@ -11343,8 +11493,7 @@ public message_flashbat()
 // Flashbangs should only affect zombies
 public message_screenfade(msg_id, msg_dest, msg_entity)
 {
-	if (get_msg_arg_int(4) != 255 || get_msg_arg_int(5) != 255 || get_msg_arg_int(6) != 255 || get_msg_arg_int(7) < 200)
-		return PLUGIN_CONTINUE
+	if (get_msg_arg_int(4) != 255 || get_msg_arg_int(5) != 255 || get_msg_arg_int(6) != 255 || get_msg_arg_int(7) < 200) return PLUGIN_CONTINUE
 	
 	// Nemesis shouldn't be FBed
 	if (CheckBit(g_playerClass[msg_entity], CLASS_ZOMBIE))
@@ -11429,8 +11578,9 @@ public message_textmsg()
 	}
 	
 	// Block round end related messages
-	else if (equal(textmsg, "#Hostages_Not_Rescued") || equal(textmsg, "#Round_Draw") || equal(textmsg, "#Terrorists_Win") || equal(textmsg, "#CTs_Win") || equal(textmsg, "#Auto_Team_Balance_Next_Round"))
-		return PLUGIN_HANDLED
+	else if (equal(textmsg, "#Hostages_Not_Rescued") || equal(textmsg, "#Round_Draw") 
+	|| equal(textmsg, "#Terrorists_Win") || equal(textmsg, "#CTs_Win") 
+	|| equal(textmsg, "#Auto_Team_Balance_Next_Round")) return PLUGIN_HANDLED
 	
 	return PLUGIN_CONTINUE
 }
@@ -11453,8 +11603,7 @@ public message_sendaudio()
 		}
 	}
 	
-	if (equal(audio[7], "terwin") || equal(audio[7], "ctwin") || equal(audio[7], "rounddraw"))
-		return PLUGIN_HANDLED
+	if (equal(audio[7], "terwin") || equal(audio[7], "ctwin") || equal(audio[7], "rounddraw")) return PLUGIN_HANDLED
 	
 	return PLUGIN_CONTINUE
 }
@@ -11795,6 +11944,59 @@ start_mode(mode, id)
 
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_GRENADIER, forward_id)
+	}
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, TerminatorChance) == TerminatorEnabled && iPlayersnum >= TerminatorMinPlayers) || mode == MODE_TERMINATOR)
+	{
+		// Terminator Mode
+		SetBit(g_currentmode, MODE_TERMINATOR)
+		g_lastmode = MODE_TERMINATOR
+		
+		// Choose player randomly?
+		if (mode == MODE_NONE)
+		id = fnGetRandomAlive(random_num(1, iPlayersnum))
+		
+		// Remember id for calling our forward later
+		forward_id = id
+		
+		// Turn player into a Terminator
+		MakeHuman(id, CLASS_TERMINATOR)
+
+		// Save his index for future use
+		g_lastSpecialHumanIndex = id
+		
+		// Turn the remaining players into zombies
+		for (id = 1; id <= g_maxplayers; id++)
+		{
+			// Not alive
+			if (!g_isalive[id]) continue
+			
+			// Terminator or already a zombie
+			if (CheckBit(g_playerClass[id], CLASS_TERMINATOR) || CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) continue
+			
+			// Turn into a zombie
+			MakeZombie(id)
+		}
+		
+		// Play Terminator sound
+		PlaySound(sound_terminator[random(sizeof sound_terminator)])
+		
+		// Show Terminator HUD notice
+		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
+		ShowSyncHudMsg(0, g_MsgSync, "%s is Terminator !!!", g_playername[forward_id])
+
+		// Set Reminder task
+		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
+		
+		// Create Fog 
+		//CreateFog(0, 100, 200, 100, 0.0008)
+		
+		// Mode fully started!
+		g_modestarted = true
+
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_TERMINATOR, forward_id)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Swarm_chance) == Swarm_enable && iPlayersnum >= Swarm_minPlayers) || mode == MODE_SWARM)
 	{		
@@ -12905,7 +13107,8 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 		!CheckBit(g_currentmode, MODE_PLAGUE) && 
 		!CheckBit(g_currentmode, MODE_SNIPER) && 
 		!CheckBit(g_currentmode, MODE_SURVIVOR) && 
-		!CheckBit(g_currentmode, MODE_SAMURAI)) fm_give_item(victim, "weapon_hegrenade")
+		!CheckBit(g_currentmode, MODE_SAMURAI) &&
+		!CheckBit(g_currentmode, MODE_TERMINATOR)) fm_give_item(victim, "weapon_hegrenade")
 	
 	// Fancy effects
 	infection_effects(victim)
@@ -12972,8 +13175,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	turn_off_flashlight(victim)
 
 	// Remove tasks
-	if (task_exists(victim + TASK_CONCUSSION))
-		remove_task(victim + TASK_CONCUSSION)
+	if (task_exists(victim + TASK_CONCUSSION)) remove_task(victim + TASK_CONCUSSION)
 
 	// Show VIP
 	if (g_bVip[victim]) Show_VIP()
@@ -13261,14 +13463,6 @@ MakeHuman(id, class = CLASS_HUMAN)
 				if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
 				else remove_glow(id)
 			}
-
-			// Drop weapons when infected
-			drop_weapons(id, 1)
-			drop_weapons(id, 2)
-			
-			// Strip his guns and give him a knife
-			fm_strip_user_weapons(id)
-			fm_give_item(id, "weapon_knife")
 			
 			// Give Grenadier his own weapon	
 			set_weapon(id, CSW_HEGRENADE, 1)
@@ -13276,6 +13470,42 @@ MakeHuman(id, class = CLASS_HUMAN)
 			
 			// Models fix
 			replace_weapon_models(id, CSW_HEGRENADE)
+			
+			// Turn off his flashlight
+			turn_off_flashlight(id)
+			
+			// Grenadier bots will also need nightvision to see in the dark
+			if (g_isbot[id])
+			{
+				g_nvision[id] = true
+				cs_set_user_nvg(id, 1)
+			}
+		}
+		case CLASS_TERMINATOR:
+		{
+			// Terminator
+			SetBit(g_playerClass[id], CLASS_TERMINATOR)
+			g_specialclass[id] = true
+			g_classString[id] = "Terminator"
+			
+			// Set Health [0 = auto]
+			set_user_health(id, TerminatorHealth)
+
+			// Set terminator maxspeed
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
+			
+			// Set gravity and glow, unless frozen
+			if (!g_frozen[id]) 
+			{
+				set_pev(id, pev_gravity, TerminatorGravity)
+
+				// Set glow
+				if (TerminatorGlow) set_glow(id, 50, 100, 150, 25)
+				else remove_glow(id)
+			}
+			
+			// Give Terminator his own weapon	
+			set_weapon(id, CSW_MP5NAVY, 10000)	           
 			
 			// Turn off his flashlight
 			turn_off_flashlight(id)
@@ -13352,14 +13582,16 @@ public cache_cvars()
 	g_cached_leapsurvivorcooldown 	= LeapSurvivorCooldown
 	g_cached_leapsniper 			= LeapSniper
 	g_cached_leapsnipercooldown 	= LeapSniperCooldown
-	g_cached_leapzadoc 				= LeapSamurai		// Abhinash
+	g_cached_leapzadoc 				= LeapSamurai		
 	g_cached_leapzadoccooldown 		= LeapSamuraiCooldown
-	g_cached_leapgrenadier			= LeapGrenadier		// Abhinash
+	g_cached_leapgrenadier			= LeapGrenadier		
 	g_cached_leapgrenadiercooldown	= LeapGrenadierCooldown
-	g_cached_leapbombardier 		= LeapBombardier		// Abhinash
+	g_cached_leapbombardier 		= LeapBombardier		
 	g_cached_leapbombardiercooldown = LeapBombardierCooldown
 	g_cached_leaprevenant           = LeapRevenant
 	g_cached_leaprevenantcooldown   = LeapRevenantCooldown
+	g_cached_leapterminator 		= LeapTerminator
+	g_cached_leapterminatorcooldown = LeapTerminatorCooldown
 }
 
 // Register Ham Forwards for CZ bots
@@ -13397,7 +13629,7 @@ balance_teams()
 	static iPlayersnum; iPlayersnum = fnGetPlaying()
 	
 	// No players, don't bother
-	if (iPlayersnum < 1) return
+	if (!iPlayersnum) return
 	
 	// Split players evenly
 	static iTerrors, iMaxTerrors, id, team[33]
@@ -13566,6 +13798,7 @@ check_round(leaving_player)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_SNIPER)) MakeHuman(id, CLASS_SNIPER)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_SAMURAI)) MakeHuman(id, CLASS_SAMURAI)
 		else if (CheckBit(g_playerClass[leaving_player], CLASS_GRENADIER)) MakeHuman(id, CLASS_GRENADIER)
+		else if (CheckBit(g_playerClass[leaving_player], CLASS_TERMINATOR)) MakeHuman(id, CLASS_TERMINATOR)
 		else MakeHuman(id)
 
 		// Remove player leaving flag
@@ -13585,6 +13818,10 @@ check_round(leaving_player)
 
 		// If Grenadier, set chosen player's health to that of the one who's leaving			// Abhinash
 		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_GRENADIER))
+			set_user_health(id, pev(leaving_player, pev_health))
+
+		// If Terminator, set chosen player's health to that of the one who's leaving			// Abhinash
+		if (KeepHealthOnDisconnect && CheckBit(g_playerClass[leaving_player], CLASS_TERMINATOR))
 			set_user_health(id, pev(leaving_player, pev_health))
 	}
 }
@@ -13628,6 +13865,7 @@ public StartAmbienceSounds(taskid)
 	else if (CheckBit(g_currentmode, MODE_SNIPER)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SAMURAI)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_GRENADIER)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckBit(g_currentmode, MODE_TERMINATOR)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_REVENANT)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SWARM)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_PLAGUE)) PlaySound("PerfectZM/ambience_normal.wav")
@@ -14345,6 +14583,11 @@ public remove_freeze(id)
 		if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
 		else remove_glow(id)
 	}
+	else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
+	{
+		if (TerminatorGlow) set_glow(id, 50, 100, 150, 25)
+		else remove_glow(id)
+	}
 	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
 	{
 		if (RevenantGlow) set_glow(id, 50, 100, 150, 25)
@@ -14402,6 +14645,11 @@ public remove_fire(id)
 	else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
 	{
 		if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
+		else remove_glow(id)
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
+	{
+		if (TerminatorGlow) set_glow(id, 50, 100, 150, 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
@@ -14806,6 +15054,20 @@ fnGetGrenadiers()
 	return iGrenadier
 }
 
+// Get Terminator -returns alive Terminator number-
+fnGetTerminators()
+{
+	static iTerminator, id
+	iTerminator = 0
+	
+	for (id = 1; id <= g_maxplayers; id++)
+	{
+		if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_TERMINATOR)) iTerminator++
+	}
+	
+	return iTerminator
+}
+
 // Get Revenants -returns alive Revenant number-
 fnGetRevenants()
 {
@@ -15080,6 +15342,15 @@ allowed_grenadier(id)
 	return true
 }
 
+// Checks if a player is allowed to be Terminator
+allowed_terminator(id)
+{
+	if (g_endround || CheckBit(g_playerClass[id], CLASS_TERMINATOR) || !g_isalive[id] || task_exists(TASK_WELCOMEMSG) || (!g_newround && CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && fnGetZombies() == 1))
+	return false
+	
+	return true
+}
+
 // Checks if a player is allowed to be nemesis
 allowed_nemesis(id)
 {
@@ -15232,7 +15503,7 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
-					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
+					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR)) return false
 					else
 					{
 						if (LIMIT[id][KILL_NADE] == 2)
@@ -15257,7 +15528,7 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
-					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
+					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR)) return false
 					else
 					{
 						if (LIMIT[id][ANTIDOTE_NADE] == 2)
@@ -15332,7 +15603,7 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
-					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
+					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR)) return false
 
 					return true
 				}
@@ -15359,7 +15630,7 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) 
 					|| CheckBit(g_currentmode, MODE_SYNAPSIS) || CheckBit(g_currentmode, MODE_GRENADIER) 
-					|| CheckBit(g_currentmode, MODE_REVENANT) || fnGetZombies() <= 1) return false
+					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR) || fnGetZombies() <= 1) return false
 
 					return true 
 				}
@@ -15398,7 +15669,7 @@ CanBuy(category, item, id)
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
 					|| CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_GRENADIER)
-					|| CheckBit(g_currentmode, MODE_REVENANT))
+					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR))
 					{
 						client_print_color(id, print_team_grey, "%s This item is not available in current round", CHAT_PREFIX)
 						return false
@@ -15493,6 +15764,7 @@ LogToFile(action, admin, target = 0)
 		case LOG_MAKE_SURVIVOR: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_SAMURAI: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_GRENADIER: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_TERMINATOR: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Terminator. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MAKE_REVENANT: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_MULTIPLE_INFECTION: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SWARM: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
@@ -15529,8 +15801,9 @@ set_player_maxspeed(id)
 		{
 			if (CheckBit(g_playerClass[id], CLASS_SURVIVOR)) set_pev(id, pev_maxspeed, SurvivorSpeed)
 			else if (CheckBit(g_playerClass[id], CLASS_SNIPER)) set_pev(id, pev_maxspeed, SniperSpeed)
-			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) set_pev(id, pev_maxspeed, SamuraiSpeed)		// Abhinash
-			else if (CheckBit(g_playerClass[id], CLASS_GRENADIER)) set_pev(id, pev_maxspeed, GrenadierSpeed)		// Abhinash
+			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) set_pev(id, pev_maxspeed, SamuraiSpeed)		
+			else if (CheckBit(g_playerClass[id], CLASS_GRENADIER)) set_pev(id, pev_maxspeed, GrenadierSpeed)
+			else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR)) set_pev(id, pev_maxspeed, TerminatorSpeed)		
 			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) set_pev(id, pev_maxspeed, TryderSpeed)
 			else set_pev(id, pev_maxspeed, HumanSpeed)
 
@@ -15927,6 +16200,30 @@ public native_set_user_grenadier_kills(id, amount)
 	return true
 }
 
+// Native: GetTerminatorKills
+public native_get_user_terminator_kills(id){ return g_terminatorkills[id]; }
+
+// Native: AddTerminatorKills
+public native_add_user_terminator_kills(id, amount)
+{
+	if (!amount) return false
+
+	g_terminatorkills[id] += amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
+
+// Native: SetTerminatorKills
+public native_set_user_terminator_kills(id, amount)
+{
+	if (!amount) return false
+
+	g_terminatorkills[id] = amount
+	MySQL_UPDATE_DATABASE(id)
+
+	return true
+}
 // Native: GetNemesis
 public native_get_user_nemesis(id){ return CheckBit(g_playerClass[id], CLASS_NEMESIS); }
 
@@ -16161,6 +16458,35 @@ public native_make_user_grenadier(id)
 		start_mode(MODE_GRENADIER, id)
 	}
 	else MakeHuman(id, CLASS_GRENADIER) // Make him Grenadier
+
+	return true
+}
+
+// Native: GetTerminator
+public native_get_user_terminator(id){ return CheckBit(g_playerClass[id], CLASS_TERMINATOR); }
+
+// Native: MakeTerminator
+public native_make_user_terminator(id)
+{
+	// ZQ Disabled ?
+	if (!g_pluginenabled) return false
+
+	if (!is_user_valid_alive(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZQ] Invalid Player (%d)", id)
+		return false
+	}
+
+	// Not allowed to be terminator ?
+	if (!allowed_terminator(id)) return false
+
+	// New round ?
+	if (g_newround)
+	{
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_TERMINATOR, id)
+	}
+	else MakeHuman(id, CLASS_TERMINATOR) // Make him Terminator
 
 	return true
 }
