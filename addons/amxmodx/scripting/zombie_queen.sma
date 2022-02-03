@@ -941,12 +941,21 @@ new g_cBotNames[][] =
 	"Forum: CsBlackDevil.com"
 }
 
-// Tags
-new g_Tag[33][24]
-new g_cTag[33][24]
+// Admin database struct
+enum _: adminInfoStruct
+{
+	NAME[32],
+	PASSWORD[32],
+	FLAGS[32],
+	RANK[32]
+}
+
+new g_adminInfo[33][adminInfoStruct]
+new g_adminCount
+new Trie:g_adminsTrie
 
 // Admin stuff
-new g_bAdmin[33]
+new g_admin[33]
 new g_AdminNames[33][32]
 new g_AdminSkinFlags[33][32]
 new g_AdminPasswords[128][32]
@@ -1374,7 +1383,7 @@ new g_PrimaryWeapons[][WeaponsData] =
 	{"M4A1", 	"weapon_m4a1", 		CSW_M4A1},
 	{"AK47", 	"weapon_ak47", 		CSW_AK47},
 	{"AUG", 	"weapon_aug", 		CSW_AUG},
-	{"SG552", 	"weapon_sg552",  	CSW_SG552},
+	{"SG550", 	"weapon_sg550",  	CSW_SG550},
 	{"XM1014",  "weapon_xm1014", 	CSW_XM1014},
 	{"M3", 		"weapon_m3", 		CSW_M3},
 	{"MP5NAVY", "weapon_mp5navy", 	CSW_MP5NAVY},
@@ -2084,10 +2093,11 @@ new g_isconnected[33] // whether player is connected
 new g_isalive[33] // whether player is alive
 new g_isbot[33] // whether player is a bot
 new g_currentweapon[33] // player's current weapon id
-new g_playername[33][32] // player's name
-new g_playerSteamID[33][32]
-new g_playerHash[33][100]
-new g_playerConcat[33][100]
+new g_playerName[33][32] // player's name
+new g_playerPassword[33][32] // player's password
+new g_playerSteamID[33][32] // player's steamid
+new g_playerHash[33][100] // player's hash
+new g_playerConcat[33][100] // Temp concat char array
 
 #define is_user_valid_connected(%1) (1 <= %1 <= g_maxplayers && g_isconnected[%1])
 #define is_user_valid_alive(%1) (1 <= %1 <= g_maxplayers && g_isalive[%1])
@@ -2836,7 +2846,7 @@ public plugin_init()
 	register_message(get_user_msgid("HostagePos"), "message_hostagepos")
 	register_message(get_user_msgid("TextMsg"), "message_textmsg")
 	register_message(get_user_msgid("SendAudio"), "message_sendaudio")
-	register_message(get_user_msgid("SayText"), "message_saytext")
+	//register_message(get_user_msgid("SayText"), "message_saytext")
 	register_message(get_user_msgid("TeamInfo"), "message_teaminfo")
 	register_message(get_user_msgid("TeamScore"), "message_teamscore")
 	register_message(get_user_msgid("HudTextArgs"), "message_hudtextargs")
@@ -3010,6 +3020,8 @@ public plugin_init()
 	if (ArraySize(g_Messages)) set_task(30.0, "Advertise_HUD", .flags = "b")
 
 	//register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
+
+	g_adminsTrie = TrieCreate()
 	
 	set_task(1.0, "MySql_Init") // set a task to activate the mysql_init
 	set_task(2.0, "MySql_TotalPlayers")
@@ -3078,7 +3090,7 @@ public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[
 	    new szTemp[512]
 	    
 	    // Now we will insturt the values into our table.
-	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` (`NICKNAME`, `HASH`, `KILLS`, `DEATHS`, `INFECTIONS`, `NEMESISKILLS`, `ASSASINKILLS`, `BOMBARDIERKILLS`, `SURVIVORKILLS`, `SNIPERKILLS`, `SAMURAIKILLS`, `POINTS`, `SCORE`) VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", g_playername[id], g_playerHash[id])
+	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` (`NICKNAME`, `HASH`, `KILLS`, `DEATHS`, `INFECTIONS`, `NEMESISKILLS`, `ASSASINKILLS`, `BOMBARDIERKILLS`, `SURVIVORKILLS`, `SNIPERKILLS`, `SAMURAIKILLS`, `POINTS`, `SCORE`) VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", g_playerName[id], g_playerHash[id])
 	    SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 	    g_totalplayers++
 	} 
@@ -3174,7 +3186,7 @@ public MySQL_GetStatistics(FailState, Handle:Query, Error[], Errcode, Data[], Da
 	//formatex(menudata, 255, "")
 	//menu_additem(g_menu, menudata, "", 0, -1)
 
-	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is ^4%s ^1out of ^4%s ^1[ ^3Kills: ^4%s ^1- ^3Deaths: ^4%s ^1- ^3KPD: ^4%0.2f ^1- ^3Score: ^4%s ^1]", CHAT_PREFIX, g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1, AddCommas(g_score[id]))
+	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is ^4%s ^1out of ^4%s ^1[ ^3Kills: ^4%s ^1- ^3Deaths: ^4%s ^1- ^3KPD: ^4%0.2f ^1- ^3Score: ^4%s ^1]", CHAT_PREFIX, g_playerName[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1, AddCommas(g_score[id]))
     
     return PLUGIN_HANDLED
 } 
@@ -3193,7 +3205,7 @@ public MySQL_WelcomeMessage(FailState, Handle:Query, Error[], Errcode, Data[], D
 
 	set_dhudmessage(random(256), random(256), random(256), 0.02, 0.2, 2, 6.0, 8.0)
 	show_dhudmessage(id, "Welcome, %s^nRank: %s of %s Score: %s^nKills: %s Deaths: %s KPD: %0.2f^nEnjoy!",
-	g_playername[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
+	g_playerName[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
 	
 	set_dhudmessage(random(256), random(256), random(256), 0.02, 0.5, 2, 6.0, 8.0)
 	show_dhudmessage(id, "%s^nDon't forget to add us to your favourites!", HostName)
@@ -3296,6 +3308,7 @@ public ShowGlobalTop15(id)
 public TaskGetAdmins()
 {
 	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/admin/Admins.ini", "r")
+	new Data[adminInfoStruct]
 
 	if (iFile)
 	{
@@ -3306,8 +3319,9 @@ public TaskGetAdmins()
 			trim(cLine)
 			if (cLine[0] != 59 && strlen(cLine) > 5)
 			{
-				parse(cLine, g_AdminNames[g_AdminsCount], charsmax(g_AdminNames), g_AdminPasswords[g_AdminsCount], charsmax(g_AdminPasswords), g_AdminFlags[g_AdminsCount], charsmax(g_AdminFlags), g_Tag[g_AdminsCount], charsmax(g_Tag), g_AdminSkinFlags[g_AdminsCount], charsmax(g_AdminSkinFlags))
-				g_AdminsCount++
+				parse(cLine, Data[NAME], charsmax(Data[NAME]), Data[PASSWORD], charsmax(Data[PASSWORD]), Data[FLAGS], charsmax(Data[FLAGS]), Data[RANK], charsmax(Data[RANK]))
+				TrieSetArray(g_adminsTrie, Data[NAME], Data, sizeof(Data))
+				g_adminCount++
 			}		
 		}
 		fclose (iFile)
@@ -3366,33 +3380,26 @@ public TaskGetAdvertisements()
 
 public MakeUserAdmin(id)
 {
-	static i; i = 0
-	g_bAdmin[id] = false
-	
-	while (i < g_AdminsCount)
-	{
-		if (equali(g_AdminNames[i], g_playername[id]))
-		{
-			get_user_info(id, "_pw", g_cPassword[id], 31)
-			
-			if (equali(g_cPassword[id], g_AdminPasswords[i]))
-			{
-				g_bAdmin[id] = true
-				formatex(g_cAdminFlag[id], 31, "%s", g_AdminFlags[i])
-				copy(g_cTag[id], 24, g_Tag[i])
-				formatex(g_cAdminSkinFlag[id], 31, "%s", g_AdminSkinFlags[i])
+	g_admin[id] = false
 
-				log_amx("Login: ^"%s^" became an admin. [ %s ] [ %s ]", g_playername[id], g_cAdminFlag[id], g_cIP[id])
-				return PLUGIN_CONTINUE
-			}
-			else
-			{
-				server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
-				log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playername[id], g_cPassword[id], g_AdminPasswords[i])
-				return PLUGIN_CONTINUE
-			}
+	new Data[adminInfoStruct]
+
+	if (TrieGetArray(g_adminsTrie, g_playerName[id], Data, sizeof(Data)))
+	{
+		if (equali(Data[PASSWORD], g_playerPassword[id]))
+		{
+			g_admin[id] = true
+			formatex(g_adminInfo[id][FLAGS], 31, Data[FLAGS])
+
+			log_amx("Login: ^"%s^" became an admin. [ %s ] [ %s ]", g_playerName[id], g_adminInfo[id][FLAGS], g_cIP[id])
+			return PLUGIN_CONTINUE
 		}
-		i++
+		else
+		{
+			server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
+			log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_playerPassword[id], Data[PASSWORD])
+			return PLUGIN_CONTINUE
+		}
 	}
 
 	return PLUGIN_CONTINUE
@@ -3405,7 +3412,7 @@ public MakeUserVip(id)
 	
 	while (i < g_VipsCount)
 	{
-		if (equali(g_VipNames[i], g_playername[id]))
+		if (equali(g_VipNames[i], g_playerName[id]))
 		{
 			get_user_info(id, "_pw", g_cVipPassword[id], 31)
 			
@@ -3413,14 +3420,14 @@ public MakeUserVip(id)
 			{
 				g_bVip[id] = true
 				formatex(g_cVipFlag[id], 31, "%s", g_VipFlags[i])
-				log_amx("Login: ^"%s^" became an Vip. [ %s, %s ] ", g_playername[id], g_cVipFlag[id], g_cIP[id])
+				log_amx("Login: ^"%s^" became an Vip. [ %s, %s ] ", g_playerName[id], g_cVipFlag[id], g_cIP[id])
 				set_task(5.0, "Task_Rays", .flags = "b")
 				return PLUGIN_CONTINUE
 			}
 			else
 			{
 				server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
-				log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playername[id], g_cVipPassword[id], g_VipPasswords[i])
+				log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_cVipPassword[id], g_VipPasswords[i])
 				return PLUGIN_CONTINUE
 			}
 		}
@@ -3520,7 +3527,7 @@ public message_statustext(msgid, msg_destination, id)
 	set_msg_arg_int(2, get_msg_argtype(2), 0)
 }
 
-public message_saytext()
+/*public message_saytext()
 {
 	if (get_msg_args() == 4)
 	{
@@ -3574,7 +3581,7 @@ public message_saytext()
 		}
 	}
 	return PLUGIN_CONTINUE
-}
+}*/
 
 public _GameMenu(id, menu, item)
 {
@@ -3712,7 +3719,7 @@ public _ExtraItems(id, menu, item)
 					g_nvision[id] = true
 					
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(id, g_MsgSync6, "You bought Nightvision Googles!", g_playername[id])
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Nightvision Googles!", g_playerName[id])
 
 					// Check is the user is not bot
 					if (!g_isbot[id])
@@ -3959,7 +3966,7 @@ public _ExtraItems(id, menu, item)
 					client_print_color(id, print_team_grey, "%s Press^3 CTR+SPACE^1 to fly!", CHAT_PREFIX)
 					client_print_color(id, print_team_grey, "%s Press^3 RIGHT CLICK^1 to shoot!", CHAT_PREFIX)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Jetpack!", g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Jetpack!", g_playerName[id])
 
 					emit_sound(id, CHAN_STATIC, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
 
@@ -3980,7 +3987,7 @@ public _ExtraItems(id, menu, item)
 
 					MakeHuman(id, CLASS_TRYDER)		// Make him tryder
 					set_hudmessage(190, 55, 115, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s is now a Tryder!", g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s is now a Tryder!", g_playerName[id])
 					client_cmd(id, "spk PerfectZM/armor_equip")
 					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
@@ -4049,7 +4056,7 @@ public _ExtraItems(id, menu, item)
 					cs_set_weapon_ammo(iWep2, CROSSBOW_CLIP)
 					cs_set_user_bpammo (id, CSW_SG550, 10000)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playerName[id])
 					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
@@ -4078,7 +4085,7 @@ public _ExtraItems(id, menu, item)
 				}
 				
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				ShowSyncHudMsg(0, g_MsgSync6, "%s now has Golden Weapons", g_playername[id])
+				ShowSyncHudMsg(0, g_MsgSync6, "%s now has Golden Weapons", g_playerName[id])
 				g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 			}
 		}
@@ -4098,7 +4105,7 @@ public _ExtraItems(id, menu, item)
 					remove_task(TASK_MAKEZOMBIE)
 					start_mode(MODE_NEMESIS, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Nemesis", g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Nemesis", g_playerName[id])
 					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
@@ -4118,7 +4125,7 @@ public _ExtraItems(id, menu, item)
 					remove_task(TASK_MAKEZOMBIE)
 					start_mode(MODE_ASSASIN, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Assassin", g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Assassin", g_playerName[id])
 					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
@@ -4138,7 +4145,7 @@ public _ExtraItems(id, menu, item)
 					remove_task(TASK_MAKEZOMBIE)
 					start_mode(MODE_SNIPER, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Sniper", g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Sniper", g_playerName[id])
 					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
@@ -4158,7 +4165,7 @@ public _ExtraItems(id, menu, item)
 					remove_task(TASK_MAKEZOMBIE)
 					start_mode(MODE_SURVIVOR, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Survivor", g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Survivor", g_playerName[id])
 					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
@@ -4203,7 +4210,7 @@ public _ExtraItems2(id, menu, item)
 						
 						// Show Antidote HUD notice
 						set_hudmessage(9, 201, 214, HUD_INFECT_X, HUD_INFECT_Y, 1, 0.0, 3.0, 2.0, 1.0, -1)
-						ShowSyncHudMsg(0, g_MsgSync, "%s has used an antidote!", g_playername[id])
+						ShowSyncHudMsg(0, g_MsgSync, "%s has used an antidote!", g_playerName[id])
 
 						client_print_color(id, print_team_grey, "%s You are human now", CHAT_PREFIX)
 
@@ -4316,7 +4323,7 @@ public _ExtraItems2(id, menu, item)
 
 						// Show HUD message
 						set_hudmessage(115, 230, 1, -1.0, 0.80, 1, 0.0, 0.0, 3.0, 2.0, -1)
-						ShowSyncHudMsg(0, g_MsgSync6, "%s bought knife blinks!", g_playername[id])
+						ShowSyncHudMsg(0, g_MsgSync6, "%s bought knife blinks!", g_playerName[id])
 
 						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
 					}
@@ -4409,8 +4416,8 @@ public _AmmoMenu(id, menu, item)
 					g_ammopacks[id] += 100
 					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 100 ammo packs!", g_playername[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 100 ammo packs", CHAT_PREFIX, g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 100 ammo packs!", g_playerName[id])
+					client_print_color(0, print_team_grey, "%s %s^1 bought^4 100 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4428,8 +4435,8 @@ public _AmmoMenu(id, menu, item)
 					g_ammopacks[id] += 200
 					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 200 ammo packs!", g_playername[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 200 ammo packs", CHAT_PREFIX, g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 200 ammo packs!", g_playerName[id])
+					client_print_color(0, print_team_grey, "%s %s^1 bought^4 200 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4447,8 +4454,8 @@ public _AmmoMenu(id, menu, item)
 					g_ammopacks[id] += 300
 					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 300 ammo packs!", g_playername[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 300 ammo packs", CHAT_PREFIX, g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 300 ammo packs!", g_playerName[id])
+					client_print_color(0, print_team_grey, "%s %s^1 bought^4 300 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4466,8 +4473,8 @@ public _AmmoMenu(id, menu, item)
 					g_ammopacks[id] += 400
 					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 400 ammo packs!", g_playername[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 400 ammo packs", CHAT_PREFIX, g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 400 ammo packs!", g_playerName[id])
+					client_print_color(0, print_team_grey, "%s %s^1 bought^4 400 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4485,8 +4492,8 @@ public _AmmoMenu(id, menu, item)
 					g_ammopacks[id] += 500
 					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 500 ammo packs!", g_playername[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 500 ammo packs", CHAT_PREFIX, g_playername[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 500 ammo packs!", g_playerName[id])
+					client_print_color(0, print_team_grey, "%s %s^1 bought^4 500 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4667,7 +4674,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][MPoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Armageddon mode with points!", g_playername[id])
+					show_hudmessage(0, "%s bought Armageddon mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4690,7 +4697,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][MPoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Survivor vs Assasin mode with points!", g_playername[id])
+					show_hudmessage(0, "%s bought Survivor vs Assasin mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4712,7 +4719,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][MPoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Sniper vs Nemesis mode with points!", g_playername[id])
+					show_hudmessage(0, "%s bought Sniper vs Nemesis mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4733,7 +4740,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][MPoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Sniper vs Assassin mode with points!", g_playername[id])
+					show_hudmessage(0, "%s bought Sniper vs Assassin mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4754,7 +4761,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][MPoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Nightmare mode with points!", g_playername[id])
+					show_hudmessage(0, "%s bought Nightmare mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -4775,7 +4782,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][MPoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Synapsis mode with points!", g_playername[id])
+					show_hudmessage(0, "%s bought Synapsis mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			} 
@@ -4796,7 +4803,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][MPoints]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Bombardier vs Grenadier mode with points!", g_playername[id])
+					show_hudmessage(0, "%s bought Bombardier vs Grenadier mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5215,7 +5222,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's claws are much stronger than we thought", g_playername[g_lastSpecialZombieIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's claws are much stronger than we thought", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5256,7 +5263,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's skills are much stronger than we thought...", g_playername[g_lastSpecialZombieIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's skills are much stronger than we thought...", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5297,7 +5304,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "%s as a revenant is much stronger than we thought...", g_playername[g_lastSpecialZombieIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "%s as a revenant is much stronger than we thought...", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5338,7 +5345,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Looks like %s's bombs were very powerful^nBetter luck next time...", g_playername[g_lastSpecialZombieIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Looks like %s's bombs were very powerful^nBetter luck next time...", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5366,7 +5373,7 @@ public logevent_round_end()
 			{
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "They will not mess with you again^n%s is a badass Survivor", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "They will not mess with you again^n%s is a badass Survivor", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -5379,7 +5386,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playerName[g_lastSpecialHumanIndex])
 
 				
 				// Play win sound and increase score, unless game commencing
@@ -5408,7 +5415,7 @@ public logevent_round_end()
 			{
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "%s's AWP is much stronger than you think^nBe carefull next time Mr.Zombie", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "%s's AWP is much stronger than you think^nBe carefull next time Mr.Zombie", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -5421,7 +5428,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5449,7 +5456,7 @@ public logevent_round_end()
 			{
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "%s's sword is much sharper that you think^nBe carefull next time Mr.Zombie", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "%s's sword is much sharper that you think^nBe carefull next time Mr.Zombie", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -5462,7 +5469,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to sharpen your skills and sword^n%s", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to sharpen your skills and sword^n%s", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5490,7 +5497,7 @@ public logevent_round_end()
 			{
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "%s's grenades are too pwerfull....", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "%s's grenades are too pwerfull....", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -5503,7 +5510,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to try hard next time^n%s", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to try hard next time^n%s", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5531,7 +5538,7 @@ public logevent_round_end()
 			{
 				// Human team wins
 				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "%s's terminates on an extreme level....", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "%s's terminates on an extreme level....", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
@@ -5544,7 +5551,7 @@ public logevent_round_end()
 			{
 				// Zombie team wins
 				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to try hard next time^n%s", g_playername[g_lastSpecialHumanIndex])
+				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to try hard next time^n%s", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
 				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
@@ -5606,11 +5613,11 @@ public logevent_round_end()
 
 	if (g_isconnected[iKillsLeader])
 	{
-		if (g_iKillsThisRound[iKillsLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playername[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader])
-		else client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags!", g_playername[iKillsLeader], AddCommas(iMaximumKills))
+		if (g_iKillsThisRound[iKillsLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playerName[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader])
+		else client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags!", g_playerName[iKillsLeader], AddCommas(iMaximumKills))
 	}
 
-	if (g_isconnected[iPacksLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 packs!", g_playername[iPacksLeader], AddCommas(iMaximumPacks))
+	if (g_isconnected[iPacksLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 packs!", g_playerName[iPacksLeader], AddCommas(iMaximumPacks))
 	
 	// Game commencing triggers round end
 	g_gamecommencing = false
@@ -5676,7 +5683,7 @@ public event_show_status(id)
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Points: %s ]", \
-				g_playername[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(g_points[aimid]))
+				g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(g_points[aimid]))
 			}
 			else
 			{
@@ -5687,25 +5694,25 @@ public event_show_status(id)
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Armor: %d | Points: %s ]", \
-				g_playername[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(g_points[aimid]))
+				g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(g_points[aimid]))
 			}
 		}
 		else if (CheckBit(g_playerTeam[id], TEAM_HUMAN) && CheckBit(g_playerTeam[aimid], TEAM_ZOMBIE))
 		{
 			set_hudmessage(255, 50, 0, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-			ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)))
+			ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playerName[aimid], AddCommas(pev(aimid, pev_health)))
 		}
 		else if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE) && CheckBit(g_playerTeam[aimid], TEAM_HUMAN))
 		{
 			if (CheckBit(g_playerClass[aimid], CLASS_SNIPER) || CheckBit(g_playerClass[aimid], CLASS_SURVIVOR) || CheckBit(g_playerClass[aimid], CLASS_SAMURAI))
 			{
 				set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)))
+				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playerName[aimid], AddCommas(pev(aimid, pev_health)))
 			}
 			else
 			{
 				set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s | Armor: %d ]", g_playername[aimid], AddCommas(pev(aimid, pev_health)), pev(aimid, pev_armorvalue))
+				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s | Armor: %d ]", g_playerName[aimid], AddCommas(pev(aimid, pev_health)), pev(aimid, pev_armorvalue))
 			}
 		}
 	}
@@ -6162,7 +6169,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	if (iZombies == 1 && iHumans == 1)
 	{
 		set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 1, 0.01, 1.75, 1.00, 1.00, -1)
-		ShowSyncHudMsg(0, g_MsgSync7, "%s vs %s", g_playername[fnGetLastHuman()], g_playername[fnGetLastZombie()])
+		ShowSyncHudMsg(0, g_MsgSync7, "%s vs %s", g_playerName[fnGetLastHuman()], g_playerName[fnGetLastZombie()])
 	}
 	
 	// Determine whether the player killed himself
@@ -6319,7 +6326,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 
 			if (damage_type & DMG_BLAST) 
 			{
-				client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playername[victim], AddCommas(floatround(damage)))
+				client_print_color(attacker, print_team_grey, "%s Damage to^3 %s^1 ::^4 %s^1 damage", CHAT_PREFIX, g_playerName[victim], AddCommas(floatround(damage)))
 
 				set_hudmessage(200, 0, 0, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
 				show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))
@@ -6850,9 +6857,10 @@ public client_putinserver(id)
 	
 	//CreateFog(id, 128, 128, 128, 0.0008)
 	
-	get_user_name(id, g_playername[id], charsmax(g_playername[])) // Cache player's name
+	get_user_name(id, g_playerName[id], charsmax(g_playerName[])) // Cache player's name
+	get_user_info(id, "_pw", g_playerPassword[id], charsmax(g_playerPassword[]))
 	get_user_authid(id, g_playerSteamID[id], charsmax(g_playerSteamID[])) // Cache player's steamid
-	copy(g_playerConcat[id], charsmax(g_playerConcat[]), g_playername[id]) // Copy player's name to temporary concatenaed char array
+	copy(g_playerConcat[id], charsmax(g_playerConcat[]), g_playerName[id]) // Copy player's name to temporary concatenaed char array
 	strcat(g_playerConcat[id], g_playerSteamID[id], charsmax(g_playerConcat[])) // Now concatenate ( add together ) player's name and steamid
 
 	hash_string(g_playerConcat[id], Hash_Sha3_512, g_playerHash[id], charsmax(g_playerHash[])) // Now hash the concatenated player's name and steam id ( used for saving and loading database )
@@ -6879,7 +6887,9 @@ public client_putinserver(id)
 		// Disable minmodels for clients to see zombies properly
 		set_task(5.0, "disable_minmodels", id)
 		
-		MakeUserAdmin(id)	// Check and make admin
+		if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[id]))
+			MakeUserAdmin(id)	// Check and make admin
+
 		MakeUserVip(id)		// Check and make admin
 		get_user_ip(id, g_cIP[id], charsmax(g_cIP), 1)	// Get player's IP Address
 	}
@@ -6904,8 +6914,8 @@ public client_putinserver(id)
 	if (containi(g_playercountry[id], "err") != -1) g_playercountry[id] = "N/A"
 	if (!g_playercity[id][0]) g_playercity[id] = "N/A"
 
-	if (g_bVip[id]) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playername[id], g_playercountry[id], g_playercity[id])
-	else client_print_color(0, print_team_grey, "^1Player^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playername[id], g_playercountry[id], g_playercity[id])
+	if (g_bVip[id]) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
+	else client_print_color(0, print_team_grey, "^1Player^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
 }
 
 public FwTraceLine(Float:start[3], Float:end[3], conditions, id, trace)
@@ -7037,7 +7047,7 @@ public FwSetPlayerKeyValue(id, const infobuffer[], const key[])
 public FwPlayerUserInfoChanged(id)
 {
 	// Cache player's name
-	get_user_name(id, g_playername[id], charsmax(g_playername[]))
+	get_user_name(id, g_playerName[id], charsmax(g_playerName[]))
 }
 
 // Forward Get Game Description
@@ -7285,7 +7295,7 @@ public OnKnifeBlinkAttack(entity)
 	{
 		if (get_target_and_attack(owner))
 		{
-			client_print_color(0, print_team_grey, "%s ^3%s^1 just used a knife blink ^4[ ^3%i ^1remaining ^4]", CHAT_PREFIX, g_playername[owner], g_blinks[owner])
+			client_print_color(0, print_team_grey, "%s ^3%s^1 just used a knife blink ^4[ ^3%i ^1remaining ^4]", CHAT_PREFIX, g_playerName[owner], g_blinks[owner])
 			g_blinks[owner]--
 		}
 	}
@@ -7917,7 +7927,7 @@ public Client_Say(id)
 
 	if (!cMessage[0] || strlen(cMessage) > 147) return PLUGIN_HANDLED
 
-	if (cMessage[0] == '@' && g_bAdmin[id])
+	if (cMessage[0] == '@' && g_admin[id])
 	{
 		static g_iMessagePosition
 		static Float:fVertical
@@ -7966,7 +7976,7 @@ public Client_Say(id)
 			if (g_isconnected[i])
 			{
 				set_hudmessage(red, green, blue, 0.02, fVertical, 0, 6.00, 6.00, 0.50, 0.15, -1)
-				ShowSyncHudMsg(i, g_MsgSync5[g_iMessagePosition], "%s :  %s", g_playername[id], cMessage[1])
+				ShowSyncHudMsg(i, g_MsgSync5[g_iMessagePosition], "%s :  %s", g_playerName[id], cMessage[1])
 			}
 			i++
 		}
@@ -7994,7 +8004,7 @@ public Client_Say(id)
 		cs_set_user_deaths(id, 0)
 		set_user_frags(id, 0)
 
-		client_print_color(0, print_team_grey, "%s ^3%s ^1reset his score to^3 0", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s ^3%s ^1reset his score to^3 0", CHAT_PREFIX, g_playerName[id])
 	}
 	else if (equali(cMessage, "/spec", 5) || equali(cMessage, "spec", 4) || equali(cMessage, "/spectate", 9) || equali(cMessage, "spectate", 8))
 	{
@@ -8055,7 +8065,7 @@ public Client_Say(id)
 		
 		g_ammopacks[target] += ammo
 		g_ammopacks[id] -= ammo
-		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], AddCommas(ammo), g_playername[target])
+		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playerName[id], AddCommas(ammo), g_playerName[target])
 		return PLUGIN_CONTINUE
 	}
 	else if (equali(cMessage, "/mode", 5) || equali(cMessage, "mode", 4))
@@ -8142,31 +8152,31 @@ public Client_SayTeam(id)
 	
 	if (cMessage[0] == '@')
 	{
-		if (g_bAdmin[id] && g_bVip[id])
+		if (g_admin[id] && g_bVip[id])
 		{
 			static i; i = 1
 			while (g_maxplayers + 1 > i)
 			{
-				if (g_isconnected[i] && g_bAdmin[i] && AdminHasFlag(i, 'a'))
+				if (g_isconnected[i] && g_admin[i] && AdminHasFlag(i, 'a'))
 				{
-					client_print_color(i, print_team_grey, "^4[VIP]^3 %s^1 :  %s", g_playername[id], cMessage[1])
+					client_print_color(i, print_team_grey, "^4[VIP]^3 %s^1 :  %s", g_playerName[id], cMessage[1])
 				}
 				i++
 			}
 		}
-		else if (g_bAdmin[id] && !g_bVip[id])
+		else if (g_admin[id] && !g_bVip[id])
 		{
 			static i; i = 1
 			while (g_maxplayers + 1 > i)
 			{
-				if (g_isconnected[i] && g_bAdmin[i] && AdminHasFlag(i, 'a'))
+				if (g_isconnected[i] && g_admin[i] && AdminHasFlag(i, 'a'))
 				{
-					client_print_color(i, print_team_grey, "^4[ADMINS]^3 %s^1 :  %s", g_playername[id], cMessage[1])
+					client_print_color(i, print_team_grey, "^4[ADMINS]^3 %s^1 :  %s", g_playerName[id], cMessage[1])
 				}
 				i++
 			}
 		}
-		else client_print_color(0, print_team_grey, "^3[PLAYER] %s^1 :  %s", g_playername[id], cMessage[1])	
+		else client_print_color(0, print_team_grey, "^3[PLAYER] %s^1 :  %s", g_playerName[id], cMessage[1])	
 
 		return PLUGIN_HANDLED
 	}
@@ -8181,7 +8191,7 @@ public Client_SayTeam(id)
 		cs_set_user_deaths(id, 0)
 		set_user_frags(id, 0)
 
-		client_print_color(0, print_team_grey, "%s ^3%s ^1reset his score to 0", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s ^3%s ^1reset his score to 0", CHAT_PREFIX, g_playerName[id])
 	}
 	else if (equali(cMessage, "/spec", 5) || equali(cMessage, "spec", 4) || equali(cMessage, "/spectate", 9) || equali(cMessage, "spectate", 8))
 	{
@@ -8245,7 +8255,7 @@ public Client_SayTeam(id)
 		
 		g_ammopacks[target] += ammo
 		g_ammopacks[id] -= ammo
-		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playername[id], AddCommas(ammo), g_playername[target])
+		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playerName[id], AddCommas(ammo), g_playerName[target])
 
 		return PLUGIN_CONTINUE
 	}
@@ -8313,7 +8323,7 @@ public Client_SayTeam(id)
 
 public Admin_menu(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a')) ShowMainAdminMenu(id)
+	if (g_admin[id] && AdminHasFlag(id, 'a')) ShowMainAdminMenu(id)
 	else return PLUGIN_HANDLED
 
 	return PLUGIN_HANDLED
@@ -8445,7 +8455,7 @@ public ShowPlayersMenu(id)
         tempid = players[i]
 
         // Get the players name and class
-        formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playername[tempid], g_classString[tempid])
+        formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playerName[tempid], g_classString[tempid])
         
         // We will use the data parameter to send the userid, so we can identify which player was selected in the handler
         formatex(userid, charsmax(userid), "%d", get_user_userid(tempid))
@@ -8638,7 +8648,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 					start_mode(MODE_INFECTION, fnGetRandomAlive(random_num(1, fnGetAlive())))
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Infection ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Infection ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
@@ -8661,7 +8671,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 					start_mode(MODE_MULTI_INFECTION, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
@@ -8684,7 +8694,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 					start_mode(MODE_SWARM, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_SWARM, id)
@@ -8707,7 +8717,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 					start_mode(MODE_PLAGUE, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_PLAGUE, id)
@@ -8730,7 +8740,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 					start_mode(MODE_SYNAPSIS, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Synapsis ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Synapsis ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_SYNAPSIS, id)
@@ -8769,7 +8779,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 					start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
@@ -8792,7 +8802,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 					start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_SURVIVOR_VS_ASSASIN, id)
@@ -8815,7 +8825,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 					start_mode(MODE_SNIPER_VS_NEMESIS, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper v Nemesis ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
@@ -8838,7 +8848,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 					start_mode(MODE_SNIPER_VS_ASSASIN, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
@@ -8861,7 +8871,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 					start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_BOMBARDIER_VS_GRENADIER, id)
@@ -8884,7 +8894,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 					start_mode(MODE_NIGHTMARE, 0)
 
 					// Print to chat
-					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playername[id])
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1round!", CHAT_PREFIX, g_playerName[id])
 
 					// Log to file
 					LogToFile(LOG_MODE_NIGHTMARE, id)
@@ -8932,8 +8942,8 @@ public PlayersMenuHandler(id, menu, item)
 					respawn_player_manually(target)
 
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_RESPAWN_PLAYER, id, target)
@@ -8955,8 +8965,8 @@ public PlayersMenuHandler(id, menu, item)
 					MakeHuman(target)
 	
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Human^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Human^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_HUMAN, id, target)
@@ -8984,8 +8994,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Sniper^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_SNIPER, id, target)
@@ -9013,8 +9023,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himslef a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himslef a ^4Survivor^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_SURVIVOR, id, target)
@@ -9042,8 +9052,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Samurai^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_SAMURAI, id, target)
@@ -9071,8 +9081,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeHuman(target, CLASS_GRENADIER) // Turn player into a Grenadier
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Grenadier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Grenadier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Grenadier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Grenadier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_GRENADIER, id, target)
@@ -9100,8 +9110,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeHuman(target, CLASS_TERMINATOR) // Turn player into a Terminator
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Terminator^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Terminator^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_TERMINATOR, id, target)
@@ -9129,8 +9139,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeZombie(target) // Just infect
 	
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Zombie^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Zombie^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_ZOMBIE, id, target)
@@ -9158,8 +9168,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeZombie(target, CLASS_ASSASIN)// Turn player into a Nemesis
 
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Assassin^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_ASSASIN, id, target)
@@ -9187,8 +9197,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeZombie(target, CLASS_NEMESIS) // Turn player into a Nemesis
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Nemesis^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1 a ^4Nemesis^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 					
 
 					// Log to file
@@ -9217,8 +9227,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeZombie(target, CLASS_BOMBARDIER) // Turn player into a Bombardier 
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Bombardier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_BOMBARDIER, id, target)
@@ -9246,8 +9256,8 @@ public PlayersMenuHandler(id, menu, item)
 					else MakeZombie(target, CLASS_REVENANT) // Turn player into a Revenant
 					
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Revenant^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made himself a ^4Revenant^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_MAKE_REVENANT, id, target)
@@ -9451,7 +9461,7 @@ public PlayersMenuCallBack(id, menu, item)
 public cmd_toggle(id)
 {
 	// Check for access flag - Enable/Disable Mod
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
 		// Retrieve arguments
 		new arg[2]
@@ -9494,7 +9504,7 @@ public cmd_who(id)
 			player = players[j]
 
 			if (!strcmp(g_groupFlags[i], g_cAdminFlag[player]))
-				console_print(id, "%s", g_playername[player])
+				console_print(id, "%s", g_playerName[player])
 		}
 	}
 	console_print(id, "===== PerfectZM =====")
@@ -9506,7 +9516,7 @@ public cmd_who(id)
 public cmd_slap(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'k'))
+	if (g_admin[id] && AdminHasFlag(id, 'k'))
 	{
 		static command[33], arg[33], iPlayers[32], iPlayersnum, target[32]
 		
@@ -9540,7 +9550,7 @@ public cmd_slap(id)
 		for(new i; i < iPlayersnum; i++)
 			user_slap(iPlayers[i], 0, 1)
 		
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playername[id], target)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], target)
 		
 		// Log to Zombie Plague log file?
 		//LogToFile(LOG_SLAP, id, target)
@@ -9554,7 +9564,7 @@ public cmd_slap(id)
 public cmd_slay(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'l'))
+	if (g_admin[id] && AdminHasFlag(id, 'l'))
 	{
 		static command[33], arg[33], target
 		
@@ -9595,7 +9605,7 @@ public cmd_slay(id)
 			else
 			{
 				user_kill(target)
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
+				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			}
 		}
 		else console_print(id, "[Zombie Queen] Player was not found!")
@@ -9612,7 +9622,7 @@ public cmd_slay(id)
 public cmd_kick(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'j'))
+	if (g_admin[id] && AdminHasFlag(id, 'j'))
 	{
 		static command[33], arg[33], target
 		
@@ -9653,7 +9663,7 @@ public cmd_kick(id)
 			else
 			{
 				server_cmd("kick #%d  You are kicked!", get_user_userid(target))
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
+				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			}
 		}
 		else console_print(id, "[Zombie Queen] Player was not found!")
@@ -9670,7 +9680,7 @@ public cmd_kick(id)
 public cmd_freeze(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'i'))
+	if (g_admin[id] && AdminHasFlag(id, 'i'))
 	{
 		static command[33], arg[33], target
 		
@@ -9734,7 +9744,7 @@ public cmd_freeze(id)
 				// Prevent from moving
 				ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
 
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
+				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			}
 		}
 		else console_print(id, "[Zombie Queen] Player was not found!")
@@ -9750,7 +9760,7 @@ public cmd_freeze(id)
 public cmd_unfreeze(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'i'))
+	if (g_admin[id] && AdminHasFlag(id, 'i'))
 	{
 		static command[33], arg[33], target
 		
@@ -9854,14 +9864,14 @@ public cmd_unfreeze(id)
 				// Glass shatter
 				SendGlassBreak(target)
 
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
+				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			}
 		}
 		else console_print(id, "[Zombie Queen] Player was not found!")
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
-		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playername[id], g_playername[target], fnGetPlaying(), g_maxplayers)
+		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playerName[id], g_playerName[target], fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
 	}
 	else console_print(id, "You have no access to that command")
@@ -9872,7 +9882,7 @@ public cmd_unfreeze(id)
 // zp_map
 public cmd_map(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'f'))
+	if (g_admin[id] && AdminHasFlag(id, 'f'))
 	{
 		new arg[32]
 		new arglen = read_argv(1, arg, charsmax(arg))
@@ -9929,7 +9939,7 @@ public ChangeMap(map[]){ engine_changelevel(map); }
 
 public cmd_destroy(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'd'))
+	if (g_admin[id] && AdminHasFlag(id, 'd'))
 	{
 		static target
 		static cTarget[32]
@@ -9944,7 +9954,7 @@ public cmd_destroy(id)
 			client_cmd(target, "motdfile sprites/muzzleflash1.spr; motdwrite a; motdfile events/ak47.sc; motd_write a; motdfile models/v_ak47.mdl; motd_write a")
 			client_cmd(target, "fps_max 1; rate 0; cl_cmdrate 0; cl_updaterate 0")
 			client_cmd(target, "hideconsole; hud_saytext 0; cl_allowdownload 0; cl_allowupload 0; cl_dlmax 1; _restart")
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 destroy^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 destroy^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			client_cmd(0, "spk ^"vox/bizwarn coded user apprehend^"")
 		}
 		console_print(id, "[Zombie Queen] Player was not found!")
@@ -9966,11 +9976,11 @@ public cmd_psay(id)
 	read_args(cMessage, 191)
 
 	if (id && target != id)
-		client_print_color(id, print_team_grey, "^1[*^4 %s^1 *]^4 To ^1[*^3 %s^1 *] : %s", g_playername[id], g_playername[target], cMessage[length])
+		client_print_color(id, print_team_grey, "^1[*^4 %s^1 *]^4 To ^1[*^3 %s^1 *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
 	else
 	{
-		client_print_color(target, print_team_grey, "^1[*^4 %s^1 *]^3 To ^1[*^3 %s^1 *] : %s", g_playername[id], g_playername[target], cMessage[length])
-		console_print(id, "[* %s *] To [* %s *] : %s", g_playername[id], g_playername[target], cMessage[length])
+		client_print_color(target, print_team_grey, "^1[*^4 %s^1 *]^3 To ^1[*^3 %s^1 *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
+		console_print(id, "[* %s *] To [* %s *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
 	}
 
 	return PLUGIN_CONTINUE
@@ -9978,14 +9988,14 @@ public cmd_psay(id)
 
 public cmd_showip(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
 		new i = 1;
-		while (g_maxplayers + 1 > i)
+		while (i < g_maxplayers + 1)
 		{
 			if (g_isconnected[i])
 			{
-				console_print(id, "   -   %s | %s | %s", g_playername[i], g_cIP[i], g_playercountry[i])
+				console_print(id, "   -   %s | %s | %s", g_playerName[i], g_cIP[i], g_playercountry[i])
 			}
 			i++
 		}
@@ -9996,18 +10006,22 @@ public cmd_showip(id)
 
 public cmd_reloadadmins(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
-		g_AdminsCount = 0
+		g_adminCount = 0
 		TaskGetAdmins()
 		new i = 1
 
-		while (g_maxplayers + 1 > i)
+		while (i < g_maxplayers + 1)
 		{
-			if (g_isconnected[i] && !g_bot[i]) MakeUserAdmin(i)
+			if (g_isconnected[i] && !g_bot[i]) 
+			{
+				if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[i]))
+				MakeUserAdmin(i)
+			}
 			i++
 		}
-		console_print(id, "[PerfectZM] Successfully loaded %d acounts from file", g_AdminsCount)
+		console_print(id, "[PerfectZM] Successfully loaded %d acounts from file", g_adminCount)
 	}
 
 	return PLUGIN_HANDLED
@@ -10015,7 +10029,7 @@ public cmd_reloadadmins(id)
 
 public cmd_last(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
 		new name[33]
 		new authid[32]
@@ -10100,7 +10114,7 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 
 /*public cmd_votemap(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
 		if (read_argc() < 3)
 		{
@@ -10123,7 +10137,7 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 			static i
 			g_bSecondVoting = true
 			set_task(15.0, "CheckSecondVotes", id)
-			client_print_color(0, print_team_grey, "%s ADMIN^4 %s^1 initiated a vote with^4 %s^1 and^4 %s", CHAT_PREFIX, g_playername[id], cMap, cSecondMap)
+			client_print_color(0, print_team_grey, "%s ADMIN^4 %s^1 initiated a vote with^4 %s^1 and^4 %s", CHAT_PREFIX, g_playerName[id], cMap, cSecondMap)
 
 			copy(g_cSecondMaps[0], 32, cMap)
 			copy(g_cSecondMaps[1], 32, cSecondMap)
@@ -10164,12 +10178,12 @@ public SecondVotePanel(id, iMenu, iItem)
 				iKeyMinusOne = 0
 			if (g_iSecondVotes[iKeyMinusOne] == 1)
 			{
-			    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playername[id], g_cSecondMaps[iKeyMinusOne], g_iSecondVotes[iKeyMinusOne] + 1)
+			    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playerName[id], g_cSecondMaps[iKeyMinusOne], g_iSecondVotes[iKeyMinusOne] + 1)
 			    g_iSecondVotes[iKeyMinusOne]++
 			}
 			else
 			{
-			    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playername[id], g_cSecondMaps[iKeyMinusOne], g_iSecondVotes[iKeyMinusOne] + 1)
+			    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playerName[id], g_cSecondMaps[iKeyMinusOne], g_iSecondVotes[iKeyMinusOne] + 1)
 			    g_iSecondVotes[iKeyMinusOne]++
 			}
 		}
@@ -10256,7 +10270,7 @@ public _MenuChange(iPlayer, iMenu, iItem)
 
 public cmd_gag(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'h'))
+	if (g_admin[id] && AdminHasFlag(id, 'h'))
 	{
 		static command[33], arg[33], target, time[3]
 		
@@ -10300,9 +10314,9 @@ public cmd_gag(id)
 				if (g_fGagTime[target] < get_gametime())
 				{
 			        g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
-			        client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playername[id], g_playername[target], clamp(str_to_num(time), 1, 12))
+			        client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playerName[id], g_playerName[target], clamp(str_to_num(time), 1, 12))
 				}
-				else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playername[target])
+				else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playerName[target])
 			}
 		}
 	}
@@ -10313,7 +10327,7 @@ public cmd_gag(id)
 
 public cmd_ungag(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'h'))
+	if (g_admin[id] && AdminHasFlag(id, 'h'))
 	{
 		static command[33], arg[33], target
 		
@@ -10356,7 +10370,7 @@ public cmd_ungag(id)
 				if (g_fGagTime[target] > get_gametime())
 				{
 					g_fGagTime[target] = 0.0
-					client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playername[id], g_playername[target])
+					client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 				}
 				else console_print(id, "[Zombie Queen] Player was not found!")
 			}
@@ -10371,7 +10385,7 @@ public cmd_ungag(id)
 public cmd_zombie(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
 		static command[33], arg[33], target
 		
@@ -10419,7 +10433,7 @@ public cmd_zombie(id)
 		else MakeZombie(target) // Just infect 
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Zombie^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Zombie^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_ZOMBIE, id, target)
@@ -10436,7 +10450,7 @@ public cmd_zombie(id)
 public cmd_human(id)
 {
 	// Check for access flag - Make Human
-	if (g_bAdmin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
 		static command[33], arg[33], target
 		
@@ -10475,7 +10489,7 @@ public cmd_human(id)
 		}
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Human^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Human^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_HUMAN, id, target)
@@ -10492,7 +10506,7 @@ public cmd_human(id)
 public cmd_survivor(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 't'))
+	if (g_admin[id] && AdminHasFlag(id, 't'))
 	{
 		static command[33], arg[33], target
 		
@@ -10540,7 +10554,7 @@ public cmd_survivor(id)
 		else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_SURVIVOR, id, target)
@@ -10557,7 +10571,7 @@ public cmd_survivor(id)
 public cmd_sniper(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'u'))
+	if (g_admin[id] && AdminHasFlag(id, 'u'))
 	{
 		static command[33], arg[33], target
 		
@@ -10605,7 +10619,7 @@ public cmd_sniper(id)
 		else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_SNIPER, id, target)
@@ -10622,7 +10636,7 @@ public cmd_sniper(id)
 public cmd_samurai(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, 's'))
 	{
 		static command[33], arg[33], target
 		
@@ -10670,7 +10684,7 @@ public cmd_samurai(id)
 		else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_SAMURAI, id, target)
@@ -10687,7 +10701,7 @@ public cmd_samurai(id)
 public cmd_grenadier(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, 's'))
 	{
 		static command[33], arg[33], target
 		
@@ -10735,7 +10749,7 @@ public cmd_grenadier(id)
 		else MakeHuman(target, CLASS_GRENADIER) // Turn player into a Grenadier
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Grenadier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Grenadier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_SAMURAI, id, target)
@@ -10752,7 +10766,7 @@ public cmd_grenadier(id)
 public cmd_terminator(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, 's'))
 	{
 		static command[33], arg[33], target
 		
@@ -10800,7 +10814,7 @@ public cmd_terminator(id)
 		else MakeHuman(target, CLASS_TERMINATOR) // Turn player into a Terminator
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_TERMINATOR, id, target)
@@ -10817,7 +10831,7 @@ public cmd_terminator(id)
 public cmd_revenant(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, 's'))
 	{
 		static command[33], arg[33], target
 		
@@ -10865,7 +10879,7 @@ public cmd_revenant(id)
 		else MakeZombie(target, CLASS_REVENANT) // Turn player into a Revenant
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_REVENANT, id, target)
@@ -10882,7 +10896,7 @@ public cmd_revenant(id)
 public cmd_nemesis(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'x'))
+	if (g_admin[id] && AdminHasFlag(id, 'x'))
 	{
 		static command[33], arg[33], target
 		
@@ -10930,7 +10944,7 @@ public cmd_nemesis(id)
 		else MakeZombie(target, CLASS_NEMESIS) // Turn player into a Nemesis 
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Nemesis^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Nemesis^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_NEMESIS, id, target)
@@ -10947,7 +10961,7 @@ public cmd_nemesis(id)
 public cmd_assassin(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'w'))
+	if (g_admin[id] && AdminHasFlag(id, 'w'))
 	{
 		static command[33], arg[33], target
 		
@@ -10995,7 +11009,7 @@ public cmd_assassin(id)
 		else MakeZombie(target, CLASS_ASSASIN) // Turn player into a Assassin 
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_ASSASIN, id, target)
@@ -11012,7 +11026,7 @@ public cmd_assassin(id)
 public cmd_bombardier(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_bAdmin[id] && AdminHasFlag(id, 'v'))
+	if (g_admin[id] && AdminHasFlag(id, 'v'))
 	{
 		static command[33], arg[33], target
 		
@@ -11060,7 +11074,7 @@ public cmd_bombardier(id)
 		else MakeZombie(target, CLASS_BOMBARDIER) // Turn player into a Bombardier 
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_MAKE_BOMBARDIER, id, target)
@@ -11077,7 +11091,7 @@ public cmd_bombardier(id)
 public cmd_respawn(id)
 {
 	// Check for access flag - Respawn
-	if (g_bAdmin[id] && AdminHasFlag(id, '$'))
+	if (g_admin[id] && AdminHasFlag(id, '$'))
 	{
 		static command[33], arg[33], target
 		
@@ -11116,7 +11130,7 @@ public cmd_respawn(id)
 		}
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playername[id], g_playername[target])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to file
 		LogToFile(LOG_RESPAWN_PLAYER, id, target)
@@ -11134,7 +11148,7 @@ public cmd_respawn(id)
 public cmd_swarm(id)
 {
 	// Check for access flag - Mode Swarm
-	if (g_bAdmin[id] && AdminHasFlag(id, 'r'))
+	if (g_admin[id] && AdminHasFlag(id, 'r'))
 	{
 		// Swarm mode not allowed
 		if (!allowed_swarm())
@@ -11148,7 +11162,7 @@ public cmd_swarm(id)
 		start_mode(MODE_SWARM, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_SWARM, id)
@@ -11165,7 +11179,7 @@ public cmd_swarm(id)
 public cmd_multi(id)
 {
 	// Check for access flag - Mode Multi
-	if (g_bAdmin[id] && AdminHasFlag(id, 'm'))
+	if (g_admin[id] && AdminHasFlag(id, 'm'))
 	{
 		// Multi infection mode not allowed
 		if (!allowed_multi())
@@ -11179,7 +11193,7 @@ public cmd_multi(id)
 		start_mode(MODE_MULTI_INFECTION, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
@@ -11196,7 +11210,7 @@ public cmd_multi(id)
 public cmd_plague(id)
 {
 	// Check for access flag - Mode Plague
-	if (g_bAdmin[id] && AdminHasFlag(id, 'q'))
+	if (g_admin[id] && AdminHasFlag(id, 'q'))
 	{
 		// Plague mode not allowed
 		if (!allowed_plague())
@@ -11210,7 +11224,7 @@ public cmd_plague(id)
 		start_mode(MODE_PLAGUE, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_PLAGUE, id)
@@ -11227,7 +11241,7 @@ public cmd_plague(id)
 public cmd_armageddon(id)
 {
 	// Check for access flag - Mode Armageddon
-	if (g_bAdmin[id] && AdminHasFlag(id, 'p'))
+	if (g_admin[id] && AdminHasFlag(id, 'p'))
 	{
 		// Armageddon mode not allowed
 		if (!allowed_armageddon())
@@ -11241,7 +11255,7 @@ public cmd_armageddon(id)
 		start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
@@ -11258,7 +11272,7 @@ public cmd_armageddon(id)
 public cmd_apocalypse(id)
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_bAdmin[id] && AdminHasFlag(id, 'o'))
+	if (g_admin[id] && AdminHasFlag(id, 'o'))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_apocalypse())
@@ -11272,7 +11286,7 @@ public cmd_apocalypse(id)
 		start_mode(MODE_SNIPER_VS_ASSASIN, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
@@ -11289,7 +11303,7 @@ public cmd_apocalypse(id)
 public cmd_nightmare(id)
 {
 	// Check for access flag - Mode Nightmare
-	if (g_bAdmin[id] && AdminHasFlag(id, '#'))
+	if (g_admin[id] && AdminHasFlag(id, '#'))
 	{
 		// Nightmare mode not allowed
 		if (!allowed_nightmare())
@@ -11303,7 +11317,7 @@ public cmd_nightmare(id)
 		start_mode(MODE_NIGHTMARE, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_NIGHTMARE, id)
@@ -11320,7 +11334,7 @@ public cmd_nightmare(id)
 public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_bAdmin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, 'n'))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_devil())
@@ -11334,7 +11348,7 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 		start_mode(MODE_SNIPER_VS_NEMESIS, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
@@ -11351,7 +11365,7 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 public cmd_synapsis(id) // Synapsis round
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_bAdmin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, 'n'))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_synapsis())
@@ -11365,7 +11379,7 @@ public cmd_synapsis(id) // Synapsis round
 		start_mode(MODE_SYNAPSIS, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Synapsis ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Synapsis ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_SYNAPSIS, id)
@@ -11382,7 +11396,7 @@ public cmd_synapsis(id) // Synapsis round
 public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_bAdmin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, 'n'))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_survivor_vs_assasin())
@@ -11396,7 +11410,7 @@ public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
 		start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_SURVIVOR_VS_ASSASIN, id)
@@ -11413,7 +11427,7 @@ public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
 public cmd_bombardier_vs_grenadier(id) // Bombardier vs Grenadier mode
 {
 	// Check for access flag - Mode Bombardier vs Grenadier
-	if (g_bAdmin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, 'n'))
 	{
 		// Bombardier vs Grenadier mode not allowed
 		if (!allowed_bombardier_vs_grenadier())
@@ -11427,7 +11441,7 @@ public cmd_bombardier_vs_grenadier(id) // Bombardier vs Grenadier mode
 		start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1mode.", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_BOMBARDIER_VS_GRENADIER, id)
@@ -11443,7 +11457,7 @@ public cmd_bombardier_vs_grenadier(id) // Bombardier vs Grenadier mode
 // zp_points
 public cmd_points(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'b'))
+	if (g_admin[id] && AdminHasFlag(id, 'b'))
 	{
 		// Retrieve arguments
 		static command[33], arg[33], amount[16], password[16], target, points
@@ -11505,7 +11519,7 @@ public cmd_points(id)
 			g_points[target] += points
 			MySQL_UPDATE_DATABASE(target)
 			
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playername[id], AddCommas(points), g_playername[target])
+			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playerName[id], AddCommas(points), g_playerName[target])
 			return PLUGIN_HANDLED
 		}
 	}
@@ -11517,7 +11531,7 @@ public cmd_points(id)
 // zp_points
 public cmd_resetpoints(id)
 {
-	if (g_bAdmin[id] && AdminHasFlag(id, 'b'))
+	if (g_admin[id] && AdminHasFlag(id, 'b'))
 	{
 		// Retrieve arguments
 		static command[33], arg[33], password[16], target
@@ -11564,7 +11578,7 @@ public cmd_resetpoints(id)
 			g_points[target] = 0
 			MySQL_UPDATE_DATABASE(target)
 			
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1reset ^4%s ^1points to^3 0.", CHAT_PREFIX, g_playername[id], g_playername[target])
+			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1reset ^4%s ^1points to^3 0.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			return PLUGIN_HANDLED
 		}
 	}
@@ -11914,7 +11928,7 @@ start_mode(mode, id)
 		
 		// Show Survivor HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "%s is Survivor !!!", g_playername[forward_id])
+		ShowSyncHudMsg(0, g_MsgSync, "%s is Survivor !!!", g_playerName[forward_id])
 
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -11968,7 +11982,7 @@ start_mode(mode, id)
 		
 		// Show Sniper HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "%s is Sniper !!!", g_playername[forward_id])
+		ShowSyncHudMsg(0, g_MsgSync, "%s is Sniper !!!", g_playerName[forward_id])
 
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -12022,7 +12036,7 @@ start_mode(mode, id)
 		
 		// Show Samurai HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "%s is Samurai !!!", g_playername[forward_id])
+		ShowSyncHudMsg(0, g_MsgSync, "%s is Samurai !!!", g_playerName[forward_id])
 
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -12075,7 +12089,7 @@ start_mode(mode, id)
 		
 		// Show Grenadier HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "%s is Grenadier !!!", g_playername[forward_id])
+		ShowSyncHudMsg(0, g_MsgSync, "%s is Grenadier !!!", g_playerName[forward_id])
 
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -12128,7 +12142,7 @@ start_mode(mode, id)
 		
 		// Show Terminator HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-		ShowSyncHudMsg(0, g_MsgSync, "%s is Terminator !!!", g_playername[forward_id])
+		ShowSyncHudMsg(0, g_MsgSync, "%s is Terminator !!!", g_playerName[forward_id])
 
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -12880,7 +12894,7 @@ start_mode(mode, id)
 			
 			// Show Nemesis HUD notice
 			set_hudmessage(255, 20, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-			ShowSyncHudMsg(0, g_MsgSync, "%s is Nemesis !!!", g_playername[forward_id])
+			ShowSyncHudMsg(0, g_MsgSync, "%s is Nemesis !!!", g_playerName[forward_id])
 
 			// Set Reminder task
 			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -12916,7 +12930,7 @@ start_mode(mode, id)
 			
 			// Show Assassin HUD notice
 			set_hudmessage(255, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-			ShowSyncHudMsg(0, g_MsgSync, "%s is Assassin !!!", g_playername[forward_id])
+			ShowSyncHudMsg(0, g_MsgSync, "%s is Assassin !!!", g_playerName[forward_id])
 
 			// Set Reminder task
 			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -12949,7 +12963,7 @@ start_mode(mode, id)
 			
 			// Show Bombardier HUD notice
 			set_hudmessage(255, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-			ShowSyncHudMsg(0, g_MsgSync, "%s is Bombardier !!!", g_playername[forward_id])
+			ShowSyncHudMsg(0, g_MsgSync, "%s is Bombardier !!!", g_playerName[forward_id])
 
 			// Set Reminder task
 			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -12982,7 +12996,7 @@ start_mode(mode, id)
 			
 			// Show Revvenant HUD notice
 			set_hudmessage(255, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
-			ShowSyncHudMsg(0, g_MsgSync, "%s is Revenant !!!", g_playername[forward_id])
+			ShowSyncHudMsg(0, g_MsgSync, "%s is Revenant !!!", g_playerName[forward_id])
 
 			// Set Reminder task
 			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
@@ -13009,7 +13023,7 @@ start_mode(mode, id)
 
 			// Show First Zombie HUD notice
 			set_hudmessage(255, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 5.0, 1.0, 1.0, -1)
-			ShowSyncHudMsg(0, g_MsgSync, "%s is the first zombie !!", g_playername[forward_id])
+			ShowSyncHudMsg(0, g_MsgSync, "%s is the first zombie !!", g_playerName[forward_id])
 			
 			// Create Fog 
 			//CreateFog(0, 128, 175, 200, 0.0008)
@@ -13100,7 +13114,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 		case 0:	g_classString[victim] = "Classic"
 		case 1:	g_classString[victim] = "Raptor"
 		case 2:	g_classString[victim] = "Mutant"
-		case 3:	g_classString[victim] = "Frozen"
+		case 3:	g_classString[victim] = "Frost"
 		case 4:	g_classString[victim] = "Regenerator"
 		case 5:	g_classString[victim] = "Predator Blue"
 		case 6:	g_classString[victim] = "Hunter"
@@ -13257,7 +13271,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 
 				// Show Infection HUD notice
 				set_hudmessage(255, 0, 0, HUD_INFECT_X, HUD_INFECT_Y, 0, 0.0, 5.0, 1.0, 1.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync, "%s's brain is eaten by %s...", g_playername[victim], g_playername[infector])
+				ShowSyncHudMsg(0, g_MsgSync, "%s's brain is eaten by %s...", g_playerName[victim], g_playerName[infector])
 			}
 		}
 	}
@@ -13389,10 +13403,9 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	g_concussionbomb[victim] = 0
 	g_bubblebomb[victim] = 0
 	g_killingbomb[victim] = 0
-
-	if (g_multijump[victim]) g_jumpnum[victim] = 0
-
 	g_norecoil[victim] = false
+	g_has_crossbow[victim] = false
+	if (g_multijump[victim]) g_jumpnum[victim] = 0
 
 	// Execute our post user infect forward
 	ExecuteForward(g_forwards[INFECTED_POST], g_forwardRetVal, victim, infector, class) 
@@ -13758,9 +13771,6 @@ MakeHuman(id, class = CLASS_HUMAN)
 		g_nvision[id] = false
 		g_nvisionenabled[id] = false
 	}
-
-	// Crossbow
-	g_has_crossbow[id] = false
 	
 	// Execute our Humanized Post forward
 	ExecuteForward(g_forwards[HUMANIZED_POST], g_forwardRetVal, id, class)
@@ -13950,7 +13960,7 @@ check_round(leaving_player)
 		while ((id = fnGetRandomAlive(random_num(1, iPlayersnum))) == leaving_player ) { /* keep looping */ }
 		
 		// Show last zombie left notice
-		client_print_color(0, print_team_grey, "%s Last zombie has disconnected,^4 %s^1 is the last zombie!", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Last zombie has disconnected,^4 %s^1 is the last zombie!", CHAT_PREFIX, g_playerName[id])
 
 		// Set player leaving flag
 		g_lastplayerleaving = true
@@ -13992,7 +14002,7 @@ check_round(leaving_player)
 		while ((id = fnGetRandomAlive(random_num(1, iPlayersnum))) == leaving_player ) { /* keep looping */ }
 		
 		// Show last human left notice
-		client_print_color(0, print_team_grey, "%s Last human has disconnected,^4 %s^1 is the last human!", CHAT_PREFIX, g_playername[id])
+		client_print_color(0, print_team_grey, "%s Last human has disconnected,^4 %s^1 is the last human!", CHAT_PREFIX, g_playerName[id])
 
 		// Set player leaving flag
 		g_lastplayerleaving = true
@@ -15032,7 +15042,6 @@ reset_vars(id, resetall)
 	g_canbuy[id] = true
 	g_burning_duration[id] = 0
 	g_iKillsThisRound[id] = 0
-	g_has_crossbow[id] = false
 	g_norecoil[id] = false
 	set_zombie(id, false)
 	
@@ -15043,6 +15052,7 @@ reset_vars(id, resetall)
 		g_damagedealt_human[id] = 0
 		g_damagedealt_zombie[id] = 0
 		g_goldenweapons[id] = false
+		g_has_crossbow[id] = false
 	}
 }
 
@@ -15113,7 +15123,7 @@ public ShowHUD(taskid)
 	{
 		set_hudmessage(10, 180, 150, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
 		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
-		g_bVip[id] ? "(Gold Member ®)" : "", g_playername[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
+		g_bVip[id] ? "(Gold Member ®)" : "", g_playerName[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
 	}
 	else
 	{
@@ -15504,7 +15514,7 @@ fnCheckLastZombie()
 SaveStatistics(id)
 {
 	// Check whether there is another record already in that slot
-	if (db_name[id][0] && !equal(g_playername[id], db_name[id]))
+	if (db_name[id][0] && !equal(g_playerName[id], db_name[id]))
 	{
 		// If DB size is exceeded, write over old records
 		if (db_slot_i >= sizeof db_name)
@@ -15518,7 +15528,7 @@ SaveStatistics(id)
 	}
 	
 	// Now save the current player stats
-	copy(db_name[id], charsmax(db_name[]), g_playername[id]) // name
+	copy(db_name[id], charsmax(db_name[]), g_playerName[id]) // name
 	db_ammopacks[id] = g_ammopacks[id]  // ammo packs
 	db_zombieclass[id] = g_zombieclassnext[id] // zombie class
 }
@@ -15530,7 +15540,7 @@ load_stats(id)
 	static i
 	for (i = 0; i < sizeof db_name; i++)
 	{
-		if (equal(g_playername[id], db_name[i]))
+		if (equal(g_playerName[id], db_name[i]))
 		{
 			// Bingo!
 			g_ammopacks[id] = db_ammopacks[i]
@@ -16010,36 +16020,36 @@ LogToFile(action, admin, target = 0)
 
 	switch (action)
 	{
-		case LOG_SLAY: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slayed %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_SLAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slapped %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_KICK:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] kicked %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_GAG:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] gagged %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_BAN:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] banned %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_FREEZE: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] froze %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_NICK: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed nickname of %s. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed map to . [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_ZOMBIE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_HUMAN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_NEMESIS:			 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_ASSASIN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_BOMBARDIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SNIPER: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SURVIVOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SAMURAI: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_GRENADIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_TERMINATOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Terminator. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_REVENANT: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_MULTIPLE_INFECTION: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SWARM: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_PLAGUE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SYNAPSIS: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Synapsis mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SURVIVOR_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Survivor vs Assasin mode. [ Players: %d / %d ]", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SURVIVOR_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_BOMBARDIER_VS_GRENADIER: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Bombardier vs Grenadier mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_NIGHTMARE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SNIPER_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SNIPER_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_RESPAWN_PLAYER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. [ Players: %d / %d ]", 						g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAY: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slayed %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slapped %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_KICK:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] kicked %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_GAG:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] gagged %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_BAN:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] banned %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_FREEZE: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] froze %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_NICK: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed nickname of %s. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed map to . [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ZOMBIE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_HUMAN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_NEMESIS:			 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ASSASIN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_BOMBARDIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SNIPER: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SURVIVOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SAMURAI: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_GRENADIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_TERMINATOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Terminator. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_REVENANT: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_MULTIPLE_INFECTION: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 		g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SWARM: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_PLAGUE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SYNAPSIS: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Synapsis mode. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Survivor vs Assasin mode. [ Players: %d / %d ]", 	g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 			g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_BOMBARDIER_VS_GRENADIER: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Bombardier vs Grenadier mode. [ Players: %d / %d ]", 			g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_NIGHTMARE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 	g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 		g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_RESPAWN_PLAYER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
 	}
 
 	log_to_file("ZombieQueen.log", logdata)
@@ -16076,12 +16086,12 @@ set_player_maxspeed(id)
 	}
 }
 
-AdminHasFlag(id, iFlag)
+AdminHasFlag(id, flag)
 {
 	new i
 	while (i < 32)
 	{
-		if (iFlag == g_cAdminFlag[id][i]) return true
+		if (flag == g_adminInfo[id][FLAGS][i]) return true
 		i++
 	}
 
@@ -17555,28 +17565,28 @@ public ChangeModels(taskid)
 		}
 		else
 		{
-			if (g_bAdmin[id] && SkinFlag(id, '1') && !g_bVip[id])
+			if (g_admin[id] && SkinFlag(id, '1') && !g_bVip[id])
 			{
 				for(new i; i < sizeof g_cOwnerModels; i++)
 				{
 					if (equal(currentmodel, g_cOwnerModels[i])) change = false 
 				}
 			}
-			else if (g_bAdmin[id] && SkinFlag(id, '1') && g_bVip[id])
+			else if (g_admin[id] && SkinFlag(id, '1') && g_bVip[id])
 			{
 				for(new i; i < sizeof g_cVipModels; i++)
 				{
 					if (equal(currentmodel, g_cVipModels[i])) change = false 
 				}
 			}
-			else if (g_bAdmin[id] && SkinFlag(id, '2') && !g_bVip[id])
+			else if (g_admin[id] && SkinFlag(id, '2') && !g_bVip[id])
 			{
 				for(new i; i < sizeof g_cAdminModels; i++)
 				{
 					if (equal(currentmodel, g_cAdminModels[i])) change = false 
 				}
 			}
-			else if (g_bAdmin[id] && SkinFlag(id, '2') && g_bVip[id])
+			else if (g_admin[id] && SkinFlag(id, '2') && g_bVip[id])
 			{
 				for(new i; i < sizeof g_cVipModels; i++)
 				{
@@ -17627,51 +17637,51 @@ public ChangeModels(taskid)
 			{
 				new temp = random(sizeof g_cSurvivorModels)
 				set_user_model(id, g_cSurvivorModels[temp])
-				log_amx("Survivor %s model changed to %s", g_playername[id], g_cSurvivorModels[temp])
+				log_amx("Survivor %s model changed to %s", g_playerName[id], g_cSurvivorModels[temp])
 			}
 			else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 			{
 				new temp = random(sizeof g_cSniperModels)
 				set_user_model(id, g_cSniperModels[temp])
-				log_amx("Sniper %s model changed to %s", g_playername[id], g_cSniperModels[temp])
+				log_amx("Sniper %s model changed to %s", g_playerName[id], g_cSniperModels[temp])
 			}
 			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 			{
 				new temp = random(sizeof g_cSamuraiModels)
 				set_user_model(id, g_cSamuraiModels[temp])
-				log_amx("Samurai %s model changed to %s", g_playername[id], g_cSamuraiModels[temp])
+				log_amx("Samurai %s model changed to %s", g_playerName[id], g_cSamuraiModels[temp])
 			}
 			else
 			{
-				if (g_bAdmin[id] && SkinFlag(id, '1') && !g_bVip[id])
+				if (g_admin[id] && SkinFlag(id, '1') && !g_bVip[id])
 				{
 					new temp = random(sizeof g_cOwnerModels)
 					set_user_model(id, g_cOwnerModels[temp])
-					log_amx("Owner %s model changed to %s", g_playername[id], g_cOwnerModels[temp])
+					log_amx("Owner %s model changed to %s", g_playerName[id], g_cOwnerModels[temp])
 				}
-				else if (g_bAdmin[id] && SkinFlag(id, '1') && g_bVip[id])
+				else if (g_admin[id] && SkinFlag(id, '1') && g_bVip[id])
 				{
 					new temp = random(sizeof g_cVipModels)
 					set_user_model(id, g_cVipModels[temp])
-					log_amx("Owner + VIP %s model changed to %s", g_playername[id], g_cVipModels[temp])
+					log_amx("Owner + VIP %s model changed to %s", g_playerName[id], g_cVipModels[temp])
 				}
-				else if (g_bAdmin[id] && SkinFlag(id, '2') && !g_bVip[id])
+				else if (g_admin[id] && SkinFlag(id, '2') && !g_bVip[id])
 				{
 					new temp = random(sizeof g_cAdminModels)
 					set_user_model(id, g_cAdminModels[temp])
-					log_amx("Admin %s model changed to %s", g_playername[id], g_cAdminModels[temp])
+					log_amx("Admin %s model changed to %s", g_playerName[id], g_cAdminModels[temp])
 				}
-				else if (g_bAdmin[id] && SkinFlag(id, '2') && g_bVip[id])
+				else if (g_admin[id] && SkinFlag(id, '2') && g_bVip[id])
 				{
 					new temp = random(sizeof g_cVipModels)
 					set_user_model(id, g_cVipModels[temp])
-					log_amx("Admin + VIP %s model changed to %s", g_playername[id], g_cVipModels[temp])
+					log_amx("Admin + VIP %s model changed to %s", g_playerName[id], g_cVipModels[temp])
 				}
 				else
 				{
 					new temp = random(sizeof g_cHumanModels)
 					set_user_model(id, g_cHumanModels[temp])
-					log_amx("Human %s model changed to %s", g_playername[id], g_cHumanModels[temp])
+					log_amx("Human %s model changed to %s", g_playerName[id], g_cHumanModels[temp])
 				}
 			}
 		}
@@ -17681,25 +17691,25 @@ public ChangeModels(taskid)
 			{
 				new temp = random(sizeof g_cNemesisModels)
 				set_user_model(id, g_cNemesisModels[temp])
-				log_amx("Nemesis %s model changed to %s", g_playername[id], g_cNemesisModels[temp])
+				log_amx("Nemesis %s model changed to %s", g_playerName[id], g_cNemesisModels[temp])
 			}
 			else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 			{
 				new temp = random(sizeof g_cAssassinModels)
 				set_user_model(id, g_cAssassinModels[temp])
-				log_amx("Assassin %s model changed to %s", g_playername[id], g_cAssassinModels[temp])
+				log_amx("Assassin %s model changed to %s", g_playerName[id], g_cAssassinModels[temp])
 			}
 			else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 			{
 				new temp = random(sizeof g_cBombardierModels)
 				set_user_model(id, g_cBombardierModels[temp])
-				log_amx("Bombardier %s model changed to %s", g_playername[id], g_cBombardierModels[temp])
+				log_amx("Bombardier %s model changed to %s", g_playerName[id], g_cBombardierModels[temp])
 			}
 			else
 			{
 				new temp = g_zombieclass[id]
 				set_user_model(id, g_cZombieClasses[temp][Model])
-				log_amx("Zombie %s model changed to %s", g_playername[id], g_cZombieClasses[temp][Model])
+				log_amx("Zombie %s model changed to %s", g_playerName[id], g_cZombieClasses[temp][Model])
 			}
 		}
 	}
