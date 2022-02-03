@@ -6315,10 +6315,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		// Bullet damage
 		if (damage) 
 		{
-			if (++iPosition[attacker] == sizeof(g_flCoords))
-			{
-				iPosition[attacker] = 0
-			}
+			if (++iPosition[attacker] == sizeof(g_flCoords)) iPosition[attacker] = 0
 
 			if (damage_type & DMG_BLAST) 
 			{
@@ -6369,10 +6366,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 
 			if (damage) 
 			{
-				if (++iPosition[attacker] == sizeof(g_flCoords))
-				{
-					iPosition[attacker] = 0
-				}
+				if (++iPosition[attacker] == sizeof(g_flCoords)) iPosition[attacker] = 0
 
 				if (damage_type & DMG_BLAST) 
 				{
@@ -6570,7 +6564,8 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	set_pev(victim, pev_velocity, direction)
 
 	// Golden Weapon functions
-	if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE))
+	if (g_goldenweapons[attacker] && ((g_currentweapon[attacker] == CSW_AK47)
+	|| (g_currentweapon[attacker] == CSW_M4A1) || (g_currentweapon[attacker] == CSW_XM1014) || (g_currentweapon[attacker] == CSW_DEAGLE)))
 	{
 		SendTracers(attacker)
 		SendLightningTracers(attacker)
