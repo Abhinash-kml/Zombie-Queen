@@ -493,6 +493,14 @@ new Float:SurvivorVsAssasin_ratio = 0.5
 new Float:SurvivorVsAssasin_assasin_HealthMultiply = 0.5
 new Float:SurvivorVsAssasin_survivor_HealthMultiply = 0.5
 
+// Bombardier vs Grenadier configs
+new BombardierVsGrenadier_enable = 1
+new BombardierVsGrenadier_chance = 25
+new BombardierVsGrenadier_minPlayers = 2
+new Float:BombardierVsGrenadier_raio = 0.5
+new Float:BombardierVsGrenadier_bombardier_HealthMultiply = 2.0
+new Float:BombardierVsGrenadier_grenadier_HealthMultiply = 2.0
+
 // Models stuff
 new Float:g_modelchange_delay = 0.2 
 
@@ -822,6 +830,10 @@ new const sound_survivor_vs_assasin[][] =
 {
 	"PerfectZM/nemesis2.wav" 
 }
+new const sound_bombardier_vs_grenadier[][] =
+{
+	"PerfectZM/nemesis2.wav"
+}
 new const grenade_infect[][] = 
 { 
 	"PerfectZM/grenade_infect.wav" 
@@ -1102,7 +1114,7 @@ enum _: startSpecialModesConstants
     START_SURVIVOR_VS_ASSASIN,
     START_SNIPER_VS_NEMESIS,
     START_SNIPER_VS_ASSASIN,
-    START_BOMBARDIER_VS_BOMBER,
+    START_BOMBARDIER_VS_GRENADIER,
     START_NIGHTMARE
 }
 
@@ -1250,7 +1262,6 @@ new g_cModesMenu[][MMenuData] =
 	{"Sniper vs Assasin round", 		"\r[120 points]",  120},
 	{"Nightmare round", 		  		"\r[300 points]",  300},
 	{"Synapsis round", 				 	"\r[150 points]",  150},
-	{"Bombardier vs Bomber round", 		"\r[150 points]",  150},
 	{"Bombardier vs Grenadier Mode",  	"\r[500 points]",  500},
 	{"Samurai vs Nemesis round", 		"\r[500 points]",  500},
 	{"Sonic vs Shadow round", 			"\r[500 round]",  500},
@@ -1427,6 +1438,7 @@ enum _: modNames
 	MODE_SNIPER_VS_NEMESIS,
 	MODE_SURVIVOR_VS_NEMESIS,
 	MODE_SURVIVOR_VS_ASSASIN,
+	MODE_BOMBARDIER_VS_GRENADIER,
 	MODE_NIGHTMARE
 }
 
@@ -1582,6 +1594,7 @@ enum _: logActions
 	LOG_MODE_SURVIVOR_VS_ASSASIN,
 	LOG_MODE_SNIPER_VS_NEMESIS,
 	LOG_MODE_SNIPER_VS_ASSASIN,
+	LOG_MODE_BOMBARDIER_VS_GRENADIER,
 	LOG_RESPAWN_PLAYER
 }
 
@@ -1977,7 +1990,7 @@ const PEV_NADE_TYPE = pev_flTimeStepSound
 enum (+= 1111) 
 {
 	NADE_TYPE_INFECTION = 1111,
-	NADE_TYPE_EXPLODE,
+	NADE_TYPE_EXPLOSION,
 	NADE_TYPE_NAPALM,
 	NADE_TYPE_FROST,
 	NADE_TYPE_ANTIDOTE,
@@ -2102,71 +2115,71 @@ public plugin_natives()
 	register_native("AdminHasFlag", "native_admin_has_flag", 1)
 
 	// Data related natives
-	register_native("GetPacks", 		  "native_get_user_packs", 1) 				// Get
-	register_native("AddPacks",           "native_add_user_packs", 1)				// Add
-	register_native("SetPacks", 		  "native_set_user_packs", 1)				// Set
-	register_native("GetPoints", 		  "native_get_user_points", 1)				// Get
-	register_native("AddPoints",          "native_add_user_points", 1)				// Add
-	register_native("SetPoints", 		  "native_set_user_points", 1)				// Set
-	register_native("GetKills", 		  "native_get_user_kills", 1)				// Get
-	register_native("AddKills",           "native_add_user_kills", 1)				// Add
-	register_native("SetKills", 		  "native_set_user_kills", 1)				// Set
-	register_native("GetInfections", 	  "native_get_user_infections", 1)			// Get
-	register_native("AddInfections",      "native_add_user_infections", 1)			// Add
-	register_native("SetInfections", 	  "native_set_user_infections", 1)			// Set
-	register_native("GetNemesisKills", 	  "native_get_user_nemesis_kills", 1)		// Get
-	register_native("AddNemesisKills",    "native_add_user_nemesis_kills", 1)		// Add
-	register_native("SetNemesisKills", 	  "native_set_user_nemesis_kills", 1)		// Set
-	register_native("GetAssasinKills", 	  "native_get_user_assasin_kills", 1)		// Get
-	register_native("AddAssasinKills",    "native_add_user_assasin_kills", 1)		// Add
-	register_native("SetAssasinKills", 	  "native_set_user_assasin_kills", 1)		// Set
+	register_native("GetPacks", "native_get_user_packs", 1) 				// Get
+	register_native("AddPacks", "native_add_user_packs", 1)				// Add
+	register_native("SetPacks", "native_set_user_packs", 1)				// Set
+	register_native("GetPoints", "native_get_user_points", 1)				// Get
+	register_native("AddPoints", "native_add_user_points", 1)				// Add
+	register_native("SetPoints", "native_set_user_points", 1)				// Set
+	register_native("GetKills", "native_get_user_kills", 1)				// Get
+	register_native("AddKills", "native_add_user_kills", 1)				// Add
+	register_native("SetKills", "native_set_user_kills", 1)				// Set
+	register_native("GetInfections", "native_get_user_infections", 1)			// Get
+	register_native("AddInfections", "native_add_user_infections", 1)			// Add
+	register_native("SetInfections", "native_set_user_infections", 1)			// Set
+	register_native("GetNemesisKills", "native_get_user_nemesis_kills", 1)		// Get
+	register_native("AddNemesisKills", "native_add_user_nemesis_kills", 1)		// Add
+	register_native("SetNemesisKills", "native_set_user_nemesis_kills", 1)		// Set
+	register_native("GetAssasinKills", "native_get_user_assasin_kills", 1)		// Get
+	register_native("AddAssasinKills", "native_add_user_assasin_kills", 1)		// Add
+	register_native("SetAssasinKills", "native_set_user_assasin_kills", 1)		// Set
 	register_native("GetBombardierKills", "native_get_user_bombardier_kills", 1)	// Get
 	register_native("AddBombardierKills", "native_add_user_bombardier_kills", 1)	// Add
 	register_native("SetBombardierKills", "native_set_user_bombardier_kills", 1)	// Set
-	register_native("GetSurvivorKills",   "native_get_user_survivor_kills", 1)		// Get
-	register_native("AddSurvivorKills",   "native_add_user_survivor_kills", 1)		// Add
-	register_native("SetSurvivorKills",   "native_set_user_survivor_kills", 1)		// Set
-	register_native("GetSniperKills", 	  "native_get_user_sniper_kills", 1)		// Get
-	register_native("AddSniperKills",     "native_add_user_sniper_kills", 1)		// Add
-	register_native("SetSniperKills", 	  "native_set_user_sniper_kills", 1)		// Set
-	register_native("GetSamuraiKills", 	  "native_get_user_samurai_kills", 1)		// Get
-	register_native("AddSamuraiKills",    "native_add_user_samurai_kills", 1)		// Add
-	register_native("SetSamuraiKills", 	  "native_set_user_samurai_kills", 1)		// Set
-	register_native("GetGrenadierKills",  "native_get_user_grenadier_kills", 1)		// Get
-	register_native("AddGrenadierKills",  "native_add_user_grenadier_kills", 1)		// Add
-	register_native("SetGrenadierKills",  "native_set_user_grenadier_kills", 1)		// Set
-	register_native("GetRevenantKills",   "native_get_user_revenant_kills", 1)      // Get
-	register_native("AddRevenantKills",   "native_add_user_revenant_kills", 1)      // Add
-	register_native("SetRevenantKills",   "native_set_user_revenant_kills", 1)		// Set
+	register_native("GetSurvivorKills", "native_get_user_survivor_kills", 1)		// Get
+	register_native("AddSurvivorKills", "native_add_user_survivor_kills", 1)		// Add
+	register_native("SetSurvivorKills", "native_set_user_survivor_kills", 1)		// Set
+	register_native("GetSniperKills", "native_get_user_sniper_kills", 1)		// Get
+	register_native("AddSniperKills", "native_add_user_sniper_kills", 1)		// Add
+	register_native("SetSniperKills", "native_set_user_sniper_kills", 1)		// Set
+	register_native("GetSamuraiKills", "native_get_user_samurai_kills", 1)		// Get
+	register_native("AddSamuraiKills", "native_add_user_samurai_kills", 1)		// Add
+	register_native("SetSamuraiKills", "native_set_user_samurai_kills", 1)		// Set
+	register_native("GetGrenadierKills", "native_get_user_grenadier_kills", 1)		// Get
+	register_native("AddGrenadierKills", "native_add_user_grenadier_kills", 1)		// Add
+	register_native("SetGrenadierKills", "native_set_user_grenadier_kills", 1)		// Set
+	register_native("GetRevenantKills", "native_get_user_revenant_kills", 1)      // Get
+	register_native("AddRevenantKills", "native_add_user_revenant_kills", 1)      // Add
+	register_native("SetRevenantKills", "native_set_user_revenant_kills", 1)		// Set
 	register_native("GetTerminatorKills", "native_get_user_terminator_kills", 1)	// Get
 	register_native("AddTerminatorKills", "native_add_user_terminator_kills", 1)	// Add
 	register_native("SetTerminatorKills", "native_set_user_terminator_kills", 1)	// Set
 
 	// Class related natives
-	register_native("IsZombie",       "native_get_user_zombie", 1)
-	register_native("MakeZombie",     "native_make_user_zombie", 1)
-	register_native("IsHuman", 		  "native_get_user_human", 1)
-	register_native("MakeHuman",      "native_make_user_human", 1)
-	register_native("IsNemesis",      "native_get_user_nemesis", 1)
-	register_native("MakeNemesis",    "native_make_user_nemesis", 1)
-	register_native("IsAssasin",      "native_get_user_assassin", 1)
-	register_native("MakeAssasin",    "native_make_user_assasin", 1)
-	register_native("IsBombardier",   "native_get_user_bombardier", 1)
+	register_native("IsZombie", "native_get_user_zombie", 1)
+	register_native("MakeZombie", "native_make_user_zombie", 1)
+	register_native("IsHuman", "native_get_user_human", 1)
+	register_native("MakeHuman", "native_make_user_human", 1)
+	register_native("IsNemesis", "native_get_user_nemesis", 1)
+	register_native("MakeNemesis", "native_make_user_nemesis", 1)
+	register_native("IsAssasin", "native_get_user_assassin", 1)
+	register_native("MakeAssasin", "native_make_user_assasin", 1)
+	register_native("IsBombardier", "native_get_user_bombardier", 1)
 	register_native("MakeBombardier", "native_make_user_bombardier", 1)
-	register_native("IsSniper",       "native_get_user_sniper", 1)
-	register_native("MakeSniper",     "native_make_user_sniper", 1)
-	register_native("IsSurvivor",     "native_get_user_survivor", 1)
-	register_native("MakeSurvivor",   "native_make_user_survivor", 1)
-	register_native("IsSamurai",      "native_get_user_samurai", 1)
-	register_native("MakeSamurai",    "native_make_user_samurai", 1)
-	register_native("IsGrenadier",    "native_get_user_grenadier", 1)
-	register_native("MakeGrenadier",  "native_make_user_grenadier", 1)
-	register_native("IsRevenant",     "native_get_user_revenant", 1)
-	register_native("MakeRevenant",   "native_make_user_revenant", 1)
-	register_native("IsTerminator",   "native_get_user_terminator", 1)
+	register_native("IsSniper", "native_get_user_sniper", 1)
+	register_native("MakeSniper", "native_make_user_sniper", 1)
+	register_native("IsSurvivor", "native_get_user_survivor", 1)
+	register_native("MakeSurvivor", "native_make_user_survivor", 1)
+	register_native("IsSamurai", "native_get_user_samurai", 1)
+	register_native("MakeSamurai", "native_make_user_samurai", 1)
+	register_native("IsGrenadier", "native_get_user_grenadier", 1)
+	register_native("MakeGrenadier", "native_make_user_grenadier", 1)
+	register_native("IsRevenant", "native_get_user_revenant", 1)
+	register_native("MakeRevenant", "native_make_user_revenant", 1)
+	register_native("IsTerminator", "native_get_user_terminator", 1)
 	register_native("MakeTerminator", "native_make_user_terminator", 1)
 
-	register_native("RespawnPlayer",  "native_respawn_player", 1)
+	register_native("RespawnPlayer", "native_respawn_player", 1)
 
 	// String natives
 	register_native("GetClassString", "native_get_class_string")
@@ -2177,26 +2190,28 @@ public plugin_natives()
 	//register_native("IsMode", 					"native_is_current_mode", 1)
 
 	// Custom natives specific to modes
-	register_native("IsInfectionRound",      	"native_is_infection_round", 1)
-	register_native("StartInfectionRound",   	"native_start_infection_round", 1)
-	register_native("IsMultiInfectionRound", 	"native_is_multi_infection_round", 1)
+	register_native("IsInfectionRound", "native_is_infection_round", 1)
+	register_native("StartInfectionRound", "native_start_infection_round", 1)
+	register_native("IsMultiInfectionRound", "native_is_multi_infection_round", 1)
 	register_native("StartMultiInfectionRound", "native_start_multi_infection_round", 1)
-	register_native("IsSwarmRound",          	"native_is_swarm_round", 1)
-	register_native("StartSwarmRound", 			"native_start_swarm_round", 1)
-	register_native("IsPlagueRound", 		 	"native_is_plague_round", 1)
-	register_native("StartPlagueRound", 		"native_start_plague_round", 1)
-	register_native("IsArmageddonRound", 	 	"native_is_armageddon_round", 1)
-	register_native("StartArmageddonRound", 	"native_start_armageddon_round", 1)
-	register_native("IsApocalypseRound", 	 	"native_is_apocalypse_round", 1)
-	register_native("StartApocalypseRound", 	"native_start_apocalypse_round", 1)
-	register_native("IsDevilRound", 		 	"native_is_devil_round", 1)
-	register_native("StartDevilRound", 			"native_start_devil_round", 1)
-	register_native("IsNightmareRound", 	 	"native_is_nightmare_round", 1)
-	register_native("StartNightmareRound", 		"native_start_nightmare_round", 1)
-	register_native("IsSynapsisRound",          "native_is_synapsis_round", 1)
-	register_native("StartSynapsisRound",       "native_start_synapsis_round", 1)
+	register_native("IsSwarmRound", "native_is_swarm_round", 1)
+	register_native("StartSwarmRound", "native_start_swarm_round", 1)
+	register_native("IsPlagueRound", "native_is_plague_round", 1)
+	register_native("StartPlagueRound", "native_start_plague_round", 1)
+	register_native("IsArmageddonRound", "native_is_armageddon_round", 1)
+	register_native("StartArmageddonRound", "native_start_armageddon_round", 1)
+	register_native("IsApocalypseRound", "native_is_apocalypse_round", 1)
+	register_native("StartApocalypseRound", "native_start_apocalypse_round", 1)
+	register_native("IsDevilRound", "native_is_devil_round", 1)
+	register_native("StartDevilRound", "native_start_devil_round", 1)
+	register_native("IsNightmareRound", "native_is_nightmare_round", 1)
+	register_native("StartNightmareRound", "native_start_nightmare_round", 1)
+	register_native("IsSynapsisRound", "native_is_synapsis_round", 1)
+	register_native("StartSynapsisRound", "native_start_synapsis_round", 1)
 	register_native("IsSurvivorVsAssasinRound", "native_is_survivor_vs_assasin_round", 1)
 	register_native("StartSurvivorVsAssasinRound", "native_start_survivor_vs_assasin_round", 1)
+	register_native("IsBombardierVsGrenadierRound", "native_is_bombardier_vs_grenadier_round", 1)
+	register_native("StartBombardierVsGrenadierRound", "native_start_bombardier_vs_grenadier_round", 1)
 
 	// Native for adding weapons to the Points shop weapons
     register_native("RegisterPointsShopWeapon", "native_register_points_shop_weapon")
@@ -2493,6 +2508,10 @@ public plugin_precache()
 	for (i = 0; i < sizeof(sound_survivor_vs_assasin); i++)
 	{
 		engfunc(EngFunc_PrecacheSound, sound_survivor_vs_assasin[i])
+	}
+	for (i = 0; i < sizeof(sound_bombardier_vs_grenadier); i++)
+	{
+		engfunc(EngFunc_PrecacheSound, sound_bombardier_vs_grenadier[i])
 	}
 	for (i = 0; i < sizeof(grenade_infect); i++)
 	{
@@ -2797,6 +2816,8 @@ public plugin_init()
 	register_concmd("amx_devil", "cmd_devil", -1, _, -1)
 	register_concmd("zp_survivor_vs_assasin", "cmd_survivor_vs_assasin", -1, _, -1)
 	register_concmd("amx_survivor_vs_assasin", "cmd_survivor_vs_assasin", -1, _, -1)
+	register_concmd("zp_bombardier_vs_grenadier", "cmd_bombardier_vs_grenadier", -1, _, -1)
+	register_concmd("amx_bombardier_vs_grenadier", "cmd_bombardier_vs_grenadier", -1, _, -1)
 	register_concmd("zp_points", "cmd_points", -1, _, -1)
 	register_concmd("amx_points", "cmd_points", -1, _, -1)
 	register_concmd("zp_resetpoints", "cmd_resetpoints", -1, _, -1)
@@ -3486,10 +3507,7 @@ public TaskReminder()
 	static id; id = 1
 	while (g_maxplayers + 1 > id)
 	{
-		if (g_isalive[id] && g_specialclass[id])
-		{
-			client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_classString[id], AddCommas(pev(id, pev_health)))
-		}
+		if (g_isalive[id] && g_specialclass[id]) client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_classString[id], AddCommas(pev(id, pev_health)))
 		id++
 	}
 
@@ -3506,8 +3524,8 @@ public message_saytext()
 {
 	if (get_msg_args() == 4)
 	{
-		static iSender
-		iSender = get_msg_arg_int(1)
+		static iSender; iSender = get_msg_arg_int(1)
+
 		if (0 < iSender < g_maxplayers + 1 && g_cTag[iSender][0])
 		{
 			static cReplacement[189]
@@ -3591,14 +3609,13 @@ public _GameMenu(id, menu, item)
 			{
 				if (g_isalive[id] && !is_hull_vacant(id))
 				{
-					static i
+					static i; i = 0
 					static Float:fOrigin[3]
 					static Float:fVector[3]
 					static Float:fMins[3]
 					pev(id, pev_mins, fMins)
 					pev(id, pev_origin, fOrigin)
-					i = 0
-
+					
 					while (i < 70)
 					{
 						fVector[0] = floatsub(fOrigin[0], floatmul(fMins[0], g_fSizes[i][0]))
@@ -3613,7 +3630,7 @@ public _GameMenu(id, menu, item)
 							client_cmd(id, "spk fvox/blip.wav")
 							UTIL_ScreenFade(id, {200, 200, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)			
 						}
-						i += 1
+						i++
 					}
 					client_print_color(id, print_team_grey, "%s You have been unstucked!", CHAT_PREFIX)
 				}
@@ -4766,7 +4783,21 @@ public _Modes(id, menu, item)
 			{ 
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
 				{
+					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					{
+						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
 
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
+
+					LIMIT[id][CUSTOM_MODES]++
+
+					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					show_hudmessage(0, "%s bought Bombardier vs Grenadier mode with points!", g_playername[id])
+					MySQL_UPDATE_DATABASE(id)
 				}
 			}
 		case PSHOP_MODE_SAMURAI_VS_NEMESIS: 
@@ -5042,7 +5073,7 @@ public logevent_round_end()
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
 			}
 		}
-		case MODE_SWARM, MODE_PLAGUE, MODE_SYNAPSIS:
+		case MODE_SWARM, MODE_PLAGUE, MODE_SYNAPSIS, MODE_BOMBARDIER_VS_GRENADIER:
 		{
 			if (!fnGetZombies())
 			{
@@ -5802,7 +5833,7 @@ public OnPlayerSpawn(id)
 	// Switch to CT if spawning mid-round
 	if (!g_newround && fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
 	{
-		remove_task(id+TASK_TEAM)
+		remove_task(id + TASK_TEAM)
 		fm_cs_set_user_team(id, FM_CS_TEAM_CT)
 		fm_user_team_update(id)
 	}
@@ -5813,7 +5844,7 @@ public OnPlayerSpawn(id)
 	
 	if (current_time - g_models_targettime >= g_modelchange_delay)
 	{
-		ChangeModels(id+TASK_MODEL)
+		ChangeModels(id + TASK_MODEL)
 		g_models_targettime = current_time
 	}
 	else
@@ -5956,7 +5987,8 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	static iSurvivors; iSurvivors = fnGetSurvivors()
 	static iSnipers; iSnipers = fnGetSnipers()
 	//static iSamurai; iSamurai = fnGetSamurai()
-	//static iBombardier; iBombardier = fnGetBombardier()
+	static iBombardier; iBombardier = fnGetBombardier()
+	static iGrenadier; iGrenadier = fnGetGrenadier()
 
 	if (!fnGetHumans() || !fnGetZombies()) return
 
@@ -6106,6 +6138,26 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
+	else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER))
+	{
+		if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER))
+		{
+			if (iBombardier > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Bombardiers Remaining...", iSnipers)
+			}
+		}
+		
+		if (CheckBit(g_playerClass[victim], CLASS_GRENADIER))
+		{
+			if (iGrenadier > 1)
+			{
+				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Grenadiers Remaining...", iAssasin)
+			}
+		}
+	}
 
 	if (iZombies == 1 && iHumans == 1)
 	{
@@ -6251,7 +6303,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		
 		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) 
 		|| CheckBit(g_playerClass[attacker], CLASS_TRYDER) || CheckBit(g_playerClass[attacker], CLASS_GRENADIER)
-		|| CheckBit(g_playerClass[attacker], CLASS_TERMINATOR))
+		|| CheckBit(g_playerClass[attacker], CLASS_TERMINATOR) || CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER))
 		{
 			while (g_damagedealt_human[attacker] >= 500)
 			{
@@ -6314,6 +6366,27 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		{
 			// Ignore assassin damage override if damage comes from a 3rd party entity
 			// (to prevent this from affecting a sub-plugin's rockets e.g.)
+
+			if (damage) 
+			{
+				if (++iPosition[attacker] == sizeof(g_flCoords))
+				{
+					iPosition[attacker] = 0
+				}
+
+				if (damage_type & DMG_BLAST) 
+				{
+					set_hudmessage(200, 0, 0, g_flCoords[iPosition[attacker]][0], g_flCoords[iPosition[attacker]][1], 0, 0.1, 2.5, 0.02, 0.02, -1)
+					show_hudmessage(attacker, "%s", AddCommas(floatround(damage)))
+
+					// Send Screenfade message
+					UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
+
+					// Send Screenshake message
+					SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
+				}
+			}
+
 			if (inflictor == attacker) SetHamParamFloat(4, BombardierDamage)
 			return HAM_IGNORED
 		}
@@ -6345,6 +6418,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) 
 	|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) 
 	|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) 
+	|| CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)
 	|| CheckBit(g_currentmode, MODE_NIGHTMARE) 
 	|| fnGetHumans() == 1) return HAM_IGNORED // human is killed
 	
@@ -7022,7 +7096,11 @@ public FwSetModel(entity, const model[])
 		{
 			if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
 			{
-				if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) SetNadeType(entity, 128, 0, 255, NADE_TYPE_KILLING)
+				if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
+				{
+					if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) SetNadeType(entity, 255, 0, 0, NADE_TYPE_EXPLOSION)
+					else SetNadeType(entity, 128, 0, 255, NADE_TYPE_KILLING)
+				} 
 				else SetNadeType(entity, 0, 255, 0, NADE_TYPE_INFECTION)
 			}
 			else
@@ -7041,7 +7119,7 @@ public FwSetModel(entity, const model[])
 					// Decrease count
 					g_antidotebomb[id]--
 				}
-				else SetNadeType(entity, 255, 0, 0, NADE_TYPE_EXPLODE)
+				else SetNadeType(entity, 255, 0, 0, NADE_TYPE_EXPLOSION)
 			}
 		}
 		case 'f':
@@ -7114,7 +7192,7 @@ public OnThinkGrenade(entity)
 			infection_explode(entity)
 			return HAM_SUPERCEDE
 		}
-	case NADE_TYPE_EXPLODE: // Explosion Grenade
+	case NADE_TYPE_EXPLOSION: // Explosion Grenade
 		{
 			explosion_explode(entity)
 			return HAM_SUPERCEDE
@@ -7999,6 +8077,7 @@ public Client_Say(id)
 		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor vs Assasin")
 		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
 		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
+		else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier vs Grenadier")
 		else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
 		else if (CheckBit(g_currentmode, MODE_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Assasin")
 		else if (CheckBit(g_currentmode, MODE_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nemesis")
@@ -8186,8 +8265,10 @@ public Client_SayTeam(id)
 		else if (CheckBit(g_currentmode, MODE_PLAGUE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
 		else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Synapsis")
 		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
+		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor vs Assasin")
 		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
 		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
+		else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier vs Grenadier")
 		else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
 		else if (CheckBit(g_currentmode, MODE_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Assasin")
 		else if (CheckBit(g_currentmode, MODE_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nemesis")
@@ -8201,6 +8282,28 @@ public Client_SayTeam(id)
 
 		client_print_color(id, print_team_grey, "%s %s", CHAT_PREFIX, buffer)
 	}
+	else if (equali(cMessage, "class", 5))
+	{
+		if (CheckBit(g_playerClass[id], CLASS_HUMAN)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Human")
+		else if (CheckBit(g_playerClass[id], CLASS_ZOMBIE)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Zombie")
+		else if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Nemesis")
+		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Assasin")
+		else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Bombardier")
+		else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Survivor")
+		else if (CheckBit(g_playerClass[id], CLASS_SNIPER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Sniper")
+		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Samurai")
+		else if (CheckBit(g_playerClass[id], CLASS_GRENADIER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Grenadier")
+		else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Terminator")
+		else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Revenant")
+		else if (CheckBit(g_playerClass[id], CLASS_TRYDER)) client_print_color(id, print_team_grey, "^4Your class^1: ^3Tryder")
+	}
+	else if (equali(cMessage, "team", 4))
+	{
+		if (CheckBit(g_playerTeam[id], TEAM_HUMAN)) client_print_color(id, print_team_grey, "^4Your team: ^3Human")
+		else client_print_color(id, print_team_grey, "^4Your team: ^3Zombie")
+	}
+	else if (equali(cMessage, "hash", 4)) client_print_color(id, print_team_grey, "Your ^4Name ^1+ ^4Steam ID ^3Hash ^1is : ^3%s", g_playerHash[id])
+	else if (equali(cMessage, "id", 4)) client_print_color(id, print_team_grey, "Your ^4Steam ID ^3is : ^3%s", g_playerSteamID[id])
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
 	else if (equali(cMessage, "/commands", 9) || equali(cMessage, "commands", 8))
@@ -8306,7 +8409,7 @@ public ShowStartSpecialModesMenu(id)
     menu_additem(g_startSpecialModesMenu, "Survivor vs Assasin", "1", 0, g_startSpecialModesCallback)
     menu_additem(g_startSpecialModesMenu, "Sniper vs Nemesis", "2", 0, g_startSpecialModesCallback)
     menu_additem(g_startSpecialModesMenu, "Sniper vs Assasin", "3", 0, g_startSpecialModesCallback)
-    menu_additem(g_startSpecialModesMenu, "Bombardier vs Bomber", "4", 0, g_startSpecialModesCallback)
+    menu_additem(g_startSpecialModesMenu, "Bombardier vs Grenadier", "4", 0, g_startSpecialModesCallback)
     menu_additem(g_startSpecialModesMenu, "Nightmare", "5", 0, g_startSpecialModesCallback)
 
     menu_display(id, g_startSpecialModesMenu, 0)
@@ -8752,11 +8855,28 @@ public StartSpecialModesMenuHandler(id, menu, item)
 			}
 			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
-        case START_BOMBARDIER_VS_BOMBER: 
+        case START_BOMBARDIER_VS_GRENADIER: 
 		{ 
-			// Execute our forward
-			//ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_, id)
-			return PLUGIN_HANDLED
+			if (AdminHasFlag(id, 'a'))
+			{
+				if (allowed_bombardier_vs_grenadier())
+				{
+					// Start Bombardier vs Grenadier Mode
+					remove_task(TASK_MAKEZOMBIE)
+					start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
+
+					// Print to chat
+					client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1round!", CHAT_PREFIX, g_playername[id])
+
+					// Log to file
+					LogToFile(LOG_MODE_BOMBARDIER_VS_GRENADIER, id)
+
+					// Execute our forward
+					ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_BOMBARDIER_VS_GRENADIER, id)
+				}
+				else client_print_color(id, print_team_grey, "%s Unavailable command.", CHAT_PREFIX)
+			}
+			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
 		case START_NIGHTMARE: 
 		{ 
@@ -9293,7 +9413,7 @@ public StartSpecialModesCallBack(id, menu, item)
 		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
 		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
 		case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 4: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+		case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
 		case 5: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
     }
 
@@ -11294,6 +11414,37 @@ public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
 	return PLUGIN_CONTINUE
 }
 
+// zp_bombardier_vs_grenadier
+public cmd_bombardier_vs_grenadier(id) // Bombardier vs Grenadier mode
+{
+	// Check for access flag - Mode Bombardier vs Grenadier
+	if (g_bAdmin[id] && AdminHasFlag(id, 'n'))
+	{
+		// Bombardier vs Grenadier mode not allowed
+		if (!allowed_bombardier_vs_grenadier())
+		{
+			client_print(id, print_console, "[ZP] Unavailable command.")
+			return PLUGIN_HANDLED
+		}
+		
+		// Call Bombardier vs Grenadier Mode
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
+		
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1mode.", CHAT_PREFIX, g_playername[id])
+		
+		// Log to file
+		LogToFile(LOG_MODE_BOMBARDIER_VS_GRENADIER, id)
+
+		// Execute our forward
+		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_BOMBARDIER_VS_GRENADIER, id)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
 // zp_points
 public cmd_points(id)
 {
@@ -12503,6 +12654,64 @@ start_mode(mode, id)
 
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, 0)
+	}
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, BombardierVsGrenadier_chance) == BombardierVsGrenadier_enable && iPlayersnum >= BombardierVsGrenadier_minPlayers && iPlayersnum >= 2) || mode == MODE_BOMBARDIER_VS_GRENADIER)
+	{
+		// Bombardier vs Grenadier Mode
+		SetBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)
+		g_lastmode = MODE_BOMBARDIER_VS_GRENADIER
+		
+		// iMaxZombies is rounded up, in case there aren't enough players
+		iMaxZombies = floatround((iPlayersnum * BombardierVsGrenadier_raio), floatround_ceil)
+		iZombies = 0
+		
+		// Randomly turn iMaxZombies players into Bombardier
+		while (iZombies < iMaxZombies)
+		{
+			// Keep looping through all players
+			if (++id > g_maxplayers) id = 1
+			
+			// Dead or already a zombie or Bombardier
+			if (!g_isalive[id] || CheckBit(g_playerClass[id], CLASS_BOMBARDIER)) continue
+			
+			// Random chance
+			if (random_num(0, 1))
+			{
+				// Turn into a Bombardier
+				MakeZombie(id, CLASS_BOMBARDIER)
+				set_user_health(id, floatround(float(pev(id, pev_health)) * BombardierVsGrenadier_bombardier_HealthMultiply))
+				iZombies++
+			}
+		}
+		
+		// Turn the remaining players into Grenadiers
+		for (id = 1; id <= g_maxplayers; id++)
+		{
+			// Only those of them who arent zombies or sniper
+			if (!g_isalive[id] || CheckBit(g_playerTeam[id], TEAM_ZOMBIE) || CheckBit(g_playerClass[id], CLASS_GRENADIER)) continue
+			
+			// Turn into a Grenadier
+			MakeHuman(id, CLASS_GRENADIER)
+			set_user_health(id, floatround(float(pev(id, pev_health)) * BombardierVsGrenadier_grenadier_HealthMultiply))
+		}
+		
+		// Play Bombardier vs Grenadier sound
+		PlaySound(sound_bombardier_vs_grenadier[random(sizeof sound_bombardier_vs_grenadier)])
+		
+		// Show Bombardier vs Grenadier HUD notice
+		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
+		ShowSyncHudMsg(0, g_MsgSync, "Bombardier vs Grenadier mode !!!")
+		
+		// Create Fog 
+		//CreateFog(0, 100, 200, 100, 0.0008)
+		
+		// Mode fully started!
+		g_modestarted = true
+
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+
+		// Execute out forward
+		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_BOMBARDIER_VS_GRENADIER, 0)
 	}
 	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Nightmare_chance) == Nightmare_enable && iPlayersnum >= Nightmare_minPlayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
 	{
@@ -13874,6 +14083,7 @@ public StartAmbienceSounds(taskid)
 	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
+	else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) PlaySound("PerfectZM/ambience_normal.wav")
 	else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) PlaySound("PerfectZM/ambience_normal.wav")
 }
 
@@ -14345,54 +14555,103 @@ public explosion_explode(ent)
 
 	// Send TE_BEAMCYLINDER
 	SendGrenadeBeamCylinder(ent, 255, 0, 0, 200)
-	
-	// Loop
-	for (victim = 1 ; victim <= g_maxplayers; victim++)
+
+	if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER))
 	{
-		if (!is_user_alive(victim)) continue
-		
-		if (CheckBit(g_playerTeam[victim], TEAM_HUMAN)) continue
-		
-		pev(victim, pev_origin, clorigin)
-		distance = get_distance_f(origin, clorigin)
-
-		if (distance < 330)
+		for (victim = 1 ; victim <= g_maxplayers; victim++)
 		{
-			damage = 700.0 - distance
-			health = get_user_health(victim)
-			damage = float(floatround(damage))
-
-			// Throw him away in his current vector
-			pev(victim , pev_velocity, clvelocity)
-			xs_vec_mul_scalar(clvelocity, 2.75, clvelocity)
-			clvelocity[2] *= 1.75
-			set_pev(victim, pev_velocity, clvelocity)
-
-			// Send Screenfade message
-			UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
+			if (!is_user_alive(victim)) continue
 			
-			// Play flatline sound on client
-			client_cmd(victim, "spk fvox/flatline")
+			if (attacker == victim) continue
 			
-			// Send Screenshake message
-			SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
+			pev(victim, pev_origin, clorigin)
+			distance = get_distance_f(origin, clorigin)
 
-			if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) 
-			|| CheckBit(g_playerClass[victim], CLASS_BOMBARDIER) || CheckBit(g_playerClass[victim], CLASS_REVENANT)) damage *= 1.50
-
-			// Checks
-			if (health - floatround(damage))
-				ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
-			else
+			if (distance < 330)
 			{
-				ExecuteHamB(Ham_Killed, victim, attacker, 2)
-				SendLavaSplash(victim)
+				damage = 700.0 - distance
+				health = get_user_health(victim)
+				damage = float(floatround(damage))
+
+				// Throw him away in his current vector
+				pev(victim , pev_velocity, clvelocity)
+				xs_vec_mul_scalar(clvelocity, 2.75, clvelocity)
+				clvelocity[2] *= 1.75
+				set_pev(victim, pev_velocity, clvelocity)
+
+				// Send Screenfade message
+				UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
+				
+				// Play flatline sound on client
+				client_cmd(victim, "spk fvox/flatline")
+				
+				// Send Screenshake message
+				SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
+
+				damage *= 1.50
+
+				// Checks
+				if (health - floatround(damage))
+					ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
+				else
+				{
+					ExecuteHamB(Ham_Killed, victim, attacker, 2)
+					SendLavaSplash(victim)
+				}
+			}
+		}
+	}
+	else
+	{
+		for (victim = 1 ; victim <= g_maxplayers; victim++)
+		{
+			if (!is_user_alive(victim)) continue
+			
+			if (CheckBit(g_playerTeam[victim], TEAM_HUMAN)) continue
+			
+			pev(victim, pev_origin, clorigin)
+			distance = get_distance_f(origin, clorigin)
+
+			if (distance < 330)
+			{
+				damage = 700.0 - distance
+				health = get_user_health(victim)
+				damage = float(floatround(damage))
+
+				// Throw him away in his current vector
+				pev(victim , pev_velocity, clvelocity)
+				xs_vec_mul_scalar(clvelocity, 2.75, clvelocity)
+				clvelocity[2] *= 1.75
+				set_pev(victim, pev_velocity, clvelocity)
+
+				// Send Screenfade message
+				UTIL_ScreenFade(victim, {200, 0, 0}, 1.0, 0.5, 100, FFADE_IN, true, false)
+				
+				// Play flatline sound on client
+				client_cmd(victim, "spk fvox/flatline")
+				
+				// Send Screenshake message
+				SendScreenShake(victim, 4096 * 6, 4096 * random_num(4, 12), 4096 * random_num(4, 12))
+
+				if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) 
+				|| CheckBit(g_playerClass[victim], CLASS_BOMBARDIER) || CheckBit(g_playerClass[victim], CLASS_REVENANT)) damage *= 1.50
+
+				// Checks
+				if (health - floatround(damage))
+					ExecuteHamB(Ham_TakeDamage, victim, ent, attacker, damage, DMG_BLAST)
+				else
+				{
+					ExecuteHamB(Ham_Killed, victim, attacker, 2)
+					SendLavaSplash(victim)
+				}
 			}
 		}
 	}
 	
 	// Get rid of the grenade
 	engfunc(EngFunc_RemoveEntity, ent)
+
+	if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER)) fm_give_item(attacker, "weapon_hegrenade")
 
 	// Give Grenadier his grenade
 	if (CheckBit(g_playerClass[attacker], CLASS_GRENADIER)) fm_give_item(attacker, "weapon_hegrenade")
@@ -15041,7 +15300,7 @@ fnGetSamurai()
 }
 
 // Get Grenadier -returns alive Grenadier number-
-fnGetGrenadiers()
+fnGetGrenadier()
 {
 	static iGrenadier, id
 	iGrenadier = 0
@@ -15455,6 +15714,15 @@ allowed_survivor_vs_assasin()
 	return true
 }
 
+// Checks if bombardier vs grenadier mode is allowed
+allowed_bombardier_vs_grenadier()
+{
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * BombardierVsGrenadier_raio, floatround_ceil) < 2 || floatround(fnGetAlive() * BombardierVsGrenadier_raio, floatround_ceil) >= fnGetAlive())
+	return false
+	
+	return true
+}
+
 // Checks if apocalypse mode is allowed
 allowed_apocalypse()
 {
@@ -15747,35 +16015,36 @@ LogToFile(action, admin, target = 0)
 
 	switch (action)
 	{
-		case LOG_SLAY: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slayed %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_SLAP: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slapped %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_KICK:						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] kicked %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_GAG:						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] gagged %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_BAN:						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] banned %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_FREEZE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] froze %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_NICK: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed nickname of %s. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAP: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed map to . [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_ZOMBIE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_HUMAN: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_NEMESIS:			 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_ASSASIN: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_BOMBARDIER: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SNIPER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SURVIVOR: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SAMURAI: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_GRENADIER: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_TERMINATOR: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Terminator. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_REVENANT: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_MULTIPLE_INFECTION: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SWARM: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_PLAGUE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SYNAPSIS: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Synapsis mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SURVIVOR_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Survivor vs Assasin mode. [ Players: %d / %d ]", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SURVIVOR_VS_NEMESIS: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_NIGHTMARE: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SNIPER_VS_ASSASIN: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SNIPER_VS_NEMESIS: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_RESPAWN_PLAYER: 			formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. [ Players: %d / %d ]", 						g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAY: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slayed %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slapped %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_KICK:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] kicked %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_GAG:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] gagged %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_BAN:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] banned %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_FREEZE: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] froze %s. [ Players: %d / %d ]", 							g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_NICK: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed nickname of %s. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed map to . [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ZOMBIE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_HUMAN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_NEMESIS:			 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ASSASIN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_BOMBARDIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SNIPER: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SURVIVOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SAMURAI: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_GRENADIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_TERMINATOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Terminator. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_REVENANT: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_MULTIPLE_INFECTION: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SWARM: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_PLAGUE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SYNAPSIS: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Synapsis mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Survivor vs Assasin mode. [ Players: %d / %d ]", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_BOMBARDIER_VS_GRENADIER: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Bombardier vs Grenadier mode. [ Players: %d / %d ]", 			g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_NIGHTMARE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 				g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 	g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 		g_playername[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_RESPAWN_PLAYER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. [ Players: %d / %d ]", 						g_playername[admin], authid, ip, g_playername[target], fnGetPlaying(), g_maxplayers)
 	}
 
 	log_to_file("ZombieQueen.log", logdata)
@@ -16644,6 +16913,20 @@ public native_start_survivor_vs_assasin_round()
 
 	remove_task(TASK_MAKEZOMBIE)
 	start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
+
+	return true
+}
+
+// Native: IsBombardierVsGrenadierRound
+public native_is_bombardier_vs_grenadier_round(){ return CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER); }
+
+// Native: StartBombardierVsGrenadierRound
+public native_start_bombardier_vs_grenadier_round()
+{
+	if (!allowed_bombardier_vs_grenadier()) return false
+
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
 
 	return true
 }
