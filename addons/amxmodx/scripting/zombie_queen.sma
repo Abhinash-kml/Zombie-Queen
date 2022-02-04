@@ -992,7 +992,6 @@ new Float:predator_invisible_duration = 10.0
 new bool:g_invisible[33]
 
 // Extra items
-new bool:g_unlimitedclip[33]
 new bool:g_multijump[33]
 new g_jumpcount[33]
 new g_jumpnum[33]
@@ -1028,17 +1027,16 @@ new Float:BubbleGrenadeMins[3] = { -100.0, -100.0, -100.0 }
 
 // Map related
 new MapCountdownTimer = 10
-new bool:g_bVoting
-new bool:g_bSecondVoting
-new g_iVariable
-new g_iVariables[3]
-new g_iVotes[7]
-new g_cMaps[7][32]
-new g_cSecondMaps[5][32]
-new g_iSecondVotes[5]
+// new bool:g_bVoting
+// new bool:g_bSecondVoting
+// new g_iVotes[7]
+// new g_cMaps[7][32]
+// new g_cSecondMaps[5][32]
+// new g_iSecondVotes[5]
 
 // Leader related
 new g_iKillsThisRound[33]
+new g_iVariable
 
 // Round Count
 new g_roundcount
@@ -2215,7 +2213,7 @@ public plugin_natives()
 	register_native("StartBombardierVsGrenadierRound", "native_start_bombardier_vs_grenadier_round", 1)
 
 	// Native for adding weapons to the Points shop weapons
-    register_native("RegisterPointsShopWeapon", "native_register_points_shop_weapon")
+	register_native("RegisterPointsShopWeapon", "native_register_points_shop_weapon")
 }
 
 public plugin_precache()
@@ -2864,7 +2862,7 @@ public plugin_init()
 	g_forwards[POINTS_SHOP_WEAPON_SELECTED] = CreateMultiForward("OnPointsShopWeaponSelected", ET_IGNORE, FP_CELL, FP_CELL)
 
 	// create our array with the size of the item structure
-    g_pointsShopWeapons = ArrayCreate(pointsShopDataStructure)
+	g_pointsShopWeapons = ArrayCreate(pointsShopDataStructure)
 	
 	// CVARS - Others
 	cvar_botquota = get_cvar_pointer("bot_quota")
@@ -2905,11 +2903,11 @@ public plugin_init()
 
 	g_mainAdminMenuCallback = menu_makecallback("MainAdminMenuCallback")
 	g_makeHumanClassMenuCallback= menu_makecallback("MakeHumanClassMenuCallback")
-    g_makeZombieClassMenuCallback = menu_makecallback("MakeZombieClassMenuCallback")
-    g_startNormalModesCallback = menu_makecallback("StartNormalModesCallBack")
-    g_startSpecialModesCallback = menu_makecallback("StartSpecialModesCallBack")
-    g_playersMenuCallback = menu_makecallback("PlayersMenuCallBack")
-	
+	g_makeZombieClassMenuCallback = menu_makecallback("MakeZombieClassMenuCallback")
+	g_startNormalModesCallback = menu_makecallback("StartNormalModesCallBack")
+	g_startSpecialModesCallback = menu_makecallback("StartSpecialModesCallBack")
+	g_playersMenuCallback = menu_makecallback("PlayersMenuCallBack")
+
 	new cLine[128]
 	new cNumber[3]
 	g_iGameMenu = menu_create("Game Menu", "_GameMenu", 0)	// Game menu
@@ -3008,28 +3006,28 @@ public MySql_Init()
 
     // We tell the API that this is the information we want to connect to,
     // just not yet. basically it's like storing it in global variables
-    g_SqlTuple = SQL_MakeDbTuple("", "", "", "ZombieQueen")
+	g_SqlTuple = SQL_MakeDbTuple("", "", "", "ZombieQueen")
    
     // Ok, we're ready to connect
-    new ErrorCode, Handle:SqlConnection = SQL_Connect(g_SqlTuple, ErrorCode, g_Error, charsmax(g_Error))
+	new ErrorCode, Handle:SqlConnection = SQL_Connect(g_SqlTuple, ErrorCode, g_Error, charsmax(g_Error))
 
-    if (SqlConnection == Empty_Handle)
+	if (SqlConnection == Empty_Handle)
     {
 		// stop the plugin with an error message
         set_fail_state(g_Error)
     }
 
-    new Handle:Queries
+	new Handle:Queries
 
     // We must now prepare some random queries
-    Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS `perfectzm` (NICKNAME varchar(32), HASH varchar(150), KILLS INT(11), DEATHS INT(11), INFECTIONS INT(11), NEMESISKILLS INT(11), ASSASINKILLS INT(11), BOMBARDIERKILLS INT(11), SURVIVORKILLS INT(11), SNIPERKILLS INT(11), SAMURAIKILLS INT(11), POINTS INT(11), SCORE INT(11))")
+	Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS `perfectzm` (NICKNAME varchar(32), HASH varchar(150), KILLS INT(11), DEATHS INT(11), INFECTIONS INT(11), NEMESISKILLS INT(11), ASSASINKILLS INT(11), BOMBARDIERKILLS INT(11), SURVIVORKILLS INT(11), SNIPERKILLS INT(11), SAMURAIKILLS INT(11), POINTS INT(11), SCORE INT(11))")
 
-    if (!SQL_Execute(Queries))
-    {
-        // if there were any problems the plugin will set itself to bad load.
+	if (!SQL_Execute(Queries))
+	{
+	    // if there were any problems the plugin will set itself to bad load.
 	    SQL_QueryError(Queries, g_Error, charsmax(g_Error))
 	    set_fail_state(g_Error)
-    }
+	}
     
 	// Free the querie
 	SQL_FreeHandle(Queries)
@@ -3066,8 +3064,8 @@ public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[
 	else 
 	{
 	    // if there are results found
-	    g_kills[id]  		  = SQL_ReadResult(Query, 2)
-	    g_deaths[id] 		  = SQL_ReadResult(Query, 3)
+		g_kills[id]  		  = SQL_ReadResult(Query, 2)
+		g_deaths[id] 		  = SQL_ReadResult(Query, 3)
 		g_infections[id] 	  = SQL_ReadResult(Query, 4)
 		g_nemesiskills[id] 	  = SQL_ReadResult(Query, 5)
 		g_assasinkills[id] 	  = SQL_ReadResult(Query, 6)
@@ -3075,14 +3073,14 @@ public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[
 		g_survivorkills[id]   = SQL_ReadResult(Query, 8)
 		g_sniperkills[id] 	  = SQL_ReadResult(Query, 9)
 		g_samuraikills[id] 	  = SQL_ReadResult(Query, 10)
-	    g_points[id] 		  = SQL_ReadResult(Query, 11)
-	    g_score[id] 		  = SQL_ReadResult(Query, 12)
+		g_points[id] 		  = SQL_ReadResult(Query, 11)
+		g_score[id] 		  = SQL_ReadResult(Query, 12)
 
-	    set_dhudmessage(0, 255, 255, 0.03, 0.5, 2, 6.0, 10.0)
-	    show_dhudmessage(id, "You are now ranked!")
+		set_dhudmessage(0, 255, 255, 0.03, 0.5, 2, 6.0, 10.0)
+		show_dhudmessage(id, "You are now ranked!")
 	}
     
-    return PLUGIN_HANDLED
+	return PLUGIN_HANDLED
 }
 
 public MySql_TotalPlayers()
@@ -3123,8 +3121,8 @@ public MySQL_UPDATE_DATABASE(id)
 public MySQL_GetStatistics(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
 	new id, rank, Float:var1, g_menu, menudata[256]
-    rank = SQL_NumResults(Query)
-   	id = Data[0]
+	rank = SQL_NumResults(Query)
+	id = Data[0]
    
 	if (g_deaths[id]) var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]))
 	else var1 = float(g_kills[id])
@@ -3157,14 +3155,14 @@ public MySQL_GetStatistics(FailState, Handle:Query, Error[], Errcode, Data[], Da
 
 	client_print_color(0, print_team_grey, "%s ^3%s^1's rank is ^4%s ^1out of ^4%s ^1[ ^3Kills: ^4%s ^1- ^3Deaths: ^4%s ^1- ^3KPD: ^4%0.2f ^1- ^3Score: ^4%s ^1]", CHAT_PREFIX, g_playerName[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1, AddCommas(g_score[id]))
     
-    return PLUGIN_HANDLED
+	return PLUGIN_HANDLED
 } 
 
 public MySQL_WelcomeMessage(FailState, Handle:Query, Error[], Errcode, Data[], DataSize)
 {
 	new id, rank, Float:var1
-    rank = SQL_NumResults(Query)
-   	id = Data[0]
+	rank = SQL_NumResults(Query)
+	id = Data[0]
 
 	if (g_deaths[id]) var1 = floatdiv(float(g_kills[id]), float(g_deaths[id]))
 	else var1 = float(g_kills[id])
@@ -3179,7 +3177,7 @@ public MySQL_WelcomeMessage(FailState, Handle:Query, Error[], Errcode, Data[], D
 	set_dhudmessage(random(256), random(256), random(256), 0.02, 0.5, 2, 6.0, 8.0)
 	show_dhudmessage(id, "%s^nDon't forget to add us to your favourites!", HostName)
     
-    return PLUGIN_HANDLED
+	return PLUGIN_HANDLED
 } 
 
 public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
@@ -3364,10 +3362,10 @@ public ReadChatAdvertisementsFromFile()
 			trim(cLine)
 			if (cLine[0] == 33)
             {
-	            copy(g_cAdvertisements[g_iAdvertisementsCount], 160, cLine)
-	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!g", "^4")
-	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!t", "^3")
-	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!n", "^1")
+				copy(g_cAdvertisements[g_iAdvertisementsCount], 160, cLine)
+				replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!g", "^4")
+				replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!t", "^3")
+				replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!n", "^1")
 				g_iAdvertisementsCount++
             }
 		}
@@ -4961,7 +4959,7 @@ public logevent_round_end()
 
 	// Remove Bubble Grenade  (bugfix) ( credits: yokomo )
 	new ent = find_ent_by_class(-1, BubbleEntityClassName)
-    while (ent > 0)
+	while (ent > 0)
     {
         if(is_valid_ent(ent))
         {
@@ -4973,8 +4971,7 @@ public logevent_round_end()
     }
 
 	// Reset lighting if last round was Assassin round
-	if (g_lastmode == MODE_ASSASIN)
-		engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
+	if (g_lastmode == MODE_ASSASIN) engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
 
 	// Prevent this from getting called twice when restarting (bugfix)
 	static Float:lastendtime, Float:current_time
@@ -7548,7 +7545,7 @@ public FwCmdStart(id, handle)
 	return
 
 	// Get button for Zombie Abilities
-    new button = pev(id, pev_button)
+	new button = pev(id, pev_button)
 
 	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && (button & IN_USE) && g_zombieclass[id] == 1)
 	OnRaptorSkill(id)
@@ -8017,7 +8014,7 @@ public Client_Say(id)
 	}
 	else if (equali(cMessage, "/back", 5) || equali(cMessage, "back", 4))
 	{
-		if(cs_get_user_team(id) == CS_TEAM_SPECTATOR)
+		if (cs_get_user_team(id) == CS_TEAM_SPECTATOR)
 	    {
 	    	if (!g_modestarted)
 	    	{
@@ -8026,7 +8023,7 @@ public Client_Say(id)
 	    	}
 	    	else cs_set_user_team(id, CS_TEAM_CT)  
 	    }
-	    else client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
+		else client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
 	}
 	else if (equali(cMessage, "/donate", 7) || equali(cMessage, "donate", 6))
 	{
@@ -8213,7 +8210,7 @@ public Client_SayTeam(id)
 	    	}
 	    	else cs_set_user_team(id, CS_TEAM_CT)
 	    }
-	    else client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
+		else client_print_color(id, print_team_grey, "%s You are not a spectator", CHAT_PREFIX)
 	}
 	else if (equali(cMessage, "/donate", 7) || equali(cMessage, "donate", 6))
 	{
@@ -8351,30 +8348,30 @@ public show_menu_buy1(taskid)
 
 public ShowMainAdminMenu(id)
 {
-    new g_mainAdminMenu = menu_create("\yAdmin Menu", "MainAdminMenuHandler", 0)
+	new g_mainAdminMenu = menu_create("\yAdmin Menu", "MainAdminMenuHandler", 0)
     
-    menu_additem(g_mainAdminMenu, "Respawn Players", "0", 0, g_mainAdminMenuCallback)
-    menu_additem(g_mainAdminMenu, "Make Human Class", "1", 0, g_mainAdminMenuCallback)
+	menu_additem(g_mainAdminMenu, "Respawn Players", "0", 0, g_mainAdminMenuCallback)
+	menu_additem(g_mainAdminMenu, "Make Human Class", "1", 0, g_mainAdminMenuCallback)
 	menu_additem(g_mainAdminMenu, "Make Zombie Class", "2", 0, g_mainAdminMenuCallback)
 	menu_additem(g_mainAdminMenu, "Start Normal Rounds", "3", 0, g_mainAdminMenuCallback)
 	menu_additem(g_mainAdminMenu, "Start Special Rounds", "4", 0, g_mainAdminMenuCallback)
 	menu_additem(g_mainAdminMenu, "Switch off Zombie Queen \y( \rnote this will restart map \y)", "5", 0, g_mainAdminMenuCallback)
 
-    menu_display(id, g_mainAdminMenu, 0)
+	menu_display(id, g_mainAdminMenu, 0)
 }
 
 public ShowMakeHumanClassMenu(id)
 {
-    new g_makeHumanClassMenu = menu_create("\yMake Human Class", "MakeHumanClassMenuHandler", 0)
+	new g_makeHumanClassMenu = menu_create("\yMake Human Class", "MakeHumanClassMenuHandler", 0)
 
-    menu_additem(g_makeHumanClassMenu, "Make Human", "0", 0, g_makeHumanClassMenuCallback)
+	menu_additem(g_makeHumanClassMenu, "Make Human", "0", 0, g_makeHumanClassMenuCallback)
 	menu_additem(g_makeHumanClassMenu, "Make Survivor", "1", 0, g_makeHumanClassMenuCallback)
 	menu_additem(g_makeHumanClassMenu, "Make Sniper", "2", 0, g_makeHumanClassMenuCallback)
 	menu_additem(g_makeHumanClassMenu, "Make Samurai", "3", 0, g_makeHumanClassMenuCallback)
 	menu_additem(g_makeHumanClassMenu, "Make Terminator", "4", 0, g_makeHumanClassMenuCallback)
 	menu_additem(g_makeHumanClassMenu, "Make Grenadier", "5", 0, g_makeHumanClassMenuCallback)
 
-    menu_display(id, g_makeHumanClassMenu, 0)
+	menu_display(id, g_makeHumanClassMenu, 0)
 }
 
 public ShowMakeZombieClassMenu(id)
@@ -8441,7 +8438,7 @@ public ShowPlayersMenu(id)
     
     // Variables for storing infos
     new players[32], pnum, tempid
-    new name[32], userid[32], class[32], szString[64]
+    new userid[32], szString[64]
 
     //Fill players with available players
     get_players_ex(players, pnum)
@@ -8468,40 +8465,40 @@ public ShowPlayersMenu(id)
 public ShowPointsShopWeaponsMenu(id)
 {
     // Check if there are no items
-    if (!g_pointsShopTotalWeapons)
-    {
+	if (!g_pointsShopTotalWeapons)
+	{
 		client_print_color(id, print_team_grey, "%s There are no ^3weapons ^1available right now", CHAT_PREFIX)
-        return PLUGIN_HANDLED
+		return PLUGIN_HANDLED
     }
-    
-    // Create menu
-    new menu = menu_create("\yPremium Wepons", "PointsShopWeaponsMenuHandler")
-    
-    // Used to display item in the menu
-    new itemData[pointsShopDataStructure]
-    new item[64]
-    
-    // Used for array index to menu
-    new data[3]
-    
-    // Loop through each item
-    for (new i = 0; i < g_pointsShopTotalWeapons; i++)
-    {
-        // Get item data from array
-        ArrayGetArray(g_pointsShopWeapons, i, itemData)
-        
-        // Format item for menu
-        formatex(item, charsmax(item), "%s \r[ %s points ]", itemData[ItemName], AddCommas(itemData[ItemCost]))
-        
-        // Pass array index to menu to find information about it later
-        num_to_str(i, data, charsmax(data))
-        
-        // Add item to menu
-        menu_additem(menu, item, data)
-    }
-    
-    // Display menu to player
-    menu_display(id, menu, 0)
+
+	// Create menu
+	new menu = menu_create("\yPremium Wepons", "PointsShopWeaponsMenuHandler")
+
+	// Used to display item in the menu
+	new itemData[pointsShopDataStructure]
+	new item[64]
+
+	// Used for array index to menu
+	new data[3]
+
+	// Loop through each item
+	for (new i = 0; i < g_pointsShopTotalWeapons; i++)
+	{
+		// Get item data from array
+		ArrayGetArray(g_pointsShopWeapons, i, itemData)
+
+		// Format item for menu
+		formatex(item, charsmax(item), "%s \r[ %s points ]", itemData[ItemName], AddCommas(itemData[ItemCost]))
+
+		// Pass array index to menu to find information about it later
+		num_to_str(i, data, charsmax(data))
+
+		// Add item to menu
+		menu_additem(menu, item, data)
+	}
+
+	// Display menu to player
+	menu_display(id, menu, 0)
 
 	return PLUGIN_CONTINUE
 }
@@ -8556,34 +8553,34 @@ public PrimaryHandler(id, menu, item)
 
 public MainAdminMenuHandler(id, menu, item)
 {
-    if (item == MENU_EXIT)
-    {
-        menu_destroy(menu)
-        return PLUGIN_HANDLED
-    }
+	if (item == MENU_EXIT)
+	{
+		menu_destroy(menu)
+		return PLUGIN_HANDLED
+	}
 
-    new data[6]
+	new data[6]
 
-    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
-    new choice = str_to_num(data)
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
 
-    switch (choice)
-    {
-        case 0: { ADMIN_MENU_ACTION = ACTION_RESPAWN_PLAYER; PL_MENU_BACK_ACTION = MENU_BACK_RESPAWN_PLAYERS; ShowPlayersMenu(id); }
-        case 1: { ShowMakeHumanClassMenu(id); }
-        case 2: { ShowMakeZombieClassMenu(id); }
-        case 3: { ShowStartNormalModesMenu(id); }
-        case 4: { ShowStartSpecialModesMenu(id); }
-        case 5: { client_print_color(id, print_team_grey, "^3You have access to this command"); return PLUGIN_HANDLED; }
-    }
+	switch (choice)
+	{
+		case 0: { ADMIN_MENU_ACTION = ACTION_RESPAWN_PLAYER; PL_MENU_BACK_ACTION = MENU_BACK_RESPAWN_PLAYERS; ShowPlayersMenu(id); }
+		case 1: { ShowMakeHumanClassMenu(id); }
+		case 2: { ShowMakeZombieClassMenu(id); }
+		case 3: { ShowStartNormalModesMenu(id); }
+		case 4: { ShowStartSpecialModesMenu(id); }
+		case 5: { client_print_color(id, print_team_grey, "^3You have access to this command"); return PLUGIN_HANDLED; }
+	}
 
 	return PLUGIN_CONTINUE
 }
 
 public MakeHumanClassMenuHandler(id, menu, item)
 {
-    if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
-    
+	if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
+
 	new data[6]
 
 	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
@@ -8595,8 +8592,8 @@ public MakeHumanClassMenuHandler(id, menu, item)
 		case MAKE_SURVIVOR: { ADMIN_MENU_ACTION = ACTION_MAKE_SURVIVOR; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
 		case MAKE_SNIPER: { ADMIN_MENU_ACTION = ACTION_MAKE_SNIPER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
 		case MAKE_SAMURAI: { ADMIN_MENU_ACTION = ACTION_MAKE_SAMURAI; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
-        case MAKE_TERMINATOR: { ADMIN_MENU_ACTION = ACTION_MAKE_TERMINATOR; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
-        case MAKE_GRENADIER: { ADMIN_MENU_ACTION = ACTION_MAKE_GRENADIER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
+		case MAKE_TERMINATOR: { ADMIN_MENU_ACTION = ACTION_MAKE_TERMINATOR; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
+		case MAKE_GRENADIER: { ADMIN_MENU_ACTION = ACTION_MAKE_GRENADIER; PL_MENU_BACK_ACTION = MENU_BACK_MAKE_HUMAN_CLASS; ShowPlayersMenu(id); }
 	}
 
 	return PLUGIN_CONTINUE
@@ -8626,17 +8623,17 @@ public MakeZombieClassMenuHandler(id, menu, item)
 
 public StartNormalModesMenuHandler(id, menu, item)
 {
-    if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
+	if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
 
-    new data[6]
+	new data[6]
 
 	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
 	new choice = str_to_num(data)
 
-    switch (choice)
-    {
-        case START_INFECTION: 
-		{ 
+	switch (choice)
+	{
+		case START_INFECTION: 
+		{
 			if (AdminHasFlag(id, 'a') && !g_modestarted)
 			{
 				if (!g_modestarted)
@@ -8657,8 +8654,8 @@ public StartNormalModesMenuHandler(id, menu, item)
 			}
 			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
-        case START_MULTIPLE_INFECTION: 
-		{ 
+	case START_MULTIPLE_INFECTION: 
+		{
 			if (AdminHasFlag(id, 'a'))
 			{
 				if (allowed_multi())
@@ -8680,8 +8677,8 @@ public StartNormalModesMenuHandler(id, menu, item)
 			}
 			else client_print_color(id, print_team_grey, "%s You dont have access of this command.", CHAT_PREFIX)
 		}
-        case START_SWARM: 
-		{ 
+	case START_SWARM: 
+		{
 			if (AdminHasFlag(id, 'a'))
 			{
 				if (allowed_swarm())
@@ -8751,22 +8748,22 @@ public StartNormalModesMenuHandler(id, menu, item)
 		}
     }
 
-    return PLUGIN_CONTINUE
+	return PLUGIN_CONTINUE
 }
 
 public StartSpecialModesMenuHandler(id, menu, item)
 {
-    if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
+	if (item == MENU_EXIT) { menu_destroy(menu); ShowMainAdminMenu(id); return PLUGIN_HANDLED; }
 
-    new data[6]
+	new data[6]
 
 	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
 	new choice = str_to_num(data)
 
-    switch (choice)
+	switch (choice)
     {
-        case START_SURVIVOR_VS_NEMESIS: 
-		{ 
+		case START_SURVIVOR_VS_NEMESIS: 
+		{
 			if (AdminHasFlag(id, 'a'))
 			{
 				if (allowed_armageddon())
@@ -8905,7 +8902,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
     }
 
-    return PLUGIN_CONTINUE
+	return PLUGIN_CONTINUE
 }
 
 public PlayersMenuHandler(id, menu, item)
@@ -9273,38 +9270,38 @@ public PlayersMenuHandler(id, menu, item)
 
 public PointsShopWeaponsMenuHandler(id, menu, item)
 {
-    if (item == MENU_EXIT)
-    {
-        menu_destroy(menu)
-        return PLUGIN_HANDLED
-    }
-    
-    new data[3]
-    menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
-    
-    // Get item index from menu
-    new itemIndex = str_to_num(data)
-    
-    // Get item data from array
-    new itemData[pointsShopDataStructure]
-    ArrayGetArray(g_pointsShopWeapons, itemIndex, itemData)
-    
-    // Check if player's points is less then the item's cost // If not then set the item
-    if (g_points[id] < itemData[ItemCost])
-    {
-        // notify player
-       client_print_color(id, print_team_grey, "%s You dont have enough ^3points ^1to buy this weapon...", CHAT_PREFIX)
-	   return PLUGIN_HANDLED
-    }
-    else
+	if (item == MENU_EXIT)
+	{
+		menu_destroy(menu)
+		return PLUGIN_HANDLED
+	}
+
+	new data[3]
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+
+	// Get item index from menu
+	new itemIndex = str_to_num(data)
+
+	// Get item data from array
+	new itemData[pointsShopDataStructure]
+	ArrayGetArray(g_pointsShopWeapons, itemIndex, itemData)
+
+	// Check if player's points is less then the item's cost // If not then set the item
+	if (g_points[id] < itemData[ItemCost])
+	{
+		// notify player
+		client_print_color(id, print_team_grey, "%s You dont have enough ^3points ^1to buy this weapon...", CHAT_PREFIX)
+		return PLUGIN_HANDLED
+	}
+	else
     {
 		// Get player's points and subtract the cost
 		g_points[id] -= itemData[ItemCost]
 		MySQL_UPDATE_DATABASE(id)
 
-        // Notify plugins that the player bought this item
-        ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
-    }
+		// Notify plugins that the player bought this item
+		ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
+	}
 
 	return PLUGIN_CONTINUE
 }
@@ -9385,12 +9382,12 @@ public MakeZombieClassMenuCallback(id, menu, item)
 
 public StartNormalModesCallBack(id, menu, item)
 {
-    new data[6]
+	new data[6]
 
 	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
 	new choice = str_to_num(data)
 
-    switch (choice)
+	switch (choice)
     {
         case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
 		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
@@ -9399,17 +9396,17 @@ public StartNormalModesCallBack(id, menu, item)
         case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
     }
 
-    return ITEM_IGNORE
+	return ITEM_IGNORE
 }
 
 public StartSpecialModesCallBack(id, menu, item)
 {
-    new data[6]
+	new data[6]
 
 	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
 	new choice = str_to_num(data)
 
-    switch (choice)
+	switch (choice)
     {
         case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
 		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
@@ -9419,7 +9416,7 @@ public StartSpecialModesCallBack(id, menu, item)
 		case 5: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
     }
 
-    return ITEM_IGNORE
+	return ITEM_IGNORE
 }
 
 public PlayersMenuCallBack(id, menu, item)
@@ -15287,9 +15284,9 @@ fnGetSnipers()
 	return iSnipers
 }
 
-// Abhinash
+
 // Get Samurai -returns alive Samurai number-
-fnGetSamurai()
+/*fnGetSamurai()
 {
 	static iSamurai, id
 	iSamurai = 0
@@ -15300,7 +15297,7 @@ fnGetSamurai()
 	}
 	
 	return iSamurai
-}
+}*/
 
 // Get Grenadier -returns alive Grenadier number-
 fnGetGrenadier()
@@ -15317,7 +15314,7 @@ fnGetGrenadier()
 }
 
 // Get Terminator -returns alive Terminator number-
-fnGetTerminators()
+/*fnGetTerminators()
 {
 	static iTerminator, id
 	iTerminator = 0
@@ -15342,7 +15339,7 @@ fnGetRevenants()
 	}
 
 	return iRevenants
-}
+}*/
 
 // Get Alive -returns alive players number-
 fnGetAlive()
