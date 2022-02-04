@@ -2947,7 +2947,7 @@ public plugin_init()
 
 	// Statistics menu
 	menu_additem(g_iStatisticsMenu, "Your rank", "0", 0, -1)
-	menu_additem(g_iStatisticsMenu, "Global top 15", "1", 0, -1)
+	menu_additem(g_iStatisticsMenu, "Global top 10", "1", 0, -1)
 	menu_additem(g_iStatisticsMenu, "Today's top players", "2", 0, -1)
 
 	// Points Shop menu
@@ -3206,7 +3206,7 @@ public MySQL_WelcomeMessage(FailState, Handle:Query, Error[], Errcode, Data[], D
 
 public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 {
-	static id, Buffer[6000], Place, Name[64], Score, Kills, Deaths, Infections, Points, Len
+	static id, Buffer[2048], Place, Name[16], Score, Kills, Deaths, Infections, Points, Len
 
 	Buffer[0] = '^0'
 
@@ -3218,8 +3218,8 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 
 	if (is_user_connected(id))
 	{
-		formatex(Buffer, charsmax(Buffer), "<meta charset=utf-8><style>body{background:#112233;font-family:Arial}th{background:#2E2E2E;color:#FFF;padding:5px 2px;text-align:left}td{padding:5px 2px}table{width:100%%;background:#EEEECC;font-size:12px;}h2{color:#FFF;font-family:Verdana;text-align:center}#nr{text-align:center}#c{background:#E2E2BC}</style><h2>%s</h2><table border=^"0^" align=^"center^" cellpadding=^"0^" cellspacing=^"1^"><tbody>", "TOP 15")
-		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>NAME<th>KILLS<th>DEATHS<th>INFECTIONS<th>POINTS<th>SCORE")
+		formatex(Buffer, charsmax(Buffer), "<meta charset=utf-8><style>body{background:#112233;font-family:Arial}th{background:#2E2E2E;color:#FFF;padding:5px 2px;text-align:left}td{padding:5px 2px}table{width:100%%;background:#EEEECC;font-size:15px;}h2{color:#FFF;font-family:Verdana;text-align:center}#nr{text-align:center}#c{background:#E2E2BC}</style><h2>%s</h2><table border=^"0^" align=^"center^" cellpadding=^"0^" cellspacing=^"1^"><tbody>", "TOP 10")
+		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>NAME<th>KILLS<th>DEATHS<th>INFECTIONS<th>POINTS<th>SCORE<th>KPD")
 
 		while (SQL_MoreResults(Query))
 		{
@@ -3229,11 +3229,16 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 			Deaths 	   = SQL_ReadResult(Query, 2)
 			Infections = SQL_ReadResult(Query, 3)
 			Points     = SQL_ReadResult(Query, 4)
-			Score 	   = SQL_ReadResult(Query, 5)
+			Score	   = SQL_ReadResult(Query, 5)
+
+			new Float:KPD
+
+			if (Deaths) KPD = floatdiv(float(Kills), float(Deaths))
+			else KPD = float(Kills)
 
 			++Place
 
-			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%s<td>%s<td>%s<td>%s<td>%s<td>%s<td>%s", Place % 2 == 0 ? "" : " id=c", AddCommas(Place), Name, AddCommas(Kills), AddCommas(Deaths), AddCommas(Infections), AddCommas(Points), AddCommas(Score))
+			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%i<td>%s<td>%s<td>%s<td>%s<td>%s<td>%s<td>%.2f", Place % 2 == 0 ? "" : " id=c", Place, Name, AddCommas(clamp(Kills, 0, 99999)), AddCommas(clamp(Deaths, 0, 99999)), AddCommas(clamp(Infections, 0, 99999)), AddCommas(clamp(Points, 0, 99999)), AddCommas(clamp(Score, 0, 99999)), floatclamp(KPD, 0.10, 10.00))
 
 			SQL_NextRow(Query)
 		}
@@ -3244,7 +3249,7 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 		formatex(Buffer[Len], charsmax(Buffer), "<tr><th colspan=^"10^" id=nr>%s", ServerName)
 		add(Buffer, charsmax(Buffer), "</tbody></table></body>")
 		
-		show_motd(id, Buffer, "Global Top 15")
+		show_motd(id, Buffer, "Global Top 10")
 	}
 
 	SQL_FreeHandle(Query)
@@ -3282,7 +3287,7 @@ public ShowGlobalTop15(id)
 	new szTemp[512]
 	new Data[1]
 	Data[0] = id
-	format(szTemp, charsmax(szTemp), "SELECT `NICKNAME`, `KILLS`, `DEATHS`, `INFECTIONS`, `POINTS`, `SCORE` FROM `perfectzm` ORDER BY `SCORE` DESC LIMIT 20;")
+	format(szTemp, charsmax(szTemp), "SELECT `NICKNAME`, `KILLS`, `DEATHS`, `INFECTIONS`, `POINTS`, `SCORE` FROM `perfectzm` ORDER BY `SCORE` DESC LIMIT 10;")
 	SQL_ThreadQuery(g_SqlTuple, "TopFunction", szTemp, Data, 1)
 }
 
