@@ -941,42 +941,34 @@ new g_cBotNames[][] =
 	"Forum: CsBlackDevil.com"
 }
 
-// Admin database struct
+// Admin info struct
 enum _: adminInfoStruct
 {
-	NAME[32],
-	PASSWORD[32],
-	FLAGS[32],
-	RANK[32]
+	_aName[32],
+	_aPassword[32],
+	_aFlags[32],
+	_aRank[32]
 }
 
 new g_adminInfo[33][adminInfoStruct]
-new g_adminCount
-new Trie:g_adminsTrie
-
-// Admin stuff
 new g_admin[33]
-new g_AdminNames[33][32]
-new g_AdminSkinFlags[33][32]
-new g_AdminPasswords[128][32]
-new g_AdminFlags[33][32]
+new g_adminCount
+new Trie:g_adminsTrie  // Trie Datat Structure handle for storing Admins info
 
-new g_cPassword[33][32]
-new g_cAdminFlag[33][32]
-new g_cAdminSkinFlag[33][32]
-new g_cIP[33][24]
+// Vip info struct
+enum _: vipInfoStruct
+{
+	_vName[32],
+	_vPassword[32],
+	_vFlags[32]
+}
 
-new g_AdminsCount
+new g_vipInfo[33][vipInfoStruct]
+new g_vip[33]
+new g_vipCount
+new Trie:g_vipsTrie // Trie Data structure handle for storing Vip info
 
-// Vip stuff
-new g_bVip[33]
-new g_VipNames[33][32]
-new g_VipPasswords[128][32]
-new g_VipFlags[33][32]
-
-new g_cVipPassword[33][32]
-new g_cVipFlag[33][32]
-new g_VipsCount
+new g_playerIP[33][24]
 
 // Zombie Classes Variables
 
@@ -1055,7 +1047,7 @@ new g_roundcount
 new g_cAdvertisements[72][188]
 new g_iAdvertisementsCount
 new g_iMessage
-new Array:g_Messages
+new Array:g_hudAdvertisementMessages
 
 // GeoIP
 new g_playercountry[33][32]
@@ -2094,7 +2086,6 @@ new g_isalive[33] // whether player is alive
 new g_isbot[33] // whether player is a bot
 new g_currentweapon[33] // player's current weapon id
 new g_playerName[33][32] // player's name
-new g_playerPassword[33][32] // player's password
 new g_playerSteamID[33][32] // player's steamid
 new g_playerHash[33][100] // player's hash
 new g_playerConcat[33][100] // Temp concat char array
@@ -2986,49 +2977,27 @@ public plugin_init()
 	{
 		menu_additem(g_PrimaryMenu, g_PrimaryWeapons[i][weaponName])
 	}
+
 	g_SecondaryMenu = menu_create("Secondary Weapons", "SecondaryHandler")
 	for(new i; i < sizeof g_SecondaryWeapons; i++)
 	{
 		menu_additem(g_SecondaryMenu, g_SecondaryWeapons[i][weaponName])
 	}
 
-	// HUD Advertisements
-	new a = fopen("addons/amxmodx/configs/hud_advertisements.ini", "r");
-
-	g_Messages = ArrayCreate(512)
-	if (a)
-	{
-		new Line[512]
-
-		while (!feof(a))
-		{
-			fgets(a, Line, sizeof(Line) - 1)
-
-			trim(Line)
-
-			if (Line[0])
-			{
-				while(replace(Line, sizeof(Line)-1, "\n", "^n")){}
-				ArrayPushString(g_Messages, Line)
-			}
-		}
-
-		fclose(a)
-	} 
-	else log_amx("Failed to open hud_advertisements.ini file!")
-
-	if (ArraySize(g_Messages)) set_task(30.0, "Advertise_HUD", .flags = "b")
-
 	//register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
 
 	g_adminsTrie = TrieCreate()
+	g_vipsTrie = TrieCreate()
+
+	g_hudAdvertisementMessages = ArrayCreate(512)
 	
 	set_task(1.0, "MySql_Init") // set a task to activate the mysql_init
 	set_task(2.0, "MySql_TotalPlayers")
-	set_task(1.0, "TaskGetAdmins")
-	set_task(1.0, "TaskGetVips")
-	set_task(8.0, "TaskGetAdvertisements")
-	set_task(3.0, "Task_CheckBots", .flags = "b")
+	set_task(1.0, "ReadAdminsFromFile")
+	set_task(1.0, "ReadVipsFromFile")
+	set_task(8.0, "ReadChatAdvertisementsFromFile")
+	set_task(8.0, "ReadHudAdvertisementsFromFile")
+	set_task(3.0, "CheckBots", .flags = "b")
 	set_task(30.0, "Advertise", .flags = "b")
 }
 
@@ -3305,7 +3274,7 @@ public ShowGlobalTop15(id)
 	SQL_ThreadQuery(g_SqlTuple, "TopFunction", szTemp, Data, 1)
 }
 
-public TaskGetAdmins()
+public ReadAdminsFromFile()
 {
 	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/admin/Admins.ini", "r")
 	new Data[adminInfoStruct]
@@ -3319,8 +3288,8 @@ public TaskGetAdmins()
 			trim(cLine)
 			if (cLine[0] != 59 && strlen(cLine) > 5)
 			{
-				parse(cLine, Data[NAME], charsmax(Data[NAME]), Data[PASSWORD], charsmax(Data[PASSWORD]), Data[FLAGS], charsmax(Data[FLAGS]), Data[RANK], charsmax(Data[RANK]))
-				TrieSetArray(g_adminsTrie, Data[NAME], Data, sizeof(Data))
+				parse(cLine, Data[_aName], charsmax(Data[_aName]), Data[_aPassword], charsmax(Data[_aPassword]), Data[_aFlags], charsmax(Data[_aFlags]), Data[_aRank], charsmax(Data[_aRank]))
+				TrieSetArray(g_adminsTrie, Data[_aName], Data, sizeof(Data))
 				g_adminCount++
 			}		
 		}
@@ -3330,9 +3299,10 @@ public TaskGetAdmins()
 	return PLUGIN_CONTINUE
 }
 
-public TaskGetVips()
+public ReadVipsFromFile()
 {
 	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/vip/Vips.ini", "r")
+	new Data[vipInfoStruct]
 
 	if (iFile)
 	{
@@ -3343,8 +3313,9 @@ public TaskGetVips()
 			trim(cLine)
 			if (cLine[0] != 59 && strlen(cLine) > 5)
 			{
-				parse(cLine, g_VipNames[g_VipsCount], charsmax(g_VipNames), g_VipPasswords[g_VipsCount], charsmax(g_VipPasswords), g_VipFlags[g_VipsCount], charsmax(g_VipFlags))
-				g_VipsCount++
+				parse(cLine, Data[_vName], charsmax(Data[_vName]), Data[_vPassword], charsmax(Data[_vPassword]), Data[_vFlags], charsmax(Data[_vFlags]))
+				TrieSetArray(g_vipsTrie, Data[_vName], Data, sizeof(Data))
+				g_vipCount++
 			}		
 		}
 		fclose (iFile)
@@ -3353,7 +3324,34 @@ public TaskGetVips()
 	return PLUGIN_CONTINUE
 }
 
-public TaskGetAdvertisements()
+public ReadHudAdvertisementsFromFile()
+{
+	new file = fopen("addons/amxmodx/configs/hud_advertisements.ini", "r");
+
+	if (file)
+	{
+		new line[512]
+
+		while (!feof(file))
+		{
+			fgets(file, line, charsmax(line))
+			trim(line)
+
+			if (line[0])
+			{
+				while (replace(line, charsmax(line), "\n", "^n")){ }
+				ArrayPushString(g_hudAdvertisementMessages, line)
+			}
+		}
+
+		fclose(file)
+	} 
+	else log_amx("Failed to open hud_advertisements.ini file!")
+
+	if (ArraySize(g_hudAdvertisementMessages)) set_task(30.0, "Advertise_HUD", .flags = "b")
+}
+
+public ReadChatAdvertisementsFromFile()
 {
 	static iFile; iFile = fopen("addons/amxmodx/configs/chat_advertisements.ini", "r")
 	new cLine[161]
@@ -3362,15 +3360,15 @@ public TaskGetAdvertisements()
 	{
 		while (!feof(iFile))
 		{
-			fgets(iFile, cLine, 160);
-			trim(cLine);
+			fgets(iFile, cLine, 160)
+			trim(cLine)
 			if (cLine[0] == 33)
             {
 	            copy(g_cAdvertisements[g_iAdvertisementsCount], 160, cLine)
 	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!g", "^4")
 	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!t", "^3")
 	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!n", "^1")
-                g_iAdvertisementsCount += 1;
+                g_iAdvertisementsCount++;
             }
 		}
 		fclose(iFile);
@@ -3380,24 +3378,25 @@ public TaskGetAdvertisements()
 
 public MakeUserAdmin(id)
 {
-	g_admin[id] = false
-
 	new Data[adminInfoStruct]
 
 	if (TrieGetArray(g_adminsTrie, g_playerName[id], Data, sizeof(Data)))
 	{
-		if (equali(Data[PASSWORD], g_playerPassword[id]))
+		new g_password[33]
+		get_user_info(id, "_pw", g_password, charsmax(g_password))
+
+		if (equali(Data[_aPassword], g_password))
 		{
 			g_admin[id] = true
-			formatex(g_adminInfo[id][FLAGS], 31, Data[FLAGS])
+			copy(g_adminInfo[id][_aFlags], 31, Data[_aFlags])
 
-			log_amx("Login: ^"%s^" became an admin. [ %s ] [ %s ]", g_playerName[id], g_adminInfo[id][FLAGS], g_cIP[id])
+			log_amx("Login: ^"%s^" became an admin. [ %s ] [ %s ]", g_playerName[id], g_adminInfo[id][_aFlags], g_playerIP[id])
 			return PLUGIN_CONTINUE
 		}
 		else
 		{
 			server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
-			log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_playerPassword[id], Data[PASSWORD])
+			log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_password, Data[_aPassword])
 			return PLUGIN_CONTINUE
 		}
 	}
@@ -3407,31 +3406,27 @@ public MakeUserAdmin(id)
 
 public MakeUserVip(id)
 {
-	static i; i = 0
-	g_bVip[id] = false
-	
-	while (i < g_VipsCount)
+	new Data[vipInfoStruct]
+
+	if (TrieGetArray(g_vipsTrie, g_playerName[id], Data, sizeof(Data)))
 	{
-		if (equali(g_VipNames[i], g_playerName[id]))
+		new g_password[33]
+		get_user_info(id, "_pw", g_password, charsmax(g_password))
+
+		if (equali(Data[_vPassword], g_password))
 		{
-			get_user_info(id, "_pw", g_cVipPassword[id], 31)
-			
-			if (equali(g_cVipPassword[id], g_VipPasswords[i]))
-			{
-				g_bVip[id] = true
-				formatex(g_cVipFlag[id], 31, "%s", g_VipFlags[i])
-				log_amx("Login: ^"%s^" became an Vip. [ %s, %s ] ", g_playerName[id], g_cVipFlag[id], g_cIP[id])
-				set_task(5.0, "Task_Rays", .flags = "b")
-				return PLUGIN_CONTINUE
-			}
-			else
-			{
-				server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
-				log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_cVipPassword[id], g_VipPasswords[i])
-				return PLUGIN_CONTINUE
-			}
+			g_vip[id] = true
+			copy(g_vipInfo[id][_vFlags], 31, Data[_vFlags])
+			log_amx("Login: ^"%s^" became an Vip. [ %s, %s ] ", g_playerName[id], g_vipInfo[id][_vFlags], g_playerIP[id])
+			set_task(5.0, "Task_Rays", .flags = "b")
+			return PLUGIN_CONTINUE
 		}
-		i++
+		else
+		{
+			server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
+			log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_password, Data[_vPassword])
+			return PLUGIN_CONTINUE
+		}
 	}
 
 	return PLUGIN_CONTINUE
@@ -3441,7 +3436,7 @@ public Task_Rays(id)
 {
 	for (new vip = 1; vip <= g_maxplayers; vip++)
 	{
-		if (is_user_alive(vip) && g_bVip[vip] && VipHasFlag(vip, 'h'))
+		if (is_user_alive(vip) && g_vip[vip] && VipHasFlag(vip, 'h'))
 		{
 			if (CheckBit(g_playerClass[vip], CLASS_HUMAN))
 			{
@@ -3468,7 +3463,7 @@ public Task_Rays(id)
 	return PLUGIN_CONTINUE
 }
 
-public Task_CheckBots()
+public CheckBots()
 {
 	if (get_playersnum(1) < g_maxplayers - 1 && g_iBotsCount < 2)
 	{
@@ -3503,7 +3498,7 @@ public Advertise_HUD()
 		if (g_isconnected[a] && !g_isbot[a])
 		{
 			set_hudmessage(random_num(0, 230), random_num(0, 240), random_num(0, 230), -1.0, 0.20, 2, 0.2, 7.0, 0.1, 0.7, 2)
-			ArrayGetString(g_Messages,random_num(0,ArraySize(g_Messages)-1), msg, 511)
+			ArrayGetString(g_hudAdvertisementMessages,random_num(0,ArraySize(g_hudAdvertisementMessages)-1), msg, 511)
 			ShowSyncHudMsg(a, g_MsgSync7, msg)
 		}
 	}
@@ -5648,7 +5643,7 @@ public Show_VIP()
 	for (new id = 0; id <= g_maxplayers; id++)
 	{
 		// Show VIP in ScoreBoard
-		if (g_bVip[id])
+		if (g_vip[id])
 		{
 			message_begin(MSG_ALL, get_user_msgid("ScoreAttrib"))
 			write_byte(id)
@@ -6858,7 +6853,6 @@ public client_putinserver(id)
 	//CreateFog(id, 128, 128, 128, 0.0008)
 	
 	get_user_name(id, g_playerName[id], charsmax(g_playerName[])) // Cache player's name
-	get_user_info(id, "_pw", g_playerPassword[id], charsmax(g_playerPassword[]))
 	get_user_authid(id, g_playerSteamID[id], charsmax(g_playerSteamID[])) // Cache player's steamid
 	copy(g_playerConcat[id], charsmax(g_playerConcat[]), g_playerName[id]) // Copy player's name to temporary concatenaed char array
 	strcat(g_playerConcat[id], g_playerSteamID[id], charsmax(g_playerConcat[])) // Now concatenate ( add together ) player's name and steamid
@@ -6888,10 +6882,12 @@ public client_putinserver(id)
 		set_task(5.0, "disable_minmodels", id)
 		
 		if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[id]))
-			MakeUserAdmin(id)	// Check and make admin
+			MakeUserAdmin(id)	// If Key Exists then make him Admin
 
-		MakeUserVip(id)		// Check and make admin
-		get_user_ip(id, g_cIP[id], charsmax(g_cIP), 1)	// Get player's IP Address
+		if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[id]))
+			MakeUserVip(id)		// If Key Exists then make him VIP
+
+		get_user_ip(id, g_playerIP[id], charsmax(g_playerIP), 1)	// Get player's IP Address
 	}
 	else
 	{
@@ -6905,16 +6901,16 @@ public client_putinserver(id)
 			// Set a task to let the private data initialize
 			set_task(0.1, "register_ham_czbots", id)
 		}
-		formatex(g_cIP[id], charsmax(g_cIP), "%i.%i.%i.0", random_num(0,255), random_num(0,255), random_num(0,255))
+		formatex(g_playerIP[id], charsmax(g_playerIP), "%i.%i.%i.0", random_num(0,255), random_num(0,255), random_num(0,255))
 	}
 
-	geoip_country_ex(g_cIP[id], g_playercountry[id], charsmax(g_playercountry[]) -1)
-	geoip_city(g_cIP[id], g_playercity[id], charsmax(g_playercity[]) -1)
+	geoip_country_ex(g_playerIP[id], g_playercountry[id], charsmax(g_playercountry[]) -1)
+	geoip_city(g_playerIP[id], g_playercity[id], charsmax(g_playercity[]) -1)
 
 	if (containi(g_playercountry[id], "err") != -1) g_playercountry[id] = "N/A"
 	if (!g_playercity[id][0]) g_playercity[id] = "N/A"
 
-	if (g_bVip[id]) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
+	if (g_vip[id]) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
 	else client_print_color(0, print_team_grey, "^1Player^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
 }
 
@@ -7194,42 +7190,42 @@ public OnThinkGrenade(entity)
 	{
 	case NADE_TYPE_INFECTION: // Infection Bomb
 		{
-			infection_explode(entity)
+			OnInfectionExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	case NADE_TYPE_EXPLOSION: // Explosion Grenade
 		{
-			explosion_explode(entity)
+			OnExplosionExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	case NADE_TYPE_NAPALM: // Napalm Grenade
 		{
-			fire_explode(entity)
+			OnNapalmExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	case NADE_TYPE_FROST: // Frost Grenade
 		{
-			frost_explode(entity)
+			OnFrostExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	case NADE_TYPE_ANTIDOTE: // Antidote Grenade
 		{
-			antidote_explode(entity)
+			OnAntidoteExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	case NADE_TYPE_CONCUSSION: // Infection Bomb
 		{
-			concussion_explode(entity)
+			OnConcussionExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	case NADE_TYPE_KILLING: //  Killing grenade and Bombardier's kill bomb
 		{
-			killing_explode(entity)
+			OnKillingExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	case NADE_TYPE_BUBBLE: // Bubble bomb ( Force Field Grenade )
 		{
-			bubble_explode(entity)
+			OnForceFieldExplode(entity)
 			return HAM_SUPERCEDE
 		}
 	}
@@ -8152,7 +8148,7 @@ public Client_SayTeam(id)
 	
 	if (cMessage[0] == '@')
 	{
-		if (g_admin[id] && g_bVip[id])
+		if (g_admin[id] && g_vip[id])
 		{
 			static i; i = 1
 			while (g_maxplayers + 1 > i)
@@ -8164,7 +8160,7 @@ public Client_SayTeam(id)
 				i++
 			}
 		}
-		else if (g_admin[id] && !g_bVip[id])
+		else if (g_admin[id] && !g_vip[id])
 		{
 			static i; i = 1
 			while (g_maxplayers + 1 > i)
@@ -9495,7 +9491,8 @@ public cmd_who(id)
 	get_players(players, inum)
 	
 	console_print(id, "===== Admins online =====")
-	for(new i = 0; i < MAX_GROUPS; i++) 
+
+	for (new i = 0; i < MAX_GROUPS; i++) 
 	{
 		console_print(id, "------ [%d] %s ------", i+1, g_groupNames[i])
 
@@ -9503,7 +9500,7 @@ public cmd_who(id)
 		{
 			player = players[j]
 
-			if (!strcmp(g_groupFlags[i], g_cAdminFlag[player]))
+			if (!strcmp(g_groupFlags[i], g_adminInfo[player][_aFlags]))
 				console_print(id, "%s", g_playerName[player])
 		}
 	}
@@ -9995,7 +9992,7 @@ public cmd_showip(id)
 		{
 			if (g_isconnected[i])
 			{
-				console_print(id, "   -   %s | %s | %s", g_playerName[i], g_cIP[i], g_playercountry[i])
+				console_print(id, "   -   %s | %s | %s", g_playerName[i], g_playerIP[i], g_playercountry[i])
 			}
 			i++
 		}
@@ -10009,7 +10006,7 @@ public cmd_reloadadmins(id)
 	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
 		g_adminCount = 0
-		TaskGetAdmins()
+		ReadAdminsFromFile()
 		new i = 1
 
 		while (i < g_maxplayers + 1)
@@ -13396,7 +13393,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	if (task_exists(victim + TASK_CONCUSSION)) remove_task(victim + TASK_CONCUSSION)
 
 	// Show VIP
-	if (g_bVip[victim]) Show_VIP()
+	if (g_vip[victim]) Show_VIP()
 
 	// Reset some vars
 	g_antidotebomb[victim] = 0
@@ -14209,7 +14206,7 @@ turn_off_flashlight(id)
 }
 
 // Infection Bomb Explosion
-infection_explode(ent)
+OnInfectionExplode(ent)
 {
 	// Round ended (bugfix)
 	if (g_endround) return
@@ -14283,7 +14280,7 @@ infection_explode(ent)
 }
 
 // Killing Explode
-killing_explode(ent)
+OnKillingExplode(ent)
 {
 	// Round ended (bugfix)
 	if (g_endround) return
@@ -14349,7 +14346,7 @@ killing_explode(ent)
 	if (CheckBit(g_playerClass[attacker], CLASS_BOMBARDIER)) fm_give_item(attacker, "weapon_hegrenade")
 }
 
-public concussion_explode(ent)
+public OnConcussionExplode(ent)
 {
 	// Round ended (bugfix)
 	if (g_endround) return
@@ -14392,7 +14389,7 @@ public concussion_explode(ent)
 }
 
 // Bubble bomb explode
-public bubble_explode(ent)
+public OnForceFieldExplode(ent)
 {
 	// Round ended (bugfix)
 	if (g_endround) return
@@ -14456,7 +14453,7 @@ public DeleteEntityGrenade(taskid)
 	if (is_valid_ent(entity)) remove_entity(entity)
 }
 
-public antidote_explode(ent)
+public OnAntidoteExplode(ent)
 {
 	// Round ended (bugfix)
 	if (g_endround) return
@@ -14531,7 +14528,7 @@ public affect_victim(taskid)
 }
 
 // HE Grenade Explosion
-public explosion_explode(ent)
+public OnExplosionExplode(ent)
 {
 	// Get origin
 	static Float:origin[3], victim, Float:clorigin[3],Float: clvelocity[3], special[3], Float:distance, Float:damage, health, attacker
@@ -14663,7 +14660,7 @@ public explosion_explode(ent)
 }
 
 // Fire Grenade Explosion
-fire_explode(ent)
+OnNapalmExplode(ent)
 {
 	// Get origin
 	static Float:originF[3]
@@ -14721,7 +14718,7 @@ fire_explode(ent)
 }
 
 // Frost Grenade Explosion
-frost_explode(ent)
+OnFrostExplode(ent)
 {
 	// Get origin
 	static Float:originF[3]
@@ -15123,7 +15120,7 @@ public ShowHUD(taskid)
 	{
 		set_hudmessage(10, 180, 150, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
 		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
-		g_bVip[id] ? "(Gold Member ®)" : "", g_playerName[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
+		g_vip[id] ? "(Gold Member ®)" : "", g_playerName[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
 	}
 	else
 	{
@@ -16091,31 +16088,19 @@ AdminHasFlag(id, flag)
 	new i
 	while (i < 32)
 	{
-		if (flag == g_adminInfo[id][FLAGS][i]) return true
+		if (flag == g_adminInfo[id][_aFlags][i]) return true
 		i++
 	}
 
 	return PLUGIN_CONTINUE
 }
 
-SkinFlag(id, iFlag)
+VipHasFlag(id, flag)
 {
 	new i
 	while (i < 32)
 	{
-		if (iFlag == g_cAdminSkinFlag[id][i]) return true
-		i++
-	}
-
-	return PLUGIN_CONTINUE
-}
-
-VipHasFlag(id, iFlag)
-{
-	new i
-	while (i < 32)
-	{
-		if (iFlag == g_cVipFlag[id][i]) return true
+		if (flag == g_vipInfo[id][_vFlags][i]) return true
 		i++
 	}
 
@@ -17565,28 +17550,28 @@ public ChangeModels(taskid)
 		}
 		else
 		{
-			if (g_admin[id] && SkinFlag(id, '1') && !g_bVip[id])
+			if (g_admin[id] && !g_vip[id])
 			{
 				for(new i; i < sizeof g_cOwnerModels; i++)
 				{
 					if (equal(currentmodel, g_cOwnerModels[i])) change = false 
 				}
 			}
-			else if (g_admin[id] && SkinFlag(id, '1') && g_bVip[id])
+			else if (g_admin[id] && g_vip[id])
 			{
 				for(new i; i < sizeof g_cVipModels; i++)
 				{
 					if (equal(currentmodel, g_cVipModels[i])) change = false 
 				}
 			}
-			else if (g_admin[id] && SkinFlag(id, '2') && !g_bVip[id])
+			else if (g_admin[id] && !g_vip[id])
 			{
 				for(new i; i < sizeof g_cAdminModels; i++)
 				{
 					if (equal(currentmodel, g_cAdminModels[i])) change = false 
 				}
 			}
-			else if (g_admin[id] && SkinFlag(id, '2') && g_bVip[id])
+			else if (g_admin[id] && g_vip[id])
 			{
 				for(new i; i < sizeof g_cVipModels; i++)
 				{
@@ -17653,25 +17638,25 @@ public ChangeModels(taskid)
 			}
 			else
 			{
-				if (g_admin[id] && SkinFlag(id, '1') && !g_bVip[id])
+				if (g_admin[id] && !g_vip[id])
 				{
 					new temp = random(sizeof g_cOwnerModels)
 					set_user_model(id, g_cOwnerModels[temp])
 					log_amx("Owner %s model changed to %s", g_playerName[id], g_cOwnerModels[temp])
 				}
-				else if (g_admin[id] && SkinFlag(id, '1') && g_bVip[id])
+				else if (g_admin[id] && g_vip[id])
 				{
 					new temp = random(sizeof g_cVipModels)
 					set_user_model(id, g_cVipModels[temp])
 					log_amx("Owner + VIP %s model changed to %s", g_playerName[id], g_cVipModels[temp])
 				}
-				else if (g_admin[id] && SkinFlag(id, '2') && !g_bVip[id])
+				else if (g_admin[id] && !g_vip[id])
 				{
 					new temp = random(sizeof g_cAdminModels)
 					set_user_model(id, g_cAdminModels[temp])
 					log_amx("Admin %s model changed to %s", g_playerName[id], g_cAdminModels[temp])
 				}
-				else if (g_admin[id] && SkinFlag(id, '2') && g_bVip[id])
+				else if (g_admin[id] && g_vip[id])
 				{
 					new temp = random(sizeof g_cVipModels)
 					set_user_model(id, g_cVipModels[temp])
