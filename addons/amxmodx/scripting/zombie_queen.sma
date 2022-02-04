@@ -5785,19 +5785,19 @@ public Countdown()
 		
 		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
 		ShowSyncHudMsg(0, g_MsgSync4, "Infection in %i", countdown_timer)
-	}
 
-	--countdown_timer
-	
-	if (!countdown_timer)
+		countdown_timer--
+
+		set_task(1.0, "Countdown", TASK_COUNTDOWN)
+	}
+	else
 	{
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
 		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 2.0, 0.01, 0.1, 10)
 		ShowSyncHudMsg(0, g_MsgSync4, "Warning: Biohazard detected")
-	}
 
-	if (countdown_timer >= 1) set_task(1.0, "Countdown", TASK_COUNTDOWN)
-	else if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+		if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
+	}
 }
 
 /*================================================================================
@@ -9968,15 +9968,12 @@ public cmd_map(id)
 
 public MapChangeCountdown()
 {
-	if (MapCountdownTimer)
-	{ 
-		client_cmd(0, "spk %s", CountdownSounds[MapCountdownTimer])
-		
-		set_hudmessage(0, 255, 0, -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
-		if (countdown_timer)
-		ShowSyncHudMsg(0, g_MsgSync4, "Changing map in %i", MapCountdownTimer)
-		MapCountdownTimer--
-	}
+	client_cmd(0, "spk %s", CountdownSounds[MapCountdownTimer])
+	
+	set_hudmessage(0, 255, 0, -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
+	ShowSyncHudMsg(0, g_MsgSync4, "Changing map in %i", MapCountdownTimer)
+
+	MapCountdownTimer--
 }
 
 public InformEveryone(){ client_print_color(0, print_team_grey, "%s Shutting down^3 MySQL ^1and ^3Zombie Queen^1... Map change in^3 10 seconds!", CHAT_PREFIX); }
