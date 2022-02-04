@@ -1213,7 +1213,7 @@ new g_cZombieClasses[][ZMenuData] =
 
 enum _:PMenuData
 {
-	PItemName[20]
+	_pName[20]
 }
 
 new g_cPointsMenu[][PMenuData] =
@@ -1226,9 +1226,9 @@ new g_cPointsMenu[][PMenuData] =
 
 enum _:AMenuData
 {
-	AItemName[20],
-	AItemTag[32],
-	APoints
+	_ammoItemName[20],
+	_ammoItemTag[32],
+	_ammoItemPrice
 }
 
 new g_cAmmoMenu[][AMenuData] =
@@ -1242,9 +1242,9 @@ new g_cAmmoMenu[][AMenuData] =
 
 enum _:FMenuData
 {
-	FItemName[32],
-	FItemTag[32],
-	FPoints
+	_fItemName[32],
+	_fItemTag[32],
+	_fItemPrice
 }
 
 new g_cFeaturesMenu[][FMenuData] =
@@ -1260,9 +1260,9 @@ new g_cFeaturesMenu[][FMenuData] =
 
 enum _:MMenuData
 {
-	MItemName[64],
-	MItemTag[32],
-	MPoints
+	_mItemName[64],
+	_mItemTag[32],
+	_mItemPrice
 }
 
 new g_cModesMenu[][MMenuData] =
@@ -2953,7 +2953,7 @@ public plugin_init()
 	// Points Shop menu
 	for (new i; i < sizeof(g_cPointsMenu); i++)
 	{
-		formatex(cLine, 128, "%s", g_cPointsMenu[i][PItemName])
+		formatex(cLine, 128, "%s", g_cPointsMenu[i][_pName])
 		num_to_str(i, cNumber, 3)
 		menu_additem(g_iPointShopMenu, cLine, cNumber, 0, -1)
 	}
@@ -2961,7 +2961,7 @@ public plugin_init()
 	// Ammo packs menu
 	for (new i; i < sizeof(g_cAmmoMenu); i++)
 	{
-		formatex(cLine, 128, "%s %s", g_cAmmoMenu[i][AItemName], g_cAmmoMenu[i][AItemTag])
+		formatex(cLine, 128, "%s %s", g_cAmmoMenu[i][_ammoItemName], g_cAmmoMenu[i][_ammoItemTag])
 		num_to_str(i, cNumber, 3)
 		menu_additem(g_iAmmoMenu, cLine, cNumber, 0, -1)
 	}
@@ -2969,7 +2969,7 @@ public plugin_init()
 	// Features menu
 	for (new i; i < sizeof(g_cFeaturesMenu); i++)
 	{
-		formatex(cLine, 128, "%s %s", g_cFeaturesMenu[i][FItemName], g_cFeaturesMenu[i][FItemTag])
+		formatex(cLine, 128, "%s %s", g_cFeaturesMenu[i][_fItemName], g_cFeaturesMenu[i][_fItemTag])
 		num_to_str(i, cNumber, 3)
 		menu_additem(g_iFeaturesMenu, cLine, cNumber, 0, -1)
 	}
@@ -2977,7 +2977,7 @@ public plugin_init()
 	// Modes menu
 	for (new i; i < sizeof(g_cModesMenu); i++)
 	{
-		formatex(cLine, 128, "%s %s", g_cModesMenu[i][MItemName], g_cModesMenu[i][MItemTag])
+		formatex(cLine, 128, "%s %s", g_cModesMenu[i][_mItemName], g_cModesMenu[i][_mItemTag])
 		num_to_str(i, cNumber, 3)
 		menu_additem(g_iModesMenu, cLine, cNumber, 0, -1)
 	}
@@ -3196,7 +3196,7 @@ public MySQL_WelcomeMessage(FailState, Handle:Query, Error[], Errcode, Data[], D
 
 	set_dhudmessage(random(256), random(256), random(256), 0.02, 0.2, 2, 6.0, 8.0)
 	show_dhudmessage(id, "Welcome, %s^nRank: %s of %s Score: %s^nKills: %s Deaths: %s KPD: %0.2f^nEnjoy!",
-	g_playerName[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(g_score[id]), AddCommas(g_kills[id]), AddCommas(g_deaths[id]), var1)
+	g_playerName[id], AddCommas(rank), AddCommas(g_totalplayers), AddCommas(clamp(g_score[id], 10, 999999)), AddCommas(clamp(g_kills[id], 0, 999999)), AddCommas(clamp(g_deaths[id], 0, 999999)), var1)
 	
 	set_dhudmessage(random(256), random(256), random(256), 0.02, 0.5, 2, 6.0, 8.0)
 	show_dhudmessage(id, "%s^nDon't forget to add us to your favourites!", HostName)
@@ -3213,8 +3213,6 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 	id = Data[0]
 
 	Place = 0
-
-	client_print_color(id, print_team_grey, "Rows: %i", SQL_NumResults(Query))
 
 	if (is_user_connected(id))
 	{
@@ -4466,7 +4464,7 @@ public _AmmoMenu(id, menu, item)
 			{
 				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_100, id))
 				{
-					if (g_points[id] < g_cAmmoMenu[iChoice][APoints])
+					if (g_points[id] < g_cAmmoMenu[iChoice][_ammoItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4474,7 +4472,7 @@ public _AmmoMenu(id, menu, item)
 
 					LIMIT[id][PACKS]++
 					g_ammopacks[id] += 100
-					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
+					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 100 ammo packs!", g_playerName[id])
 					client_print_color(0, print_team_grey, "%s %s^1 bought^4 100 ammo packs", CHAT_PREFIX, g_playerName[id])
@@ -4485,7 +4483,7 @@ public _AmmoMenu(id, menu, item)
 			{
 				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_200, id))
 				{
-					if (g_points[id] < g_cAmmoMenu[iChoice][APoints])
+					if (g_points[id] < g_cAmmoMenu[iChoice][_ammoItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4493,7 +4491,7 @@ public _AmmoMenu(id, menu, item)
 
 					LIMIT[id][PACKS]++
 					g_ammopacks[id] += 200
-					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
+					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 200 ammo packs!", g_playerName[id])
 					client_print_color(0, print_team_grey, "%s %s^1 bought^4 200 ammo packs", CHAT_PREFIX, g_playerName[id])
@@ -4504,7 +4502,7 @@ public _AmmoMenu(id, menu, item)
 			{
 				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_300, id))
 				{
-					if (g_points[id] < g_cAmmoMenu[iChoice][APoints])
+					if (g_points[id] < g_cAmmoMenu[iChoice][_ammoItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4512,7 +4510,7 @@ public _AmmoMenu(id, menu, item)
 
 					LIMIT[id][PACKS]++
 					g_ammopacks[id] += 300
-					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
+					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 300 ammo packs!", g_playerName[id])
 					client_print_color(0, print_team_grey, "%s %s^1 bought^4 300 ammo packs", CHAT_PREFIX, g_playerName[id])
@@ -4523,7 +4521,7 @@ public _AmmoMenu(id, menu, item)
 			{
 				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_400, id))
 				{
-					if (g_points[id] < g_cAmmoMenu[iChoice][APoints])
+					if (g_points[id] < g_cAmmoMenu[iChoice][_ammoItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4531,7 +4529,7 @@ public _AmmoMenu(id, menu, item)
 
 					LIMIT[id][PACKS]++
 					g_ammopacks[id] += 400
-					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
+					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 400 ammo packs!", g_playerName[id])
 					client_print_color(0, print_team_grey, "%s %s^1 bought^4 400 ammo packs", CHAT_PREFIX, g_playerName[id])
@@ -4542,7 +4540,7 @@ public _AmmoMenu(id, menu, item)
 			{
 				if (CanBuy(PSHOP_PACKS, PSHOP_PACKS_500, id))
 				{
-					if (g_points[id] < g_cAmmoMenu[iChoice][APoints])
+					if (g_points[id] < g_cAmmoMenu[iChoice][_ammoItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4550,7 +4548,7 @@ public _AmmoMenu(id, menu, item)
 
 					LIMIT[id][PACKS]++
 					g_ammopacks[id] += 500
-					g_points[id] -= g_cAmmoMenu[iChoice][APoints]
+					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 500 ammo packs!", g_playerName[id])
 					client_print_color(0, print_team_grey, "%s %s^1 bought^4 500 ammo packs", CHAT_PREFIX, g_playerName[id])
@@ -4577,7 +4575,7 @@ public _Features(id, menu, item)
 			{
 				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_GOD_MODE, id))
 				{
-					if (g_points[id] < g_cFeaturesMenu[iChoice][FPoints])
+					if (g_points[id] < g_cFeaturesMenu[iChoice][_fItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4585,7 +4583,7 @@ public _Features(id, menu, item)
 
 					// Set the boolean to true
 					g_nodamage[id] = true
-					g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
+					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_glow(id, 192, 255, 62, 25)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage( id, "You bought God Mode!")
@@ -4596,7 +4594,7 @@ public _Features(id, menu, item)
 			{
 				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_DOUBLE_DAMAGE, id))
 				{
-					if (g_points[id] < g_cFeaturesMenu[iChoice][FPoints])
+					if (g_points[id] < g_cFeaturesMenu[iChoice][_fItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4604,7 +4602,7 @@ public _Features(id, menu, item)
 
 					// Set the boolean to true
 					g_doubledamage[id] = true
-					g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
+					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage( id, "You bought Double damage!")
 					MySQL_UPDATE_DATABASE(id)
@@ -4614,7 +4612,7 @@ public _Features(id, menu, item)
 			{
 				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_NO_RECOIL, id))
 				{
-					if (g_points[id] < g_cFeaturesMenu[iChoice][FPoints])
+					if (g_points[id] < g_cFeaturesMenu[iChoice][_fItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4622,7 +4620,7 @@ public _Features(id, menu, item)
 
 					// Set the boolean to true
 					g_norecoil[id] = true
-					g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
+					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage( id, "You bought No Recoil!")
 					MySQL_UPDATE_DATABASE(id)
@@ -4632,13 +4630,13 @@ public _Features(id, menu, item)
 			{
 				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_INVISIBILITY, id))
 				{
-					if (g_points[id] < g_cFeaturesMenu[iChoice][FPoints])
+					if (g_points[id] < g_cFeaturesMenu[iChoice][_fItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
 					}
 
-					g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
+					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_user_rendering(id, kRenderFxGlowShell, 0, 0, 0, kRenderTransAlpha, 0)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage( id, "You bought Invisibility!")
@@ -4649,7 +4647,7 @@ public _Features(id, menu, item)
 			{
 				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_SPRINT, id))
 				{
-					if (g_points[id] < g_cFeaturesMenu[iChoice][FPoints])
+					if (g_points[id] < g_cFeaturesMenu[iChoice][_fItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4658,7 +4656,7 @@ public _Features(id, menu, item)
 					// Set boolean to true
 					g_speed[id] = true
 					ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
-					g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
+					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage( id, "You bought High Speed!")
 					MySQL_UPDATE_DATABASE(id)
@@ -4668,14 +4666,14 @@ public _Features(id, menu, item)
 			{
 				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_LOW_GRAVITY, id))
 				{
-					if (g_points[id] < g_cFeaturesMenu[iChoice][FPoints])
+					if (g_points[id] < g_cFeaturesMenu[iChoice][_fItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
 					}
 
 					set_pev(id, pev_gravity, 0.5)
-					g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
+					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage( id, "Now you have less gravity!")
 					MySQL_UPDATE_DATABASE(id)
@@ -4685,7 +4683,7 @@ public _Features(id, menu, item)
 			{
 				if (CanBuy(PSHOP_FEATURES, PSHOP_FEATURE_HEAD_HUNTER, id))
 				{
-					if (g_points[id] < g_cFeaturesMenu[iChoice][FPoints])
+					if (g_points[id] < g_cFeaturesMenu[iChoice][_fItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4694,7 +4692,7 @@ public _Features(id, menu, item)
 					// Set boolean to true
 					g_allheadshots[id] = true
 
-					g_points[id] -= g_cFeaturesMenu[iChoice][FPoints]
+					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage( 115, 230, 1, -1.0, 0.80, 1, 0.0, 5.0, 1.0, 1.0, -1 )
 					show_hudmessage( id, "Now all your bullet will connect to head!")
 					MySQL_UPDATE_DATABASE(id)
@@ -4721,7 +4719,7 @@ public _Modes(id, menu, item)
 			{
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SURVIVOR_VS_NEMESIS, id))
 				{
-					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4732,7 +4730,7 @@ public _Modes(id, menu, item)
 
 					LIMIT[id][CUSTOM_MODES]++
 
-					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage(0, "%s bought Armageddon mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
@@ -4744,7 +4742,7 @@ public _Modes(id, menu, item)
 			{
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SURVIVOR_VS_ASSASIN, id))
 				{
-					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4755,7 +4753,7 @@ public _Modes(id, menu, item)
 
 					LIMIT[id][CUSTOM_MODES]++
 
-					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage(0, "%s bought Survivor vs Assasin mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
@@ -4766,7 +4764,7 @@ public _Modes(id, menu, item)
 			{
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SNIPER_VS_NEMESIS, id))
 				{
-					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4777,7 +4775,7 @@ public _Modes(id, menu, item)
 
 					LIMIT[id][CUSTOM_MODES]++
 
-					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage(0, "%s bought Sniper vs Nemesis mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
@@ -4787,7 +4785,7 @@ public _Modes(id, menu, item)
 			{
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SNIPER_VS_ASSASIN, id))
 				{
-					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4798,7 +4796,7 @@ public _Modes(id, menu, item)
 
 					LIMIT[id][CUSTOM_MODES]++
 
-					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage(0, "%s bought Sniper vs Assassin mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
@@ -4808,7 +4806,7 @@ public _Modes(id, menu, item)
 			{
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_NIGHTMARE, id))
 				{
-					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4819,7 +4817,7 @@ public _Modes(id, menu, item)
 
 					LIMIT[id][CUSTOM_MODES]++
 
-					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage(0, "%s bought Nightmare mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
@@ -4829,7 +4827,7 @@ public _Modes(id, menu, item)
 			{ 
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SYNAPSIS, id))
 				{
-					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4840,7 +4838,7 @@ public _Modes(id, menu, item)
 
 					LIMIT[id][CUSTOM_MODES]++
 
-					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage(0, "%s bought Synapsis mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
@@ -4850,7 +4848,7 @@ public _Modes(id, menu, item)
 			{ 
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_BOMBARDIER_VS_GRENADIER, id))
 				{
-					if (g_points[id] < g_cModesMenu[iChoice][MPoints])
+					if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
 					{
 						client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
@@ -4861,7 +4859,7 @@ public _Modes(id, menu, item)
 
 					LIMIT[id][CUSTOM_MODES]++
 
-					g_points[id] -= g_cModesMenu[iChoice][MPoints]
+					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					show_hudmessage(0, "%s bought Bombardier vs Grenadier mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
@@ -5742,7 +5740,7 @@ public event_show_status(id)
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Points: %s ]", \
-				g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(g_points[aimid]))
+				g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(clamp(g_points[aimid], 0, 99999)))
 			}
 			else
 			{
@@ -5753,7 +5751,7 @@ public event_show_status(id)
 				// Show the notice
 				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
 				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Armor: %d | Points: %s ]", \
-				g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(g_points[aimid]))
+				g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(clamp(g_points[aimid], 0, 99999)))
 			}
 		}
 		else if (CheckBit(g_playerTeam[id], TEAM_HUMAN) && CheckBit(g_playerTeam[aimid], TEAM_ZOMBIE))
@@ -15166,7 +15164,7 @@ public ShowHUD(taskid)
 		green = 50
 		blue  = 0
 		
-		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
+		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(clamp(g_points[ID_SHOWHUD], 0, 99999)))
 	}	
 	else // humans
 	{
@@ -15174,7 +15172,7 @@ public ShowHUD(taskid)
 		green = 180
 		blue  = 150
 		
-		formatex(message, charsmax(message), "%s - Health: %s - Armor: %d - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), pev(ID_SHOWHUD, pev_armorvalue), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(g_points[ID_SHOWHUD]))
+		formatex(message, charsmax(message), "%s - Health: %s - Armor: %d - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), pev(ID_SHOWHUD, pev_armorvalue), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(clamp(g_points[ID_SHOWHUD], 0, 99999)))
 	}
 	
 	// Spectating someone else?
@@ -15182,7 +15180,7 @@ public ShowHUD(taskid)
 	{
 		set_hudmessage(10, 180, 150, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
 		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
-		g_vip[id] ? "(Gold Member ®)" : "", g_playerName[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(g_points[id]), g_playercountry[id], g_playercity[id])
+		g_vip[id] ? "(Gold Member ®)" : "", g_playerName[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(clamp(g_points[id], 0, 99999)), g_playercountry[id], g_playercity[id])
 	}
 	else
 	{
