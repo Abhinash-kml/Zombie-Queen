@@ -968,6 +968,18 @@ new g_vip[33]
 new g_vipCount
 new Trie:g_vipsTrie // Trie Data structure handle for storing Vip info
 
+// Player tag info struct
+enum _: playerTagInfoStruct
+{
+	_tName[32],
+	_tPassword[32],
+	_tTag[32]
+}
+
+new g_tagCount
+new g_tag[33][32]
+new Trie:g_tagTrie
+
 new g_playerIP[33][24]
 
 // Zombie Classes Variables
@@ -2835,7 +2847,7 @@ public plugin_init()
 	register_message(get_user_msgid("HostagePos"), "message_hostagepos")
 	register_message(get_user_msgid("TextMsg"), "message_textmsg")
 	register_message(get_user_msgid("SendAudio"), "message_sendaudio")
-	//register_message(get_user_msgid("SayText"), "message_saytext")
+	register_message(get_user_msgid("SayText"), "message_saytext")
 	register_message(get_user_msgid("TeamInfo"), "message_teaminfo")
 	register_message(get_user_msgid("TeamScore"), "message_teamscore")
 	register_message(get_user_msgid("HudTextArgs"), "message_hudtextargs")
@@ -2986,15 +2998,18 @@ public plugin_init()
 
 	g_adminsTrie = TrieCreate()
 	g_vipsTrie = TrieCreate()
+	g_tagTrie = TrieCreate()
 
 	g_hudAdvertisementMessages = ArrayCreate(512)
+
+	MySql_Init()
+	MySql_TotalPlayers()
+	ReadPlayerTagsFromFile()
+	ReadAdminsFromFile()
+	ReadVipsFromFile()
+	ReadChatAdvertisementsFromFile()
+	ReadHudAdvertisementsFromFile()
 	
-	set_task(1.0, "MySql_Init") // set a task to activate the mysql_init
-	set_task(2.0, "MySql_TotalPlayers")
-	set_task(1.0, "ReadAdminsFromFile")
-	set_task(1.0, "ReadVipsFromFile")
-	set_task(8.0, "ReadChatAdvertisementsFromFile")
-	set_task(8.0, "ReadHudAdvertisementsFromFile")
 	set_task(3.0, "CheckBots", .flags = "b")
 	set_task(30.0, "Advertise", .flags = "b")
 }
@@ -3274,7 +3289,7 @@ public ShowGlobalTop15(id)
 
 public ReadAdminsFromFile()
 {
-	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/admin/Admins.ini", "r")
+	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/Admin/Admins.ini", "r")
 	new Data[adminInfoStruct]
 
 	if (iFile)
@@ -3282,16 +3297,18 @@ public ReadAdminsFromFile()
 		static cLine[161]
 		while (!feof(iFile))
 		{
-			fgets(iFile, cLine, 255)
+			fgets(iFile, cLine, charsmax(cLine))
 			trim(cLine)
 			if (cLine[0] != 59 && strlen(cLine) > 5)
 			{
 				parse(cLine, Data[_aName], charsmax(Data[_aName]), Data[_aPassword], charsmax(Data[_aPassword]), Data[_aFlags], charsmax(Data[_aFlags]), Data[_aRank], charsmax(Data[_aRank]))
 				TrieSetArray(g_adminsTrie, Data[_aName], Data, sizeof(Data))
 				g_adminCount++
-			}		
+			}
 		}
 		fclose (iFile)
+
+		log_amx("Loaded %d Admins from file...", g_adminCount)		
 	}
 
 	return PLUGIN_CONTINUE
@@ -3299,7 +3316,7 @@ public ReadAdminsFromFile()
 
 public ReadVipsFromFile()
 {
-	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/vip/Vips.ini", "r")
+	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/Vip/Vips.ini", "r")
 	new Data[vipInfoStruct]
 
 	if (iFile)
@@ -3307,14 +3324,43 @@ public ReadVipsFromFile()
 		static cLine[161]
 		while (!feof(iFile))
 		{
-			fgets(iFile, cLine, 255)
+			fgets(iFile, cLine, charsmax(cLine))
 			trim(cLine)
 			if (cLine[0] != 59 && strlen(cLine) > 5)
 			{
 				parse(cLine, Data[_vName], charsmax(Data[_vName]), Data[_vPassword], charsmax(Data[_vPassword]), Data[_vFlags], charsmax(Data[_vFlags]))
 				TrieSetArray(g_vipsTrie, Data[_vName], Data, sizeof(Data))
 				g_vipCount++
-			}		
+			}	
+		}
+		fclose (iFile)
+
+		log_amx("Loaded %d Vips from file...", g_vipCount)	
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public ReadPlayerTagsFromFile()
+{
+	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/PlayerTag/PlayerTags.ini", "r")
+	new Data[playerTagInfoStruct]
+
+	if (!iFile) log_amx("Tags file not found")
+
+	if (iFile)
+	{
+		static cLine[161]
+		while (!feof(iFile))
+		{
+			fgets(iFile, cLine, charsmax(cLine))
+			trim(cLine)
+			if (cLine[0] != 59 && strlen(cLine) > 5)
+			{
+				parse(cLine, Data[_tName], charsmax(Data[_tName]), Data[_tPassword], charsmax(Data[_tPassword]), Data[_tTag], charsmax(Data[_tTag]))
+				TrieSetArray(g_tagTrie, Data[_tName], Data, sizeof(Data))
+				g_tagCount++
+			}
 		}
 		fclose (iFile)
 	}
@@ -3390,13 +3436,11 @@ public MakeUserAdmin(id)
 			copy(g_adminInfo[id][_aRank], 31, Data[_aRank])
 
 			log_amx("Login: ^"%s^" became an admin. [ %s ] - [ %s ] - [ %s ]", g_playerName[id], g_adminInfo[id][_aFlags], g_adminInfo[id][_aRank], g_playerIP[id])
-			return PLUGIN_CONTINUE
 		}
 		else
 		{
 			server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
 			log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_password, Data[_aPassword])
-			return PLUGIN_CONTINUE
 		}
 	}
 
@@ -3416,15 +3460,32 @@ public MakeUserVip(id)
 		{
 			g_vip[id] = true
 			copy(g_vipInfo[id][_vFlags], 31, Data[_vFlags])
-			log_amx("Login: ^"%s^" became an Vip. [ %s, %s ] ", g_playerName[id], g_vipInfo[id][_vFlags], g_playerIP[id])
+			log_amx("Login: ^"%s^" became an Vip. [ %s ] - [ %s ] ", g_playerName[id], g_vipInfo[id][_vFlags], g_playerIP[id])
 			set_task(5.0, "Task_Rays", .flags = "b")
-			return PLUGIN_CONTINUE
 		}
 		else
 		{
 			server_cmd("kick #%d  You have no entry to the server...", get_user_userid(id))
 			log_amx("Login: ^"%s^" kicked due to invalid password. [ %s ] [ %s ]", g_playerName[id], g_password, Data[_vPassword])
-			return PLUGIN_CONTINUE
+		}
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public GiveUserTag(id)
+{
+	new _tData[playerTagInfoStruct]
+
+	if (TrieGetArray(g_tagTrie, g_playerName[id], _tData, sizeof(_tData)))
+	{
+		new g_password[33]
+		get_user_info(id, "_pw", g_password, charsmax(g_password))
+
+		if (equali(_tData[_tPassword], g_password))
+		{
+			copy(g_tag[id], 31, _tData[_tTag])		
+			log_amx("Login: ^"%s^" got his Tag. [ %s ] ", g_playerName[id], g_tag[id])
 		}
 	}
 
@@ -3521,61 +3582,62 @@ public message_statustext(msgid, msg_destination, id)
 	set_msg_arg_int(2, get_msg_argtype(2), 0)
 }
 
-/*public message_saytext()
+public message_saytext()
 {
 	if (get_msg_args() == 4)
 	{
-		static iSender; iSender = get_msg_arg_int(1)
+		static sender; sender = get_msg_arg_int(1)
 
-		if (0 < iSender < g_maxplayers + 1 && g_cTag[iSender][0])
+		if (0 < sender < g_maxplayers + 1 && g_tag[sender][0])
 		{
 			static cReplacement[189]
 			static cPhrase[47]
 			get_msg_arg_string(2, cPhrase, 46)
+
 			if (equal(cPhrase, "#Cstrike_Chat_CT", 0))
 			{
-				formatex(cReplacement, 188, "^1(Counter-Terrorist) ^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^1(Counter-Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_T", 0))
 			{
-				formatex(cReplacement, 188, "^1(Terrorist) ^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^1(Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_CT_Dead", 0))
 			{
-				formatex(cReplacement, 188, "^1*DEAD*(Counter-Terrorist) ^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^1*DEAD*(Counter-Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_T_Dead", 0))
 			{
-				formatex(cReplacement, 188, "^1*DEAD*(Terrorist) ^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^1*DEAD*(Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_Spec", 0))
 			{
-				formatex(cReplacement, 188, "^1(Spectator) ^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^1(Spectator) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_All", 0))
 			{
-				formatex(cReplacement, 188, "^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_AllDead", 0))
 			{
-				formatex(cReplacement, 188, "^1*DEAD* ^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^1*DEAD* ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_AllSpec", 0))
 			{
-				formatex(cReplacement, 188, "^1*SPEC* ^4%s ^3%s^1 :  %s", g_cTag[iSender], "%s1", "%s2")
+				formatex(cReplacement, 188, "^1*SPEC* ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 		}
 	}
 	return PLUGIN_CONTINUE
-}*/
+}
 
 public _GameMenu(id, menu, item)
 {
@@ -6884,6 +6946,9 @@ public client_putinserver(id)
 
 		if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[id]))
 			MakeUserVip(id)		// If Key Exists then make him VIP
+
+		if (g_tagCount && TrieKeyExists(g_tagTrie, g_playerName[id]))
+			GiveUserTag(id)
 
 		get_user_ip(id, g_playerIP[id], charsmax(g_playerIP), 1)	// Get player's IP Address
 	}
