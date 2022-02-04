@@ -3368,7 +3368,7 @@ public ReadChatAdvertisementsFromFile()
 	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!g", "^4")
 	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!t", "^3")
 	            replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!n", "^1")
-                g_iAdvertisementsCount++;
+				g_iAdvertisementsCount++
             }
 		}
 		fclose(iFile);
@@ -3389,8 +3389,9 @@ public MakeUserAdmin(id)
 		{
 			g_admin[id] = true
 			copy(g_adminInfo[id][_aFlags], 31, Data[_aFlags])
+			copy(g_adminInfo[id][_aRank], 31, Data[_aRank])
 
-			log_amx("Login: ^"%s^" became an admin. [ %s ] [ %s ]", g_playerName[id], g_adminInfo[id][_aFlags], g_playerIP[id])
+			log_amx("Login: ^"%s^" became an admin. [ %s ] - [ %s ] - [ %s ]", g_playerName[id], g_adminInfo[id][_aFlags], g_adminInfo[id][_aRank], g_playerIP[id])
 			return PLUGIN_CONTINUE
 		}
 		else
@@ -13283,7 +13284,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	current_time = get_gametime()
 	if (current_time - g_models_targettime >= g_modelchange_delay)
 	{
-		ChangeModels(victim+TASK_MODEL)
+		ChangeModels(victim + TASK_MODEL)
 		g_models_targettime = current_time
 	}
 	else
@@ -17529,58 +17530,72 @@ public ChangeModels(taskid)
 	{
 		if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 		{
-			for(new i; i < sizeof g_cSurvivorModels; i++)
+			for (new i; i < sizeof g_cSurvivorModels; i++)
 			{
 				if (equal(currentmodel, g_cSurvivorModels[i])) change = false 
 			}
 		}
 		else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 		{
-			for(new i; i < sizeof g_cSniperModels; i++)
+			for (new i; i < sizeof g_cSniperModels; i++)
 			{
 				if (equal(currentmodel, g_cSniperModels[i])) change = false 
 			}
 		}
 		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 		{
-			for(new i; i < sizeof g_cSamuraiModels; i++)
+			for (new i; i < sizeof g_cSamuraiModels; i++)
 			{
 				if (equal(currentmodel, g_cSamuraiModels[i])) change = false 
 			}
 		}
+		else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
+		{
+			for (new i; i < sizeof g_cTerminatorModels; i++)
+			{
+				if (equal(currentmodel, g_cTerminatorModels[i])) change = false 
+			}
+		}
+		else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
+		{
+			for (new i; i < sizeof g_cGrenadierModels; i++)
+			{
+				if (equal(currentmodel, g_cGrenadierModels[i])) change = false 
+			}
+		}
 		else
 		{
-			if (g_admin[id] && !g_vip[id])
+			if (g_admin[id] && equali(g_adminInfo[id][_aRank], "RANK_OWNER") && !g_vip[id])
 			{
-				for(new i; i < sizeof g_cOwnerModels; i++)
+				for (new i; i < sizeof g_cOwnerModels; i++)
 				{
 					if (equal(currentmodel, g_cOwnerModels[i])) change = false 
 				}
 			}
 			else if (g_admin[id] && g_vip[id])
 			{
-				for(new i; i < sizeof g_cVipModels; i++)
+				for (new i; i < sizeof g_cVipModels; i++)
 				{
 					if (equal(currentmodel, g_cVipModels[i])) change = false 
 				}
 			}
 			else if (g_admin[id] && !g_vip[id])
 			{
-				for(new i; i < sizeof g_cAdminModels; i++)
+				for (new i; i < sizeof g_cAdminModels; i++)
 				{
 					if (equal(currentmodel, g_cAdminModels[i])) change = false 
 				}
 			}
 			else if (g_admin[id] && g_vip[id])
 			{
-				for(new i; i < sizeof g_cVipModels; i++)
+				for (new i; i < sizeof g_cVipModels; i++)
 				{
 					if (equal(currentmodel, g_cVipModels[i])) change = false 
 				}
 			}
 			else
 			{
-				for(new i; i < sizeof g_cHumanModels; i++)
+				for (new i; i < sizeof g_cHumanModels; i++)
 				{
 					if (equal(currentmodel, g_cHumanModels[i])) change = false 
 				}
@@ -17591,23 +17606,30 @@ public ChangeModels(taskid)
 	{
 		if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 		{
-			for(new i; i < sizeof g_cNemesisModels; i++)
+			for (new i; i < sizeof g_cNemesisModels; i++)
 			{
 				if (equal(currentmodel, g_cNemesisModels[i])) change = false 
 			}
 		}
 		if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 		{
-			for(new i; i < sizeof g_cAssassinModels; i++)
+			for (new i; i < sizeof g_cAssassinModels; i++)
 			{
 				if (equal(currentmodel, g_cAssassinModels[i])) change = false 
 			}
 		}
 		if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 		{
-			for(new i; i < sizeof g_cBombardierModels; i++)
+			for (new i; i < sizeof g_cBombardierModels; i++)
 			{
 				if (equal(currentmodel, g_cBombardierModels[i])) change = false 
+			}
+		}
+		if (CheckBit(g_playerClass[id], CLASS_REVENANT))
+		{
+			for (new i; i < sizeof g_cRevenantModels; i++)
+			{
+				if (equal(currentmodel, g_cRevenantModels[i])) change = false 
 			}
 		}
 		else if (equal(currentmodel, g_cZombieClasses[g_zombieclass[id]][Model])) change = false  
@@ -17636,9 +17658,21 @@ public ChangeModels(taskid)
 				set_user_model(id, g_cSamuraiModels[temp])
 				log_amx("Samurai %s model changed to %s", g_playerName[id], g_cSamuraiModels[temp])
 			}
+			else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
+			{
+				new temp = random(sizeof g_cGrenadierModels)
+				set_user_model(id, g_cGrenadierModels[temp])
+				log_amx("Grenadier %s model changed to %s", g_playerName[id], g_cGrenadierModels[temp])
+			}
+			else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
+			{
+				new temp = random(sizeof g_cTerminatorModels)
+				set_user_model(id, g_cTerminatorModels[temp])
+				log_amx("Terminator %s model changed to %s", g_playerName[id], g_cTerminatorModels[temp])
+			}
 			else
 			{
-				if (g_admin[id] && !g_vip[id])
+				if (g_admin[id] && equali(g_adminInfo[id][_aRank], "RANK_OWNER") && !g_vip[id])
 				{
 					new temp = random(sizeof g_cOwnerModels)
 					set_user_model(id, g_cOwnerModels[temp])
@@ -17690,6 +17724,12 @@ public ChangeModels(taskid)
 				set_user_model(id, g_cBombardierModels[temp])
 				log_amx("Bombardier %s model changed to %s", g_playerName[id], g_cBombardierModels[temp])
 			}
+			else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
+			{
+				new temp = random(sizeof g_cRevenantModels)
+				set_user_model(id, g_cRevenantModels[temp])
+				log_amx("Revenant %s model changed to %s", g_playerName[id], g_cRevenantModels[temp])
+			}
 			else
 			{
 				new temp = g_zombieclass[id]
@@ -17698,6 +17738,7 @@ public ChangeModels(taskid)
 			}
 		}
 	}
+
 	return PLUGIN_CONTINUE
 }
 
