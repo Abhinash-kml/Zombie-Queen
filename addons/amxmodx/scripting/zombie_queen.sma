@@ -3035,7 +3035,7 @@ public MySql_Init()
 	new Handle:Queries
 
     // We must now prepare some random queries
-	Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS `perfectzm` (NICKNAME varchar(32), HASH varchar(150), KILLS INT(11), DEATHS INT(11), INFECTIONS INT(11), NEMESISKILLS INT(11), ASSASINKILLS INT(11), BOMBARDIERKILLS INT(11), SURVIVORKILLS INT(11), SNIPERKILLS INT(11), SAMURAIKILLS INT(11), POINTS INT(11), SCORE INT(11))")
+	Queries = SQL_PrepareQuery(SqlConnection, "CREATE TABLE IF NOT EXISTS `perfectzm` (NICKNAME varchar(32), HASH varchar(150), KILLS INT(11), DEATHS INT(11), INFECTIONS INT(11), NEMESISKILLS INT(11), ASSASINKILLS INT(11), BOMBARDIERKILLS INT(11), SURVIVORKILLS INT(11), SNIPERKILLS INT(11), SAMURAIKILLS INT(11), GRENADIERKILLS INT(11), TERMINATORKILLS INT(11), REVENANTKILLS INT(11), POINTS INT(11), SCORE INT(11))")
 
 	if (!SQL_Execute(Queries))
 	{
@@ -3072,7 +3072,7 @@ public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[
 	    new szTemp[512]
 	    
 	    // Now we will insturt the values into our table.
-	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` (`NICKNAME`, `HASH`, `KILLS`, `DEATHS`, `INFECTIONS`, `NEMESISKILLS`, `ASSASINKILLS`, `BOMBARDIERKILLS`, `SURVIVORKILLS`, `SNIPERKILLS`, `SAMURAIKILLS`, `POINTS`, `SCORE`) VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", g_playerName[id], g_playerHash[id])
+	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` (`NICKNAME`, `HASH`, `KILLS`, `DEATHS`, `INFECTIONS`, `NEMESISKILLS`, `ASSASINKILLS`, `BOMBARDIERKILLS`, `SURVIVORKILLS`, `SNIPERKILLS`, `SAMURAIKILLS`, `GRENADIERKILLS`, `TERMINATORKILLS`, `REVENANTKILLS`, `POINTS`, `SCORE`) VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", g_playerName[id], g_playerHash[id])
 	    SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 	    g_totalplayers++
 	} 
@@ -3088,8 +3088,11 @@ public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[
 		g_survivorkills[id]   = SQL_ReadResult(Query, 8)
 		g_sniperkills[id] 	  = SQL_ReadResult(Query, 9)
 		g_samuraikills[id] 	  = SQL_ReadResult(Query, 10)
-		g_points[id] 		  = SQL_ReadResult(Query, 11)
-		g_score[id] 		  = SQL_ReadResult(Query, 12)
+		g_grenadierkills[id]  = SQL_ReadResult(Query, 11)
+		g_terminatorkills[id] = SQL_ReadResult(Query, 12)
+		g_revenantkills[id]	  = SQL_ReadResult(Query, 13)
+		g_points[id] 		  = SQL_ReadResult(Query, 14)
+		g_score[id] 		  = SQL_ReadResult(Query, 15)
 
 		set_dhudmessage(0, 255, 255, 0.03, 0.5, 2, 6.0, 10.0)
 		show_dhudmessage(id, "You are now ranked!")
@@ -3129,7 +3132,7 @@ public MySQL_UPDATE_DATABASE(id)
 	new szTemp[512]
 
 	// Here we will update the user hes information in the database where the steamid matches.
-	format(szTemp, charsmax(szTemp), "UPDATE `perfectzm` SET `KILLS` = '%i', `DEATHS` = '%i', `INFECTIONS` = '%i', `NEMESISKILLS` = '%i', `ASSASINKILLS` = '%i', `BOMBARDIERKILLS` = '%i', `SURVIVORKILLS` = '%i', `SNIPERKILLS` = '%i', `SAMURAIKILLS` = '%i', `POINTS` = '%i', `SCORE` = '%i' WHERE `HASH` = '%s';", g_kills[id], g_deaths[id], g_infections[id], g_nemesiskills[id], g_assasinkills[id], g_bombardierkills[id], g_survivorkills[id], g_sniperkills[id], g_samuraikills[id], g_points[id], g_score[id], g_playerHash[id])
+	format(szTemp, charsmax(szTemp), "UPDATE `perfectzm` SET `KILLS` = '%i', `DEATHS` = '%i', `INFECTIONS` = '%i', `NEMESISKILLS` = '%i', `ASSASINKILLS` = '%i', `BOMBARDIERKILLS` = '%i', `SURVIVORKILLS` = '%i', `SNIPERKILLS` = '%i', `SAMURAIKILLS` = '%i', `GRENADIERKILLS` = '%i', `TERMINATORKILLS` = '%i', `REVENANTKILLS` = '%i', `POINTS` = '%i', `SCORE` = '%i' WHERE `HASH` = '%s';", g_kills[id], g_deaths[id], g_infections[id], g_nemesiskills[id], g_assasinkills[id], g_bombardierkills[id], g_survivorkills[id], g_sniperkills[id], g_samuraikills[id], g_grenadierkills[id], g_terminatorkills[id], g_revenantkills[id], g_points[id], g_score[id], g_playerHash[id])
 	SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
 } 
 
@@ -3161,6 +3164,12 @@ public MySQL_GetStatistics(FailState, Handle:Query, Error[], Errcode, Data[], Da
 	menu_additem(g_menu, menudata, "8", 0, -1)
 	formatex(menudata, 255, "Samurai kills: \r%s", AddCommas(g_samuraikills[id]))
 	menu_additem(g_menu, menudata, "9", 0, -1)
+	formatex(menudata, 255, "Grenadier kills: \r%s", AddCommas(g_grenadierkills[id]))
+	menu_additem(g_menu, menudata, "10", 0, -1)
+	formatex(menudata, 255, "Terminator kills: \r%s", AddCommas(g_terminatorkills[id]))
+	menu_additem(g_menu, menudata, "11", 0, -1)
+	formatex(menudata, 255, "Revenant kills: \r%s", AddCommas(g_revenantkills[id]))
+	menu_additem(g_menu, menudata, "12", 0, -1)
 
 	menu_setprop(g_menu, 6, -1)
 	menu_display(id, g_menu, 0)
@@ -3210,13 +3219,10 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 	if (is_user_connected(id))
 	{
 		formatex(Buffer, charsmax(Buffer), "<meta charset=utf-8><style>body{background:#112233;font-family:Arial}th{background:#2E2E2E;color:#FFF;padding:5px 2px;text-align:left}td{padding:5px 2px}table{width:100%%;background:#EEEECC;font-size:12px;}h2{color:#FFF;font-family:Verdana;text-align:center}#nr{text-align:center}#c{background:#E2E2BC}</style><h2>%s</h2><table border=^"0^" align=^"center^" cellpadding=^"0^" cellspacing=^"1^"><tbody>", "TOP 15")
-		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>NAME<th>KILLS<th>DEATHS<th>INFECTIONS<th>POINTS<th>SCORE<th>KPD")
+		Len = add(Buffer, charsmax(Buffer), "<tr><th id=nr>#</th><th>NAME<th>KILLS<th>DEATHS<th>INFECTIONS<th>POINTS<th>SCORE")
 
 		while (SQL_MoreResults(Query))
 		{
-			log_amx("Entered While loop")
-			new Float:KPD
-
 			SQL_ReadResult(Query, 0, Name, charsmax(Name))
 
 			Kills 	   = SQL_ReadResult(Query, 1)
@@ -3225,27 +3231,20 @@ public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 			Points     = SQL_ReadResult(Query, 4)
 			Score 	   = SQL_ReadResult(Query, 5)
 
-			if (Kills) KPD = floatdiv(float(Kills), float(Deaths))
-			else KPD = float(Kills)
-
-			log_amx("Got result")
-
 			++Place
 
-			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%s<td>%s<td>%s<td>%s<td>%s<td>%s<td>%s<td>%.02f", Place % 2 == 0 ? "" : " id=c", AddCommas(Place), Name, AddCommas(Kills), AddCommas(Deaths), AddCommas(Infections), AddCommas(Points), AddCommas(Score), KPD)
+			Len += formatex(Buffer[Len], charsmax(Buffer), "<tr %s><td id=nr>%s<td>%s<td>%s<td>%s<td>%s<td>%s<td>%s", Place % 2 == 0 ? "" : " id=c", AddCommas(Place), Name, AddCommas(Kills), AddCommas(Deaths), AddCommas(Infections), AddCommas(Points), AddCommas(Score))
 
 			SQL_NextRow(Query)
-
-			log_amx("Next Row Query Executed")
 		}
 
 		new ServerName[128]
 		get_cvar_string("hostname", ServerName, charsmax(ServerName))
 		
-		formatex(Buffer[Len], charsmax(Buffer), "<tr><th colspan=^"5^" id=nr>%s", ServerName)
+		formatex(Buffer[Len], charsmax(Buffer), "<tr><th colspan=^"10^" id=nr>%s", ServerName)
 		add(Buffer, charsmax(Buffer), "</tbody></table></body>")
 		
-		show_motd(id, Buffer, "Top Players")
+		show_motd(id, Buffer, "Global Top 15")
 	}
 
 	SQL_FreeHandle(Query)
@@ -8051,10 +8050,8 @@ public Client_Say(id)
 		if (cMap[0]) client_print_color(id, print_team_grey, "^1Next map:^4 %s", cMap)
 		else client_print_color(id, print_team_grey, "^1Next map:^4 [not yet voted on]")
 	}
-	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4))
-		ShowPlayerStatistics(id)
-	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3))
-		ShowGlobalTop15(id)
+	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
+	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3)) ShowGlobalTop15(id)
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
 		cs_set_user_deaths(id, 0)
@@ -8069,7 +8066,7 @@ public Client_Say(id)
 	{
 		if (CheckBit(g_playerClass[id], CLASS_HUMAN))
 		{
-			if(cs_get_user_team(id) != CS_TEAM_SPECTATOR)
+			if (cs_get_user_team(id) != CS_TEAM_SPECTATOR)
 			{
 			    cs_set_user_team(id, CS_TEAM_SPECTATOR)
 			    user_kill(id)
