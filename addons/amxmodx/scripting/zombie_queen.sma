@@ -10,6 +10,7 @@
 #include <   hamsandwich  >
 #include <     nvault     >
 #include <	 screenfade   >
+#include <   SettingsAPI  >
 #include <      xs        >
 #include <     geoip      >
 #include <    targetex    >
@@ -139,18 +140,18 @@ new g_groupNames[MAX_GROUPS][] =
 	"Suspended"
 }
 
-new g_groupFlags[MAX_GROUPS][] = 
+new g_groupRanks[MAX_GROUPS][] = 
 {
-	"abcdefghijkl#$!mnopqrstuvwxyz",
-	"abcdefghijkl#$%mnopqrstuvwxyz",
-	"abcdefghijkl#$&mnopqrstuvwxyz",
-	"defghijklmnopqrstuvwxyz",
-	"fghijklmnopqrstuvwxyz",
-	"ghijklmnopqrstuvwxyz",
-	"ghijklmqrstuvwxyz",
-	"ghijklmyz",
-	"ghijklyz",
-	"st"
+	"RANK_FOUNDER",
+	"RANK_OWNER",
+	"RANK_CO_OWNER",
+	"RANK_PRINCE",
+	"RANK_ELDER",
+	"RANK_SEMI_ELDER",
+	"RANK_ADMINISTRATOR",
+	"RANK_MODERATOR",
+	"RANK_HELPER",
+	"RANK_SUSPENDED"
 }
 
 // Old connection queue
@@ -1137,6 +1138,61 @@ enum _: menuBackActions
 }
 
 new g_mainAdminMenuCallback, g_makeHumanClassMenuCallback, g_makeZombieClassMenuCallback, g_startNormalModesCallback, g_startSpecialModesCallback, g_playersMenuCallback
+
+// Admin commands access
+enum _: adminCommandsAccess
+{
+	ACCESS_IMMUNITY,
+	ACCESS_SLAP,
+	ACCESS_SLAY,
+	ACCESS_FREEZE,
+	ACCESS_GAG,
+	ACCESS_PUNISH,
+	ACCESS_MAP,
+	ACCESS_MAKE_HUMAN,
+	ACCESS_MAKE_ZOMBIE,
+	ACCESS_MAKE_ASSASIN,
+	ACCESS_MAKE_NEMESIS,
+	ACCESS_MAKE_BOMBARDIER,
+	ACCESS_MAKE_REVENANT,
+	ACCESS_MAKE_SURVIVOR,
+	ACCESS_MAKE_SNIPER,
+	ACCESS_MAKE_SAMURAI,
+	ACCESS_MAKE_GRENADIER,
+	ACCESS_MAKE_TERMINATOR,
+	ACCESS_START_MULTI_INFECTION,
+	ACCESS_START_SWARM,
+	ACCESS_START_PLAGUE,
+	ACCESS_START_SYNAPSIS,
+	ACCESS_START_SURVIVOR_VS_NEMESIS,
+	ACCESS_START_SURVIVOR_VS_ASSASIN,
+	ACCESS_START_SNIPER_VS_ASSASIN,
+	ACCESS_START_SNIPER_VS_NEMESIS,
+	ACCESS_START_BOMBARDIER_VS_GRENADIER,
+	ACCESS_START_NIGHTMARE,
+	MAX_ACCESS_FLAGS
+}
+
+new g_access_flag[MAX_ACCESS_FLAGS]
+
+LoadCustomizationFromFile()
+{
+	// Section Access Flags
+	new user_access[2]
+	new access_names[MAX_ACCESS_FLAGS][] = { "ACCESS IMMUNITY", "ACCESS SLAP", "ACCESS SLAY", "ACCESS FREEZE", "ACCESS GAG", "ACCESS PUNISH", "ACCESS MAP",  "ACCESS HUMAN", "ACCESS ZOMBIE", 
+	"ACCESS ASSASIN", "ACCESS NEMESIS", "ACCESS BOMBARDIER", "ACCESS REVENANT", "ACCESS SURVIVOR", "ACCESS SNIPER", "ACCESS SAMURAI", "ACCESS GRENADIER", "ACCESS TERMINATOR",
+	"ACCESS MULTI INFECTION", "ACCESS SWARM", "ACCESS PLAGUE", "ACCESS SYNAPSIS", "ACCESS SURVIVOR VS NEMESIS", "ACCESS SURVIVOR VS ASSASIN", "ACCESS SNIPER VS ASSASIN", 
+	"ACCESS SNIPER VS NEMESIS", "ACCESS BOMBARDIER VS GRENADIER", "ACCESS NIGHTMARE" }
+
+	for (new i = 0; i < MAX_ACCESS_FLAGS; i++)
+	{
+		AmxLoadString("AccessFlags.ini", "Access Flags", access_names[i], user_access, charsmax(user_access))
+		g_access_flag[i] = user_access[0]
+
+		log_amx("Loaded Flags = %c", g_access_flag[i])
+	}	
+}
+
 
 // Forward enums
 enum _: forwardNames
@@ -2240,6 +2296,8 @@ public plugin_precache()
 	// Plugin disabled?
 	if (!get_pcvar_num(cvar_toggle)) return
 	g_pluginenabled = true
+
+	LoadCustomizationFromFile()
 	
 	new i, buffer[128]
 	
@@ -9436,7 +9494,7 @@ public MakeZombieClassMenuCallback(id, menu, item)
     {
         case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
         case 1: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-        case 2: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+        case 2: return AdminHasFlag(id, g_access_flag[ACCESS_MAKE_NEMESIS]) ? ITEM_ENABLED : ITEM_DISABLED
         case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
         case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
         case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
@@ -9563,7 +9621,7 @@ public cmd_who(id)
 		{
 			player = players[j]
 
-			if (!strcmp(g_groupFlags[i], g_adminInfo[player][_aFlags]))
+			if (!strcmp(g_groupRanks[i], g_adminInfo[player][_aRank]))
 				console_print(id, "%s", g_playerName[player])
 		}
 	}
