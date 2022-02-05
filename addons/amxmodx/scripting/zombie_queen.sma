@@ -1145,10 +1145,13 @@ enum _: adminCommandsAccess
 	ACCESS_IMMUNITY,
 	ACCESS_SLAP,
 	ACCESS_SLAY,
+	ACCESS_KICK,
+	ACCESS_RESPAWN_PLAYERS,
 	ACCESS_FREEZE,
 	ACCESS_GAG,
 	ACCESS_PUNISH,
 	ACCESS_MAP,
+	ACCESS_DESTROY,
 	ACCESS_MAKE_HUMAN,
 	ACCESS_MAKE_ZOMBIE,
 	ACCESS_MAKE_ASSASIN,
@@ -1170,29 +1173,30 @@ enum _: adminCommandsAccess
 	ACCESS_START_SNIPER_VS_NEMESIS,
 	ACCESS_START_BOMBARDIER_VS_GRENADIER,
 	ACCESS_START_NIGHTMARE,
+	ACCESS_RELOAD_ADMINS,
+	ACCESS_POINTS,
 	MAX_ACCESS_FLAGS
 }
 
-new g_access_flag[MAX_ACCESS_FLAGS]
+new g_accessFlag[MAX_ACCESS_FLAGS]
 
 LoadCustomizationFromFile()
 {
 	// Section Access Flags
 	new user_access[2]
-	new access_names[MAX_ACCESS_FLAGS][] = { "ACCESS IMMUNITY", "ACCESS SLAP", "ACCESS SLAY", "ACCESS FREEZE", "ACCESS GAG", "ACCESS PUNISH", "ACCESS MAP",  "ACCESS HUMAN", "ACCESS ZOMBIE", 
+	new access_names[MAX_ACCESS_FLAGS][] = { "ACCESS IMMUNITY", "ACCESS SLAP", "ACCESS SLAY", "ACCESS KICK", "ACCESS RESPAWN", "ACCESS FREEZE", "ACCESS GAG", "ACCESS PUNISH", "ACCESS MAP", "ACCESS DESTROY", "ACCESS HUMAN", "ACCESS ZOMBIE", 
 	"ACCESS ASSASIN", "ACCESS NEMESIS", "ACCESS BOMBARDIER", "ACCESS REVENANT", "ACCESS SURVIVOR", "ACCESS SNIPER", "ACCESS SAMURAI", "ACCESS GRENADIER", "ACCESS TERMINATOR",
 	"ACCESS MULTI INFECTION", "ACCESS SWARM", "ACCESS PLAGUE", "ACCESS SYNAPSIS", "ACCESS SURVIVOR VS NEMESIS", "ACCESS SURVIVOR VS ASSASIN", "ACCESS SNIPER VS ASSASIN", 
-	"ACCESS SNIPER VS NEMESIS", "ACCESS BOMBARDIER VS GRENADIER", "ACCESS NIGHTMARE" }
+	"ACCESS SNIPER VS NEMESIS", "ACCESS BOMBARDIER VS GRENADIER", "ACCESS NIGHTMARE", "ACCESS RELOAD ADMINS", "ACCESS POINTS" }
 
 	for (new i = 0; i < MAX_ACCESS_FLAGS; i++)
 	{
 		AmxLoadString("AccessFlags.ini", "Access Flags", access_names[i], user_access, charsmax(user_access))
-		g_access_flag[i] = user_access[0]
+		g_accessFlag[i] = user_access[0]
 
-		log_amx("Loaded Flags = %c", g_access_flag[i])
+		log_amx("%s = %c", access_names[i], g_accessFlag[i])
 	}	
 }
-
 
 // Forward enums
 enum _: forwardNames
@@ -8269,24 +8273,12 @@ public Client_SayTeam(id)
 	
 	if (cMessage[0] == '@')
 	{
-		if (g_admin[id] && g_vip[id])
+		if (g_admin[id])
 		{
 			static i; i = 1
-			while (g_maxplayers + 1 > i)
+			while (i < g_maxplayers + 1)
 			{
-				if (g_isconnected[i] && g_admin[i] && AdminHasFlag(i, 'a'))
-				{
-					client_print_color(i, print_team_grey, "^4[VIP]^3 %s^1 :  %s", g_playerName[id], cMessage[1])
-				}
-				i++
-			}
-		}
-		else if (g_admin[id] && !g_vip[id])
-		{
-			static i; i = 1
-			while (g_maxplayers + 1 > i)
-			{
-				if (g_isconnected[i] && g_admin[i] && AdminHasFlag(i, 'a'))
+				if (g_isconnected[i] && g_admin[i])
 				{
 					client_print_color(i, print_team_grey, "^4[ADMINS]^3 %s^1 :  %s", g_playerName[id], cMessage[1])
 				}
@@ -8440,7 +8432,7 @@ public Client_SayTeam(id)
 
 public Admin_menu(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'a')) ShowMainAdminMenu(id)
+	if (g_admin[id]) ShowMainAdminMenu(id)
 	else return PLUGIN_HANDLED
 
 	return PLUGIN_HANDLED
@@ -8757,7 +8749,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 	{
 		case START_INFECTION: 
 		{
-			if (AdminHasFlag(id, 'a') && !g_modestarted)
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_MULTI_INFECTION]))
 			{
 				if (!g_modestarted)
 				{
@@ -8779,7 +8771,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 		}
 	case START_MULTIPLE_INFECTION: 
 		{
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_MULTI_INFECTION]))
 			{
 				if (allowed_multi())
 				{
@@ -8802,7 +8794,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 		}
 	case START_SWARM: 
 		{
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_SWARM]))
 			{
 				if (allowed_swarm())
 				{
@@ -8825,7 +8817,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 		}
         case START_PLAGUE: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_PLAGUE]))
 			{
 				if (allowed_plague())
 				{
@@ -8848,7 +8840,7 @@ public StartNormalModesMenuHandler(id, menu, item)
 		}
         case START_SYNAPSIS: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_SYNAPSIS]))
 			{
 				if (allowed_synapsis())
 				{
@@ -8887,7 +8879,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
     {
 		case START_SURVIVOR_VS_NEMESIS: 
 		{
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_NEMESIS]))
 			{
 				if (allowed_armageddon())
 				{
@@ -8910,7 +8902,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
 		case START_SURVIVOR_VS_ASSASIN: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_ASSASIN]))
 			{
 				if (allowed_survivor_vs_assasin())
 				{
@@ -8933,7 +8925,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
 		case START_SNIPER_VS_NEMESIS: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_NEMESIS]))
 			{
 				if (allowed_devil())
 				{
@@ -8956,7 +8948,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
         case START_SNIPER_VS_ASSASIN: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_ASSASIN]))
 			{
 				if (allowed_apocalypse())
 				{
@@ -8979,7 +8971,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
         case START_BOMBARDIER_VS_GRENADIER: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_BOMBARDIER_VS_GRENADIER]))
 			{
 				if (allowed_bombardier_vs_grenadier())
 				{
@@ -9002,7 +8994,7 @@ public StartSpecialModesMenuHandler(id, menu, item)
 		}
 		case START_NIGHTMARE: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_START_NIGHTMARE]))
 			{
 				if (allowed_nightmare())
 				{
@@ -9051,7 +9043,7 @@ public PlayersMenuHandler(id, menu, item)
     {
         case ACTION_RESPAWN_PLAYER: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_RESPAWN_PLAYERS]))
 			{
 				if (allowed_respawn(target))
 				{
@@ -9074,7 +9066,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_HUMAN: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_HUMAN]))
 			{
 				if (allowed_human(target))
 				{
@@ -9097,7 +9089,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_SNIPER: 
 		{
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SNIPER]))
 			{
 				if (allowed_sniper(target))
 				{
@@ -9126,7 +9118,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_SURVIVOR: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SURVIVOR]))
 			{
 				if (allowed_survivor(target))
 				{
@@ -9155,7 +9147,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_SAMURAI: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SAMURAI]))
 			{
 				if (allowed_samurai(target))
 				{
@@ -9184,7 +9176,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
 		case ACTION_MAKE_GRENADIER: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_GRENADIER]))
 			{
 				if (allowed_grenadier(target))
 				{
@@ -9213,7 +9205,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
 		case ACTION_MAKE_TERMINATOR: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_TERMINATOR]))
 			{
 				if (allowed_terminator(target))
 				{
@@ -9242,7 +9234,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_ZOMBIE: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ZOMBIE]))
 			{
 				if (allowed_zombie(target))
 				{
@@ -9271,7 +9263,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_ASSASIN: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ASSASIN]))
 			{
 				if (allowed_assassin(target))
 				{
@@ -9300,7 +9292,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_NEMESIS: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_NEMESIS]))
 			{
 				if (allowed_nemesis(target))
 				{
@@ -9330,7 +9322,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
         case ACTION_MAKE_BOMBARDIER: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_BOMBARDIER]))
 			{
 				if (allowed_bombardier(target))
 				{
@@ -9359,7 +9351,7 @@ public PlayersMenuHandler(id, menu, item)
 		}
 		case ACTION_MAKE_REVENANT: 
 		{ 
-			if (AdminHasFlag(id, 'a'))
+			if (AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_REVENANT]))
 			{
 				if (allowed_revenant(target))
 				{
@@ -9452,11 +9444,11 @@ public MainAdminMenuCallback(id, menu, item)
 
 	switch (choice)
 	{
-		case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 1: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 2: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
-		case 3: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
-		case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case 0: return AdminHasFlag(id, g_accessFlag[ACCESS_RESPAWN_PLAYERS]) ? ITEM_ENABLED : ITEM_DISABLED
+		case 1: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_HUMAN]) ? ITEM_ENABLED : ITEM_DISABLED
+		case 2: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ZOMBIE]) ? ITEM_ENABLED : ITEM_DISABLED
+		case 3: return AdminHasFlag(id, g_accessFlag[ACCESS_START_MULTI_INFECTION]) ? ITEM_ENABLED : ITEM_DISABLED
+		case 4: return AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_NEMESIS]) ? ITEM_ENABLED : ITEM_DISABLED
 		case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
 	}
 
@@ -9472,12 +9464,12 @@ public MakeHumanClassMenuCallback(id, menu, item)
 
 	switch (choice)
 	{
-		case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
-		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
-		case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 5: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+		case MAKE_HUMAN: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_HUMAN]) ? ITEM_ENABLED : ITEM_DISABLED
+		case MAKE_SURVIVOR: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SURVIVOR]) ? ITEM_ENABLED : ITEM_DISABLED
+		case MAKE_SNIPER: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SNIPER]) ? ITEM_ENABLED : ITEM_DISABLED
+		case MAKE_SAMURAI: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SAMURAI]) ? ITEM_ENABLED : ITEM_DISABLED
+		case MAKE_TERMINATOR: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_TERMINATOR]) ? ITEM_ENABLED : ITEM_DISABLED
+		case MAKE_GRENADIER: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_GRENADIER]) ? ITEM_ENABLED : ITEM_DISABLED
 	}
 
 	return ITEM_IGNORE
@@ -9492,12 +9484,12 @@ public MakeZombieClassMenuCallback(id, menu, item)
 
     switch (choice)
     {
-        case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-        case 1: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-        case 2: return AdminHasFlag(id, g_access_flag[ACCESS_MAKE_NEMESIS]) ? ITEM_ENABLED : ITEM_DISABLED
-        case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-        case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-        case 5: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
+        case MAKE_ZOMBIE: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ZOMBIE]) ? ITEM_ENABLED : ITEM_DISABLED
+        case MAKE_ASSASIN: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ASSASIN]) ? ITEM_ENABLED : ITEM_DISABLED
+        case MAKE_NEMESIS: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_NEMESIS]) ? ITEM_ENABLED : ITEM_DISABLED
+        case MAKE_BOMBARDIER: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_BOMBARDIER]) ? ITEM_ENABLED : ITEM_DISABLED
+        case MAKE_REVENANT: return AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_REVENANT]) ? ITEM_ENABLED : ITEM_DISABLED
+        case MAKE_DRAGON: return AdminHasFlag(id, '[') ? ITEM_ENABLED : ITEM_DISABLED
     }
 
     return ITEM_IGNORE
@@ -9512,11 +9504,11 @@ public StartNormalModesCallBack(id, menu, item)
 
 	switch (choice)
     {
-        case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
-		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
-		case 3: return AdminHasFlag(id, 'd') ? ITEM_ENABLED : ITEM_DISABLED
-        case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+        case START_INFECTION: return AdminHasFlag(id, g_accessFlag[ACCESS_START_MULTI_INFECTION]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_MULTIPLE_INFECTION: return AdminHasFlag(id, g_accessFlag[ACCESS_START_MULTI_INFECTION]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_SWARM: return AdminHasFlag(id, g_accessFlag[ACCESS_START_SWARM]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_PLAGUE: return AdminHasFlag(id, g_accessFlag[ACCESS_START_PLAGUE]) ? ITEM_ENABLED : ITEM_DISABLED
+        case START_SYNAPSIS: return AdminHasFlag(id, g_accessFlag[ACCESS_START_SYNAPSIS]) ? ITEM_ENABLED : ITEM_DISABLED
     }
 
 	return ITEM_IGNORE
@@ -9531,12 +9523,12 @@ public StartSpecialModesCallBack(id, menu, item)
 
 	switch (choice)
     {
-        case 0: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 1: return AdminHasFlag(id, 'b') ? ITEM_ENABLED : ITEM_DISABLED
-		case 2: return AdminHasFlag(id, 'c') ? ITEM_ENABLED : ITEM_DISABLED
-		case 3: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 4: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
-		case 5: return AdminHasFlag(id, 'a') ? ITEM_ENABLED : ITEM_DISABLED
+        case START_SURVIVOR_VS_NEMESIS: return AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_NEMESIS]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_SURVIVOR_VS_ASSASIN: return AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_ASSASIN]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_SNIPER_VS_NEMESIS: return AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_NEMESIS]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_SNIPER_VS_ASSASIN: return AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_ASSASIN]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_BOMBARDIER_VS_GRENADIER: return AdminHasFlag(id, g_accessFlag[ACCESS_START_BOMBARDIER_VS_GRENADIER]) ? ITEM_ENABLED : ITEM_DISABLED
+		case START_NIGHTMARE: return AdminHasFlag(id, g_accessFlag[ACCESS_START_NIGHTMARE]) ? ITEM_ENABLED : ITEM_DISABLED
     }
 
 	return ITEM_IGNORE
@@ -9578,7 +9570,7 @@ public PlayersMenuCallBack(id, menu, item)
 public cmd_toggle(id)
 {
 	// Check for access flag - Enable/Disable Mod
-	if (g_admin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, '*'))
 	{
 		// Retrieve arguments
 		new arg[2]
@@ -9634,7 +9626,7 @@ public cmd_who(id)
 public cmd_slap(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'k'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
 	{
 		static command[33], arg[33], iPlayers[32], iPlayersnum, target[32]
 		
@@ -9682,7 +9674,7 @@ public cmd_slap(id)
 public cmd_slay(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'l'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAY]))
 	{
 		static command[33], arg[33], target
 		
@@ -9715,7 +9707,7 @@ public cmd_slay(id)
 		
 		if (target > 0)
 		{
-			if (AdminHasFlag(target, 'a'))
+			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 			{
 				console_print(id, "[Zombie Queen] You cannot slay an Admin with immunity!")
 				return PLUGIN_HANDLED
@@ -9740,7 +9732,7 @@ public cmd_slay(id)
 public cmd_kick(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'j'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_KICK]))
 	{
 		static command[33], arg[33], target
 		
@@ -9773,7 +9765,7 @@ public cmd_kick(id)
 		
 		if (target > 0)
 		{
-			if (AdminHasFlag(target, 'a'))
+			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 			{
 				console_print(id, "[Zombie Queen] You cannot kick an Admin with immunity!")
 				return PLUGIN_HANDLED
@@ -9798,7 +9790,7 @@ public cmd_kick(id)
 public cmd_freeze(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'i'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_FREEZE]))
 	{
 		static command[33], arg[33], target
 		
@@ -9831,7 +9823,7 @@ public cmd_freeze(id)
 		
 		if (target > 0)
 		{
-			if (AdminHasFlag(target, 'a'))
+			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 			{
 				console_print(id, "[Zombie Queen] You cannot freeze an Admin with immunity!")
 				return PLUGIN_HANDLED
@@ -9878,7 +9870,7 @@ public cmd_freeze(id)
 public cmd_unfreeze(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'i'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_FREEZE]))
 	{
 		static command[33], arg[33], target
 		
@@ -9911,7 +9903,7 @@ public cmd_unfreeze(id)
 		
 		if (target > 0)
 		{
-			if (AdminHasFlag(target, 'a'))
+			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 			{
 				console_print(id, "[Zombie Queen] You cannot unfreeze an Admin with immunity!")
 				return PLUGIN_HANDLED
@@ -10000,7 +9992,7 @@ public cmd_unfreeze(id)
 // zp_map
 public cmd_map(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'f'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAP]))
 	{
 		new arg[32]
 		new arglen = read_argv(1, arg, charsmax(arg))
@@ -10054,7 +10046,7 @@ public ChangeMap(map[]){ engine_changelevel(map); }
 
 public cmd_destroy(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'd'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_DESTROY]))
 	{
 		static target
 		static cTarget[32]
@@ -10103,15 +10095,12 @@ public cmd_psay(id)
 
 public cmd_showip(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
 	{
 		new i = 1;
 		while (i < g_maxplayers + 1)
 		{
-			if (g_isconnected[i])
-			{
-				console_print(id, "   -   %s | %s | %s", g_playerName[i], g_playerIP[i], g_playercountry[i])
-			}
+			if (g_isconnected[i]) console_print(id, "   -   %s   |   %s   |   %s   -   ", g_playerName[i], g_playerIP[i], g_playercountry[i])
 			i++
 		}
 	}
@@ -10121,7 +10110,7 @@ public cmd_showip(id)
 
 public cmd_reloadadmins(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RELOAD_ADMINS]))
 	{
 		g_adminCount = 0
 		ReadAdminsFromFile()
@@ -10144,7 +10133,7 @@ public cmd_reloadadmins(id)
 
 public cmd_last(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
 	{
 		new name[33]
 		new authid[32]
@@ -10385,7 +10374,7 @@ public _MenuChange(iPlayer, iMenu, iItem)
 
 public cmd_gag(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'h'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_GAG]))
 	{
 		static command[33], arg[33], target, time[3]
 		
@@ -10419,7 +10408,7 @@ public cmd_gag(id)
 		
 		if (target > 0)
 		{
-			if (AdminHasFlag(target, '#'))
+			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 			{
 				console_print(id, "[Zombie Queen] You cannot gag an Admin with immunity!")
 				return PLUGIN_HANDLED
@@ -10442,7 +10431,7 @@ public cmd_gag(id)
 
 public cmd_ungag(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'h'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_GAG]))
 	{
 		static command[33], arg[33], target
 		
@@ -10475,7 +10464,7 @@ public cmd_ungag(id)
 		
 		if (target > 0)
 		{
-			if (AdminHasFlag(target, '#'))
+			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 			{
 				console_print(id, "[Zombie Queen] You cannot ungag an Admin with immunity!")
 				return PLUGIN_HANDLED
@@ -10500,7 +10489,7 @@ public cmd_ungag(id)
 public cmd_zombie(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ZOMBIE]))
 	{
 		static command[33], arg[33], target
 		
@@ -10565,7 +10554,7 @@ public cmd_zombie(id)
 public cmd_human(id)
 {
 	// Check for access flag - Make Human
-	if (g_admin[id] && AdminHasFlag(id, 'a'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_HUMAN]))
 	{
 		static command[33], arg[33], target
 		
@@ -10621,7 +10610,7 @@ public cmd_human(id)
 public cmd_survivor(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 't'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SURVIVOR]))
 	{
 		static command[33], arg[33], target
 		
@@ -10686,7 +10675,7 @@ public cmd_survivor(id)
 public cmd_sniper(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'u'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SNIPER]))
 	{
 		static command[33], arg[33], target
 		
@@ -10751,7 +10740,7 @@ public cmd_sniper(id)
 public cmd_samurai(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SAMURAI]))
 	{
 		static command[33], arg[33], target
 		
@@ -10816,7 +10805,7 @@ public cmd_samurai(id)
 public cmd_grenadier(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_GRENADIER]))
 	{
 		static command[33], arg[33], target
 		
@@ -10881,7 +10870,7 @@ public cmd_grenadier(id)
 public cmd_terminator(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_TERMINATOR]))
 	{
 		static command[33], arg[33], target
 		
@@ -10946,7 +10935,7 @@ public cmd_terminator(id)
 public cmd_revenant(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 's'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_REVENANT]))
 	{
 		static command[33], arg[33], target
 		
@@ -11011,7 +11000,7 @@ public cmd_revenant(id)
 public cmd_nemesis(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'x'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_NEMESIS]))
 	{
 		static command[33], arg[33], target
 		
@@ -11076,7 +11065,7 @@ public cmd_nemesis(id)
 public cmd_assassin(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'w'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ASSASIN]))
 	{
 		static command[33], arg[33], target
 		
@@ -11141,7 +11130,7 @@ public cmd_assassin(id)
 public cmd_bombardier(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, 'v'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_BOMBARDIER]))
 	{
 		static command[33], arg[33], target
 		
@@ -11206,7 +11195,7 @@ public cmd_bombardier(id)
 public cmd_respawn(id)
 {
 	// Check for access flag - Respawn
-	if (g_admin[id] && AdminHasFlag(id, '$'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RESPAWN_PLAYERS]))
 	{
 		static command[33], arg[33], target
 		
@@ -11263,7 +11252,7 @@ public cmd_respawn(id)
 public cmd_swarm(id)
 {
 	// Check for access flag - Mode Swarm
-	if (g_admin[id] && AdminHasFlag(id, 'r'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SWARM]))
 	{
 		// Swarm mode not allowed
 		if (!allowed_swarm())
@@ -11294,7 +11283,7 @@ public cmd_swarm(id)
 public cmd_multi(id)
 {
 	// Check for access flag - Mode Multi
-	if (g_admin[id] && AdminHasFlag(id, 'm'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_MULTI_INFECTION]))
 	{
 		// Multi infection mode not allowed
 		if (!allowed_multi())
@@ -11325,7 +11314,7 @@ public cmd_multi(id)
 public cmd_plague(id)
 {
 	// Check for access flag - Mode Plague
-	if (g_admin[id] && AdminHasFlag(id, 'q'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_PLAGUE]))
 	{
 		// Plague mode not allowed
 		if (!allowed_plague())
@@ -11356,7 +11345,7 @@ public cmd_plague(id)
 public cmd_armageddon(id)
 {
 	// Check for access flag - Mode Armageddon
-	if (g_admin[id] && AdminHasFlag(id, 'p'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_NEMESIS]))
 	{
 		// Armageddon mode not allowed
 		if (!allowed_armageddon())
@@ -11387,7 +11376,7 @@ public cmd_armageddon(id)
 public cmd_apocalypse(id)
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, 'o'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_ASSASIN]))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_apocalypse())
@@ -11418,7 +11407,7 @@ public cmd_apocalypse(id)
 public cmd_nightmare(id)
 {
 	// Check for access flag - Mode Nightmare
-	if (g_admin[id] && AdminHasFlag(id, '#'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_NIGHTMARE]))
 	{
 		// Nightmare mode not allowed
 		if (!allowed_nightmare())
@@ -11449,7 +11438,7 @@ public cmd_nightmare(id)
 public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_NEMESIS]))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_devil())
@@ -11463,7 +11452,7 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 		start_mode(MODE_SNIPER_VS_NEMESIS, 0)
 		
 		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playerName[id])
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playerName[id])
 		
 		// Log to file
 		LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
@@ -11480,7 +11469,7 @@ public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
 public cmd_synapsis(id) // Synapsis round
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SYNAPSIS]))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_synapsis())
@@ -11511,7 +11500,7 @@ public cmd_synapsis(id) // Synapsis round
 public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_ASSASIN]))
 	{
 		// Apocalypse mode not allowed
 		if (!allowed_survivor_vs_assasin())
@@ -11542,7 +11531,7 @@ public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
 public cmd_bombardier_vs_grenadier(id) // Bombardier vs Grenadier mode
 {
 	// Check for access flag - Mode Bombardier vs Grenadier
-	if (g_admin[id] && AdminHasFlag(id, 'n'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_BOMBARDIER_VS_GRENADIER]))
 	{
 		// Bombardier vs Grenadier mode not allowed
 		if (!allowed_bombardier_vs_grenadier())
@@ -11572,7 +11561,7 @@ public cmd_bombardier_vs_grenadier(id) // Bombardier vs Grenadier mode
 // zp_points
 public cmd_points(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'b'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_POINTS]))
 	{
 		// Retrieve arguments
 		static command[33], arg[33], amount[16], password[16], target, points
@@ -11646,7 +11635,7 @@ public cmd_points(id)
 // zp_points
 public cmd_resetpoints(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'b'))
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_POINTS]))
 	{
 		// Retrieve arguments
 		static command[33], arg[33], password[16], target
