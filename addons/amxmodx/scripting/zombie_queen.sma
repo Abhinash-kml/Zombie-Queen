@@ -529,62 +529,6 @@ new Float:g_fGagTime[33]
 /*================================================================================
 	[Models]
 =================================================================================*/
-
-new const g_cHumanModels[][] =
-{
-	"gign",
-	"sas",
-	"arctic"
-}
-
-new const g_cNemesisModels[][] =
-{
-	"PerfectZM_Nemesis"
-}
-new const g_cAssassinModels[][] =
-{
-	"PerfectZM_Assassin"
-}
-new const g_cBombardierModels[][] =
-{
-	"PerfectZM_Bombardier"
-}
-new const g_cSurvivorModels[][] =
-{
-	"PerfectZM_Survivor"
-}
-new const g_cSniperModels[][] =
-{
-	"PerfectZM_Sniper"
-}
-new const g_cSamuraiModels[][] =
-{
-	"PerfectZM_Samurai"
-}
-new const g_cRevenantModels[][] =
-{
-	"PerfectZM_Assassin"
-}
-new const g_cGrenadierModels[][] = 
-{
-	"PerfectZM_Samurai"
-}
-new const g_cTerminatorModels[][] =
-{
-	"PerfectZM_Samurai"
-}
-new const g_cAdminModels[][] = 
-{
-	"PerfectZM_Admin"
-}
-new const g_cOwnerModels[][] =
-{
-	"PerfectZM_Owner"
-}
-new const g_cVipModels[][] =
-{
-	"PerfectZM_VIP"
-}
 new const V_KNIFE_HUMAN[] =
 {
 	"models/v_knife.mdl"
@@ -1180,6 +1124,27 @@ enum _: adminCommandsAccess
 
 new g_accessFlag[MAX_ACCESS_FLAGS]
 
+// Class Models constants
+enum _: modelConsts
+{
+	MODEL_HUMAN,
+	MODEL_SURVIVOR,
+	MODEL_SNIPER,
+	MODEL_SAMURAI,
+	MODEL_GRENADIER,
+	MODEL_TERMINATOR,
+	MODEL_ASSASIN,
+	MODEL_NEMESIS,
+	MODEL_BOMBARDIER,
+	MODEL_REVENANT,
+	MODEL_OWNER,
+	MODEL_ADMIN,
+	MODEL_VIP,
+	MAX_CLASS_MODELS
+}
+
+new Array:g_playerModel[MAX_CLASS_MODELS]
+
 LoadCustomizationFromFile()
 {
 	// Section Access Flags
@@ -1191,11 +1156,28 @@ LoadCustomizationFromFile()
 
 	for (new i = 0; i < MAX_ACCESS_FLAGS; i++)
 	{
-		AmxLoadString("AccessFlags.ini", "Access Flags", access_names[i], user_access, charsmax(user_access))
+		AmxLoadString("AccessFlags/AccessFlags.ini", "Access Flags", access_names[i], user_access, charsmax(user_access))
 		g_accessFlag[i] = user_access[0]
 
 		log_amx("%s = %c", access_names[i], g_accessFlag[i])
-	}	
+	}
+
+	// Section Player models
+	new model_names[MAX_CLASS_MODELS][] = { "HUMAN", "SURVIVOR", "SNIPER", "SAMURAI", "GRENADIER", "TERMINATOR", "ASSASIN", "NEMESIS", "BOMBARDIER", "REVENANT", "OWNER", "ADMIN", "VIP" }
+
+	for (new i = 0; i < MAX_CLASS_MODELS; i++)
+	{
+		AmxLoadStringArray("Models/Models.ini", "Class Models", model_names[i], g_playerModel[i])
+
+		log_amx("----- %s = %i -----", model_names[i], ArraySize(g_playerModel[i]))
+
+		for (new j = 0; j < ArraySize(g_playerModel[i]); j++)
+		{
+			new buffer[32]
+			ArrayGetString(g_playerModel[i], j, buffer, charsmax(buffer))
+			log_amx("%s", buffer)
+		}
+	}
 }
 
 // Forward enums
@@ -2301,78 +2283,90 @@ public plugin_precache()
 	if (!get_pcvar_num(cvar_toggle)) return
 	g_pluginenabled = true
 
+	for (new i = 0; i < MAX_CLASS_MODELS; i++) g_playerModel[i] = ArrayCreate(32, 1)
+
 	LoadCustomizationFromFile()
 	
 	new i, buffer[128]
-	
-	for (i = 0; i < sizeof g_cHumanModels; i++)
+
+	for (i = 0; i < sizeof CountdownSounds; i++) engfunc(EngFunc_PrecacheSound, CountdownSounds[i])
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_HUMAN]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cHumanModels[i], g_cHumanModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_HUMAN], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cAdminModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_SURVIVOR]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cAdminModels[i], g_cAdminModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_SURVIVOR], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cNemesisModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_SNIPER]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cNemesisModels[i], g_cNemesisModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_SNIPER], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cAssassinModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_SAMURAI]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cAssassinModels[i], g_cAssassinModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_SAMURAI], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cBombardierModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_GRENADIER]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cBombardierModels[i], g_cBombardierModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_GRENADIER], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cRevenantModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_TERMINATOR]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cRevenantModels[i], g_cRevenantModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_TERMINATOR], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cSurvivorModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_ASSASIN]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cSurvivorModels[i], g_cSurvivorModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_ASSASIN], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cSniperModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_NEMESIS]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cSniperModels[i], g_cSniperModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_NEMESIS], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cSamuraiModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_BOMBARDIER]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cSamuraiModels[i], g_cSamuraiModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_BOMBARDIER], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cGrenadierModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_REVENANT]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cGrenadierModels[i], g_cGrenadierModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_REVENANT], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cTerminatorModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_OWNER]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cTerminatorModels[i], g_cTerminatorModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_OWNER], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cOwnerModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_ADMIN]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cOwnerModels[i], g_cOwnerModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
+		ArrayGetString(Array:g_playerModel[MODEL_ADMIN], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
-	for (i = 0; i < sizeof g_cVipModels; i++)
+
+	for (i = 0; i < ArraySize(Array:g_playerModel[MODEL_VIP]); i++)
 	{
-		formatex(buffer, charsmax(buffer), "models/player/%s/%s.mdl", g_cVipModels[i], g_cVipModels[i])
-		engfunc(EngFunc_PrecacheModel, buffer)
-	}
-	for(i = 0; i < sizeof CountdownSounds; i++)
-	{
-		engfunc(EngFunc_PrecacheSound, CountdownSounds[i])
+		ArrayGetString(Array:g_playerModel[MODEL_VIP], i, buffer, charsmax(buffer))
+		PrecachePlayerModel(buffer)
 	}
 	
 	// Custom weapon models
@@ -3045,13 +3039,13 @@ public plugin_init()
 	}
 	
 	g_PrimaryMenu = menu_create("Primary Weapons", "PrimaryHandler")
-	for(new i; i < sizeof g_PrimaryWeapons; i++)
+	for (new i; i < sizeof g_PrimaryWeapons; i++)
 	{
 		menu_additem(g_PrimaryMenu, g_PrimaryWeapons[i][weaponName])
 	}
 
 	g_SecondaryMenu = menu_create("Secondary Weapons", "SecondaryHandler")
-	for(new i; i < sizeof g_SecondaryWeapons; i++)
+	for (new i; i < sizeof g_SecondaryWeapons; i++)
 	{
 		menu_additem(g_SecondaryMenu, g_SecondaryWeapons[i][weaponName])
 	}
@@ -17628,224 +17622,280 @@ public RemoveBot()
 public ChangeModels(taskid)
 {	
 	static id; id = taskid - TASK_MODEL
-	static bool:change; change = true
+	static iRand
+	static bool:already_has_model; already_has_model = false
 	static currentmodel[33]; get_user_model(id, currentmodel, charsmax(currentmodel))
+	static tempmodel[33]
 
 	// Check if model change is needed
-	if (CheckBit(g_playerTeam[id], TEAM_HUMAN))
+	if (CheckBit(g_playerClass[id], CLASS_HUMAN))
 	{
-		if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
+		if (g_admin[id] && equali(g_adminInfo[id][_aRank], "RANK_OWNER"))
 		{
-			for (new i; i < sizeof g_cSurvivorModels; i++)
+			if (g_vip[id])
 			{
-				if (equal(currentmodel, g_cSurvivorModels[i])) change = false 
-			}
-		}
-		else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
-		{
-			for (new i; i < sizeof g_cSniperModels; i++)
-			{
-				if (equal(currentmodel, g_cSniperModels[i])) change = false 
-			}
-		}
-		else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
-		{
-			for (new i; i < sizeof g_cSamuraiModels; i++)
-			{
-				if (equal(currentmodel, g_cSamuraiModels[i])) change = false 
-			}
-		}
-		else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
-		{
-			for (new i; i < sizeof g_cTerminatorModels; i++)
-			{
-				if (equal(currentmodel, g_cTerminatorModels[i])) change = false 
-			}
-		}
-		else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
-		{
-			for (new i; i < sizeof g_cGrenadierModels; i++)
-			{
-				if (equal(currentmodel, g_cGrenadierModels[i])) change = false 
-			}
-		}
-		else
-		{
-			if (g_admin[id] && equali(g_adminInfo[id][_aRank], "RANK_OWNER") && !g_vip[id])
-			{
-				for (new i; i < sizeof g_cOwnerModels; i++)
+				for (new i; i < ArraySize(Array:g_playerModel[MODEL_VIP]); i++)
 				{
-					if (equal(currentmodel, g_cOwnerModels[i])) change = false 
+					ArrayGetString(Array:g_playerModel[MODEL_VIP], i, tempmodel, charsmax(tempmodel))
+					if (equali(currentmodel, tempmodel[i])) already_has_model = true
 				}
-			}
-			else if (g_admin[id] && g_vip[id])
-			{
-				for (new i; i < sizeof g_cVipModels; i++)
-				{
-					if (equal(currentmodel, g_cVipModels[i])) change = false 
-				}
-			}
-			else if (g_admin[id] && !g_vip[id])
-			{
-				for (new i; i < sizeof g_cAdminModels; i++)
-				{
-					if (equal(currentmodel, g_cAdminModels[i])) change = false 
-				}
-			}
-			else if (g_admin[id] && g_vip[id])
-			{
-				for (new i; i < sizeof g_cVipModels; i++)
-				{
-					if (equal(currentmodel, g_cVipModels[i])) change = false 
-				}
-			}
-			else
-			{
-				for (new i; i < sizeof g_cHumanModels; i++)
-				{
-					if (equal(currentmodel, g_cHumanModels[i])) change = false 
-				}
-			}
-		}
-	}
-	else
-	{
-		if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
-		{
-			for (new i; i < sizeof g_cNemesisModels; i++)
-			{
-				if (equal(currentmodel, g_cNemesisModels[i])) change = false 
-			}
-		}
-		if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
-		{
-			for (new i; i < sizeof g_cAssassinModels; i++)
-			{
-				if (equal(currentmodel, g_cAssassinModels[i])) change = false 
-			}
-		}
-		if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
-		{
-			for (new i; i < sizeof g_cBombardierModels; i++)
-			{
-				if (equal(currentmodel, g_cBombardierModels[i])) change = false 
-			}
-		}
-		if (CheckBit(g_playerClass[id], CLASS_REVENANT))
-		{
-			for (new i; i < sizeof g_cRevenantModels; i++)
-			{
-				if (equal(currentmodel, g_cRevenantModels[i])) change = false 
-			}
-		}
-		else if (equal(currentmodel, g_cZombieClasses[g_zombieclass[id]][Model])) change = false  
-	}
 
-	// No change function
-	if (change)
-	{
-		if (CheckBit(g_playerTeam[id], TEAM_HUMAN))
-		{
-			if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
-			{
-				new temp = random(sizeof g_cSurvivorModels)
-				set_user_model(id, g_cSurvivorModels[temp])
-				log_amx("Survivor %s model changed to %s", g_playerName[id], g_cSurvivorModels[temp])
-			}
-			else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
-			{
-				new temp = random(sizeof g_cSniperModels)
-				set_user_model(id, g_cSniperModels[temp])
-				log_amx("Sniper %s model changed to %s", g_playerName[id], g_cSniperModels[temp])
-			}
-			else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
-			{
-				new temp = random(sizeof g_cSamuraiModels)
-				set_user_model(id, g_cSamuraiModels[temp])
-				log_amx("Samurai %s model changed to %s", g_playerName[id], g_cSamuraiModels[temp])
-			}
-			else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
-			{
-				new temp = random(sizeof g_cGrenadierModels)
-				set_user_model(id, g_cGrenadierModels[temp])
-				log_amx("Grenadier %s model changed to %s", g_playerName[id], g_cGrenadierModels[temp])
-			}
-			else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
-			{
-				new temp = random(sizeof g_cTerminatorModels)
-				set_user_model(id, g_cTerminatorModels[temp])
-				log_amx("Terminator %s model changed to %s", g_playerName[id], g_cTerminatorModels[temp])
+				if (!already_has_model)
+				{
+					iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_VIP]) - 1)
+					ArrayGetString(Array:g_playerModel[MODEL_VIP], iRand, tempmodel, charsmax(tempmodel))
+					set_user_model(id, tempmodel)
+					log_amx("Owner + VIP model changed to = %s", tempmodel)
+				}
 			}
 			else
 			{
-				if (g_admin[id] && equali(g_adminInfo[id][_aRank], "RANK_OWNER") && !g_vip[id])
+				for (new i; i < ArraySize(Array:g_playerModel[MODEL_OWNER]); i++)
 				{
-					new temp = random(sizeof g_cOwnerModels)
-					set_user_model(id, g_cOwnerModels[temp])
-					log_amx("Owner %s model changed to %s", g_playerName[id], g_cOwnerModels[temp])
+					ArrayGetString(Array:g_playerModel[MODEL_OWNER], i, tempmodel, charsmax(tempmodel))
+					if (equali(currentmodel, tempmodel[i])) already_has_model = true
 				}
-				else if (g_admin[id] && g_vip[id])
+
+				if (!already_has_model)
 				{
-					new temp = random(sizeof g_cVipModels)
-					set_user_model(id, g_cVipModels[temp])
-					log_amx("Owner + VIP %s model changed to %s", g_playerName[id], g_cVipModels[temp])
+					iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_OWNER]) - 1)
+					ArrayGetString(Array:g_playerModel[MODEL_OWNER], iRand, tempmodel, charsmax(tempmodel))
+					set_user_model(id, tempmodel)
+					log_amx("Owner model changed to = %s", tempmodel)
 				}
-				else if (g_admin[id] && !g_vip[id])
+			}
+		}
+		else if (g_admin[id] && !equali(g_adminInfo[id][_aRank], "RANK_OWNER"))
+		{
+			if (g_vip[id])
+			{
+				for (new i; i < ArraySize(Array:g_playerModel[MODEL_VIP]); i++)
 				{
-					new temp = random(sizeof g_cAdminModels)
-					set_user_model(id, g_cAdminModels[temp])
-					log_amx("Admin %s model changed to %s", g_playerName[id], g_cAdminModels[temp])
+					ArrayGetString(Array:g_playerModel[MODEL_VIP], i, tempmodel, charsmax(tempmodel))
+					if (equali(currentmodel, tempmodel[i])) already_has_model = true
 				}
-				else if (g_admin[id] && g_vip[id])
+
+				if (!already_has_model)
 				{
-					new temp = random(sizeof g_cVipModels)
-					set_user_model(id, g_cVipModels[temp])
-					log_amx("Admin + VIP %s model changed to %s", g_playerName[id], g_cVipModels[temp])
+					iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_VIP]) - 1)
+					ArrayGetString(Array:g_playerModel[MODEL_VIP], iRand, tempmodel, charsmax(tempmodel))
+					set_user_model(id, tempmodel)
+					log_amx("Admin + VIP model changed to = %s", tempmodel)
 				}
-				else
+			}
+			else
+			{
+				for (new i; i < ArraySize(Array:g_playerModel[MODEL_ADMIN]); i++)
 				{
-					new temp = random(sizeof g_cHumanModels)
-					set_user_model(id, g_cHumanModels[temp])
-					log_amx("Human %s model changed to %s", g_playerName[id], g_cHumanModels[temp])
+					ArrayGetString(Array:g_playerModel[MODEL_ADMIN], i, tempmodel, charsmax(tempmodel))
+					if (equali(currentmodel, tempmodel[i])) already_has_model = true
 				}
+
+				if (!already_has_model)
+				{
+					iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_ADMIN]) - 1)
+					ArrayGetString(Array:g_playerModel[MODEL_ADMIN], iRand, tempmodel, charsmax(tempmodel))
+					set_user_model(id, tempmodel)
+					log_amx("Admin model changed to = %s", tempmodel)
+				}
+			}
+		}
+		else if (g_vip[id])
+		{
+			for (new i; i < ArraySize(Array:g_playerModel[MODEL_VIP]); i++)
+			{
+				ArrayGetString(Array:g_playerModel[MODEL_VIP], i, tempmodel, charsmax(tempmodel))
+				if (equali(currentmodel, tempmodel[i])) already_has_model = true
+			}
+
+			if (!already_has_model)
+			{
+				iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_VIP]) - 1)
+				ArrayGetString(Array:g_playerModel[MODEL_VIP], iRand, tempmodel, charsmax(tempmodel))
+				set_user_model(id, tempmodel)
+				log_amx("VIP model changed to = %s", tempmodel)
 			}
 		}
 		else
 		{
-			if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
+			for (new i; i < ArraySize(Array:g_playerModel[MODEL_HUMAN]); i++)
 			{
-				new temp = random(sizeof g_cNemesisModels)
-				set_user_model(id, g_cNemesisModels[temp])
-				log_amx("Nemesis %s model changed to %s", g_playerName[id], g_cNemesisModels[temp])
+				ArrayGetString(Array:g_playerModel[MODEL_HUMAN], i, tempmodel, charsmax(tempmodel))
+				if (equali(currentmodel, tempmodel[i])) already_has_model = true
 			}
-			else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
+
+			if (!already_has_model)
 			{
-				new temp = random(sizeof g_cAssassinModels)
-				set_user_model(id, g_cAssassinModels[temp])
-				log_amx("Assassin %s model changed to %s", g_playerName[id], g_cAssassinModels[temp])
-			}
-			else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
-			{
-				new temp = random(sizeof g_cBombardierModels)
-				set_user_model(id, g_cBombardierModels[temp])
-				log_amx("Bombardier %s model changed to %s", g_playerName[id], g_cBombardierModels[temp])
-			}
-			else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
-			{
-				new temp = random(sizeof g_cRevenantModels)
-				set_user_model(id, g_cRevenantModels[temp])
-				log_amx("Revenant %s model changed to %s", g_playerName[id], g_cRevenantModels[temp])
-			}
-			else
-			{
-				new temp = g_zombieclass[id]
-				set_user_model(id, g_cZombieClasses[temp][Model])
-				log_amx("Zombie %s model changed to %s", g_playerName[id], g_cZombieClasses[temp][Model])
+				iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_HUMAN]) - 1)
+				ArrayGetString(Array:g_playerModel[MODEL_HUMAN], iRand, tempmodel, charsmax(tempmodel))
+				set_user_model(id, tempmodel)
+				log_amx("Human model changed to = %s", tempmodel)
 			}
 		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_SURVIVOR]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_SURVIVOR], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_SURVIVOR]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_SURVIVOR], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Survivor model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_SNIPER]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_SNIPER], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_SNIPER]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_SNIPER], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Samurai model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_SAMURAI]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_SAMURAI], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_SAMURAI]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_SAMURAI], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Samurai model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_TERMINATOR]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_TERMINATOR], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_TERMINATOR]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_TERMINATOR], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Terminator model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_GRENADIER]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_GRENADIER], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_GRENADIER]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_GRENADIER], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Grenadier model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_NEMESIS]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_NEMESIS], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_NEMESIS]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_NEMESIS], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Grenadier model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_ASSASIN]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_ASSASIN], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_ASSASIN]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_ASSASIN], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Grenadier model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_BOMBARDIER]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_BOMBARDIER], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_BOMBARDIER]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_BOMBARDIER], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Grenadier model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
+	{
+		for (new i; i < ArraySize(Array:g_playerModel[MODEL_REVENANT]); i++)
+		{
+			ArrayGetString(Array:g_playerModel[MODEL_REVENANT], i, tempmodel, charsmax(tempmodel))
+			if (equali(currentmodel, tempmodel[i])) already_has_model = true
+		}
+
+		if (!already_has_model)
+		{
+			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_REVENANT]) - 1)
+			ArrayGetString(Array:g_playerModel[MODEL_REVENANT], iRand, tempmodel, charsmax(tempmodel))
+			set_user_model(id, tempmodel)
+			log_amx("Grenadier model changed to = %s", tempmodel)
+		}
+	}
+	else if (CheckBit(g_playerClass[id], CLASS_ZOMBIE))
+	{
+		if (equali(currentmodel, g_cZombieClasses[g_zombieclass[id]][Model])) already_has_model = true
+
+		if (!already_has_model)
+		{
+			set_user_model(id, g_cZombieClasses[g_zombieclass[id]][Model])
+			log_amx("Zombie %s model changed to %s", g_playerName[id], g_cZombieClasses[g_zombieclass[id]][Model])
+		}	
 	}
 
 	return PLUGIN_CONTINUE
+}
+
+PrecachePlayerModel(const modelname[]) 
+{
+	static longname[128]
+	formatex(longname, charsmax(longname), "models/player/%s/%s.mdl", modelname, modelname)  	
+	engfunc(EngFunc_PrecacheModel, longname) 
 }
 
 /*public EarthQuake()
