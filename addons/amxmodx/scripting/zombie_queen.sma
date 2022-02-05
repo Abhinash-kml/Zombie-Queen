@@ -8054,7 +8054,7 @@ public Client_Say(id)
 		else client_print_color(id, print_team_grey, "^1Next map:^4 [not yet voted on]")
 	}
 	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
-	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3)) ShowGlobalTop15(id)
+	else if (equali(cMessage, "/globaltop", 4) || equali(cMessage, "globaltop", 3)) ShowGlobalTop15(id)
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
 		cs_set_user_deaths(id, 0)
@@ -8192,15 +8192,15 @@ public Client_Say(id)
 // Say Team function
 public Client_SayTeam(id)
 {
-	if (!g_isconnected[id])
+	if (!g_isconnected[id]) return PLUGIN_HANDLED
+	
+	static Float:fGameTime; fGameTime = get_gametime()
+
+	if (g_fGagTime[id] > fGameTime) 
 	{
 		client_print_color(id, print_team_grey,  "%s You are gagged due to your bad behaviour, please wait until your time is up", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
-
-	static Float:fGameTime; fGameTime = get_gametime()
-
-	if (g_fGagTime[id] > fGameTime) return PLUGIN_HANDLED
 
 	static cMessage[150]
 	read_args(cMessage, 149)
@@ -8241,7 +8241,7 @@ public Client_SayTeam(id)
 	}
 
 	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
-	else if (equali(cMessage, "/top", 4) || equali(cMessage, "top", 3)) ShowGlobalTop15(id)
+	else if (equali(cMessage, "/globaltop", 4) || equali(cMessage, "globaltop", 3)) ShowGlobalTop15(id)
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
 		cs_set_user_deaths(id, 0)

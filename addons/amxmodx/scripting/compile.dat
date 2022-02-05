@@ -51,7 +51,7 @@ Age=1294673665
 [timeleft.sma]
 Age=1294673665
 [zombie_queen.sma]
-Age=1413371353
+Age=1413777094
 [zp_jetpack.sma]
 Age=1256892558
 [zp_zclasses10.sma]
@@ -137,6 +137,10 @@ Age=1382787662
 [AdminMenu.sma]
 Age=1413241571
 [test_item.sma]
-Age=1413301568
+Age=1413373817
 [zp_nietoperz.sma]
 Age=1413372506
+[SettingsAPI.sma]
+Age=1413826232
+[zp_bat.sma]
+Age=1413373819
