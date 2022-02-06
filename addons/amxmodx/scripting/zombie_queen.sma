@@ -529,22 +529,6 @@ new Float:g_fGagTime[33]
 /*================================================================================
 	[Sounds]
 =================================================================================*/
-
-new const sound_win_zombies[][] = 
-{ 	
-	"ambience/the_horror1.wav",
-	"ambience/the_horror3.wav", 
-	"ambience/the_horror4.wav" 
-}
-new const sound_win_humans[][] = 
-{ 	
-	"PerfectZM/win_humans1.wav", 
-	"PerfectZM/win_humans2.wav" 
-}
-new const sound_win_no_one[][] = 
-{ 
-	"ambience/3dmstart.wav" 
-}
 new const zombie_infect[][] = 
 { 
 	"PerfectZM/zombie_infect_1.wav", 
@@ -628,96 +612,6 @@ new const zombie_idle_last[][] =
 new const zombie_madness[][] = 
 { 
 	"PerfectZM/zombie_madness1.wav" 
-}
-new const sound_nemesis[][] = 
-{ 
-	"PerfectZM/nemesis1.wav", 
-	"PerfectZM/nemesis2.wav" 
-}
-new const sound_assassin[][] =
-{
-	"PerfectZM/nemesis1.wav", 
-	"PerfectZM/nemesis2.wav" 
-}
-new const sound_bombardier[][] =
-{
-	"PerfectZM/nemesis1.wav", 
-	"PerfectZM/nemesis2.wav" 
-}
-new const sound_survivor[][] = 
-{ 
-	"PerfectZM/survivor1.wav", 
-	"PerfectZM/survivor2.wav" 
-}
-new const sound_sniper[][] = 
-{ 
-	"PerfectZM/survivor1.wav", 
-	"PerfectZM/survivor2.wav" 
-}
-new const sound_samurai[][] = 
-{ 
-	"PerfectZM/survivor1.wav", 
-	"PerfectZM/survivor2.wav" 
-}
-new const sound_grenadier[][] =
-{
-	"PerfectZM/survivor1.wav", 
-	"PerfectZM/survivor2.wav" 
-}
-new const sound_terminator[][] =
-{
-	"PerfectZM/survivor1.wav", 
-	"PerfectZM/survivor2.wav" 
-}
-new const sound_revenant[][] =
-{
-	"PerfectZM/survivor1.wav", 
-	"PerfectZM/survivor2.wav" 
-}
-new const sound_swarm[][] = 
-{ 
-	"ambience/the_horror2.wav" 
-}
-new const sound_multi[][] = 
-{ 
-	"ambience/the_horror2.wav" 
-}
-new const sound_plague[][] = 
-{ 
-	"PerfectZM/nemesis1.wav", 
-	"PerfectZM/survivor1.wav" 
-}
-new const sound_armageddon[][] = 
-{ 
-	"PerfectZM/nemesis1.wav", 
-	"PerfectZM/survivor1.wav" 
-}
-new const sound_nightmare[][] = 
-{ 
-	"PerfectZM/nemesis1.wav",
-	"PerfectZM/nemesis2.wav", 
-	"PerfectZM/survivor1.wav", 
-	"PerfectZM/survivor2.wav" 
-}
-new const sound_apocalypse[][] = 
-{ 
-	"PerfectZM/survivor1.wav" 
-}
-new const sound_devil[][] = 
-{ 
-	"PerfectZM/nemesis2.wav" 
-}
-new const sound_synapsis[][] = 
-{
-	"PerfectZM/nemesis2.wav" 
-}
-new const sound_survivor_vs_assasin[][] =
-{
-	"PerfectZM/nemesis2.wav" 
-}
-new const sound_bombardier_vs_grenadier[][] =
-{
-	"PerfectZM/nemesis2.wav"
 }
 new const grenade_infect[][] = 
 { 
@@ -1166,6 +1060,36 @@ enum _: ambienceSounds
 
 new Array:g_ambience[MAX_AMBIENCE_SOUNDS]
 
+// Round sounds
+enum _: roundSounds
+{
+	SOUND_HUMAN_WIN,
+	SOUND_ZOMBIE_WIN,
+	SOUND_WIN_NO_ONE,
+	SOUND_SURVIVOR,
+	SOUND_SNIPER,
+	SOUND_SAMURAI,
+	SOUND_GRENADIER,
+	SOUND_TERMINATOR,
+	SOUND_ASSASIN,
+	SOUND_NEMESIS,
+	SOUND_BOMBARDIER,
+	SOUND_REVENANT,
+	SOUND_MULTI_INFECTION,
+	SOUND_SWARM,
+	SOUND_PLAGUE,
+	SOUND_SYNAPSIS,
+	SOUND_SURVIVOR_VS_NEMESIS,
+	SOUND_SURVIVOR_VS_ASSASIN,
+	SOUND_SNIPER_VS_NEMESIS,
+	SOUND_SNIPER_VS_ASSASIN,
+	SOUND_BOMBARDIER_VS_GRENADIER,
+	SOUND_NIGHTMARE,
+	MAX_START_SOUNDS
+}
+
+new Array:g_startSound[MAX_START_SOUNDS]
+
 LoadCustomizationFromFile()
 {
 	static buffer[100], i
@@ -1264,6 +1188,24 @@ LoadCustomizationFromFile()
 		for (new j = 0; j < ArraySize(g_ambience[i]); j++)
 		{
 			ArrayGetString(g_ambience[i], j, buffer, charsmax(buffer))
+			log_amx("%s", buffer)
+		}
+	}
+
+	// Round start sounds
+	new keyStartSounds[MAX_START_SOUNDS][] = { "SOUND HUMAN WIN", "SOUND ZOMBIE WIN", "SOUND WIN NO ONE", "SOUND SURVIVOR", "SOUND SNIPER", "SOUND SAMURAI", "SOUND GRENADIER", "SOUND TERMINATOR", "SOUND ASSASIN", "SOUND NEMESIS",
+	"SOUND BOMBARDIER", "SOUND REVENANT", "SOUND MULTI INFECTION", "SOUND SWARM", "SOUND PLAGUE", "SOUND SYNAPSIS", "SOUND SURVIVOR VS NEMESIS", "SOUND SURVIVOR VS ASSASIN", "SOUND SNIPER VS NEMESIS",
+	"SOUND SNIPER VS ASSASIN", "SOUND BOMBARDIER VS GRENADIER", "SOUND NIGHTMARE" }
+
+	for (i = 0; i < MAX_START_SOUNDS; i++)
+	{
+		AmxLoadStringArray("Sounds/Sounds.ini", "Round Start Sounds", keyStartSounds[i], g_startSound[i])
+
+		log_amx("%s = %i", keyStartSounds[i], ArraySize(g_startSound[i]))
+
+		for (new j = 0; j < ArraySize(g_startSound[i]); j++)
+		{
+			ArrayGetString(g_startSound[i], j, buffer, charsmax(buffer))
 			log_amx("%s", buffer)
 		}
 	}
@@ -2376,6 +2318,7 @@ public plugin_precache()
 	for (new i = 0; i < MAX_WEAPON_MODELS; i++) g_weaponModels[i] = ArrayCreate(100, 1)
 	for (new i = 0; i < MAX_SPRITES; i++) g_sprites[i] = ArrayCreate(64, 1)
 	for (new i = 0; i < MAX_AMBIENCE_SOUNDS; i++) g_ambience[i] = ArrayCreate(64, 1)
+	for (new i = 0; i < MAX_START_SOUNDS; i++) g_startSound[i] = ArrayCreate(200, 1)
 
 	LoadCustomizationFromFile()
 	
@@ -2660,6 +2603,139 @@ public plugin_precache()
 		engfunc(EngFunc_PrecacheSound, buffer)
 	}
 
+	// Round Start Sounds
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SURVIVOR]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SURVIVOR], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SNIPER]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SNIPER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SAMURAI]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SAMURAI], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_GRENADIER]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_GRENADIER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_TERMINATOR]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_TERMINATOR], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_ASSASIN]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_ASSASIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_NEMESIS]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_NEMESIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_BOMBARDIER]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_BOMBARDIER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_REVENANT]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_REVENANT], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_MULTI_INFECTION]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_MULTI_INFECTION], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SWARM]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SWARM], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_PLAGUE]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_PLAGUE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SYNAPSIS]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SYNAPSIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SURVIVOR_VS_ASSASIN]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SURVIVOR_VS_ASSASIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SURVIVOR_VS_NEMESIS]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SURVIVOR_VS_NEMESIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SNIPER_VS_ASSASIN]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SNIPER_VS_ASSASIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_SNIPER_VS_NEMESIS]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_SNIPER_VS_NEMESIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_BOMBARDIER_VS_GRENADIER]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_BOMBARDIER_VS_GRENADIER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_startSound[SOUND_NIGHTMARE]); i++)
+	{
+		ArrayGetString(Array:g_startSound[SOUND_NIGHTMARE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Classic/PerfectZM_Classic.mdl")
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Raptor/PerfectZM_Raptor.mdl")
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Frozen/PerfectZM_Frozen.mdl")
@@ -2713,18 +2789,6 @@ public plugin_precache()
 
 	
 	// Custom sounds
-	for (i = 0; i < sizeof(sound_win_zombies); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_win_zombies[i])
-	}
-	for (i = 0; i < sizeof(sound_win_humans); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_win_humans[i])
-	}
-	for (i = 0; i < sizeof(sound_win_no_one); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_win_no_one[i])
-	}
 	for (i = 0; i < sizeof(zombie_infect); i++)
 	{
 		engfunc(EngFunc_PrecacheSound, zombie_infect[i])
@@ -2780,82 +2844,6 @@ public plugin_precache()
 	for (i = 0; i < sizeof(zombie_madness); i++)
 	{
 		engfunc(EngFunc_PrecacheSound, zombie_madness[i])
-	}
-	for (i = 0; i < sizeof(sound_nemesis); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_nemesis[i])
-	}
-	for (i = 0; i < sizeof(sound_assassin); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_assassin[i])
-	}
-	for (i = 0; i < sizeof(sound_revenant); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_revenant[i])
-	}
-	for (i = 0; i < sizeof(sound_survivor); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_survivor[i])
-	}
-	for (i = 0; i < sizeof(sound_sniper); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_sniper[i])
-	}
-	for (i = 0; i < sizeof(sound_samurai); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_samurai[i])
-	}
-	for (i = 0; i < sizeof(sound_grenadier); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_grenadier[i])
-	}
-	for (i = 0; i < sizeof(sound_terminator); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_terminator[i])
-	}
-	for (i = 0; i < sizeof(sound_bombardier); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_bombardier[i])
-	}
-	for (i = 0; i < sizeof(sound_swarm); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_swarm[i])
-	}
-	for (i = 0; i < sizeof(sound_multi); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_multi[i])
-	}
-	for (i = 0; i < sizeof(sound_plague); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_plague[i])
-	}
-	for (i = 0; i < sizeof(sound_armageddon); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_armageddon[i])
-	}
-	for (i = 0; i < sizeof(sound_apocalypse); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_apocalypse[i])
-	}
-	for (i = 0; i < sizeof(sound_nightmare); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_nightmare[i])
-	}
-	for (i = 0; i < sizeof(sound_devil); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_devil[i])
-	}
-	for (i = 0; i < sizeof(sound_synapsis); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_synapsis[i])
-	}
-	for (i = 0; i < sizeof(sound_survivor_vs_assasin); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_survivor_vs_assasin[i])
-	}
-	for (i = 0; i < sizeof(sound_bombardier_vs_grenadier); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_bombardier_vs_grenadier[i])
 	}
 	for (i = 0; i < sizeof(grenade_infect); i++)
 	{
@@ -5371,7 +5359,7 @@ public logevent_round_end()
 	if (g_lastmode == MODE_ASSASIN) engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
 
 	// Prevent this from getting called twice when restarting (bugfix)
-	static Float:lastendtime, Float:current_time
+	static Float:lastendtime, Float:current_time, iRand, buffer[65]
 	current_time = get_gametime()
 
 	if (current_time - lastendtime < 0.5) return
@@ -5434,11 +5422,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Humans have defeated the plague!")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5447,11 +5438,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Zombies have taken over the world!")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+				
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5460,11 +5454,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "No one won...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5475,11 +5471,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Thats how we go it soldiers^nI bet they will remember this defeat")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5488,11 +5487,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This is the begenning of the end...")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5501,11 +5503,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "The suffering has just began...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5516,11 +5520,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This victory is very precious^nCheers to all the survivors")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5529,11 +5536,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "We got defeated by the bad ones^nGet ready to be enslaved")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5542,11 +5552,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "The suffering has just began...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5557,11 +5569,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "We rise from the ashes...")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5570,11 +5585,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nCant feel the same pain again...")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5583,11 +5601,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5598,11 +5618,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5611,11 +5634,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's claws are much stronger than we thought", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5624,11 +5650,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5639,11 +5667,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5652,11 +5683,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh %s's skills are much stronger than we thought...", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5665,11 +5699,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5680,11 +5716,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5693,11 +5732,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "%s as a revenant is much stronger than we thought...", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5706,11 +5748,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5721,11 +5765,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Darkness has been successfully eliminated^nThats how we do it soldiers")
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5734,11 +5781,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Looks like %s's bombs were very powerful^nBetter luck next time...", g_playerName[g_lastSpecialZombieIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5747,11 +5797,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5762,11 +5814,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "They will not mess with you again^n%s is a badass Survivor", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5775,12 +5830,15 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playerName[g_lastSpecialHumanIndex])
 
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5789,11 +5847,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5804,11 +5864,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "%s's AWP is much stronger than you think^nBe carefull next time Mr.Zombie", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5817,11 +5880,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nBetter luck next time %s...", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5830,11 +5896,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5845,11 +5913,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "%s's sword is much sharper that you think^nBe carefull next time Mr.Zombie", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5858,11 +5929,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to sharpen your skills and sword^n%s", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5871,11 +5945,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5886,11 +5962,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "%s's grenades are too pwerfull....", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5899,11 +5978,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to try hard next time^n%s", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5912,11 +5994,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -5927,11 +6011,14 @@ public logevent_round_end()
 			if (!fnGetZombies())
 			{
 				// Human team wins
-				set_hudmessage(0, 0, 200, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "%s's terminates on an extreme level....", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_humans[random(sizeof sound_win_humans)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_HUMAN_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_HUMAN_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorehumans++
 
 				// Execute our forward
@@ -5940,11 +6027,14 @@ public logevent_round_end()
 			else if (!fnGetHumans())
 			{
 				// Zombie team wins
-				set_hudmessage(200, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "Ahhh not again^nYou need to try hard next time^n%s", g_playerName[g_lastSpecialHumanIndex])
 				
 				// Play win sound and increase score, unless game commencing
-				PlaySound(sound_win_zombies[random(sizeof sound_win_zombies)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ZOMBIE_WIN]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_ZOMBIE_WIN], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
+
 				if (!g_gamecommencing) g_scorezombies++
 
 				// Execute our forward
@@ -5953,11 +6043,13 @@ public logevent_round_end()
 			else
 			{
 				// No one wins
-				set_hudmessage(0, 200, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
+				set_hudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 3.0, 2.0, 1.0, -1)
 				ShowSyncHudMsg(0, g_MsgSync, "This battle will never end...")
 				
 				// Play win sound
-				PlaySound(sound_win_no_one[random(sizeof sound_win_no_one)])
+				iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_WIN_NO_ONE]) - 1)
+				ArrayGetString(Array:g_startSound[SOUND_WIN_NO_ONE], iRand, buffer, charsmax(buffer))
+				PlaySound(buffer)
 
 				// Execute our forward
 				ExecuteForward(g_forwards[ROUND_END], g_forwardRetVal, TEAM_NONE)
@@ -12263,7 +12355,7 @@ start_mode(mode, id)
 	g_newround = false
 	
 	// Set up some common vars
-	static forward_id, iZombies, iMaxZombies
+	static forward_id, iZombies, iMaxZombies, iRand, buffer[65]
 	
 	if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SurvivorChance) == SurvivorEnabled && iPlayersnum >= SurvivorMinPlayers) || mode == MODE_SURVIVOR)
 	{
@@ -12299,7 +12391,9 @@ start_mode(mode, id)
 		}
 		
 		// Play survivor sound
-		PlaySound(sound_survivor[random(sizeof sound_survivor)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SURVIVOR]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SURVIVOR], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Survivor HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12353,7 +12447,9 @@ start_mode(mode, id)
 		}
 		
 		// Play sniper sound
-		PlaySound(sound_sniper[random(sizeof sound_sniper)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SNIPER]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SNIPER], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Sniper HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12407,7 +12503,9 @@ start_mode(mode, id)
 		}
 		
 		// Play Samurai sound
-		PlaySound(sound_samurai[random(sizeof sound_samurai)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SAMURAI]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SAMURAI], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Samurai HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12460,7 +12558,9 @@ start_mode(mode, id)
 		}
 		
 		// Play Grenadier sound
-		PlaySound(sound_grenadier[random(sizeof sound_grenadier)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_GRENADIER]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_GRENADIER], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Grenadier HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12513,7 +12613,9 @@ start_mode(mode, id)
 		}
 		
 		// Play Terminator sound
-		PlaySound(sound_terminator[random(sizeof sound_terminator)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_TERMINATOR]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_TERMINATOR], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Terminator HUD notice
 		set_hudmessage(20, 20, 255, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12572,7 +12674,9 @@ start_mode(mode, id)
 		}
 		
 		// Play swarm sound
-		PlaySound(sound_swarm[random(sizeof sound_swarm)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SWARM]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SWARM], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Swarm HUD notice
 		set_hudmessage(20, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12638,7 +12742,9 @@ start_mode(mode, id)
 		}
 		
 		// Play multi infection sound
-		PlaySound(sound_multi[random(sizeof sound_multi)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_MULTI_INFECTION]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_MULTI_INFECTION], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Multi Infection HUD notice
 		set_hudmessage(200, 50, 0, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12745,7 +12851,9 @@ start_mode(mode, id)
 		}
 		
 		// Play plague sound
-		PlaySound(sound_plague[random(sizeof sound_plague)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_PLAGUE]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_PLAGUE], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Plague HUD notice
 		set_hudmessage(0, 50, 200, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12842,7 +12950,9 @@ start_mode(mode, id)
 		}
 		
 		// Play plague sound
-		PlaySound(sound_plague[random(sizeof sound_synapsis)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SYNAPSIS]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SYNAPSIS], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Plague HUD notice
 		set_hudmessage(0, 50, 200, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12902,7 +13012,9 @@ start_mode(mode, id)
 		}
 		
 		// Play armageddon sound
-		PlaySound(sound_armageddon[random(sizeof sound_armageddon)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SURVIVOR_VS_NEMESIS]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SURVIVOR_VS_NEMESIS], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Armageddon HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -12962,7 +13074,9 @@ start_mode(mode, id)
 		}
 		
 		// Play armageddon sound
-		PlaySound(sound_survivor_vs_assasin[random(sizeof sound_survivor_vs_assasin)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SURVIVOR_VS_ASSASIN]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SURVIVOR_VS_ASSASIN], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Armageddon HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13022,7 +13136,9 @@ start_mode(mode, id)
 		}
 		
 		// Play apocalypse sound
-		PlaySound(sound_apocalypse[random(sizeof sound_apocalypse)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SNIPER_VS_ASSASIN]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SNIPER_VS_ASSASIN], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Apocalypse HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13080,7 +13196,9 @@ start_mode(mode, id)
 		}
 		
 		// Play Bombardier vs Grenadier sound
-		PlaySound(sound_bombardier_vs_grenadier[random(sizeof sound_bombardier_vs_grenadier)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_BOMBARDIER_VS_GRENADIER]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_BOMBARDIER_VS_GRENADIER], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Bombardier vs Grenadier HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13164,7 +13282,9 @@ start_mode(mode, id)
 		}
 		
 		// Play nightmare sound
-		PlaySound(sound_nightmare[random(sizeof sound_nightmare)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_NIGHTMARE]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_NIGHTMARE], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Nightmare HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13224,7 +13344,9 @@ start_mode(mode, id)
 		}
 		
 		// Play devil sound
-		PlaySound(sound_devil[random(sizeof sound_devil)])
+		iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_SNIPER_VS_NEMESIS]) - 1)
+		ArrayGetString(Array:g_startSound[SOUND_SNIPER_VS_NEMESIS], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
 		
 		// Show Devil HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13265,7 +13387,9 @@ start_mode(mode, id)
 			g_lastSpecialZombieIndex = id
 
 			// Play Nemesis sound
-			PlaySound(sound_nemesis[random(sizeof sound_nemesis)])
+			iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_NEMESIS]) - 1)
+			ArrayGetString(Array:g_startSound[SOUND_NEMESIS], iRand, buffer, charsmax(buffer))
+			PlaySound(buffer)
 			
 			// Show Nemesis HUD notice
 			set_hudmessage(255, 20, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13301,7 +13425,9 @@ start_mode(mode, id)
 			g_lastSpecialZombieIndex = id
 
 			// Play Assassin sound
-			PlaySound(sound_assassin[random(sizeof sound_assassin)])
+			iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_ASSASIN]) - 1)
+			ArrayGetString(Array:g_startSound[SOUND_ASSASIN], iRand, buffer, charsmax(buffer))
+			PlaySound(buffer)
 			
 			// Show Assassin HUD notice
 			set_hudmessage(255, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13334,7 +13460,9 @@ start_mode(mode, id)
 			g_lastSpecialZombieIndex = id
 
 			// Play Bombardier sound
-			PlaySound(sound_bombardier[random(sizeof sound_bombardier)])
+			iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_BOMBARDIER]) - 1)
+			ArrayGetString(Array:g_startSound[SOUND_BOMBARDIER], iRand, buffer, charsmax(buffer))
+			PlaySound(buffer)
 			
 			// Show Bombardier HUD notice
 			set_hudmessage(255, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
@@ -13367,7 +13495,9 @@ start_mode(mode, id)
 			g_lastSpecialZombieIndex = id
 
 			// Play Revenant sound
-			PlaySound(sound_revenant[random(sizeof sound_revenant)])
+			iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_REVENANT]) - 1)
+			ArrayGetString(Array:g_startSound[SOUND_REVENANT], iRand, buffer, charsmax(buffer))
+			PlaySound(buffer)
 			
 			// Show Revvenant HUD notice
 			set_hudmessage(255, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
