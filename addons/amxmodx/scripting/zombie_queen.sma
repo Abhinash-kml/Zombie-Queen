@@ -1122,6 +1122,7 @@ enum _: _color
 	__green,
 	__blue
 }
+
 enum _: _nade_type
 {
 	__nade_type_infection,
@@ -1136,6 +1137,34 @@ enum _: _nade_type
 }
 
 new g_color[_nade_type][_color]
+
+// Ambience sounds
+enum _: ambienceSounds
+{
+	AMBIENCE_SURVIVOR,
+	AMBIENCE_SNIPER,
+	AMBIENCE_SAMURAI,
+	AMBIENCE_GRENADIER,
+	AMBIENCE_TERMINATOR,
+	AMBIENCE_ASSASIN,
+	AMBIENCE_NEMESIS,
+	AMBIENCE_BOMBARDIER,
+	AMBIENCE_REVENANT,
+	AMBIENCE_INFECTION,
+	AMBIENCE_MULTI_INFECTION,
+	AMBIENCE_SWARM,
+	AMBIENCE_PLAGUE,
+	AMBIENCE_SYNAPSIS,
+	AMBIENCE_SURVIVOR_VS_NEMESIS,
+	AMBIENCE_SURVIVOR_VS_ASSASIN,
+	AMBIENCE_SNIPER_VS_NEMESIS,
+	AMBIENCE_SNIPER_VS_ASSASIN,
+	AMBIENCE_BOMBARDIER_VS_GRENADIER,
+	AMBIENCE_NIGHTMARE,
+	MAX_AMBIENCE_SOUNDS
+}
+
+new Array:g_ambience[MAX_AMBIENCE_SOUNDS]
 
 LoadCustomizationFromFile()
 {
@@ -1219,6 +1248,24 @@ LoadCustomizationFromFile()
 		g_color[i][__blue]  = str_to_num(rgb[2])
 
 		log_amx("%s = %i %i %i", keyTrailNadeRGB[i], g_color[i][__red], g_color[i][__green], g_color[i][__blue])
+	}
+
+	// Ambience Sounds
+	new keyAmbience[MAX_AMBIENCE_SOUNDS][] = { "AMBIENCE SURVIVOR", "AMBIENCE SNIPER", "AMBIENCE SAMURAI", "AMBIENCE GRENADIER", "AMBIENCE TERMINATOR", "AMBIENCE ASSASIN", "AMBIENCE NEMESIS", "AMBIENCE BOMBARDIER",
+	"AMBIENCE REVENANT", "AMBIENCE INFECTION", "AMBIENCE MULTI INFECTION", "AMBIENCE SWARM", "AMBIENCE PLAGUE", "AMBIENCE SYNAPSIS", "AMBIENCE SURVIVOR VS NEMESIS", "AMBIENCE SURVIVOR VS ASSASIN", "AMBIENCE SNIPER VS NEMESIS",
+	"AMBIENCE SNIPER VS ASSASIN", "AMBIENCE BOMBARDIER VS GRENADIER", "AMBIENCE NIGHTMARE" }
+
+	for (i = 0; i < MAX_AMBIENCE_SOUNDS; i++)
+	{
+		AmxLoadStringArray("Sounds/Sounds.ini", "Ambience Sounds", keyAmbience[i], g_ambience[i])
+
+		log_amx("%s = %i", keyAmbience[i], ArraySize(g_ambience[i]))
+
+		for (new j = 0; j < ArraySize(g_ambience[i]); j++)
+		{
+			ArrayGetString(g_ambience[i], j, buffer, charsmax(buffer))
+			log_amx("%s", buffer)
+		}
 	}
 }
 
@@ -2328,6 +2375,7 @@ public plugin_precache()
 	for (new i = 0; i < MAX_CLASS_MODELS; i++) g_playerModel[i] = ArrayCreate(32, 1)
 	for (new i = 0; i < MAX_WEAPON_MODELS; i++) g_weaponModels[i] = ArrayCreate(100, 1)
 	for (new i = 0; i < MAX_SPRITES; i++) g_sprites[i] = ArrayCreate(64, 1)
+	for (new i = 0; i < MAX_AMBIENCE_SOUNDS; i++) g_ambience[i] = ArrayCreate(64, 1)
 
 	LoadCustomizationFromFile()
 	
@@ -2489,6 +2537,127 @@ public plugin_precache()
 	{
 		ArrayGetString(Array:g_weaponModels[V_FROST_NADE], i, buffer, charsmax(buffer))
 		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	// Sounds
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SNIPER]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SAMURAI]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SAMURAI], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_GRENADIER]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_GRENADIER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_TERMINATOR]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_TERMINATOR], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_ASSASIN]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_ASSASIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_NEMESIS]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_NEMESIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_BOMBARDIER]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_BOMBARDIER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_REVENANT]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_REVENANT], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_INFECTION]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_INFECTION], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_MULTI_INFECTION]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_MULTI_INFECTION], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SWARM]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SWARM], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_PLAGUE]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_PLAGUE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SYNAPSIS]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SYNAPSIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR_VS_ASSASIN]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR_VS_ASSASIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR_VS_NEMESIS]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR_VS_NEMESIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SNIPER_VS_ASSASIN]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER_VS_ASSASIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_SNIPER_VS_NEMESIS]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER_VS_NEMESIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_BOMBARDIER_VS_GRENADIER]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_BOMBARDIER_VS_GRENADIER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_ambience[AMBIENCE_NIGHTMARE]); i++)
+	{
+		ArrayGetString(Array:g_ambience[AMBIENCE_NIGHTMARE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
 	}
 
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Classic/PerfectZM_Classic.mdl")
@@ -14276,26 +14445,127 @@ public OnRegeneratorSkill()
 // Ambience Sound Effects Task
 public StartAmbienceSounds(taskid)
 {
-	if (CheckBit(g_currentmode, MODE_INFECTION)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_MULTI_INFECTION)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_BOMBARDIER)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SURVIVOR)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SNIPER)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SAMURAI)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_GRENADIER)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_TERMINATOR)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_REVENANT)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SWARM)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_PLAGUE)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) PlaySound("PerfectZM/ambience_normal.wav")
-	else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) PlaySound("PerfectZM/ambience_normal.wav")
+	static iRand, buffer[100]
+	if (CheckBit(g_currentmode, MODE_INFECTION)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_INFECTION]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_INFECTION], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_MULTI_INFECTION))
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_MULTI_INFECTION]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_MULTI_INFECTION], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_NEMESIS)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_NEMESIS]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_NEMESIS], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_ASSASIN)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_ASSASIN]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_ASSASIN], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_BOMBARDIER)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_BOMBARDIER]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_BOMBARDIER], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SURVIVOR)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SNIPER)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SNIPER]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SAMURAI)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SAMURAI]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SAMURAI], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_GRENADIER)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_GRENADIER]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_GRENADIER], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_TERMINATOR)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_TERMINATOR]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_TERMINATOR], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_REVENANT)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_REVENANT]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_REVENANT], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SWARM)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SWARM]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SWARM], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_PLAGUE)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_PLAGUE]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_PLAGUE], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SYNAPSIS]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SYNAPSIS], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR_VS_NEMESIS]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR_VS_NEMESIS], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR_VS_ASSASIN]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR_VS_ASSASIN], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SNIPER_VS_ASSASIN]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER_VS_ASSASIN], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SNIPER_VS_NEMESIS]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER_VS_NEMESIS], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_BOMBARDIER_VS_GRENADIER]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_BOMBARDIER_VS_GRENADIER], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
+	else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_NIGHTMARE]) - 1)
+		ArrayGetString(Array:g_ambience[AMBIENCE_NIGHTMARE], iRand, buffer, charsmax(buffer))
+		PlaySound(buffer)
+	}
 }
 
 // Ambience Sounds Stop Task
