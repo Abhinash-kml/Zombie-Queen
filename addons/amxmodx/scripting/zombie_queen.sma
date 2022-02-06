@@ -527,14 +527,6 @@ new g_totalplayers
 new Float:g_fGagTime[33]
 
 /*================================================================================
-	[Models]
-=================================================================================*/
-new const GRENADE_TRAIL[] =
-{
-	"sprites/laserbeam.spr"
-}
-
-/*================================================================================
 	[Sounds]
 =================================================================================*/
 
@@ -1114,9 +1106,40 @@ enum _: extraWeaponModels
 
 new Array:g_weaponModels[MAX_WEAPON_MODELS]
 
+// Sprites
+enum _: grenadeSprites
+{
+	SPRITE_GRENADE_TRAIL,
+	SPRITE_GRENADE_EXPLOSION,
+	MAX_SPRITES
+}
+
+new Array:g_sprites[MAX_SPRITES]
+
+enum _: _color
+{
+	__red,
+	__green,
+	__blue
+}
+enum _: _nade_type
+{
+	__nade_type_infection,
+	__nade_type_explosion,
+	__nade_type_napalm,
+	__nade_type_frost,
+	__nade_type_forcefield,
+	__nade_type_killing,
+	__nade_type_concussion,
+	__nade_type_antidote,
+	__MAX_NADE_TYPE
+}
+
+new g_color[_nade_type][_color]
+
 LoadCustomizationFromFile()
 {
-	static buffer[100]
+	static buffer[100], i
 
 	// Section Access Flags
 	new user_access[2]
@@ -1136,7 +1159,7 @@ LoadCustomizationFromFile()
 	// Section Player models
 	new player_model_names[MAX_CLASS_MODELS][] = { "HUMAN", "SURVIVOR", "SNIPER", "SAMURAI", "GRENADIER", "TERMINATOR", "ASSASIN", "NEMESIS", "BOMBARDIER", "REVENANT", "OWNER", "ADMIN", "VIP" }
 
-	for (new i = 0; i < MAX_CLASS_MODELS; i++)
+	for (i = 0; i < MAX_CLASS_MODELS; i++)
 	{
 		AmxLoadStringArray("Models/Models.ini", "Class Models", player_model_names[i], g_playerModel[i])
 
@@ -1153,7 +1176,7 @@ LoadCustomizationFromFile()
 	new weapon_model_names[MAX_WEAPON_MODELS][] = { "V KNIFE HUMAN", "P KNIFE HUMAN", "V KNIFE NEMESIS", "V KNIFE ASSASIN", "V KNIFE REVENANT", "V KNIFE SAMURAI", "P KNIFE SAMURAI", "V AWP SNIPER", 
 	"P AWP SNIPER", "V INFECTION NADE", "V EXPLOSION NADE", "V NAPALM NADE", "V FROST NADE" }
 
-	for (new i = 0; i < MAX_WEAPON_MODELS; i++)
+	for (i = 0; i < MAX_WEAPON_MODELS; i++)
 	{
 		AmxLoadStringArray("Models/Models.ini", "Weapon Models", weapon_model_names[i], g_weaponModels[i])
 
@@ -1164,6 +1187,38 @@ LoadCustomizationFromFile()
 			ArrayGetString(g_weaponModels[i], j, buffer, charsmax(buffer))
 			log_amx("%s", buffer)
 		}
+	}
+
+	// Section Sprites
+	new sprite_names[MAX_SPRITES][] = { "GRENADE TRAIL", "GRENADE EXPLOSION" }
+
+	for (i = 0; i < MAX_SPRITES; i++)
+	{
+		AmxLoadStringArray("Grenades/Grenades.ini", "Grenade Sprites", sprite_names[i], g_sprites[i])
+
+		log_amx("----- %s = %i -----", sprite_names[i], ArraySize(g_sprites[i]))
+
+		for (new j = 0; j < ArraySize(g_sprites[i]); j++)
+		{
+			ArrayGetString(g_sprites[i], j, buffer, charsmax(buffer))
+			log_amx("%s", buffer)
+		}
+	}
+
+	// Section colors
+	new keyTrailNadeRGB[__MAX_NADE_TYPE][] = { "INFECTION TRAIL & GLOW RGB", "EXPLOSION TRAIL & GLOW RGB", "NAPALM TRAIL & GLOW RGB", "FROST TRAIL & GLOW RGB", "FORCEFIELD TRAIL & GLOW RGB", "KILLING TRAIL & GLOW RGB", "CONCUSSION TRAIL & GLOW RGB", "ANTIDOTE TRAIL & GLOW RGB" }
+	
+	for (i = 0; i < __MAX_NADE_TYPE; i++)
+	{
+		AmxLoadString("Grenades/Grenades.ini", "Grenade Trail & Glow Color", keyTrailNadeRGB[i], buffer, charsmax(buffer))
+
+		static rgb[3][10]
+		parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+		g_color[i][__red]   = str_to_num(rgb[0])
+		g_color[i][__green] = str_to_num(rgb[1])
+		g_color[i][__blue]  = str_to_num(rgb[2])
+
+		log_amx("%s = %i %i %i", keyTrailNadeRGB[i], g_color[i][__red], g_color[i][__green], g_color[i][__blue])
 	}
 }
 
@@ -2100,7 +2155,7 @@ new g_scorezombies, g_scorehumans, g_gamecommencing // team scores
 new Float:g_models_targettime // for adding delays between Model Change messages
 new Float:g_teams_targettime // for adding delays between Team Change messages
 new g_MsgSync, g_MsgSync2, g_MsgSync3, g_MsgSync4, g_MsgSync5[4], g_MsgSync6, g_MsgSync7 // message sync objects
-new g_trailspr, g_Explode// grenade sprites
+new g_trailspr, g_explosionspr// grenade sprites
 new g_freezetime // whether CS's freeze time is on
 new g_maxplayers // max players counter
 new g_czero // whether we are running on a CZ serverPerfectZM
@@ -2272,6 +2327,7 @@ public plugin_precache()
 
 	for (new i = 0; i < MAX_CLASS_MODELS; i++) g_playerModel[i] = ArrayCreate(32, 1)
 	for (new i = 0; i < MAX_WEAPON_MODELS; i++) g_weaponModels[i] = ArrayCreate(100, 1)
+	for (new i = 0; i < MAX_SPRITES; i++) g_sprites[i] = ArrayCreate(64, 1)
 
 	LoadCustomizationFromFile()
 	
@@ -2459,9 +2515,10 @@ public plugin_precache()
 	engfunc(EngFunc_PrecacheModel, BubbleGrenadeModel)
 	
 	// Custom sprites for grenades
-	g_trailspr = engfunc(EngFunc_PrecacheModel, GRENADE_TRAIL)
-
-	g_Explode = precache_model("sprites/zerogxplode.spr")
+	ArrayGetString(Array:g_sprites[SPRITE_GRENADE_TRAIL], random_num(0, ArraySize(Array:g_sprites[SPRITE_GRENADE_TRAIL]) - 1), buffer, charsmax(buffer))
+	g_trailspr = precache_model(buffer)
+	ArrayGetString(Array:g_sprites[SPRITE_GRENADE_EXPLOSION], random_num(0, ArraySize(Array:g_sprites[SPRITE_GRENADE_EXPLOSION]) - 1), buffer, charsmax(buffer))
+	g_explosionspr = precache_model(buffer)
 
 	// Crossbow
 	precache_model(crossbow_V_MODEL)
@@ -7271,28 +7328,28 @@ public FwSetModel(entity, const model[])
 			{
 				if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 				{
-					if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) SetNadeType(entity, 255, 0, 0, NADE_TYPE_EXPLOSION)
-					else SetNadeType(entity, 128, 0, 255, NADE_TYPE_KILLING)
+					if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) SetNadeType(entity, g_color[__nade_type_explosion][__red], g_color[__nade_type_explosion][__green], g_color[__nade_type_explosion][__blue], NADE_TYPE_EXPLOSION)
+					else SetNadeType(entity, g_color[__nade_type_killing][__red], g_color[__nade_type_killing][__green], g_color[__nade_type_killing][__blue], NADE_TYPE_KILLING)
 				} 
-				else SetNadeType(entity, 0, 255, 0, NADE_TYPE_INFECTION)
+				else SetNadeType(entity, g_color[__nade_type_infection][__red], g_color[__nade_type_infection][__green], g_color[__nade_type_infection][__blue], NADE_TYPE_INFECTION)
 			}
 			else
 			{
 				if (g_killingbomb[id])
 				{
-					SetNadeType(entity, 128, 0, 255, NADE_TYPE_KILLING)
+					SetNadeType(entity, g_color[__nade_type_killing][__red], g_color[__nade_type_killing][__green], g_color[__nade_type_killing][__blue], NADE_TYPE_KILLING)
 
 					// Decrease count
 					g_killingbomb[id]--
 				}
 				else if (g_antidotebomb[id])
 				{
-					SetNadeType(entity, 255, 72, 0, NADE_TYPE_ANTIDOTE)
+					SetNadeType(entity, g_color[__nade_type_antidote][__red], g_color[__nade_type_antidote][__green], g_color[__nade_type_antidote][__blue], NADE_TYPE_ANTIDOTE)
 
 					// Decrease count
 					g_antidotebomb[id]--
 				}
-				else SetNadeType(entity, 255, 0, 0, NADE_TYPE_EXPLOSION)
+				else SetNadeType(entity, g_color[__nade_type_explosion][__red], g_color[__nade_type_explosion][__green], g_color[__nade_type_explosion][__blue], NADE_TYPE_EXPLOSION)
 			}
 		}
 		case 'f':
@@ -7301,24 +7358,24 @@ public FwSetModel(entity, const model[])
 			{
 				if (g_concussionbomb[id])
 				{
-					SetNadeType(entity, 0, 0, 255, NADE_TYPE_CONCUSSION)
+					SetNadeType(entity, g_color[__nade_type_concussion][__red], g_color[__nade_type_concussion][__green], g_color[__nade_type_concussion][__blue], NADE_TYPE_CONCUSSION)
 
 					// Decrease Counb
 					g_concussionbomb[id]--
 				}
 			}
-			else SetNadeType(entity, 255, 255, 0, NADE_TYPE_NAPALM)
+			else SetNadeType(entity, g_color[__nade_type_napalm][__red], g_color[__nade_type_napalm][__green], g_color[__nade_type_napalm][__blue], NADE_TYPE_NAPALM)
 		}
 		case 's':
 		{
 			if (g_bubblebomb[id])
 			{
-				SetNadeType(entity, 0, 255, 255, NADE_TYPE_BUBBLE)
+				SetNadeType(entity, g_color[__nade_type_forcefield][__red], g_color[__nade_type_forcefield][__green], g_color[__nade_type_forcefield][__blue], NADE_TYPE_BUBBLE)
 
 				// Decrease Counb
 				g_bubblebomb[id]--
 			}
-			else SetNadeType(entity, 0, 206, 209, NADE_TYPE_FROST)	
+			else SetNadeType(entity, g_color[__nade_type_frost][__red], g_color[__nade_type_frost][__green], g_color[__nade_type_frost][__blue], NADE_TYPE_FROST)	
 		}
 	}
 
@@ -14701,7 +14758,7 @@ public OnExplosionExplode(ent)
 	write_coord(special[0])
 	write_coord(special[1])
 	write_coord(special[2])
-	write_short(g_Explode)
+	write_short(g_explosionspr)
 	write_byte(32)
 	write_byte(16)
 	write_byte(0)
