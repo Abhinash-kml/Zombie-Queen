@@ -529,58 +529,6 @@ new Float:g_fGagTime[33]
 /*================================================================================
 	[Models]
 =================================================================================*/
-new const V_KNIFE_HUMAN[] =
-{
-	"models/v_knife.mdl"
-}
-new const P_KNIFE_HUMAN[] =
-{
-	"models/p_knife.mdl"
-}
-new const V_KNIFE_NEMESIS[] =
-{
-	"models/PerfectZM/PerfectZM_nemesis_claws.mdl"
-}
-new const V_KNIFE_ASSASSIN[] =
-{
-	"models/PerfectZM/PerfectZM_assassin_claws.mdl"
-}
-new const V_KNIFE_REVENANT[] =
-{
-	"models/PerfectZM/PerfectZM_assassin_claws.mdl"
-}
-new const V_KNIFE_SAMURAI[] =
-{
-	"models/PerfectZM/v_katana.mdl"
-}
-new const P_KNIFE_SAMURAI[] =
-{
-	"models/PerfectZM/p_katana.mdl"
-}
-new const V_AWP_SNIPER[] =
-{
-	"models/PerfectZM/v_awp_perfect.mdl"
-}
-new const P_AWP_SNIPER[] =
-{
-	"models/PerfectZM/p_awp_perfect.mdl"
-}
-new const V_INFECTION_NADE[] =
-{
-	"models/PerfectZM/v_grenade_infect.mdl"
-}
-new const V_EXPLODE_NADE[] =
-{
-	"models/v_hegrenade.mdl"
-}
-new const V_FIRE_NADE[] =
-{
-	"models/v_flashbang.mdl"
-}
-new const V_FROST_NADE[] = 
-{
-	"models/v_smokegrenade.mdl"
-}
 new const GRENADE_TRAIL[] =
 {
 	"sprites/laserbeam.spr"
@@ -1145,8 +1093,31 @@ enum _: modelConsts
 
 new Array:g_playerModel[MAX_CLASS_MODELS]
 
+// Extra models ( weapons )
+enum _: extraWeaponModels
+{
+	V_KNIFE_HUMAN,
+	P_KNIFE_HUMAN,
+	V_KNIFE_NEMESIS,
+	V_KNIFE_ASSASIN,
+	V_KNIFE_REVENANT,
+	V_KNIFE_SAMURAI,
+	P_KNIFE_SAMURAI,
+	V_AWP_SNIPER,
+	P_AWP_SNIPER,
+	V_INFECTION_NADE,
+	V_EXPLOSION_NADE,
+	V_NAPALM_NADE,
+	V_FROST_NADE,
+	MAX_WEAPON_MODELS
+}
+
+new Array:g_weaponModels[MAX_WEAPON_MODELS]
+
 LoadCustomizationFromFile()
 {
+	static buffer[100]
+
 	// Section Access Flags
 	new user_access[2]
 	new access_names[MAX_ACCESS_FLAGS][] = { "ACCESS IMMUNITY", "ACCESS SLAP", "ACCESS SLAY", "ACCESS KICK", "ACCESS RESPAWN", "ACCESS FREEZE", "ACCESS GAG", "ACCESS PUNISH", "ACCESS MAP", "ACCESS DESTROY", "ACCESS HUMAN", "ACCESS ZOMBIE", 
@@ -1163,18 +1134,34 @@ LoadCustomizationFromFile()
 	}
 
 	// Section Player models
-	new model_names[MAX_CLASS_MODELS][] = { "HUMAN", "SURVIVOR", "SNIPER", "SAMURAI", "GRENADIER", "TERMINATOR", "ASSASIN", "NEMESIS", "BOMBARDIER", "REVENANT", "OWNER", "ADMIN", "VIP" }
+	new player_model_names[MAX_CLASS_MODELS][] = { "HUMAN", "SURVIVOR", "SNIPER", "SAMURAI", "GRENADIER", "TERMINATOR", "ASSASIN", "NEMESIS", "BOMBARDIER", "REVENANT", "OWNER", "ADMIN", "VIP" }
 
 	for (new i = 0; i < MAX_CLASS_MODELS; i++)
 	{
-		AmxLoadStringArray("Models/Models.ini", "Class Models", model_names[i], g_playerModel[i])
+		AmxLoadStringArray("Models/Models.ini", "Class Models", player_model_names[i], g_playerModel[i])
 
-		log_amx("----- %s = %i -----", model_names[i], ArraySize(g_playerModel[i]))
+		log_amx("----- %s = %i -----", player_model_names[i], ArraySize(g_playerModel[i]))
 
 		for (new j = 0; j < ArraySize(g_playerModel[i]); j++)
 		{
-			new buffer[32]
 			ArrayGetString(g_playerModel[i], j, buffer, charsmax(buffer))
+			log_amx("%s", buffer)
+		}
+	}
+
+	// Section Weapon models
+	new weapon_model_names[MAX_WEAPON_MODELS][] = { "V KNIFE HUMAN", "P KNIFE HUMAN", "V KNIFE NEMESIS", "V KNIFE ASSASIN", "V KNIFE REVENANT", "V KNIFE SAMURAI", "P KNIFE SAMURAI", "V AWP SNIPER", 
+	"P AWP SNIPER", "V INFECTION NADE", "V EXPLOSION NADE", "V NAPALM NADE", "V FROST NADE" }
+
+	for (new i = 0; i < MAX_WEAPON_MODELS; i++)
+	{
+		AmxLoadStringArray("Models/Models.ini", "Weapon Models", weapon_model_names[i], g_weaponModels[i])
+
+		log_amx("----- %s = %i -----", weapon_model_names[i], ArraySize(g_weaponModels[i]))
+
+		for (new j = 0; j < ArraySize(g_weaponModels[i]); j++)
+		{
+			ArrayGetString(g_weaponModels[i], j, buffer, charsmax(buffer))
 			log_amx("%s", buffer)
 		}
 	}
@@ -2284,10 +2271,11 @@ public plugin_precache()
 	g_pluginenabled = true
 
 	for (new i = 0; i < MAX_CLASS_MODELS; i++) g_playerModel[i] = ArrayCreate(32, 1)
+	for (new i = 0; i < MAX_WEAPON_MODELS; i++) g_weaponModels[i] = ArrayCreate(100, 1)
 
 	LoadCustomizationFromFile()
 	
-	new i, buffer[128]
+	new i, buffer[1024]
 
 	for (i = 0; i < sizeof CountdownSounds; i++) engfunc(EngFunc_PrecacheSound, CountdownSounds[i])
 
@@ -2368,21 +2356,84 @@ public plugin_precache()
 		ArrayGetString(Array:g_playerModel[MODEL_VIP], i, buffer, charsmax(buffer))
 		PrecachePlayerModel(buffer)
 	}
-	
-	// Custom weapon models
-	engfunc(EngFunc_PrecacheModel, V_KNIFE_HUMAN)
-	engfunc(EngFunc_PrecacheModel, V_KNIFE_NEMESIS)
-	engfunc(EngFunc_PrecacheModel, V_KNIFE_ASSASSIN)
-	engfunc(EngFunc_PrecacheModel, V_KNIFE_REVENANT)
-	engfunc(EngFunc_PrecacheModel, V_AWP_SNIPER)
-	engfunc(EngFunc_PrecacheModel, V_KNIFE_SAMURAI)	
-	engfunc(EngFunc_PrecacheModel, P_KNIFE_HUMAN)
-	engfunc(EngFunc_PrecacheModel, P_KNIFE_SAMURAI)	
-	engfunc(EngFunc_PrecacheModel, P_AWP_SNIPER)
-	engfunc(EngFunc_PrecacheModel, V_INFECTION_NADE)
-	engfunc(EngFunc_PrecacheModel, V_EXPLODE_NADE)
-	engfunc(EngFunc_PrecacheModel, V_FIRE_NADE)
-	engfunc(EngFunc_PrecacheModel, V_FROST_NADE)
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_KNIFE_HUMAN]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_KNIFE_HUMAN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[P_KNIFE_HUMAN]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[P_KNIFE_HUMAN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_KNIFE_NEMESIS]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_KNIFE_NEMESIS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_KNIFE_ASSASIN]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_KNIFE_ASSASIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_KNIFE_REVENANT]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_KNIFE_REVENANT], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_AWP_SNIPER]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_AWP_SNIPER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[P_AWP_SNIPER]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[P_AWP_SNIPER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_KNIFE_SAMURAI]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_KNIFE_SAMURAI], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[P_KNIFE_SAMURAI]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[P_KNIFE_SAMURAI], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_INFECTION_NADE]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_INFECTION_NADE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_EXPLOSION_NADE]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_EXPLOSION_NADE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_NAPALM_NADE]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_NAPALM_NADE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_weaponModels[V_FROST_NADE]); i++)
+	{
+		ArrayGetString(Array:g_weaponModels[V_FROST_NADE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheModel, buffer)
+	}
 
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Classic/PerfectZM_Classic.mdl")
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Raptor/PerfectZM_Raptor.mdl")
@@ -15033,6 +15084,7 @@ public remove_fire(id)
 // Set Custom Weapon Models
 replace_weapon_models(id, weaponid)
 {
+	static iRand, buffer[1024]
 	switch (weaponid)
 	{
 	case CSW_KNIFE: // Custom knife models
@@ -15041,17 +15093,23 @@ replace_weapon_models(id, weaponid)
 			{
 				if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) // Nemesis
 				{
-					set_pev(id, pev_viewmodel2, V_KNIFE_NEMESIS)
+					iRand = random_num(0, ArraySize(Array:g_weaponModels[V_KNIFE_NEMESIS]) - 1)
+					ArrayGetString(Array:g_weaponModels[V_KNIFE_NEMESIS], iRand, buffer, charsmax(buffer))
+					set_pev(id, pev_viewmodel2, buffer)
 					set_pev(id, pev_weaponmodel2, "")
 				}
 				else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) // Assassins
 				{
-					set_pev(id, pev_viewmodel2, V_KNIFE_ASSASSIN)
+					iRand = random_num(0, ArraySize(Array:g_weaponModels[V_KNIFE_ASSASIN]) - 1)
+					ArrayGetString(Array:g_weaponModels[V_KNIFE_ASSASIN], iRand, buffer, charsmax(buffer))
+					set_pev(id, pev_viewmodel2, buffer)
 					set_pev(id, pev_weaponmodel2, "")
 				}
 				else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) // Assassins
 				{
-					set_pev(id, pev_viewmodel2, V_KNIFE_REVENANT)
+					iRand = random_num(0, ArraySize(Array:g_weaponModels[V_KNIFE_REVENANT]) - 1)
+					ArrayGetString(Array:g_weaponModels[V_KNIFE_REVENANT], iRand, buffer, charsmax(buffer))
+					set_pev(id, pev_viewmodel2, buffer)
 					set_pev(id, pev_weaponmodel2, "")
 				}
 				else // Zombies
@@ -15064,21 +15122,36 @@ replace_weapon_models(id, weaponid)
 			{
 				if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 				{
-					set_pev(id, pev_viewmodel2, V_KNIFE_SAMURAI)
-					set_pev(id, pev_weaponmodel2, P_KNIFE_SAMURAI)
+					iRand = random_num(0, ArraySize(Array:g_weaponModels[V_KNIFE_SAMURAI]) - 1)
+					ArrayGetString(Array:g_weaponModels[V_KNIFE_SAMURAI], iRand, buffer, charsmax(buffer))
+					set_pev(id, pev_viewmodel2, buffer)
+
+					iRand = random_num(0, ArraySize(Array:g_weaponModels[P_KNIFE_SAMURAI]) - 1)
+					ArrayGetString(Array:g_weaponModels[P_KNIFE_SAMURAI], iRand, buffer, charsmax(buffer))
+					set_pev(id, pev_weaponmodel2, buffer)
 				}
 				else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
 				{
-					set_pev(id, pev_viewmodel2, V_KNIFE_HUMAN)
-					set_pev(id, pev_weaponmodel2, P_KNIFE_HUMAN)
+					iRand = random_num(0, ArraySize(Array:g_weaponModels[V_KNIFE_HUMAN]) - 1)
+					ArrayGetString(Array:g_weaponModels[V_KNIFE_HUMAN], iRand, buffer, charsmax(buffer))
+					set_pev(id, pev_viewmodel2, buffer)
+
+					iRand = random_num(0, ArraySize(Array:g_weaponModels[P_KNIFE_HUMAN]) - 1)
+					ArrayGetString(Array:g_weaponModels[P_KNIFE_HUMAN], iRand, buffer, charsmax(buffer))
+					set_pev(id, pev_weaponmodel2, buffer)
 				}
 				else
 				{
 					if (get_user_jetpack(id)) set_jetpack(id)
 					else
 					{
-						set_pev(id, pev_viewmodel2, V_KNIFE_HUMAN)
-						set_pev(id, pev_weaponmodel2, P_KNIFE_HUMAN)
+						iRand = random_num(0, ArraySize(Array:g_weaponModels[V_KNIFE_HUMAN]) - 1)
+						ArrayGetString(Array:g_weaponModels[V_KNIFE_HUMAN], iRand, buffer, charsmax(buffer))
+						set_pev(id, pev_viewmodel2, buffer)
+
+						iRand = random_num(0, ArraySize(Array:g_weaponModels[P_KNIFE_HUMAN]) - 1)
+						ArrayGetString(Array:g_weaponModels[P_KNIFE_HUMAN], iRand, buffer, charsmax(buffer))
+						set_pev(id, pev_weaponmodel2, buffer)
 					}	
 				}
 			}
@@ -15087,8 +15160,13 @@ replace_weapon_models(id, weaponid)
 		{
 			if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 			{
-				set_pev(id, pev_viewmodel2, V_AWP_SNIPER)
-				set_pev(id, pev_weaponmodel2, P_AWP_SNIPER)
+				iRand = random_num(0, ArraySize(Array:g_weaponModels[V_AWP_SNIPER]) - 1)
+				ArrayGetString(Array:g_weaponModels[V_AWP_SNIPER], iRand, buffer, charsmax(buffer))
+				set_pev(id, pev_viewmodel2, buffer)
+
+				iRand = random_num(0, ArraySize(Array:g_weaponModels[P_AWP_SNIPER]) - 1)
+				ArrayGetString(Array:g_weaponModels[P_AWP_SNIPER], iRand, buffer, charsmax(buffer))
+				set_pev(id, pev_weaponmodel2, buffer)
 			}
 		}
 	case CSW_SG550:		// Crossbow
@@ -15106,11 +15184,31 @@ replace_weapon_models(id, weaponid)
 	case CSW_DEAGLE: if (g_goldenweapons[id]) set_goldendeagle(id)    
 	case CSW_HEGRENADE: // Infection bomb or Explode grenade
 		{
-			if (CheckBit(g_playerClass[id], CLASS_ZOMBIE)) set_pev(id, pev_viewmodel2, V_INFECTION_NADE)
-			else set_pev(id, pev_viewmodel2, V_EXPLODE_NADE)
+			if (CheckBit(g_playerClass[id], CLASS_ZOMBIE)) 
+			{
+				iRand = random_num(0, ArraySize(Array:g_weaponModels[V_INFECTION_NADE]) - 1)
+				ArrayGetString(Array:g_weaponModels[V_INFECTION_NADE], iRand, buffer, charsmax(buffer))
+				set_pev(id, pev_viewmodel2, buffer)
+			}
+			else 
+			{
+				iRand = random_num(0, ArraySize(Array:g_weaponModels[V_EXPLOSION_NADE]) - 1)
+				ArrayGetString(Array:g_weaponModels[V_EXPLOSION_NADE], iRand, buffer, charsmax(buffer))
+				set_pev(id, pev_viewmodel2, buffer)
+			}
 		}
-	case CSW_FLASHBANG: set_pev(id, pev_viewmodel2, V_FIRE_NADE) // Fire grenade
-	case CSW_SMOKEGRENADE: set_pev(id, pev_viewmodel2, V_FROST_NADE) // Frost grenade 
+	case CSW_FLASHBANG: 
+		{
+			iRand = random_num(0, ArraySize(Array:g_weaponModels[V_NAPALM_NADE]) - 1)
+			ArrayGetString(Array:g_weaponModels[V_NAPALM_NADE], iRand, buffer, charsmax(buffer))
+			set_pev(id, pev_viewmodel2, buffer) // Fire grenade 
+		}
+	case CSW_SMOKEGRENADE: 
+		{
+			iRand = random_num(0, ArraySize(Array:g_weaponModels[V_FROST_NADE]) - 1)
+			ArrayGetString(Array:g_weaponModels[V_FROST_NADE], iRand, buffer, charsmax(buffer))
+			set_pev(id, pev_viewmodel2, buffer) // Frost grenade 
+		}
 	}
 }
 
