@@ -282,16 +282,16 @@ new GrenadierPainfree = 1
 new TerminatorPainfree = 1
 
 // Glow 
-new NemesisGlow = 1
-new AssassinGlow = 0
-new RevenantGlow = 0
-new SurvivorGlow = 0
-new SniperGlow = 1
-new SamuraiGlow = 1
-new GrenadierGlow = 1
-new TerminatorGlow = 1
-new BombardierGlow	= 0
-new TryderGlow = 1
+new NemesisGlow
+new AssassinGlow
+new RevenantGlow
+new SurvivorGlow
+new SniperGlow
+new SamuraiGlow
+new GrenadierGlow
+new TerminatorGlow
+new BombardierGlow
+new TryderGlow
 
 // General configs
 new ZpDelay = 14
@@ -887,14 +887,14 @@ enum _: grenadeSprites
 
 new Array:g_sprites[MAX_SPRITES]
 
-enum _: _color
+enum _: __color
 {
 	__red,
 	__green,
 	__blue
 }
 
-enum _: _nade_type
+enum _: __nade_type
 {
 	__nade_type_infection,
 	__nade_type_explosion,
@@ -907,7 +907,7 @@ enum _: _nade_type
 	__MAX_NADE_TYPE
 }
 
-new g_color[_nade_type][_color]
+new g_color[__nade_type][__color]
 
 // Ambience sounds
 enum _: ambienceSounds
@@ -997,9 +997,27 @@ enum _: miscSound
 
 new Array:g_miscSounds[MAX_MISC_SOUNDS]
 
+// Enum for glow colors
+enum _: glowClasses
+{
+	__survivor,
+	__sniper,
+	__samurai,
+	__grenadier,
+	__terminator,
+	__assasin,
+	__nemesis,
+	__bombardier,
+	__revenant,
+	__MAX_GLOW_CLASSES
+}
+
+new g_glowColor[__MAX_GLOW_CLASSES][__color]
+
 LoadCustomizationFromFile()
 {
 	static buffer[100], i
+	static rgb[3][10]
 
 	// Section Access Flags
 	new user_access[2]
@@ -1072,7 +1090,6 @@ LoadCustomizationFromFile()
 	{
 		AmxLoadString("Grenades/Grenades.ini", "Grenade Trail & Glow Color", keyTrailNadeRGB[i], buffer, charsmax(buffer))
 
-		static rgb[3][10]
 		parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 		g_color[i][__red]   = str_to_num(rgb[0])
 		g_color[i][__green] = str_to_num(rgb[1])
@@ -1150,6 +1167,16 @@ LoadCustomizationFromFile()
 	AmxLoadInt("Class/Class.ini", "Survivor", "Health", SurvivorHealth)
 	AmxLoadFloat("Class/Class.ini", "Survivor", "Speed", SurvivorSpeed)
 	AmxLoadFloat("Class/Class.ini", "Survivor", "Gravity", SurvivorGravity)
+	AmxLoadInt("Class/Class.ini", "Survivor", "Glow", SurvivorGlow)
+
+	AmxLoadString("Class/Class.ini", "Survivor", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__survivor][__red]   = str_to_num(rgb[0])
+	g_glowColor[__survivor][__green] = str_to_num(rgb[1])
+	g_glowColor[__survivor][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Survivor Glow RGB = %i %i %i", g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue])
 
 	// Sniper
 	AmxLoadInt("Class/Class.ini", "Sniper", "Enabled", SniperEnabled)
@@ -1159,6 +1186,16 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("Class/Class.ini", "Sniper", "Speed", SniperSpeed)
 	AmxLoadFloat("Class/Class.ini", "Sniper", "Gravity", SniperGravity)
 	AmxLoadFloat("Class/Class.ini", "Sniper", "Damage", SniperDamage)
+	AmxLoadInt("Class/Class.ini", "Sniper", "Glow", SniperGlow)
+
+	AmxLoadString("Class/Class.ini", "Sniper", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__sniper][__red]   = str_to_num(rgb[0])
+	g_glowColor[__sniper][__green] = str_to_num(rgb[1])
+	g_glowColor[__sniper][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Sniper Glow RGB = %i %i %i", g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue])
 
 	// Samurai
 	AmxLoadInt("Class/Class.ini", "Samurai", "Enabled", SamuraiEnabled)
@@ -1168,6 +1205,16 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("Class/Class.ini", "Samurai", "Speed", SamuraiSpeed)
 	AmxLoadFloat("Class/Class.ini", "Samurai", "Gravity", SamuraiGravity)
 	AmxLoadFloat("Class/Class.ini", "Samurai", "Damage", SamuraiDamage)
+	AmxLoadInt("Class/Class.ini", "Samurai", "Glow", SamuraiGlow)
+
+	AmxLoadString("Class/Class.ini", "Samurai", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__samurai][__red]   = str_to_num(rgb[0])
+	g_glowColor[__samurai][__green] = str_to_num(rgb[1])
+	g_glowColor[__samurai][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Samurai Glow RGB = %i %i %i", g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue])
 
 	// Grenadier
 	AmxLoadInt("Class/Class.ini", "Grenadier", "Enabled", GrenadierEnabled)
@@ -1177,6 +1224,16 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("Class/Class.ini", "Grenadier", "Speed", GrenadierSpeed)
 	AmxLoadFloat("Class/Class.ini", "Grenadier", "Gravity", GrenadierGravity)
 	AmxLoadFloat("Class/Class.ini", "Grenadier", "Damage", GrenadierDamage)
+	AmxLoadInt("Class/Class.ini", "Grenadier", "Glow", GrenadierGlow)
+
+	AmxLoadString("Class/Class.ini", "Grenadier", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__grenadier][__red]   = str_to_num(rgb[0])
+	g_glowColor[__grenadier][__green] = str_to_num(rgb[1])
+	g_glowColor[__grenadier][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Grenadier Glow RGB = %i %i %i", g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue])
 
 	// Terminator
 	AmxLoadInt("Class/Class.ini", "Terminator", "Enabled", TerminatorEnabled)
@@ -1185,11 +1242,22 @@ LoadCustomizationFromFile()
 	AmxLoadInt("Class/Class.ini", "Terminator", "Health", TerminatorHealth)
 	AmxLoadFloat("Class/Class.ini", "Terminator", "Speed", TerminatorSpeed)
 	AmxLoadFloat("Class/Class.ini", "Terminator", "Gravity", TerminatorGravity)
+	AmxLoadInt("Class/Class.ini", "Terminator", "Glow", TerminatorGlow)
+
+	AmxLoadString("Class/Class.ini", "Terminator", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__terminator][__red]   = str_to_num(rgb[0])
+	g_glowColor[__terminator][__green] = str_to_num(rgb[1])
+	g_glowColor[__terminator][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Terminator Glow RGB = %i %i %i", g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue])
 
 	// Tryder
 	AmxLoadInt("Class/Class.ini", "Tryder", "Health", TryderHealth)
 	AmxLoadFloat("Class/Class.ini", "Tryder", "Speed", TryderSpeed)
 	AmxLoadFloat("Class/Class.ini", "Tryder", "Gravity", TryderGravity)
+	AmxLoadInt("Class/Class.ini", "Tryder", "Glow", TryderGlow)
 
 	// Assassin
 	AmxLoadInt("Class/Class.ini", "Assasin", "Enabled", AssassinEnabled)
@@ -1199,6 +1267,16 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("Class/Class.ini", "Assasin", "Speed", AssassinSpeed)
 	AmxLoadFloat("Class/Class.ini", "Assasin", "Gravity", AssassinGravity)
 	AmxLoadFloat("Class/Class.ini", "Assasin", "Damage", AssassinDamage)
+	AmxLoadInt("Class/Class.ini", "Assasin", "Glow", AssassinGlow)
+
+	AmxLoadString("Class/Class.ini", "Assasin", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__assasin][__red]   = str_to_num(rgb[0])
+	g_glowColor[__assasin][__green] = str_to_num(rgb[1])
+	g_glowColor[__assasin][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Assasin Glow RGB = %i %i %i", g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue])
 
 	// Nemesis
 	AmxLoadInt("Class/Class.ini", "Nemesis", "Enabled", NemesisEnabled)
@@ -1208,6 +1286,16 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("Class/Class.ini", "Nemesis", "Speed", NemesisSpeed)
 	AmxLoadFloat("Class/Class.ini", "Nemesis", "Gravity", NemesisGravity)
 	AmxLoadFloat("Class/Class.ini", "Nemesis", "Damage", NemesisDamage)
+	AmxLoadInt("Class/Class.ini", "Nemesis", "Glow", NemesisGlow)
+
+	AmxLoadString("Class/Class.ini", "Nemesis", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__nemesis][__red]   = str_to_num(rgb[0])
+	g_glowColor[__nemesis][__green] = str_to_num(rgb[1])
+	g_glowColor[__nemesis][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Nemesis Glow RGB = %i %i %i", g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue])
 
 	// Bombardier
 	AmxLoadInt("Class/Class.ini", "Bombardier", "Enabled", BombardierEnabled)
@@ -1217,6 +1305,16 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("Class/Class.ini", "Bombardier", "Speed", BombardierSpeed)
 	AmxLoadFloat("Class/Class.ini", "Bombardier", "Gravity", BombardierGravity)
 	AmxLoadFloat("Class/Class.ini", "Bombardier", "Damage", BombardierDamage)
+	AmxLoadInt("Class/Class.ini", "Bombardier", "Glow", BombardierGlow)
+
+	AmxLoadString("Class/Class.ini", "Bombardier", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__bombardier][__red]   = str_to_num(rgb[0])
+	g_glowColor[__bombardier][__green] = str_to_num(rgb[1])
+	g_glowColor[__bombardier][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Bombardier Glow RGB = %i %i %i", g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue])
 
 	// Revenant
 	AmxLoadInt("Class/Class.ini", "Revenant", "Enabled", RevenantEnabled)
@@ -1226,6 +1324,16 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("Class/Class.ini", "Revenant", "Speed", RevenantSpeed)
 	AmxLoadFloat("Class/Class.ini", "Revenant", "Gravity", Revenantgravity)
 	AmxLoadFloat("Class/Class.ini", "Revenant", "Damage", RevenantDamage)
+	AmxLoadInt("Class/Class.ini", "Revenant", "Glow", RevenantGlow)
+
+	AmxLoadString("Class/Class.ini", "Revenant", "Glow RGB", buffer, charsmax(buffer))
+
+	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
+	g_glowColor[__revenant][__red]   = str_to_num(rgb[0])
+	g_glowColor[__revenant][__green] = str_to_num(rgb[1])
+	g_glowColor[__revenant][__blue]  = str_to_num(rgb[2])
+
+	log_amx("Revenant Glow RGB = %i %i %i", g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue])
 
 	// // Knockback
 	// new KnockbackEnabled = 1
@@ -1246,18 +1354,6 @@ LoadCustomizationFromFile()
 	// new SamuraiPainfree = 1
 	// new GrenadierPainfree = 1
 	// new TerminatorPainfree = 1
-
-	// // Glow 
-	// new NemesisGlow = 1
-	// new AssassinGlow = 0
-	// new RevenantGlow = 0
-	// new SurvivorGlow = 0
-	// new SniperGlow = 1
-	// new SamuraiGlow = 1
-	// new GrenadierGlow = 1
-	// new TerminatorGlow = 1
-	// new BombardierGlow	= 0
-	// new TryderGlow = 1
 }
 
 // Forward enums
@@ -10403,73 +10499,7 @@ public cmd_unfreeze(id)
 			}
 			else
 			{
-				// Unfreeze
-				g_frozen[target] = false
-				
-				// Restore gravity and maxspeed (bugfix)
-				set_pev(target, pev_gravity, g_frozen_gravity[target])
-				ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
-				
-				// Nemesis or Survivor glow / remove glow
-				if (CheckBit(g_playerClass[target], CLASS_NEMESIS))
-				{
-					if (NemesisGlow) set_glow(target, 250, 0, 0, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_ASSASIN))
-				{
-					if (AssassinGlow) set_glow(target, 255, 255, 0, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_SURVIVOR))
-				{
-					if (SurvivorGlow) set_glow(target, 0, 0, 255, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_SNIPER))
-				{ 
-					if (SniperGlow) set_glow(target, 0, 255, 0, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_SAMURAI))
-				{
-					if (SamuraiGlow) set_glow(target, 50, 100, 150, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_GRENADIER))
-				{
-					if (GrenadierGlow) set_glow(target, 50, 100, 150, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_TERMINATOR))
-				{
-					if (TerminatorGlow) set_glow(target, 50, 100, 150, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_REVENANT))
-				{
-					if (RevenantGlow) set_glow(target, 50, 100, 150, 25)
-					else remove_glow(target)
-				}
-				else if (CheckBit(g_playerClass[target], CLASS_BOMBARDIER))
-				{
-					if (BombardierGlow) set_glow(target, 50, 100, 150, 25)
-					else remove_glow(target)
-				}
-				else remove_glow(target)
-				
-				// Gradually remove screen's blue tint
-				UTIL_ScreenFade(target, {0, 200, 200}, 1.0, 0.0, 100, FFADE_IN, true, false)
-				
-				// Broken glass sound
-				static iRand, buffer[100]
-				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK]) - 1)
-				ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK], iRand, buffer, charsmax(buffer))
-				emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
-				
-				// Glass shatter
-				SendGlassBreak(target)
-
+				remove_freeze(target)
 				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			}
 		}
@@ -13789,7 +13819,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, NemesisGravity)
 
 				// Set Glow
-				if (NemesisGlow) set_glow(victim, 250, 0, 0, 25)
+				if (NemesisGlow) set_glow(victim, g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = NemesisGravity
@@ -13815,7 +13845,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, AssassinGravity)
 
 				// Set Glow
-				if (AssassinGlow) set_glow(victim, 255, 140, 0, 25)
+				if (AssassinGlow) set_glow(victim, g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = AssassinGravity
@@ -13839,7 +13869,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, BombardierGravity)
 
 				// Set glow
-				if (BombardierGlow) set_glow(victim, 255, 140, 0, 25)
+				if (BombardierGlow) set_glow(victim, g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = BombardierGravity
@@ -13863,7 +13893,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, Revenantgravity)
 
 				// Set glow
-				if (RevenantGlow) set_glow(victim, 255, 140, 0, 25)
+				if (RevenantGlow) set_glow(victim, g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = Revenantgravity
@@ -14203,7 +14233,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, SurvivorGravity)
 
 				// Set glow
-				if (SurvivorGlow) set_glow(id, 0, 0, 255, 25)
+				if (SurvivorGlow) set_glow(id, g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue], 25)
 				else remove_glow(id)
 			}
 			
@@ -14246,7 +14276,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, SniperGravity)
 
 				// Set glow
-				if (SniperGlow) set_glow(id, 255, 255, 0, 25)
+				if (SniperGlow) set_glow(id, g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue], 25)
 				else remove_glow(id)
 			}
 			
@@ -14284,7 +14314,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, SamuraiGravity)
 
 				// Set glow
-				if (SamuraiGlow) set_glow(id, 50, 100, 150, 25)
+				if (SamuraiGlow) set_glow(id, g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue], 25)
 				else remove_glow(id)
 			}
 			
@@ -14323,7 +14353,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, GrenadierGravity)
 
 				// Set glow
-				if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
+				if (GrenadierGlow) set_glow(id, g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue], 25)
 				else remove_glow(id)
 			}
 			
@@ -14363,7 +14393,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, TerminatorGravity)
 
 				// Set glow
-				if (TerminatorGlow) set_glow(id, 50, 100, 150, 25)
+				if (TerminatorGlow) set_glow(id, g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue], 25)
 				else remove_glow(id)
 			}
 			
@@ -15573,47 +15603,47 @@ public remove_freeze(id)
 	// Nemesis or Survivor glow / remove glow
 	if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 	{
-		if (NemesisGlow) set_glow(id, 250, 0, 0, 25)
+		if (NemesisGlow) set_glow(id, g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 	{
-		if (AssassinGlow) set_glow(id, 255, 255, 0, 25)
+		if (AssassinGlow) set_glow(id, g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 	{
-		if (SurvivorGlow) set_glow(id, 0, 0, 255, 25)
+		if (SurvivorGlow) set_glow(id, g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 	{ 
-		if (SniperGlow) set_glow(id, 0, 255, 0, 25)
+		if (SniperGlow) set_glow(id, g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 	{
-		if (SamuraiGlow) set_glow(id, 50, 100, 150, 25)
+		if (SamuraiGlow) set_glow(id, g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
 	{
-		if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
+		if (GrenadierGlow) set_glow(id, g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
 	{
-		if (TerminatorGlow) set_glow(id, 50, 100, 150, 25)
+		if (TerminatorGlow) set_glow(id, g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
 	{
-		if (RevenantGlow) set_glow(id, 50, 100, 150, 25)
+		if (RevenantGlow) set_glow(id, g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 	{
-		if (BombardierGlow) set_glow(id, 50, 100, 150, 25)
+		if (BombardierGlow) set_glow(id, g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue], 25)
 		else remove_glow(id)
 	}
 	else remove_glow(id)
@@ -15640,50 +15670,50 @@ public remove_fire(id)
 	// Nemesis or Survivor glow / remove glow
 	if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 	{
-		if (NemesisGlow) set_glow(id, 250, 0, 0, 25)
+		if (NemesisGlow) set_glow(id, g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 	{
-		if (AssassinGlow) set_glow(id, 255, 255, 0, 25) 
-		else remove_glow(id) 
+		if (AssassinGlow) set_glow(id, g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue], 25)
+		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 	{
-		if (SurvivorGlow) set_glow(id, 0, 0, 255, 25) 
-		else remove_glow(id) 
+		if (SurvivorGlow) set_glow(id, g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue], 25)
+		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 	{ 
-		if (SniperGlow) set_glow(id, 0, 255, 0, 25)
+		if (SniperGlow) set_glow(id, g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 	{
-		if (SamuraiGlow) set_glow(id, 50, 100, 150, 25) 
-		else remove_glow(id) 
+		if (SamuraiGlow) set_glow(id, g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue], 25)
+		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
 	{
-		if (GrenadierGlow) set_glow(id, 50, 100, 150, 25)
+		if (GrenadierGlow) set_glow(id, g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
 	{
-		if (TerminatorGlow) set_glow(id, 50, 100, 150, 25)
+		if (TerminatorGlow) set_glow(id, g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
 	{
-		if (RevenantGlow) set_glow(id, 50, 100, 150, 25)
+		if (RevenantGlow) set_glow(id, g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 	{
-		if (BombardierGlow) set_glow(id, 50, 100, 150, 25) 
-		else remove_glow(id) 
+		if (BombardierGlow) set_glow(id, g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue], 25)
+		else remove_glow(id)
 	}
-	else remove_glow(id) 
+	else remove_glow(id)
 	
 	// Gradually remove screen fade
 	UTIL_ScreenFade(id, {200, 200, 0}, 1.0, 0.0, 100, FFADE_IN, true, false)
