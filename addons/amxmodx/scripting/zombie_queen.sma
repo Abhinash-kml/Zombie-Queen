@@ -529,129 +529,6 @@ new Float:g_fGagTime[33]
 /*================================================================================
 	[Sounds]
 =================================================================================*/
-new const zombie_infect[][] = 
-{ 
-	"PerfectZM/zombie_infect_1.wav", 
-	"PerfectZM/zombie_infect_2.wav", 
-	"PerfectZM/zombie_infect_3.wav", 
-	"PerfectZM/zombie_infect_4.wav",
-	"PerfectZM/zombie_infect_5.wav",
-	"scientist/c1a0_sci_catscream.wav", 
-	"scientist/scream01.wav" 
-}
-new const zombie_pain[][] = 
-{ 
-	"PerfectZM/zombie_pain1.wav", 
-	"PerfectZM/zombie_pain2.wav", 
-	"PerfectZM/zombie_pain3.wav", 
-	"PerfectZM/zombie_pain4.wav", 
-	"PerfectZM/zombie_pain5.wav" 
-}
-new const nemesis_pain[][] = 
-{ 
-	"PerfectZM/nemesis_pain1.wav", 
-	"PerfectZM/nemesis_pain2.wav", 
-	"PerfectZM/nemesis_pain3.wav" 
-}
-new const assassin_pain[][] = 
-{ 
-	"PerfectZM/nemesis_pain1.wav", 
-	"PerfectZM/nemesis_pain2.wav", 
-	"PerfectZM/nemesis_pain3.wav" 
-}
-new const revenant_pain[][] =
-{
-	"PerfectZM/nemesis_pain1.wav", 
-	"PerfectZM/nemesis_pain2.wav", 
-	"PerfectZM/nemesis_pain3.wav" 
-}
-new const zombie_die[][] = 
-{ 
-	"PerfectZM/zombie_die1.wav", 
-	"PerfectZM/zombie_die2.wav", 
-	"PerfectZM/zombie_die3.wav", 
-	"PerfectZM/zombie_die4.wav", 
-	"PerfectZM/zombie_die5.wav" 
-}
-new const zombie_fall[][] = 
-{ 
-	"PerfectZM/zombie_fall1.wav" 
-}
-new const zombie_miss_slash[][] = 
-{ 
-	"weapons/knife_slash1.wav", 
-	"weapons/knife_slash2.wav" 
-}
-new const zombie_miss_wall[][] = 
-{ 
-	"weapons/knife_hitwall1.wav" 
-}
-new const zombie_hit_normal[][] = 
-{ 
-	"weapons/knife_hit1.wav", 
-	"weapons/knife_hit2.wav", 
-	"weapons/knife_hit3.wav", 
-	"weapons/knife_hit4.wav" 
-}
-new const zombie_hit_stab[][] = 
-{ 
-	"weapons/knife_stab.wav" 
-}
-new const zombie_idle[][] = 
-{ 
-	"nihilanth/nil_now_die.wav", 
-	"nihilanth/nil_slaves.wav", 
-	"nihilanth/nil_alone.wav", 
-	"PerfectZM/zombie_brains1.wav", 
-	"PerfectZM/zombie_brains2.wav" 
-}
-new const zombie_idle_last[][] = 
-{ 
-	"nihilanth/nil_thelast.wav" 
-}
-new const zombie_madness[][] = 
-{ 
-	"PerfectZM/zombie_madness1.wav" 
-}
-new const grenade_infect[][] = 
-{ 
-	"PerfectZM/grenade_infect.wav" 
-}
-new const grenade_infect_player[][] = 
-{ 
-	"scientist/scream20.wav", 
-	"scientist/scream22.wav", 
-	"scientist/scream05.wav" 
-}
-new const grenade_fire[][] = 
-{ 
-	"PerfectZM/grenade_explode.wav" 
-}
-new const grenade_fire_player[][] = 
-{ 
-	"PerfectZM/zombie_burn3.wav",
-	"PerfectZM/zombie_burn4.wav",
-	"PerfectZM/zombie_burn5.wav",
-	"PerfectZM/zombie_burn6.wav",
-	"PerfectZM/zombie_burn7.wav" 
-}
-new const grenade_frost[][] = 
-{ 
-	"warcraft3/frostnova.wav" 
-}
-new const grenade_frost_player[][] = 
-{ 
-	"warcraft3/impalehit.wav" 
-}
-new const grenade_frost_break[][] = 
-{ 
-	"warcraft3/impalelaunch1.wav" 
-}
-new const sound_antidote[][] = 
-{ 
-	"items/smallmedkit1.wav" 
-}
-
 new const sound_thunder[][] =
 {
 	"PerfectZM/thunder1.wav" ,
@@ -1090,6 +967,36 @@ enum _: roundSounds
 
 new Array:g_startSound[MAX_START_SOUNDS]
 
+// Misc Sounds
+enum _: miscSound
+{
+	SOUND_ZOMBIE_INFECT,
+	SOUND_ZOMBIE_PAIN,
+	SOUND_NEMESIS_PAIN,
+	SOUND_ASSASIN_PAIN,
+	SOUND_REVENANT_PAIN,
+	SOUND_ZOMBIE_DIE,
+	SOUND_ZOMBIE_FALL,
+	SOUND_ZOMBIE_MISS_SLASH,
+	SOUND_ZOMBIE_MISS_WALL,
+	SOUND_ZOMBIE_HIT_NORMAL,
+	SOUND_ZOMBIE_HIT_STAB,
+	SOUND_ZOMBIE_IDLE,
+	SOUND_ZOMBIE_IDLE_LAST,
+	SOUND_ZOMBIE_MADNESS,
+	SOUND_GRENADE_INFECT,
+	SOUND_GRENADE_INFECT_PLAYER,
+	SOUND_GRENADE_FIRE,
+	SOUND_GRENADE_FIRE_PLAYER,
+	SOUND_GRENADE_FROST,
+	SOUND_GRENADE_FROST_PLAYER,
+	SOUND_GRENADE_FROST_BREAK,
+	SOUND_ANTIDOTE,
+	MAX_MISC_SOUNDS
+}
+
+new Array:g_miscSounds[MAX_MISC_SOUNDS]
+
 LoadCustomizationFromFile()
 {
 	static buffer[100], i
@@ -1206,6 +1113,23 @@ LoadCustomizationFromFile()
 		for (new j = 0; j < ArraySize(g_startSound[i]); j++)
 		{
 			ArrayGetString(g_startSound[i], j, buffer, charsmax(buffer))
+			log_amx("%s", buffer)
+		}
+	}
+
+	// Misc sounds
+	new keyMiscSounds[MAX_MISC_SOUNDS][] = { "ZOMBIE INFECT", "ZOMBIE PAIN", "NEMESIS PAIN", "ASSASIN PAIN", "REVENANT PAIN", "ZOMBIE DIE", "ZOMBIE FALL", "ZOMBIE MISS SLASH", "ZOMBIE MISS WALL", "ZOMBIE HIT NORMAL",
+	"ZOMBIE HIT STAB", "ZOMBIE IDLE", "ZOMBIE IDLE LAST", "ZOMBIE MADNESS", "GRENADE INFECT", "GRENADE INFECT PLAYER", "GRENADE FIRE", "GRENADE FIRE PLAYER", "GRENADE FROST", "GRENADE FROST PLAYER", "GRENADE FROST BREAK", "ANTIDOTE" }
+
+	for (i = 0; i < MAX_MISC_SOUNDS; i++)
+	{
+		AmxLoadStringArray("Sounds/Sounds.ini", "Misc Sounds", keyMiscSounds[i], g_miscSounds[i])
+		
+		log_amx("%s = %i", keyMiscSounds[i], ArraySize(g_miscSounds[i]))
+
+		for (new j = 0; j < ArraySize(g_miscSounds[i]); j++)
+		{
+			ArrayGetString(g_miscSounds[i], j, buffer, charsmax(buffer))
 			log_amx("%s", buffer)
 		}
 	}
@@ -2318,7 +2242,8 @@ public plugin_precache()
 	for (new i = 0; i < MAX_WEAPON_MODELS; i++) g_weaponModels[i] = ArrayCreate(100, 1)
 	for (new i = 0; i < MAX_SPRITES; i++) g_sprites[i] = ArrayCreate(64, 1)
 	for (new i = 0; i < MAX_AMBIENCE_SOUNDS; i++) g_ambience[i] = ArrayCreate(64, 1)
-	for (new i = 0; i < MAX_START_SOUNDS; i++) g_startSound[i] = ArrayCreate(200, 1)
+	for (new i = 0; i < MAX_START_SOUNDS; i++) g_startSound[i] = ArrayCreate(64, 1)
+	for (new i = 0; i < MAX_MISC_SOUNDS; i++) g_miscSounds[i] = ArrayCreate(64, 1)
 
 	LoadCustomizationFromFile()
 	
@@ -2736,6 +2661,141 @@ public plugin_precache()
 		engfunc(EngFunc_PrecacheSound, buffer)
 	}
 
+	// Custom sounds
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_INFECT]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_INFECT], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_PAIN]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_PAIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_NEMESIS_PAIN]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_NEMESIS_PAIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ASSASIN_PAIN]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ASSASIN_PAIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_REVENANT_PAIN]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_REVENANT_PAIN], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_DIE]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_DIE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_FALL]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_FALL], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MISS_SLASH]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MISS_SLASH], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MISS_WALL]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MISS_WALL], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_HIT_NORMAL]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_HIT_NORMAL], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_HIT_STAB]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_HIT_STAB], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+	
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_IDLE]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_IDLE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_IDLE_LAST]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_IDLE_LAST], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_GRENADE_INFECT]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_INFECT], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_GRENADE_INFECT_PLAYER]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_INFECT_PLAYER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_GRENADE_FIRE]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FIRE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_GRENADE_FIRE_PLAYER]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FIRE_PLAYER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < ArraySize(Array:g_miscSounds[SOUND_ANTIDOTE]); i++)
+	{
+		ArrayGetString(Array:g_miscSounds[SOUND_ANTIDOTE], i, buffer, charsmax(buffer))
+		engfunc(EngFunc_PrecacheSound, buffer)
+	}
+
+	for (i = 0; i < sizeof(sound_thunder); i++) engfunc(EngFunc_PrecacheSound, sound_thunder[i])
+
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Classic/PerfectZM_Classic.mdl")
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Raptor/PerfectZM_Raptor.mdl")
 	engfunc(EngFunc_PrecacheModel, "models/player/PerfectZM_Frozen/PerfectZM_Frozen.mdl")
@@ -2786,104 +2846,6 @@ public plugin_precache()
 	RegisterHam(Ham_TraceAttack, "player", "TraceAttack", 1)
 	TrieSetCell(g_tClassNames, "player", 1)
 	register_forward(FM_Spawn, "Spawn", 1)
-
-	
-	// Custom sounds
-	for (i = 0; i < sizeof(zombie_infect); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_infect[i])
-	}
-	for (i = 0; i < sizeof(zombie_pain); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_pain[i])
-	}
-	for (i = 0; i < sizeof(nemesis_pain); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, nemesis_pain[i])
-	}
-	for (i = 0; i < sizeof(assassin_pain); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, assassin_pain[i])
-	}
-	for (i = 0; i < sizeof(revenant_pain); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, revenant_pain[i])
-	}
-	for (i = 0; i < sizeof(zombie_die); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_die[i])
-	}
-	for (i = 0; i < sizeof(zombie_fall); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_fall[i])
-	}
-	for (i = 0; i < sizeof(zombie_miss_slash); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_miss_slash[i])
-	}
-	for (i = 0; i < sizeof(zombie_miss_wall); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_miss_wall[i])
-	}
-	for (i = 0; i < sizeof(zombie_hit_normal); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_hit_normal[i])
-	}
-	for (i = 0; i < sizeof(zombie_hit_stab); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_hit_stab[i])
-	}
-	for (i = 0; i < sizeof(zombie_idle); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_idle[i])
-	}
-	for (i = 0; i < sizeof(zombie_idle_last); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_idle_last[i])
-	}
-	for (i = 0; i < sizeof(zombie_madness); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, zombie_madness[i])
-	}
-	for (i = 0; i < sizeof(grenade_infect); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, grenade_infect[i])
-	}
-	for (i = 0; i < sizeof(grenade_infect_player); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, grenade_infect_player[i])
-	}
-	for (i = 0; i < sizeof(grenade_fire); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, grenade_fire[i])
-	}
-	for (i = 0; i < sizeof(grenade_fire_player); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, grenade_fire_player[i])
-	}
-	for (i = 0; i < sizeof(grenade_frost); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, grenade_frost[i])
-	}
-	for (i = 0; i < sizeof(grenade_frost_player); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, grenade_frost_player[i])
-	}
-	for (i = 0; i < sizeof(grenade_frost_break); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, grenade_frost_break[i])
-	}
-	for (i = 0; i < sizeof(sound_antidote); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_antidote[i])
-	}
-	for (i = 0; i < sizeof(sound_thunder); i++)
-	{
-		engfunc(EngFunc_PrecacheSound, sound_thunder[i])
-	}
-	
-	// Ambience Sounds
-	engfunc(EngFunc_PrecacheSound, "PerfectZM/ambience_normal.wav")
 	
 	// CS sounds (just in case)
 	engfunc(EngFunc_PrecacheSound, sound_flashlight)
@@ -4582,7 +4544,10 @@ public _ExtraItems2(id, menu, item)
 						MakeHuman(id)
 
 						// Antidote sound
-						emit_sound(id, CHAN_ITEM, sound_antidote[random(sizeof sound_antidote)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+						static iRand, buffer[100]
+						iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ANTIDOTE]) - 1)
+						ArrayGetString(Array:g_miscSounds[SOUND_ANTIDOTE], iRand, buffer, charsmax(buffer))
+						emit_sound(id, CHAN_ITEM, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 
 						// Make teleport effect
 						SendTeleport(id)
@@ -4620,7 +4585,10 @@ public _ExtraItems2(id, menu, item)
 						set_task(float(MadnessDuration), "madness_over", id+TASK_BLOOD)
 						
 						// Play madness sound
-						emit_sound(id, CHAN_VOICE, zombie_madness[random(sizeof zombie_madness)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+						new iRand, buffer[100]
+						iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS]) - 1)
+						ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS], iRand, buffer, charsmax(buffer))
+						emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 
 						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
 					}
@@ -7456,6 +7424,7 @@ public FwPlayerKill()
 // Emit Sound Forward
 public FwEmitSound(id, channel, const sample[], Float:volume, Float:attn, flags, pitch)
 {
+	static iRand, buffer[100]
 	// Block all those unneeeded hostage sounds
 	if (sample[0] == 'h' && sample[1] == 'o' && sample[2] == 's' && sample[3] == 't' && sample[4] == 'a' && sample[5] == 'g' && sample[6] == 'e')
 	return FMRES_SUPERCEDE
@@ -7467,10 +7436,31 @@ public FwEmitSound(id, channel, const sample[], Float:volume, Float:attn, flags,
 	// Zombie being hit
 	if (sample[7] == 'b' && sample[8] == 'h' && sample[9] == 'i' && sample[10] == 't')
 	{
-		if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) emit_sound(id, channel, nemesis_pain[random(sizeof nemesis_pain)], volume, attn, flags, pitch)
-		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) emit_sound(id, channel, assassin_pain[random(sizeof assassin_pain)], volume, attn, flags, pitch)
-		else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) emit_sound(id, channel, revenant_pain[random(sizeof revenant_pain)], volume, attn, flags, pitch)
-		else emit_sound(id, channel, zombie_pain[random(sizeof zombie_pain)], volume, attn, flags, pitch)
+		if (CheckBit(g_playerClass[id], CLASS_NEMESIS)) 
+		{
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_NEMESIS_PAIN]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_NEMESIS_PAIN], iRand, buffer, charsmax(buffer))
+			emit_sound(id, channel, buffer, volume, attn, flags, pitch)
+		}
+		else if (CheckBit(g_playerClass[id], CLASS_ASSASIN)) 
+		{
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ASSASIN_PAIN]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_ASSASIN_PAIN], iRand, buffer, charsmax(buffer))
+			emit_sound(id, channel, buffer, volume, attn, flags, pitch)
+		}
+		else if (CheckBit(g_playerClass[id], CLASS_REVENANT)) 
+		{
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_REVENANT_PAIN]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_REVENANT_PAIN], iRand, buffer, charsmax(buffer))
+			emit_sound(id, channel, buffer, volume, attn, flags, pitch)
+		}
+		else 
+		{
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_PAIN]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_PAIN], iRand, buffer, charsmax(buffer))
+			emit_sound(id, channel, buffer, volume, attn, flags, pitch)
+		}
+
 		return FMRES_SUPERCEDE
 	}
 	
@@ -7479,25 +7469,33 @@ public FwEmitSound(id, channel, const sample[], Float:volume, Float:attn, flags,
 	{
 		if (sample[14] == 's' && sample[15] == 'l' && sample[16] == 'a') // slash
 		{
-			emit_sound(id, channel, zombie_miss_slash[random(sizeof zombie_miss_slash)], volume, attn, flags, pitch)
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MISS_SLASH]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MISS_SLASH], iRand, buffer, charsmax(buffer))
+			emit_sound(id, channel, buffer, volume, attn, flags, pitch)
 			return FMRES_SUPERCEDE
 		}
 		if (sample[14] == 'h' && sample[15] == 'i' && sample[16] == 't') // hit
 		{
 			if (sample[17] == 'w') // wall
 			{
-				emit_sound(id, channel, zombie_miss_wall[random(sizeof zombie_miss_wall)], volume, attn, flags, pitch)
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MISS_WALL]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MISS_WALL], iRand, buffer, charsmax(buffer))
+				emit_sound(id, channel, buffer, volume, attn, flags, pitch)
 				return FMRES_SUPERCEDE
 			}
 			else
 			{
-				emit_sound(id, channel, zombie_hit_normal[random(sizeof zombie_hit_normal)], volume, attn, flags, pitch)
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_HIT_NORMAL]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_HIT_NORMAL], iRand, buffer, charsmax(buffer))
+				emit_sound(id, channel, buffer, volume, attn, flags, pitch)
 				return FMRES_SUPERCEDE
 			}
 		}
 		if (sample[14] == 's' && sample[15] == 't' && sample[16] == 'a') // stab
 		{
-			emit_sound(id, channel, zombie_hit_stab[random(sizeof zombie_hit_stab)], volume, attn, flags, pitch)
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_HIT_STAB]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_HIT_STAB], iRand, buffer, charsmax(buffer))
+			emit_sound(id, channel, buffer, volume, attn, flags, pitch)
 			return FMRES_SUPERCEDE
 		}
 	}
@@ -7505,14 +7503,18 @@ public FwEmitSound(id, channel, const sample[], Float:volume, Float:attn, flags,
 	// Zombie dies
 	if (sample[7] == 'd' && ((sample[8] == 'i' && sample[9] == 'e') || (sample[8] == 'e' && sample[9] == 'a')))
 	{
-		emit_sound(id, channel, zombie_die[random(sizeof zombie_die)], volume, attn, flags, pitch)
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_DIE]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_DIE], iRand, buffer, charsmax(buffer))
+		emit_sound(id, channel, buffer, volume, attn, flags, pitch)
 		return FMRES_SUPERCEDE
 	}
 	
 	// Zombie falls off
 	if (sample[10] == 'f' && sample[11] == 'a' && sample[12] == 'l' && sample[13] == 'l')
 	{
-		emit_sound(id, channel, zombie_fall[random(sizeof zombie_fall)], volume, attn, flags, pitch)
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_FALL]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_FALL], iRand, buffer, charsmax(buffer))
+		emit_sound(id, channel, buffer, volume, attn, flags, pitch)
 		return FMRES_SUPERCEDE
 	}
 	
@@ -10197,7 +10199,10 @@ public cmd_freeze(id)
 				set_glow(target, 0, 206, 209, 25)
 				
 				// Freeze sound
-				emit_sound(target, CHAN_BODY, grenade_frost_player[random(sizeof grenade_frost_player)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+				static iRand, buffer[100]
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+				emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 				
 				// Add a blue tint to their screen
 				UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
@@ -10332,7 +10337,10 @@ public cmd_unfreeze(id)
 				UTIL_ScreenFade(target, {0, 200, 200}, 1.0, 0.0, 100, FFADE_IN, true, false)
 				
 				// Broken glass sound
-				emit_sound(target, CHAN_BODY, grenade_frost_break[random(sizeof grenade_frost_break)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+				static iRand, buffer[100]
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK], iRand, buffer, charsmax(buffer))
+				emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 				
 				// Glass shatter
 				SendGlassBreak(target)
@@ -12721,7 +12729,9 @@ start_mode(mode, id)
 				iZombies++
 
 				// Infection sound
-				emit_sound(id, CHAN_VOICE, zombie_infect[random(sizeof zombie_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_INFECT]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_INFECT], iRand, buffer, charsmax(buffer))
+				emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 			}
 		}
 		
@@ -13599,6 +13609,8 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	// Fix for glow
 	remove_glow(victim)
 
+	static iRand, buffer[100]
+
 	if (g_isbot[victim])
 		g_zombieclass[victim] = random_num(0, 6)
 
@@ -13750,7 +13762,9 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_user_health(victim, floatround(float(g_cZombieClasses[g_zombieclass[victim]][Health]) * FirstZombieHealth))
 
 				// Infection sound
-				emit_sound(victim, CHAN_VOICE, zombie_infect[random(sizeof zombie_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_INFECT]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_INFECT], iRand, buffer, charsmax(buffer))
+				emit_sound(victim, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 			}
 			else set_user_health(victim, g_cZombieClasses[g_zombieclass[victim]][Health])
 
@@ -13764,7 +13778,9 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 			if (infector) // infected by someone?
 			{
 				// Infection sound
-				emit_sound(victim, CHAN_VOICE, zombie_infect[random(sizeof zombie_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_INFECT]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_INFECT], iRand, buffer, charsmax(buffer))
+				emit_sound(victim, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 
 				set_user_health(infector, pev(infector, pev_health) + 300)
 				set_glow(infector, 0, 255, 0, 25)
@@ -14817,6 +14833,7 @@ turn_off_flashlight(id)
 // Infection Bomb Explosion
 OnInfectionExplode(ent)
 {
+	static iRand, buffer[100]
 	// Round ended (bugfix)
 	if (g_endround) return
 	
@@ -14828,7 +14845,9 @@ OnInfectionExplode(ent)
 	SendGrenadeBeamCylinder(ent, 0, 200, 0, 200)
 	
 	// Infection nade explode sound
-	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+	iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_INFECT]) - 1)
+	ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_INFECT], iRand, buffer, charsmax(buffer))
+	emit_sound(ent, CHAN_WEAPON, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
 	static attacker; attacker = pev(ent, pev_owner)
@@ -14860,7 +14879,9 @@ OnInfectionExplode(ent)
 		}
 		
 		// Infected victim's sound
-		emit_sound(victim, CHAN_VOICE, grenade_infect_player[random(sizeof grenade_infect_player)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_INFECT_PLAYER]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_INFECT_PLAYER], iRand, buffer, charsmax(buffer))
+		emit_sound(victim, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 		
 		SendDeathMsg(attacker, victim) // send death notice
 		FixScoreAttrib(victim) // fix the "dead" attrib on scoreboard
@@ -14900,9 +14921,6 @@ OnKillingExplode(ent)
 	
 	// Send TE_BEAMCYLINDER 
 	SendGrenadeBeamCylinder(ent, 128, 0, 255, 200)
-	
-	// Infection nade explode sound
-	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
 	static attacker; attacker = pev(ent, pev_owner)
@@ -14966,9 +14984,6 @@ public OnConcussionExplode(ent)
 	
 	// Send TE_BEAMCYLINDER 
 	SendGrenadeBeamCylinder(ent, 0, 0, 255,200)
-	
-	// Infection nade explode sound
-	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
 	static attacker; attacker = pev(ent, pev_owner)
@@ -15073,9 +15088,6 @@ public OnAntidoteExplode(ent)
 	
 	// Send TE_BEAMCYLINDER 
 	SendGrenadeBeamCylinder(ent, 255, 72, 0, 200)
-	
-	// Infection nade explode sound
-	emit_sound(ent, CHAN_WEAPON, grenade_infect[random(sizeof grenade_infect)], 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Get attacker
 	static attacker; attacker = pev(ent, pev_owner)
@@ -15271,6 +15283,8 @@ public OnExplosionExplode(ent)
 // Fire Grenade Explosion
 OnNapalmExplode(ent)
 {
+	static iRand, buffer[100]
+
 	// Get origin
 	static Float:originF[3]
 	pev(ent, pev_origin, originF)
@@ -15282,7 +15296,9 @@ OnNapalmExplode(ent)
 	SendGrenadeBeamCylinder(ent, 255, 255, 0, 200)
 	
 	// Fire nade explode sound
-	emit_sound(ent, CHAN_WEAPON, grenade_fire[random(sizeof grenade_fire)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+	iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FIRE]) - 1)
+	ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FIRE], iRand, buffer, charsmax(buffer))
+	emit_sound(ent, CHAN_WEAPON, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Collisions
 	static victim; victim = -1
@@ -15329,6 +15345,7 @@ OnNapalmExplode(ent)
 // Frost Grenade Explosion
 OnFrostExplode(ent)
 {
+	static iRand, buffer[100]
 	// Get origin
 	static Float:originF[3]
 	pev(ent, pev_origin, originF)
@@ -15340,7 +15357,9 @@ OnFrostExplode(ent)
 	SendGrenadeBeamCylinder(ent, 0, 206, 209, 200)
 	
 	// Frost nade explode sound
-	emit_sound(ent, CHAN_WEAPON, grenade_frost[random(sizeof grenade_frost)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+	iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST]) - 1)
+	ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST], iRand, buffer, charsmax(buffer))
+	emit_sound(ent, CHAN_WEAPON, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Collisions
 	static victim; victim = -1
@@ -15358,7 +15377,9 @@ OnFrostExplode(ent)
 			get_user_origin(victim, origin2)
 			
 			// Broken glass sound
-			emit_sound(victim, CHAN_BODY, grenade_frost_break[random(sizeof grenade_frost_break)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK], iRand, buffer, charsmax(buffer))
+			emit_sound(victim, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 			
 			// Glass shatter
 			SendGlassBreak(victim)
@@ -15383,7 +15404,9 @@ OnFrostExplode(ent)
 		set_glow(victim, 0, 206, 209, 25)
 		
 		// Freeze sound
-		emit_sound(victim, CHAN_BODY, grenade_frost_player[random(sizeof grenade_frost_player)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+		emit_sound(victim, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 		
 		// Add a blue tint to their screen
 		UTIL_ScreenFade(victim, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
@@ -15474,7 +15497,10 @@ public remove_freeze(id)
 	UTIL_ScreenFade(id, {0, 200, 200}, 1.0, 0.0, 100, FFADE_IN, true, false)
 	
 	// Broken glass sound
-	emit_sound(id, CHAN_BODY, grenade_frost_break[random(sizeof grenade_frost_break)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+	static iRand, buffer[100]
+	iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK]) - 1)
+	ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK], iRand, buffer, charsmax(buffer))
+	emit_sound(id, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
 	// Glass shatter
 	SendGlassBreak(id)
@@ -15791,13 +15817,24 @@ public zombie_play_idle(taskid)
 {
 	//Retrieve player index
 	static id; id = taskid - TASK_BLOOD
+	static iRand, buffer[100]
 
 	// Round ended/new one starting
 	if (g_endround || g_newround) return
 	
 	// Last zombie?
-	if (g_lastzombie[id]) emit_sound(id, CHAN_VOICE, zombie_idle_last[random(sizeof zombie_idle_last)], 1.0, ATTN_NORM, 0, PITCH_NORM) 
-	else emit_sound(id, CHAN_VOICE, zombie_idle[random(sizeof zombie_idle)], 1.0, ATTN_NORM, 0, PITCH_NORM) 
+	if (g_lastzombie[id]) 
+	{
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_IDLE_LAST]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_IDLE_LAST], iRand, buffer, charsmax(buffer))
+		emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+	}
+	else 
+	{
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_IDLE]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_IDLE], iRand, buffer, charsmax(buffer))
+		emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+	}
 }
 
 // Madness Over Task
@@ -17760,6 +17797,8 @@ public burning_flame(taskid)
 
 	// Get player origin and flags
 	static flags; flags = pev(id, pev_flags)
+
+	static iRand, buffer[100]
 	
 	// Madness mode - in water - burning stopped
 	if (g_nodamage[id] || (flags & FL_INWATER) || g_burning_duration[id] < 1)
@@ -17774,7 +17813,11 @@ public burning_flame(taskid)
 	
 	// Randomly play burning zombie scream sounds (not for nemesis)
 	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !random_num(0, 20))
-		emit_sound(id, CHAN_VOICE, grenade_fire_player[random(sizeof grenade_fire_player)], 1.0, ATTN_NORM, 0, PITCH_NORM)
+	{
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FIRE_PLAYER]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FIRE_PLAYER], iRand, buffer, charsmax(buffer))
+		emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+	}
 	
 	// Fire slow down, unless nemesis
 	if (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && (flags & FL_ONGROUND) && FireSlowdown > 0.0)
