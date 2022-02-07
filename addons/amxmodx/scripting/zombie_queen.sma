@@ -342,55 +342,55 @@ new FlColor2_G = 0
 new FlColor2_B = 255
 
 // Leap Configs
-new LeapZombies = 1
-new LeapZombiesForce = 500
-new Float:LeapZombiesHeight = 300.0
-new Float:LeapZombiesCooldown = 12.0
+new LeapZombies
+new LeapZombiesForce
+new Float:LeapZombiesHeight
+new Float:LeapZombiesCooldown
 
-new LeapNemesis = 1
-new LeapNemesisForce = 500
-new Float:LeapNemesisHeight = 300.0
-new Float:LeapNemesisCooldown = 1.0
+new LeapNemesis
+new LeapNemesisForce
+new Float:LeapNemesisHeight
+new Float:LeapNemesisCooldown
 
-new LeapAssassin = 1
-new LeapAssassinForce = 500
-new Float:LeapAssassinHeight = 300.0
-new Float:LeapAssassinCooldown = 1.0
+new LeapAssassin
+new LeapAssassinForce
+new Float:LeapAssassinHeight
+new Float:LeapAssassinCooldown
 
-new LeapRevenant = 1
-new LeapRevenantForce = 500
-new Float:LeapRevenantHeight = 300.0
-new Float:LeapRevenantCooldown = 1.0
+new LeapRevenant
+new LeapRevenantForce
+new Float:LeapRevenantHeight
+new Float:LeapRevenantCooldown
 
-new LeapBombardier = 1
-new LeapBombardierForce = 500
-new Float:LeapBombardierHeight = 300.0
-new Float:LeapBombardierCooldown = 1.0
+new LeapBombardier
+new LeapBombardierForce
+new Float:LeapBombardierHeight
+new Float:LeapBombardierCooldown
 
-new LeapSurvivor = 1
-new LeapSurvivorForce = 500
-new Float:LeapSurvivorHeight = 300.0
-new Float:LeapSurvivorCooldown = 1.0
+new LeapSurvivor
+new LeapSurvivorForce
+new Float:LeapSurvivorHeight
+new Float:LeapSurvivorCooldown
 
-new LeapSniper = 1
-new LeapSniperForce = 500
-new Float:LeapSniperHeight = 300.0
-new Float:LeapSniperCooldown = 1.0
+new LeapSniper
+new LeapSniperForce
+new Float:LeapSniperHeight
+new Float:LeapSniperCooldown
 
-new LeapSamurai = 1
-new LeapSamuraiForce = 500
-new Float:LeapSamuraiHeight = 300.0
-new Float:LeapSamuraiCooldown = 1.0
+new LeapSamurai
+new LeapSamuraiForce
+new Float:LeapSamuraiHeight
+new Float:LeapSamuraiCooldown
 
-new LeapGrenadier = 1
-new LeapGrenadierForce = 700
-new Float:LeapGrenadierHeight = 300.0
-new Float:LeapGrenadierCooldown = 1.0
+new LeapGrenadier
+new LeapGrenadierForce
+new Float:LeapGrenadierHeight
+new Float:LeapGrenadierCooldown
 
-new LeapTerminator = 1
-new LeapTerminatorForce = 700
-new Float:LeapTerminatorHeight = 400.0
-new Float:LeapTerminatorCooldown = 1.0
+new LeapTerminator
+new LeapTerminatorForce
+new Float:LeapTerminatorHeight
+new Float:LeapTerminatorCooldown
 
 // Custom grenades configs
 new FireDuration  = 10
@@ -1354,6 +1354,57 @@ LoadCustomizationFromFile()
 	AmxLoadInt("Class/Class.ini", "Painshock", "Nemesis", NemesisPainfree)
 	AmxLoadInt("Class/Class.ini", "Painshock", "Bombardier", BombardierPainfree)
 	AmxLoadInt("Class/Class.ini", "Painshock", "Revenant", RevenantPainfree)
+
+	// Leap configs
+	AmxLoadInt("Class/Class.ini", "Leap", "Zombie", LeapZombies)
+	AmxLoadInt("Class/Class.ini", "Leap", "Zombie Force", LeapZombiesForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Zombie Height", LeapZombiesHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Zombie Cooldown", LeapZombiesCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Nemesis ", LeapNemesis)
+	AmxLoadInt("Class/Class.ini", "Leap", "Nemesis Force", LeapNemesisForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Nemesis Height", LeapNemesisHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Nemesis Cooldown", LeapNemesisCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Assasin", LeapAssassin)
+	AmxLoadInt("Class/Class.ini", "Leap", "Assasin Force", LeapAssassinForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Assasin Height", LeapAssassinHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Assasin Cooldown", LeapAssassinCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Revenant", LeapRevenant)
+	AmxLoadInt("Class/Class.ini", "Leap", "Revenant Force", LeapRevenantForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Revenant Height", LeapRevenantHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Revenant Cooldown", LeapRevenantCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Bombardier", LeapBombardier)
+	AmxLoadInt("Class/Class.ini", "Leap", "Bombardier Force", LeapBombardierForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Bombardier Height", LeapBombardierHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Bombardier Cooldown", LeapBombardierCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Survivor", LeapSurvivor)
+	AmxLoadInt("Class/Class.ini", "Leap", "Survivor Force", LeapSurvivorForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Survivor Height", LeapSurvivorHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Survivor Cooldown", LeapSurvivorCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Sniper", LeapSniper)
+	AmxLoadInt("Class/Class.ini", "Leap", "Sniper Force", LeapSniperForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Sniper Height", LeapSniperHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Sniper Cooldown", LeapSniperCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Samurai", LeapSamurai)
+	AmxLoadInt("Class/Class.ini", "Leap", "Samurai Force", LeapSamuraiForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Samurai Height", LeapSamuraiHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Samurai Cooldown", LeapSamuraiCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Grenadier", LeapGrenadier)
+	AmxLoadInt("Class/Class.ini", "Leap", "Grenadier Force", LeapGrenadierForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Grenadier Height", LeapGrenadierHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Grenadier Cooldown", LeapGrenadierCooldown)
+
+	AmxLoadInt("Class/Class.ini", "Leap", "Terminator", LeapTerminator)
+	AmxLoadInt("Class/Class.ini", "Leap", "Terminator Force", LeapTerminatorForce)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Terminator Height", LeapTerminatorHeight)
+	AmxLoadFloat("Class/Class.ini", "Leap", "Terminator Cooldown", LeapTerminatorCooldown)
 }
 
 // Forward enums
