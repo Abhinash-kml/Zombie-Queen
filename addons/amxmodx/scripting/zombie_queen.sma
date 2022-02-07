@@ -170,96 +170,96 @@ new g_Size
 // Classes Configurations
 
 // Human Class Configs
-new HumanHealth = 150
-new Float:HumanSpeed = 240.0
-new Float:HumanGravity = 1.0
-new HumanArmorProtect = 1
-new HumanFragsForKill = 1
-new LastHumanExtraHealth = 0
+new HumanHealth
+new Float:HumanSpeed
+new Float:HumanGravity
+new HumanArmorProtect
+new HumanFragsForKill
+new LastHumanExtraHealth
 
 // Assassin
-new AssassinEnabled = 1
-new AssassinChance = 50
-new AssassinMinPlayers = 2
-new AssassinHealth = 30000
-new Float:AssassinSpeed = 600.0
-new Float:AssassinGravity = 0.5
-new Float:AssassinDamage = 250.0
+new AssassinEnabled
+new AssassinChance
+new AssassinMinPlayers
+new AssassinHealth
+new Float:AssassinSpeed
+new Float:AssassinGravity
+new Float:AssassinDamage
 
 // Nemesis
-new NemesisEnabled = 1
-new NemesisChance = 20
-new NemesisMinPlayers = 2
-new NemesisHealth = 150000
-new Float:NemesisSpeed = 250.0
-new Float:NemesisGravity = 0.5
-new Float:NemesisDamage = 250.0
+new NemesisEnabled
+new NemesisChance
+new NemesisMinPlayers
+new NemesisHealth
+new Float:NemesisSpeed
+new Float:NemesisGravity
+new Float:NemesisDamage
 
 // Bombardier
-new BombardierEnabled = 1
-new BombardierChance = 50
-new BombardierMinPlayers = 2
-new BombardierHealth = 30000
-new Float:BombardierSpeed = 600.0
-new Float:BombardierGravity = 0.5
-new Float:BombardierDamage = 0.0
+new BombardierEnabled
+new BombardierChance
+new BombardierMinPlayers
+new BombardierHealth
+new Float:BombardierSpeed
+new Float:BombardierGravity
+new Float:BombardierDamage
 
 // Revenant
-new RevenantEnabled = 1
-new RevenantChance = 50
-new RevenantMinPlayers = 2
-new RevenantHealth = 40000
-new Float:RevenantSpeed = 800.0
-new Float:Revenantgravity = 0.1
-new Float:RevenantDamage = 500.0
+new RevenantEnabled
+new RevenantChance
+new RevenantMinPlayers
+new RevenantHealth
+new Float:RevenantSpeed
+new Float:Revenantgravity
+new Float:RevenantDamage
 
 // Sniper
-new SniperEnabled = 1
-new SniperChance = 50
-new SniperMinPlayers = 0
-new SniperHealth = 6000
-new Float:SniperSpeed = 300.0
-new Float:SniperGravity = 1.0
-new Float:SniperDamage = 5000.0
+new SniperEnabled
+new SniperChance
+new SniperMinPlayers
+new SniperHealth
+new Float:SniperSpeed
+new Float:SniperGravity
+new Float:SniperDamage
 
 // Survivor
-new SurvivorEnabled = 1
-new SurvivorChance = 50
-new SurvivorMinPlayers = 0
-new SurvivorHealth = 6000
-new Float:SurvivorSpeed = 300.0
-new Float:SurvivorGravity = 1.0
+new SurvivorEnabled
+new SurvivorChance
+new SurvivorMinPlayers
+new SurvivorHealth
+new Float:SurvivorSpeed
+new Float:SurvivorGravity
 
 // Samurai
-new SamuraiEnabled = 1
-new SamuraiChance = 50
-new SamuraiMinPlayers = 0
-new SamuraiHealth = 5000
-new Float:SamuraiSpeed = 300.0
-new Float:SamuraiGravity = 0.7
-new Float:SamuraiDamage = 4000.0
+new SamuraiEnabled
+new SamuraiChance
+new SamuraiMinPlayers
+new SamuraiHealth
+new Float:SamuraiSpeed
+new Float:SamuraiGravity
+new Float:SamuraiDamage
 
 // Grenadier
-new GrenadierEnabled = 1
-new GrenadierChance = 50
-new GrenadierMinPlayers = 2
-new GrenadierHealth = 50000
-new Float:GrenadierSpeed = 300.0
-new Float:GrenadierGravity = 1.0
-new Float:GrenadierDamage = 0.0
+new GrenadierEnabled
+new GrenadierChance
+new GrenadierMinPlayers
+new GrenadierHealth
+new Float:GrenadierSpeed
+new Float:GrenadierGravity
+new Float:GrenadierDamage
 
 // Terminator
-new TerminatorEnabled = 1
-new TerminatorChance = 50
-new TerminatorMinPlayers = 2
-new TerminatorHealth = 20000
-new Float:TerminatorSpeed = 400.0
-new Float:TerminatorGravity = 1.0
+new TerminatorEnabled
+new TerminatorChance
+new TerminatorMinPlayers
+new TerminatorHealth
+new Float:TerminatorSpeed
+new Float:TerminatorGravity
 
 // Tryder
-new TryderHealth = 777
-new Float:TryderSpeed = 300.0
-new Float:TryderGravity = 0.5
+new TryderHealth
+new Float:TryderSpeed
+new Float:TryderGravity
 
 // Knockback
 new KnockbackEnabled = 1
@@ -1133,6 +1133,131 @@ LoadCustomizationFromFile()
 			log_amx("%s", buffer)
 		}
 	}
+
+	// Custom class data
+
+	// Human
+	AmxLoadInt("Class/Class.ini", "Human", "Health", HumanHealth)
+	AmxLoadFloat("Class/Class.ini", "Human", "Speed", HumanSpeed)
+	AmxLoadFloat("Class/Class.ini", "Human", "Gravity", HumanGravity)
+	AmxLoadInt("Class/Class.ini", "Human", "Armor Protect", HumanArmorProtect)
+	AmxLoadInt("Class/Class.ini", "Human", "Last Human Extra Health", LastHumanExtraHealth)
+
+	// Survivor
+	AmxLoadInt("Class/Class.ini", "Survivor", "Enabled", SurvivorEnabled)
+	AmxLoadInt("Class/Class.ini", "Survivor", "Chance", SurvivorChance)
+	AmxLoadInt("Class/Class.ini", "Survivor", "Minimum Players", SurvivorMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Survivor", "Health", SurvivorHealth)
+	AmxLoadFloat("Class/Class.ini", "Survivor", "Speed", SurvivorSpeed)
+	AmxLoadFloat("Class/Class.ini", "Survivor", "Gravity", SurvivorGravity)
+
+	// Sniper
+	AmxLoadInt("Class/Class.ini", "Sniper", "Enabled", SniperEnabled)
+	AmxLoadInt("Class/Class.ini", "Sniper", "Chance", SniperChance)
+	AmxLoadInt("Class/Class.ini", "Sniper", "Minimum Players", SniperMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Sniper", "Health", SniperHealth)
+	AmxLoadFloat("Class/Class.ini", "Sniper", "Speed", SniperSpeed)
+	AmxLoadFloat("Class/Class.ini", "Sniper", "Gravity", SniperGravity)
+	AmxLoadFloat("Class/Class.ini", "Sniper", "Damage", SniperDamage)
+
+	// Samurai
+	AmxLoadInt("Class/Class.ini", "Samurai", "Enabled", SamuraiEnabled)
+	AmxLoadInt("Class/Class.ini", "Samurai", "Chance", SamuraiChance)
+	AmxLoadInt("Class/Class.ini", "Samurai", "Minimum Players", SamuraiMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Samurai", "Health", SamuraiHealth)
+	AmxLoadFloat("Class/Class.ini", "Samurai", "Speed", SamuraiSpeed)
+	AmxLoadFloat("Class/Class.ini", "Samurai", "Gravity", SamuraiGravity)
+	AmxLoadFloat("Class/Class.ini", "Samurai", "Damage", SamuraiDamage)
+
+	// Grenadier
+	AmxLoadInt("Class/Class.ini", "Grenadier", "Enabled", GrenadierEnabled)
+	AmxLoadInt("Class/Class.ini", "Grenadier", "Chance", GrenadierChance)
+	AmxLoadInt("Class/Class.ini", "Grenadier", "Minimum Players", GrenadierMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Grenadier", "Health", GrenadierHealth)
+	AmxLoadFloat("Class/Class.ini", "Grenadier", "Speed", GrenadierSpeed)
+	AmxLoadFloat("Class/Class.ini", "Grenadier", "Gravity", GrenadierGravity)
+	AmxLoadFloat("Class/Class.ini", "Grenadier", "Damage", GrenadierDamage)
+
+	// Terminator
+	AmxLoadInt("Class/Class.ini", "Terminator", "Enabled", TerminatorEnabled)
+	AmxLoadInt("Class/Class.ini", "Terminator", "Chance", TerminatorChance)
+	AmxLoadInt("Class/Class.ini", "Terminator", "Minimum Players", TerminatorMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Terminator", "Health", TerminatorHealth)
+	AmxLoadFloat("Class/Class.ini", "Terminator", "Speed", TerminatorSpeed)
+	AmxLoadFloat("Class/Class.ini", "Terminator", "Gravity", TerminatorGravity)
+
+	// Tryder
+	AmxLoadInt("Class/Class.ini", "Tryder", "Health", TryderHealth)
+	AmxLoadFloat("Class/Class.ini", "Tryder", "Speed", TryderSpeed)
+	AmxLoadFloat("Class/Class.ini", "Tryder", "Gravity", TryderGravity)
+
+	// Assassin
+	AmxLoadInt("Class/Class.ini", "Assasin", "Enabled", AssassinEnabled)
+	AmxLoadInt("Class/Class.ini", "Assasin", "Chance", AssassinChance)
+	AmxLoadInt("Class/Class.ini", "Assasin", "Minimum Players", AssassinMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Assasin", "Health", AssassinHealth)
+	AmxLoadFloat("Class/Class.ini", "Assasin", "Speed", AssassinSpeed)
+	AmxLoadFloat("Class/Class.ini", "Assasin", "Gravity", AssassinGravity)
+	AmxLoadFloat("Class/Class.ini", "Assasin", "Damage", AssassinDamage)
+
+	// Nemesis
+	AmxLoadInt("Class/Class.ini", "Nemesis", "Enabled", NemesisEnabled)
+	AmxLoadInt("Class/Class.ini", "Nemesis", "Chance", NemesisChance)
+	AmxLoadInt("Class/Class.ini", "Nemesis", "Minimum Players", NemesisMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Nemesis", "Health", NemesisHealth)
+	AmxLoadFloat("Class/Class.ini", "Nemesis", "Speed", NemesisSpeed)
+	AmxLoadFloat("Class/Class.ini", "Nemesis", "Gravity", NemesisGravity)
+	AmxLoadFloat("Class/Class.ini", "Nemesis", "Damage", NemesisDamage)
+
+	// Bombardier
+	AmxLoadInt("Class/Class.ini", "Bombardier", "Enabled", BombardierEnabled)
+	AmxLoadInt("Class/Class.ini", "Bombardier", "Chance", BombardierChance)
+	AmxLoadInt("Class/Class.ini", "Bombardier", "Minimum Players", BombardierMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Bombardier", "Health", BombardierHealth)
+	AmxLoadFloat("Class/Class.ini", "Bombardier", "Speed", BombardierSpeed)
+	AmxLoadFloat("Class/Class.ini", "Bombardier", "Gravity", BombardierGravity)
+	AmxLoadFloat("Class/Class.ini", "Bombardier", "Damage", BombardierDamage)
+
+	// Revenant
+	AmxLoadInt("Class/Class.ini", "Revenant", "Enabled", RevenantEnabled)
+	AmxLoadInt("Class/Class.ini", "Revenant", "Chance", RevenantChance)
+	AmxLoadInt("Class/Class.ini", "Revenant", "Minimum Players", RevenantMinPlayers)
+	AmxLoadInt("Class/Class.ini", "Revenant", "Health", RevenantHealth)
+	AmxLoadFloat("Class/Class.ini", "Revenant", "Speed", RevenantSpeed)
+	AmxLoadFloat("Class/Class.ini", "Revenant", "Gravity", Revenantgravity)
+	AmxLoadFloat("Class/Class.ini", "Revenant", "Damage", RevenantDamage)
+
+	// // Knockback
+	// new KnockbackEnabled = 1
+	// new KnockbackDistance = 500
+	// new Float:KnockbackDucking = 0.25
+	// new Float:KnockbackAssassin = 0.7
+	// new Float:KnockbackNemesis	= 0.15
+	// new Float:KnockbackBombardier = 0.5
+	// new Float:KnockbackRevenant = 0.5
+
+	// // Pain Shock free
+	// new AssassinPainfree = 1
+	// new RevenantPainfree = 1
+	// new NemesisPainfree = 0
+	// new BombardierPainfree	= 1
+	// new SniperPainfree	= 0
+	// new SurvivorPainfree = 0
+	// new SamuraiPainfree = 1
+	// new GrenadierPainfree = 1
+	// new TerminatorPainfree = 1
+
+	// // Glow 
+	// new NemesisGlow = 1
+	// new AssassinGlow = 0
+	// new RevenantGlow = 0
+	// new SurvivorGlow = 0
+	// new SniperGlow = 1
+	// new SamuraiGlow = 1
+	// new GrenadierGlow = 1
+	// new TerminatorGlow = 1
+	// new BombardierGlow	= 0
+	// new TryderGlow = 1
 }
 
 // Forward enums
