@@ -262,24 +262,24 @@ new Float:TryderSpeed
 new Float:TryderGravity
 
 // Knockback
-new KnockbackEnabled = 1
-new KnockbackDistance = 500
-new Float:KnockbackDucking = 0.25
-new Float:KnockbackAssassin = 0.7
-new Float:KnockbackNemesis	= 0.15
-new Float:KnockbackBombardier = 0.5
-new Float:KnockbackRevenant = 0.5
+new KnockbackEnabled
+new KnockbackDistance
+new Float:KnockbackDucking
+new Float:KnockbackAssassin
+new Float:KnockbackNemesis
+new Float:KnockbackBombardier
+new Float:KnockbackRevenant
 
 // Pain Shock free
-new AssassinPainfree = 1
-new RevenantPainfree = 1
-new NemesisPainfree = 0
-new BombardierPainfree	= 1
-new SniperPainfree	= 0
-new SurvivorPainfree = 0
-new SamuraiPainfree = 1
-new GrenadierPainfree = 1
-new TerminatorPainfree = 1
+new AssassinPainfree
+new RevenantPainfree
+new NemesisPainfree
+new BombardierPainfree
+new SniperPainfree
+new SurvivorPainfree
+new SamuraiPainfree
+new GrenadierPainfree
+new TerminatorPainfree
 
 // Glow 
 new NemesisGlow
@@ -1336,24 +1336,24 @@ LoadCustomizationFromFile()
 	log_amx("Revenant Glow RGB = %i %i %i", g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue])
 
 	// // Knockback
-	// new KnockbackEnabled = 1
-	// new KnockbackDistance = 500
-	// new Float:KnockbackDucking = 0.25
-	// new Float:KnockbackAssassin = 0.7
-	// new Float:KnockbackNemesis	= 0.15
-	// new Float:KnockbackBombardier = 0.5
-	// new Float:KnockbackRevenant = 0.5
+	AmxLoadInt("Class/Class.ini", "Knockback", "Enabled", KnockbackEnabled)
+	AmxLoadInt("Class/Class.ini", "Knockback", "Distance", KnockbackDistance)
+	AmxLoadFloat("Class/Class.ini", "Knockback", "Ducking", KnockbackDucking)
+	AmxLoadFloat("Class/Class.ini", "Knockback", "Assasin", KnockbackAssassin)
+	AmxLoadFloat("Class/Class.ini", "Knockback", "Nemesis", KnockbackNemesis)
+	AmxLoadFloat("Class/Class.ini", "Knockback", "Bombardier", KnockbackBombardier)
+	AmxLoadFloat("Class/Class.ini", "Knockback", "Revenant", KnockbackRevenant)
 
-	// // Pain Shock free
-	// new AssassinPainfree = 1
-	// new RevenantPainfree = 1
-	// new NemesisPainfree = 0
-	// new BombardierPainfree	= 1
-	// new SniperPainfree	= 0
-	// new SurvivorPainfree = 0
-	// new SamuraiPainfree = 1
-	// new GrenadierPainfree = 1
-	// new TerminatorPainfree = 1
+	// Painfree
+	AmxLoadInt("Class/Class.ini", "Painshock", "Survivor", SurvivorPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Sniper", SniperPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Samurai", SamuraiPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Grenadier", GrenadierPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Terminator", TerminatorPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Assasin", AssassinPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Nemesis", NemesisPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Bombardier", BombardierPainfree)
+	AmxLoadInt("Class/Class.ini", "Painshock", "Revenant", RevenantPainfree)
 }
 
 // Forward enums
