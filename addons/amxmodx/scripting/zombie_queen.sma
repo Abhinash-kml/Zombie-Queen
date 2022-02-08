@@ -1558,10 +1558,10 @@ new g_cZombieClasses[][ZMenuData] =
 	{"Clasic", 			"\r[=Balanced=]", 	  	8000, 264.0, 1.00, 0.82, 	"PerfectZM_Classic", 		 	 "models/PerfectZM/PerfectZM_classic_claws.mdl"},
 	{"Raptor", 			"\r[Speed +++]", 	  	7350, 304.0, 1.00, 1.33, 	"PerfectZM_Raptor", 			 "models/PerfectZM/PerfectZM_raptor_claws.mdl"},
 	{"Mutant", 			"\r[Health +++]", 	  	14000, 276.0, 0.74, 0.70, 	"PerfectZM_Mutant", 			 "models/PerfectZM/PerfectZM_mutant_claws.mdl"},
-	{"Frozen", 			"\r[Freeze humans]", 	6550, 244.0, 1.00, 0.44, 	"PerfectZM_Frozen", 			 "models/PerfectZM/PerfectZM_frozen_claws.mdl"},
+	{"Frost", 			"\r[Freeze humans]", 	6550, 244.0, 1.00, 0.44, 	"PerfectZM_Frozen", 			 "models/PerfectZM/PerfectZM_frozen_claws.mdl"},
 	{"Regenerator", 	"\r[Regeneration]",   	7000, 269.0, 0.61, 0.80, 	"PerfectZM_Regenerator", 	 	 "models/PerfectZM/PerfectZM_regenerator_claws.mdl"},
 	{"Predator Blue", 	"\r[Invisiblity]", 	  	10000, 249.0, 1.00, 0.90, 	"PerfectZM_Predator", 	 	 	 "models/PerfectZM/PerfectZM_predator_claws.mdl"},
-	{"Hunter", 			"\r[Remove weapon]",    9000, 273.0, 0.61, 0.83, 	"PerfectZM_Hunter", 			 "models/PerfectZM/PerfectZM_hunter_claws.mdl"}
+	{"Hunter", 			"\r[Stuns weapons]",    9000, 273.0, 0.61, 0.83, 	"PerfectZM_Hunter", 			 "models/PerfectZM/PerfectZM_hunter_claws.mdl"}
 }
 
 
@@ -1621,16 +1621,21 @@ enum _:MMenuData
 
 new g_cModesMenu[][MMenuData] =
 {
-	{"Survivor vs Nemesis round", 		"\r[120 points]",  120},
-	{"Survivor vs Assasin round", 		"\r[140 points]",  140},
-	{"Sniper vs Nemesis round", 	 	"\r[200 points]",  200},
-	{"Sniper vs Assasin round", 		"\r[120 points]",  120},
-	{"Nightmare round", 		  		"\r[300 points]",  300},
-	{"Synapsis round", 				 	"\r[150 points]",  150},
-	{"Bombardier vs Grenadier Mode",  	"\r[500 points]",  500},
-	{"Samurai vs Nemesis round", 		"\r[500 points]",  500},
-	{"Sonic vs Shadow round", 			"\r[500 round]",  500},
-	{"Nightcrawler round", 				"\r[500 round]",  500}
+	{"Samurai", "\r[180 points]", 180},
+	{"Grenadier", "\r[180 points]", 180},
+	{"Terminator", "\r[180 points]", 180},
+	{"Bombardier", "\r[180 points]", 180},
+	{"Revenant", "\r[180 points]", 180},
+	{"Survivor vs Nemesis round", "\r[120 points]", 120},
+	{"Survivor vs Assasin round", "\r[140 points]", 140},
+	{"Sniper vs Nemesis round", "\r[200 points]", 200},
+	{"Sniper vs Assasin round", "\r[120 points]", 120},
+	{"Nightmare round", "\r[300 points]", 300},
+	{"Synapsis round", "\r[150 points]", 150},
+	{"Bombardier vs Grenadier Mode", "\r[500 points]", 500},
+	{"Samurai vs Nemesis round", "\r[500 points]", 500},
+	{"Sonic vs Shadow round", "\r[500 round]", 500},
+	{"Nightcrawler round", "\r[500 round]", 500}
 }
 
 // Data structure for points shop weapons
@@ -1915,7 +1920,12 @@ enum _: buyFeaturesWithPoints
 // Points shop - modes
 enum _: buyModesWithPoints
 {
-	PSHOP_MODE_SURVIVOR_VS_NEMESIS = 0,
+	PSHOP_MODE_SAMURAI = 0,
+	PSHOP_MODE_GRENADIER,
+	PSHOP_MODE_TERMINATOR,
+	PSHOP_MODE_BOMBARDIER,
+	PSHOP_MODE_REVENANT,
+	PSHOP_MODE_SURVIVOR_VS_NEMESIS,
 	PSHOP_MODE_SURVIVOR_VS_ASSASIN,
 	PSHOP_MODE_SNIPER_VS_NEMESIS,
 	PSHOP_MODE_SNIPER_VS_ASSASIN,
@@ -1989,6 +1999,7 @@ const OFFSET_CSMENUCODE 		= 205
 const OFFSET_FLASHLIGHT_BATTERY = 244
 const OFFSET_CSDEATHS 			= 444
 const OFFSET_MODELINDEX 		= 491 // Orangutanz
+const OFFSET_NEXTATTACK			= 83  // NeO
 
 // CS Player CBase Offsets (win32)
 const OFFSET_ACTIVE_ITEM = 373
@@ -5361,6 +5372,111 @@ public _Modes(id, menu, item)
 
 		switch (iChoice)
 		{
+		case PSHOP_MODE_SAMURAI:
+		{
+			if (CanBuy(PSHOP_MODES, PSHOP_MODE_SAMURAI, id))
+			{
+				if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
+				{
+					client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
+					return PLUGIN_HANDLED
+				}
+
+				remove_task(TASK_MAKEZOMBIE)
+				start_mode(MODE_SAMURAI, id)
+
+				LIMIT[id][CUSTOM_MODES]++
+
+				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				show_hudmessage(0, "%s bought Samurai with points!", g_playerName[id])
+				MySQL_UPDATE_DATABASE(id)
+			}
+		}
+		case PSHOP_MODE_GRENADIER:
+		{
+			if (CanBuy(PSHOP_MODES, PSHOP_MODE_GRENADIER, id))
+			{
+				if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
+				{
+					client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
+					return PLUGIN_HANDLED
+				}
+
+				remove_task(TASK_MAKEZOMBIE)
+				start_mode(MODE_GRENADIER, id)
+
+				LIMIT[id][CUSTOM_MODES]++
+
+				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				show_hudmessage(0, "%s bought Grenadier with points!", g_playerName[id])
+				MySQL_UPDATE_DATABASE(id)
+			}
+		}
+		case PSHOP_MODE_TERMINATOR:
+		{
+			if (CanBuy(PSHOP_MODES, PSHOP_MODE_TERMINATOR, id))
+			{
+				if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
+				{
+					client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
+					return PLUGIN_HANDLED
+				}
+
+				remove_task(TASK_MAKEZOMBIE)
+				start_mode(MODE_TERMINATOR, id)
+
+				LIMIT[id][CUSTOM_MODES]++
+
+				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				show_hudmessage(0, "%s bought Terminator with points!", g_playerName[id])
+				MySQL_UPDATE_DATABASE(id)
+			}
+		}
+		case PSHOP_MODE_BOMBARDIER:
+		{
+			if (CanBuy(PSHOP_MODES, PSHOP_MODE_BOMBARDIER, id))
+			{
+				if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
+				{
+					client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
+					return PLUGIN_HANDLED
+				}
+
+				remove_task(TASK_MAKEZOMBIE)
+				start_mode(MODE_BOMBARDIER, id)
+
+				LIMIT[id][CUSTOM_MODES]++
+
+				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				show_hudmessage(0, "%s bought Bombardier with points!", g_playerName[id])
+				MySQL_UPDATE_DATABASE(id)
+			}
+		}
+		case PSHOP_MODE_REVENANT:
+		{
+			if (CanBuy(PSHOP_MODES, PSHOP_MODE_REVENANT, id))
+			{
+				if (g_points[id] < g_cModesMenu[iChoice][_mItemPrice])
+				{
+					client_print_color(id, print_team_grey, "%s You don't have enough points!", CHAT_PREFIX)
+					return PLUGIN_HANDLED
+				}
+
+				remove_task(TASK_MAKEZOMBIE)
+				start_mode(MODE_REVENANT, id)
+
+				LIMIT[id][CUSTOM_MODES]++
+
+				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				show_hudmessage(0, "%s bought Revenant with points!", g_playerName[id])
+				MySQL_UPDATE_DATABASE(id)
+			}
+		}
 		case PSHOP_MODE_SURVIVOR_VS_NEMESIS:
 			{
 				if (CanBuy(PSHOP_MODES, PSHOP_MODE_SURVIVOR_VS_NEMESIS, id))
@@ -8601,8 +8717,9 @@ public OnHunterSkill(id)
 	
 	if (g_isalive[target] && CheckBit(g_playerClass[target], CLASS_HUMAN))
 	{
-		// Drop target's weapon
-		drop_weapons(target, 1)
+		// Stun the target's weapons
+		set_pdata_float(target, OFFSET_NEXTATTACK, 6.0, OFFSET_LINUX)
+		//drop_weapons(target, 1)
 
 		// Send BeamPoints
 		SendSkillEffect(id, aimorigin, 200, 200, 0)
@@ -16954,7 +17071,8 @@ CanBuy(category, item, id)
 				case PSHOP_MODE_NIGHTCRAWLER: return true 
 				case PSHOP_MODE_SONIC_VS_SHADOW: return true 
 				case PSHOP_MODE_BOMBARDIER_VS_GRENADIER: return true
-				case PSHOP_MODE_SURVIVOR_VS_NEMESIS, PSHOP_MODE_SURVIVOR_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_NEMESIS, PSHOP_MODE_NIGHTMARE, PSHOP_MODE_SYNAPSIS:
+				case PSHOP_MODE_SURVIVOR_VS_NEMESIS, PSHOP_MODE_SURVIVOR_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_ASSASIN, PSHOP_MODE_SNIPER_VS_NEMESIS, PSHOP_MODE_NIGHTMARE, PSHOP_MODE_SYNAPSIS,
+				PSHOP_MODE_SAMURAI, PSHOP_MODE_GRENADIER, PSHOP_MODE_TERMINATOR, PSHOP_MODE_BOMBARDIER, PSHOP_MODE_REVENANT:
 				{
 					if (g_modestarted || g_endround)
 					{
