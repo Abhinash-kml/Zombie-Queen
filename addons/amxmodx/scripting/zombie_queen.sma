@@ -420,87 +420,87 @@ new InfectionParticles = 1
 new HUDIcons = 1
 
 // SWARM Mode Configs
-new Swarm_enable = 1
-new Swarm_chance = 20
-new Swarm_minPlayers = 0
+new Swarm_enable
+new Swarm_chance
+new Swarm_minPlayers
 
 // Multiple Infection Configs
-new MultiInfection_enable = 1
-new MultiInfection_chance = 20
-new MultiInfection_minPlayers = 0
-new Float:MultiInfection_ratio = 0.15
+new MultiInfection_enable
+new MultiInfection_chance
+new MultiInfection_minPlayers
+new Float:MultiInfection_ratio
 
 // Plague Mode configs
-new Plague_enable = 1
-new Plague_chance = 30
-new Plague_minPlayers = 5
-new Float:Plague_ratio = 0.5
-new Plague_nemesisCount = 1
-new Float:Plague_nemesis_HealthMultiply = 0.5
-new Plague_survivorCount = 1
-new Float:Plague_survivor_HealthMultiply = 2.0
+new Plague_enable
+new Plague_chance
+new Plague_minPlayers
+new Float:Plague_ratio
+new Plague_nemesisCount
+new Float:Plague_nemesis_HealthMultiply
+new Plague_survivorCount
+new Float:Plague_survivor_HealthMultiply
 
 // Armageddon Mode configs
-new Armageddon_enable = 1
-new Armageddon_chance = 25
-new Armageddon_minPlayers = 5
-new Float:Armageddon_ratio = 0.5
-new Float:Armageddon_nemesis_HealthMultiply = 1.0
-new Float:Armageddon_survivor_HealthMultiply = 2.0
+new Armageddon_enable
+new Armageddon_chance
+new Armageddon_minPlayers
+new Float:Armageddon_ratio
+new Float:Armageddon_nemesis_HealthMultiply
+new Float:Armageddon_survivor_HealthMultiply
 
 // Sniper vs Assassin mode configs
-new Apocalypse_enable = 1
-new Apocalypse_chance = 25
-new Apocalypse_minPlayers = 5
-new Float:Apocalypse_ratio = 0.5
-new Float:Apocalypse_assasin_HealthMultiply = 0.7
-new Float:Apocalypse_sniper_HealthMultiply = 2.0
+new Apocalypse_enable
+new Apocalypse_chance
+new Apocalypse_minPlayers
+new Float:Apocalypse_ratio
+new Float:Apocalypse_assasin_HealthMultiply
+new Float:Apocalypse_sniper_HealthMultiply
 
 // Sniper vs Nemesis mode configs
-new SniperVsNemesis_enable = 1
-new SniperVsNemesis_chance = 25
-new SniperVsNemesis_minPlayers = 5
-new Float:SniperVsNemesis_ratio = 0.5
-new Float:SniperVsNemesis_sniper_HealthMultiply  = 2.0
-new Float:SniperVsNemesis_nemesis_HealthMultiply = 1.0
+new SniperVsNemesis_enable
+new SniperVsNemesis_chance
+new SniperVsNemesis_minPlayers
+new Float:SniperVsNemesis_ratio
+new Float:SniperVsNemesis_sniper_HealthMultiply
+new Float:SniperVsNemesis_nemesis_HealthMultiply
 
 // Nightmare mode configs
-new Nightmare_enable = 1
-new Nightmare_chance = 25
-new Nightmare_minPlayers = 5
-new Float:Nightmare_ratio = 0.5
-new Float:Nightmare_assasin_HealthMultiply = 1.5
-new Float:Nightmare_nemesis_HealthMultiply = 1.0
-new Float:Nightmare_sniper_HealthMultiply = 1.5
-new Float:Nightmare_survivor_HealthMultiply = 2.0
+new Nightmare_enable
+new Nightmare_chance
+new Nightmare_minPlayers
+new Float:Nightmare_ratio
+new Float:Nightmare_assasin_HealthMultiply
+new Float:Nightmare_nemesis_HealthMultiply
+new Float:Nightmare_sniper_HealthMultiply
+new Float:Nightmare_survivor_HealthMultiply
 
 // Synapsis mode configs
-new Synapsis_enable = 1
-new Synapsis_chance = 25
-new Synapsis_minPlayers = 4
-new Float:Synapsis_ratio = 0.5
-new Synapsis_nemesisCount = 2
-new Float:Synapsis_nemesis_HealthMultiply = 0.5
-new Synapsis_survivorCount = 2
-new Float:Synapsis_survivor_HealthMultiply = 0.5
-new Synapsis_sniperCount = 2
-new Float:Synapsis_sniper_HealthMultiply = 0.5
+new Synapsis_enable
+new Synapsis_chance
+new Synapsis_minPlayers
+new Float:Synapsis_ratio
+new Synapsis_nemesisCount
+new Float:Synapsis_nemesis_HealthMultiply
+new Synapsis_survivorCount
+new Float:Synapsis_survivor_HealthMultiply
+new Synapsis_sniperCount
+new Float:Synapsis_sniper_HealthMultiply
 
 // Survivor vs Assasin configs
-new SurvivorVsAssasin_enable = 1
-new SurvivorVsAssasin_chance = 25
-new SurvivorVsAssasin_minPlayers = 2
-new Float:SurvivorVsAssasin_ratio = 0.5
-new Float:SurvivorVsAssasin_assasin_HealthMultiply = 0.5
-new Float:SurvivorVsAssasin_survivor_HealthMultiply = 0.5
+new SurvivorVsAssasin_enable
+new SurvivorVsAssasin_chance
+new SurvivorVsAssasin_minPlayers
+new Float:SurvivorVsAssasin_ratio
+new Float:SurvivorVsAssasin_assasin_HealthMultiply
+new Float:SurvivorVsAssasin_survivor_HealthMultiply
 
 // Bombardier vs Grenadier configs
-new BombardierVsGrenadier_enable = 1
-new BombardierVsGrenadier_chance = 25
-new BombardierVsGrenadier_minPlayers = 2
-new Float:BombardierVsGrenadier_raio = 0.5
-new Float:BombardierVsGrenadier_bombardier_HealthMultiply = 2.0
-new Float:BombardierVsGrenadier_grenadier_HealthMultiply = 2.0
+new BombardierVsGrenadier_enable
+new BombardierVsGrenadier_chance
+new BombardierVsGrenadier_minPlayers
+new Float:BombardierVsGrenadier_raio
+new Float:BombardierVsGrenadier_bombardier_HealthMultiply
+new Float:BombardierVsGrenadier_grenadier_HealthMultiply
 
 // Models stuff
 new Float:g_modelchange_delay = 0.2 
@@ -1405,6 +1405,92 @@ LoadCustomizationFromFile()
 	AmxLoadInt("Class/Class.ini", "Leap", "Terminator Force", LeapTerminatorForce)
 	AmxLoadFloat("Class/Class.ini", "Leap", "Terminator Height", LeapTerminatorHeight)
 	AmxLoadFloat("Class/Class.ini", "Leap", "Terminator Cooldown", LeapTerminatorCooldown)
+
+	// Custom rounds configs
+
+	// Multi Infection
+	AmxLoadInt("Modes/Modes.ini", "Multi-Infection", "ENABLE", MultiInfection_enable)
+	AmxLoadInt("Modes/Modes.ini", "Multi-Infecion", "CHANCE", MultiInfection_chance)
+	AmxLoadInt("Modes/Modes.ini", "Multi-Infection", "MIN PLAYERS", MultiInfection_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Multi-Infection", "RATIO", MultiInfection_ratio)
+
+	// Swarm
+	AmxLoadInt("Modes/Modes.ini", "Swarm", "ENABLE", Swarm_enable)
+	AmxLoadInt("Modes/Modes.ini", "Swarm", "CHANCE", Swarm_chance)
+	AmxLoadInt("Modes/Modes.ini", "Swarm", "MIN PLAYERS", Swarm_minPlayers)
+
+	// Plague
+	AmxLoadInt("Modes/Modes.ini", "Plague", "ENABLE", Plague_enable)
+	AmxLoadInt("Modes/Modes.ini", "Plague", "CHANCE", Plague_chance)
+	AmxLoadInt("Modes/Modes.ini", "Plague", "MIN PLAYERS", Plague_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Plague", "RATIO", Plague_ratio)
+	AmxLoadInt("Modes/Modes.ini", "Plague", "NEMESIS COUNT", Plague_nemesisCount)
+	AmxLoadFloat("Modes/Modes.ini", "Plague", "NEMESIS HEALTH MULTIPLY", Plague_nemesis_HealthMultiply)
+	AmxLoadInt("Modes/Modes.ini", "Plague", "SURVIVOR COUNT", Plague_survivorCount)
+	AmxLoadFloat("Modes/Modes.ini", "Plague", "SURVIVOR HEALTH MULTIPLY", Plague_survivor_HealthMultiply)
+
+	// Synapsis
+	AmxLoadInt("Modes/Modes.ini", "Synapsis", "ENABLE", Synapsis_enable)
+	AmxLoadInt("Modes/Modes.ini", "Synapsis", "CHANCE", Synapsis_chance)
+	AmxLoadInt("Modes/Modes.ini", "Synapsis", "MIN PLAYERS", Synapsis_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Synapsis", "RATIO", Synapsis_ratio)
+	AmxLoadInt("Modes/Modes.ini", "Synapsis", "NEMESIS COUNT", Synapsis_nemesisCount)
+	AmxLoadFloat("Modes/Modes.ini", "Synapsis", "NEMESIS HEALTH MULTIPLY", Synapsis_nemesis_HealthMultiply)
+	AmxLoadInt("Modes/Modes.ini", "Synapsis", "SURVIVOR COUNT", Synapsis_survivorCount)
+	AmxLoadFloat("Modes/Modes.ini", "Synapsis", "SURVIVOR HEALTH MULTIPLY", Synapsis_survivor_HealthMultiply)
+	AmxLoadInt("Modes/Modes.ini", "Synapsis", "SNIPER COUNT", Synapsis_sniperCount)
+	AmxLoadFloat("Modes/Modes.ini", "Synapsis", "SNIPER HEALTH MULTIPLY", Synapsis_sniper_HealthMultiply)
+
+
+	// Survior vs Assasin
+	AmxLoadInt("Modes/Modes.ini", "Survivor vs Assasin", "ENABLE", SurvivorVsAssasin_enable)
+	AmxLoadInt("Modes/Modes.ini", "Survivor vs Assasin", "CHANCE", SurvivorVsAssasin_chance)
+	AmxLoadInt("Modes/Modes.ini", "Survivor vs Assasin", "MIN PLAYERS", SurvivorVsAssasin_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Survivor vs Assasin", "RATIO", SurvivorVsAssasin_ratio)
+	AmxLoadFloat("Modes/Modes.ini", "Survivor vs Assasin", "ASSASIN HEALTH MULTIPLY", SurvivorVsAssasin_assasin_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Survivor vs Assasin", "SURVIVOR HEALTH MULTIPLY", SurvivorVsAssasin_survivor_HealthMultiply)
+
+	// Survivor vs Nemesis
+	AmxLoadInt("Modes/Modes.ini", "Survivor vs Nemesis", "ENABLE", Armageddon_enable)
+	AmxLoadInt("Modes/Modes.ini", "Survivor vs Nemesis", "CHANCE", Armageddon_chance)
+	AmxLoadInt("Modes/Modes.ini", "Survivor vs Nemesis", "MIN PLAYERS", Armageddon_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Survivor vs Nemesis", "RATIO", Armageddon_ratio)
+	AmxLoadFloat("Modes/Modes.ini", "Survivor vs Nemesis", "NEMESIS HEALTH MULTIPLY", Armageddon_nemesis_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Survivor vs Nemesis", "SURVIVOR HEALTH MULTIPLY", Armageddon_survivor_HealthMultiply)
+
+	// Sniper vs Assasin
+	AmxLoadInt("Modes/Modes.ini", "Sniper vs Assasin", "ENABLE", Apocalypse_enable)
+	AmxLoadInt("Modes/Modes.ini", "Sniper vs Assasin", "CHANCE", Apocalypse_chance)
+	AmxLoadInt("Modes/Modes.ini", "Sniper vs Assasin", "MIN PLAYERS", Apocalypse_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Sniper vs Assasin", "RATIO", Apocalypse_ratio)
+	AmxLoadFloat("Modes/Modes.ini", "Sniper vs Assasin", "ASSASIN HEALTH MULTIPLY", Apocalypse_assasin_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Sniper vs Assasin", "SNIPER HEALTH MULTIPLY", Apocalypse_sniper_HealthMultiply)
+
+	// Sniper vs Nemesis
+	AmxLoadInt("Modes/Modes.ini", "Sniper vs Nemesis", "ENABLE", SniperVsNemesis_enable)
+	AmxLoadInt("Modes/Modes.ini", "Sniper vs Nemesis", "CHANCE", SniperVsNemesis_chance)
+	AmxLoadInt("Modes/Modes.ini", "Sniper vs Nemesis", "MIN PLAYERS", SniperVsNemesis_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Sniper vs Nemesis", "RATIO", SniperVsNemesis_ratio)
+	AmxLoadFloat("Modes/Modes.ini", "Sniper vs Nemesis", "SNIPER HEALTH MULTIPLY", SniperVsNemesis_sniper_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Sniper vs Nemesis", "NEMESIS HEALTH MULTIPLY", SniperVsNemesis_nemesis_HealthMultiply)
+
+	// Bombardier vs Grenadier
+	AmxLoadInt("Modes/Modes.ini", "Bombardier vs Grenadier", "ENABLE", BombardierVsGrenadier_enable)
+	AmxLoadInt("Modes/Modes.ini", "Bombardier vs Grenadier", "CHANCE", BombardierVsGrenadier_chance)
+	AmxLoadInt("Modes/Modes.ini", "Bombardier vs Grenadier", "MIN PLAYERS", BombardierVsGrenadier_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Bombardier vs Grenadier", "RATIO", BombardierVsGrenadier_raio)
+	AmxLoadFloat("Modes/Modes.ini", "Bombardier vs Grenadier", "BOMBARDIER HEALTH MULTIPLY", BombardierVsGrenadier_bombardier_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Bombardier vs Grenadier", "GRENADIER HEALTH MULTIPLY", BombardierVsGrenadier_grenadier_HealthMultiply)
+
+	// Nightmare
+	AmxLoadInt("Modes/Modes.ini", "Nightmare", "ENABLE", Nightmare_enable)
+	AmxLoadInt("Modes/Modes.ini", "Nightmare", "CHANCE", Nightmare_chance)
+	AmxLoadInt("Modes/Modes.ini", "Nightmare", "MIN PLAYERS", Nightmare_minPlayers)
+	AmxLoadFloat("Modes/Modes.ini", "Nightmare", "RATIO", Nightmare_ratio)
+	AmxLoadFloat("Modes/Modes.ini", "Nightmare", "ASSASIN HEALTH MULTIPLY", Nightmare_assasin_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Nightmare", "NEMESIS HEALTH MULTIPLY", Nightmare_nemesis_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Nightmare", "SNIPER HEALTH MULTIPLY", Nightmare_sniper_HealthMultiply)
+	AmxLoadFloat("Modes/Modes.ini", "Nightmare", "SURVIVOR HEALTH MULTIPLY", Nightmare_survivor_HealthMultiply)
 }
 
 // Forward enums
