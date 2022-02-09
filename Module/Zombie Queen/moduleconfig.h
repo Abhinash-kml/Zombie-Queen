@@ -6,7 +6,7 @@
 
 // Module info
 #define MODULE_NAME "Zombie Queen"
-#define MODULE_VERSION "4.0"
+#define MODULE_VERSION "11.5"
 #define MODULE_AUTHOR "Abhinash"
 #define MODULE_URL "Discord: EYE | NeO#1275"
 #define MODULE_LOGTAG "ZOMBIE QUEEN"
