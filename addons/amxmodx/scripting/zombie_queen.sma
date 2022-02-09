@@ -3721,18 +3721,21 @@ public RegisterPlayerInDatabase(FailState, Handle:Query, Error[], Errcode, Data[
 
 	if (SQL_NumResults(Query) < 1) 
 	{
-	    // If there are no results found
-	    
-	    //  If its still pending we can't do anything with it
-	    //if (equal(g_playerSteamID[id], "ID_PENDING"))
-	    //return PLUGIN_HANDLED
-	        
-	    new szTemp[512]
-	    
+		// If there are no results found
+
+		//  If its still pending we can't do anything with it
+		//if (equal(g_playerSteamID[id], "ID_PENDING"))
+		//return PLUGIN_HANDLED
+
+		new szTemp[512]
+
 	    // Now we will insturt the values into our table.
-	    format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` (`NICKNAME`, `HASH`, `KILLS`, `DEATHS`, `INFECTIONS`, `NEMESISKILLS`, `ASSASINKILLS`, `BOMBARDIERKILLS`, `SURVIVORKILLS`, `SNIPERKILLS`, `SAMURAIKILLS`, `GRENADIERKILLS`, `TERMINATORKILLS`, `REVENANTKILLS`, `POINTS`, `SCORE`) VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", g_playerName[id], g_playerHash[id])
-	    SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
-	    g_totalplayers++
+		format(szTemp, charsmax(szTemp), "INSERT INTO `perfectzm` (`NICKNAME`, `HASH`, `KILLS`, `DEATHS`, `INFECTIONS`, `NEMESISKILLS`, `ASSASINKILLS`, `BOMBARDIERKILLS`, `SURVIVORKILLS`, `SNIPERKILLS`, `SAMURAIKILLS`, `GRENADIERKILLS`, `TERMINATORKILLS`, `REVENANTKILLS`, `POINTS`, `SCORE`) VALUES ('%s', '%s', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');", g_playerName[id], g_playerHash[id])
+		SQL_ThreadQuery(g_SqlTuple, "IgnoreHandle", szTemp)
+		g_totalplayers++
+
+		set_dhudmessage(0, 255, 255, 0.03, 0.5, 2, 6.0, 10.0)
+		show_dhudmessage(id, "You are now ranked!")
 	} 
 	else 
 	{
@@ -5710,6 +5713,61 @@ public client_disconnected(id)
 	g_jumpnum[id] = 0
 	g_playerClass[id] = 0
 	g_blinks[id] = 0
+}
+
+public client_infochanged(id)
+{
+	new oldname[33], newname[33]
+
+	get_user_name(id, oldname, charsmax(oldname))
+	get_user_info(id, "name", newname, charsmax(newname))
+
+	g_playerHash[id][0] = EOS
+
+	copy(g_playerConcat[id], charsmax(g_playerConcat[]), newname) // Copy player's name to temporary concatenaed char array
+	strcat(g_playerConcat[id], g_playerSteamID[id], charsmax(g_playerConcat[])) // Now concatenate ( add together ) player's name and steamid
+
+	hash_string(g_playerConcat[id], Hash_Sha3_512, g_playerHash[id], charsmax(g_playerHash[])) // Now hash the concatenated player's name and steam id ( used for saving and loading database )
+
+	if (!equali(oldname, newname, strlen(oldname)))
+	{
+		if (g_admin[id]) 
+		{
+			g_adminInfo[id][_aFlags] = EOS
+			g_adminInfo[id][_aRank] = EOS
+			g_admin[id] = false
+		}
+		if (g_vip[id]) 
+		{
+			g_vip[id] = false
+			g_vipInfo[id][_vFlags] = EOS
+		}
+
+		g_tag[id][0] = EOS
+		g_ammopacks[id] = 5
+
+		// if there are results found
+		g_kills[id]  		  = 0
+		g_deaths[id] 		  = 0
+		g_infections[id] 	  = 0
+		g_nemesiskills[id] 	  = 0
+		g_assasinkills[id] 	  = 0
+		g_bombardierkills[id] = 0
+		g_survivorkills[id]   = 0
+		g_sniperkills[id] 	  = 0
+		g_samuraikills[id] 	  = 0
+		g_grenadierkills[id]  = 0
+		g_terminatorkills[id] = 0
+		g_revenantkills[id]	  = 0
+		g_points[id] 		  = 5
+		g_score[id] 		  = 0
+
+		MySQL_LOAD_DATABASE(id)
+
+		if (TrieKeyExists(g_adminsTrie, newname)) MakeUserAdmin(id)
+		if (TrieKeyExists(g_vipsTrie, newname)) MakeUserVip(id)
+		if (TrieKeyExists(g_tagTrie, newname)) GiveUserTag(id)
+	}
 }
 
 // Abhinash
@@ -8035,7 +8093,7 @@ public FwSetPlayerKeyValue(id, const infobuffer[], const key[])
 public FwPlayerUserInfoChanged(id)
 {
 	// Cache player's name
-	get_user_name(id, g_playerName[id], charsmax(g_playerName[]))
+	get_user_info(id, "name", g_playerName[id], charsmax(g_playerName[]))
 }
 
 // Forward Get Game Description
