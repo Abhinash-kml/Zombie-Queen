@@ -798,6 +798,7 @@ new g_mainAdminMenuCallback, g_makeHumanClassMenuCallback, g_makeZombieClassMenu
 enum _: adminCommandsAccess
 {
 	ACCESS_IMMUNITY,
+	ACCESS_NICK,
 	ACCESS_SLAP,
 	ACCESS_SLAY,
 	ACCESS_KICK,
@@ -807,6 +808,7 @@ enum _: adminCommandsAccess
 	ACCESS_PUNISH,
 	ACCESS_MAP,
 	ACCESS_DESTROY,
+	ACCESS_JETPACK,
 	ACCESS_MAKE_HUMAN,
 	ACCESS_MAKE_ZOMBIE,
 	ACCESS_MAKE_ASSASIN,
@@ -1021,9 +1023,9 @@ LoadCustomizationFromFile()
 
 	// Section Access Flags
 	new user_access[2]
-	new access_names[MAX_ACCESS_FLAGS][] = { "ACCESS IMMUNITY", "ACCESS SLAP", "ACCESS SLAY", "ACCESS KICK", "ACCESS RESPAWN", "ACCESS FREEZE", "ACCESS GAG", "ACCESS PUNISH", "ACCESS MAP", "ACCESS DESTROY", "ACCESS HUMAN", "ACCESS ZOMBIE", 
-	"ACCESS ASSASIN", "ACCESS NEMESIS", "ACCESS BOMBARDIER", "ACCESS REVENANT", "ACCESS SURVIVOR", "ACCESS SNIPER", "ACCESS SAMURAI", "ACCESS GRENADIER", "ACCESS TERMINATOR",
-	"ACCESS MULTI INFECTION", "ACCESS SWARM", "ACCESS PLAGUE", "ACCESS SYNAPSIS", "ACCESS SURVIVOR VS NEMESIS", "ACCESS SURVIVOR VS ASSASIN", "ACCESS SNIPER VS ASSASIN", 
+	new access_names[MAX_ACCESS_FLAGS][] = { "ACCESS IMMUNITY", "ACCESS NICK", "ACCESS SLAP", "ACCESS SLAY", "ACCESS KICK", "ACCESS RESPAWN", "ACCESS FREEZE", "ACCESS GAG", "ACCESS PUNISH", "ACCESS MAP", 
+	"ACCESS DESTROY", "ACCESS JETPACK", "ACCESS HUMAN", "ACCESS ZOMBIE", "ACCESS ASSASIN", "ACCESS NEMESIS", "ACCESS BOMBARDIER", "ACCESS REVENANT", "ACCESS SURVIVOR", "ACCESS SNIPER", "ACCESS SAMURAI", 
+	"ACCESS GRENADIER", "ACCESS TERMINATOR", "ACCESS MULTI INFECTION", "ACCESS SWARM", "ACCESS PLAGUE", "ACCESS SYNAPSIS", "ACCESS SURVIVOR VS NEMESIS", "ACCESS SURVIVOR VS ASSASIN", "ACCESS SNIPER VS ASSASIN", 
 	"ACCESS SNIPER VS NEMESIS", "ACCESS BOMBARDIER VS GRENADIER", "ACCESS NIGHTMARE", "ACCESS RELOAD ADMINS", "ACCESS POINTS" }
 
 	for (new i = 0; i < MAX_ACCESS_FLAGS; i++)
@@ -3406,6 +3408,7 @@ public plugin_init()
 	
 	// Admin commands
 	register_concmd("amx_who", "cmd_who", -1, _, -1)
+	register_concmd("amx_nick", "cmd_nick", -1, _, -1)
 	register_concmd("amx_slap", "cmd_slap", -1, _, -1)
 	register_concmd("zp_slap", "cmd_slap", -1, _, -1)
 	register_concmd("amx_slay", "cmd_slay", -1, _, -1)
@@ -3436,6 +3439,10 @@ public plugin_init()
 	register_concmd("zp_gag", "cmd_gag", -1, _, -1)
 	register_concmd("amx_ungag", "cmd_ungag", -1, _, -1)
 	register_concmd("zp_ungag", "cmd_ungag", -1, _, -1)
+	register_concmd("amx_jetpack", "cmd_jetpack", -1, _, -1)
+	register_concmd("zp_jetpack", "cmd_jetpack", -1, _, -1)
+	register_concmd("amx_ammo", "cmd_ammo", -1, _, -1)
+	register_concmd("zp_ammo", "cmd_ammo", -1, _, -1)
 	register_concmd("zp_zombie", "cmd_zombie", -1, _, -1)
 	register_concmd("amx_zombie", "cmd_zombie", -1, _, -1)
 	register_concmd("zp_human", "cmd_human", -1, _, -1)
@@ -4126,6 +4133,15 @@ public MakeUserVip(id)
 	return PLUGIN_CONTINUE
 }
 
+public MakeFreeVIP(id)
+{
+	g_vip[id] = true
+	copy(g_vipInfo[id][_vFlags], 31, "abc")
+
+	set_dhudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), 0.03, 0.5, 2, 6.0, 10.0)
+	show_dhudmessage(id, "You are now VIP!")
+}
+
 public GiveUserTag(id)
 {
 	new _tData[playerTagInfoStruct]
@@ -4149,7 +4165,7 @@ public Task_Rays(id)
 {
 	for (new vip = 1; vip <= g_maxplayers; vip++)
 	{
-		if (is_user_alive(vip) && g_vip[vip] && VipHasFlag(vip, 'h'))
+		if (is_user_alive(vip) && g_vip[vip] && VipHasFlag(vip, 'g'))
 		{
 			if (CheckBit(g_playerClass[vip], CLASS_HUMAN))
 			{
@@ -4180,16 +4196,19 @@ public CheckBots()
 {
 	if (get_playersnum(1) < g_maxplayers - 1 && g_iBotsCount < 2)
 	{
-		for (new i; i < sizeof g_cBotNames; i++)
+		for (new i; i < sizeof g_cBotNames; i++) CreateBot(g_cBotNames[i])
+	}
+	else if (get_playersnum(1) > g_maxplayers - 1 && g_iBotsCount) RemoveBot()
+
+	if (IsCurrentTimeBetween(13, 20))
+	{
+		for (new i = 1; i <= 32; i++)
 		{
-			CreateBot(g_cBotNames[i])
+			if (g_vip[i]) continue
+
+			MakeFreeVIP(i)
 		}
 	}
-	else if (get_playersnum(1) > g_maxplayers - 1 && g_iBotsCount)
-	{
-		RemoveBot()
-	}
-	
 }
 
 public Advertise()
@@ -5680,6 +5699,8 @@ public client_disconnected(id)
 {
 	if (g_bot[id]) { g_bot[id] = 0; g_iBotsCount --; }
 
+	InsertInfo(id)
+
 	// Reset some vars
 	g_antidotebomb[id] = 0
 	g_concussionbomb[id] = 0
@@ -6756,9 +6777,9 @@ public OnPlayerSpawn(id)
 
 	// VIP
 	if (VipHasFlag(id, 'a') && g_jumpnum[id] != 2) g_jumpnum[id] = 2
-	if (VipHasFlag(id, 'c') && get_armor(id) <= 50) set_armor(id, get_armor(id) + 50)
-	if (VipHasFlag(id, 'd')) set_health(id, get_health(id) + 150)
-	if (VipHasFlag(id, 'e')) g_ammopacks[id] += 10
+	if (VipHasFlag(id, 'b') && get_armor(id) <= 50) set_armor(id, get_armor(id) + 50)
+	if (VipHasFlag(id, 'c')) set_health(id, get_health(id) + 150)
+	if (VipHasFlag(id, 'd')) g_ammopacks[id] += 10
 	
 	// Switch to CT if spawning mid-round
 	if (!g_newround && fm_cs_get_user_team(id) != FM_CS_TEAM_CT) // need to change team?
@@ -7166,7 +7187,7 @@ public OnPlayerKilledPost(victim, attacker, shouldgib)
 // Ham Take Damage Forward
 public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 {
-	if (damage_type & DMG_FALL && VipHasFlag(victim, 'f')) return HAM_SUPERCEDE
+	if (damage_type & DMG_FALL && VipHasFlag(victim, 'e')) return HAM_SUPERCEDE
 
 	// Non-player damage or self damage
 	if (victim == attacker || !is_user_valid_connected(attacker)) return HAM_IGNORED
@@ -7211,7 +7232,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 			SetHamParamFloat(4, CROSSBOW_DAMAGE)
 		}
 
-		if (VipHasFlag(attacker, 'g') && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER)) && (damage_type & DMG_BULLET))
+		if (VipHasFlag(attacker, 'f') && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER)) && (damage_type & DMG_BULLET))
 		{
 			if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE)) damage *= 1.5
 			else damage *= 2.0
@@ -7812,8 +7833,14 @@ public client_putinserver(id)
 		if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[id]))
 			MakeUserAdmin(id)	// If Key Exists then make him Admin
 
-		if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[id]))
+		if (IsCurrentTimeBetween(13, 20))
+		{
+			if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[id]))
 			MakeUserVip(id)		// If Key Exists then make him VIP
+			else MakeFreeVIP(id)
+		}
+		else if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[id]))
+		MakeUserVip(id)		// If Key Exists then make him VIP
 
 		if (g_tagCount && TrieKeyExists(g_tagTrie, g_playerName[id]))
 			GiveUserTag(id)
@@ -10461,6 +10488,46 @@ public cmd_who(id)
 	return PLUGIN_HANDLED
 }
 
+// amx_nick
+public cmd_nick(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_NICK]))
+	{
+		static command[33], arg1[33], arg2[33], target
+
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg1, charsmax(arg1))
+		read_argv(2, arg2, charsmax(arg2))
+
+		if (equal(command, "amx_nick"))
+		{
+			if (read_argc() < 3)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_nick <#userid or name> <new name>")
+				return PLUGIN_HANDLED
+			}
+		}
+
+		target = cmd_target(id, arg1, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+		
+		if (!target) return PLUGIN_HANDLED
+
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+		{
+			console_print(id, "[Zombie Queen] You cannot change name of an Admin with immunity!")
+			return PLUGIN_HANDLED
+		}
+
+		client_cmd(target, "name ^"%s^"", arg2)
+
+		client_print_color(0, print_team_grey, "%s Admin ^4%s ^1changed name of ^3%s ^1to ^3%s", CHAT_PREFIX, g_playerName[id], g_playerName[target], arg2)
+	}
+
+	return PLUGIN_CONTINUE
+}
+
 // zp_slap [target]
 public cmd_slap(id)
 {
@@ -10930,8 +10997,7 @@ stock InsertInfo(id)
 
 		new last = 0
 		
-		if (g_Size < sizeof(g_SteamIDs))
-			last = g_Size - 1
+		if (g_Size < sizeof(g_SteamIDs)) last = g_Size - 1
 		else
 		{
 			last = g_Tracker - 1
@@ -11237,6 +11303,128 @@ public cmd_ungag(id)
 			}
 			else console_print(id, "[Zombie Queen] Player was not found!")
 		}
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
+// zp_jetpack
+public cmd_jetpack(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_JETPACK]))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_jetpack"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_jetpack <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_jetpack"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_jetpack <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		if (equali(arg, "@all", 4))
+		{
+			for (new i = 1; i <= 32; i++)
+			{
+				if (!g_isalive[i] || CheckBit(g_playerTeam[i], TEAM_ZOMBIE) || get_user_jetpack(i)) continue
+
+				set_user_jetpack(i, 1)
+				set_user_fuel(i, 250.0)
+				set_user_rocket_time(i, 0.0)
+			}
+
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave everyone free ^3Jetpack", CHAT_PREFIX, g_playerName[id])
+		}
+		else
+		{
+			// Initialize Target
+			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+			// Invalid target
+			if (!target) return PLUGIN_HANDLED
+
+			set_user_jetpack(target, 1)
+			set_user_fuel(target, 250.0)
+			set_user_rocket_time(target, 0.0)
+
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave ^3%s a Jetpack", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		}
+		
+		// Log to Zombie Plague log file?
+		//LogToFile(LOG_KICK, id, target)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
+// zp_ammo
+public cmd_ammo(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_JETPACK]))
+	{
+		static command[33], arg[33], amount[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		read_argv(2, amount, charsmax(amount))
+		
+		if (equal(command, "zp_ammo"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_ammo <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_ammo"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_ammo <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		if (equali(arg, "@all", 4))
+		{
+			for (new i = 1; i <= 32; i++) g_ammopacks[i] += str_to_num(amount)
+
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave everyone ^3%i ammo", CHAT_PREFIX, g_playerName[id], str_to_num(amount))
+		}
+		else
+		{
+			// Initialize Target
+			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+			// Invalid target
+			if (!target) return PLUGIN_HANDLED
+
+			g_ammopacks[target] += str_to_num(amount)
+
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave ^3%i ^1ammo to ^3%s", CHAT_PREFIX, g_playerName[id], str_to_num(amount), g_playerName[target])
+		}
+		
+		// Log to Zombie Plague log file?
+		//LogToFile(LOG_KICK, id, target)
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -17167,7 +17355,7 @@ set_player_maxspeed(id)
 AdminHasFlag(id, flag)
 {
 	new i
-	while (i < 32)
+	while (i < MAX_ACCESS_FLAGS)
 	{
 		if (flag == g_adminInfo[id][_aFlags][i]) return true
 		i++
@@ -18618,7 +18806,7 @@ public ChangeModels(taskid)
 	{
 		if (g_admin[id] && equali(g_adminInfo[id][_aRank], "RANK_OWNER"))
 		{
-			if (g_vip[id])
+			if (g_vip[id] && VipHasFlag(id, 'i'))
 			{
 				for (new i; i < ArraySize(Array:g_playerModel[MODEL_VIP]); i++)
 				{
@@ -18653,7 +18841,7 @@ public ChangeModels(taskid)
 		}
 		else if (g_admin[id] && !equali(g_adminInfo[id][_aRank], "RANK_OWNER"))
 		{
-			if (g_vip[id])
+			if (g_vip[id] && VipHasFlag(id, 'i'))
 			{
 				for (new i; i < ArraySize(Array:g_playerModel[MODEL_VIP]); i++)
 				{
@@ -18686,7 +18874,7 @@ public ChangeModels(taskid)
 				}
 			}
 		}
-		else if (g_vip[id])
+		else if (g_vip[id] && VipHasFlag(id, 'i'))
 		{
 			for (new i; i < ArraySize(Array:g_playerModel[MODEL_VIP]); i++)
 			{
@@ -18882,6 +19070,12 @@ PrecachePlayerModel(const modelname[])
 	static longname[128]
 	formatex(longname, charsmax(longname), "models/player/%s/%s.mdl", modelname, modelname)  	
 	engfunc(EngFunc_PrecacheModel, longname) 
+}
+
+bool:IsCurrentTimeBetween(iStart, iEnd)
+{
+    new iHour; time(iHour)
+    return bool:(iStart < iEnd ? (iStart <= iHour < iEnd) : (iStart <= iHour || iHour < iEnd))
 }
 
 /*public EarthQuake()
