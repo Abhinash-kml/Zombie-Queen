@@ -26,7 +26,7 @@ public plugin_init()
 }
 public plugin_precache()
 {
-	precache_model("models/p_guadin_jetpack.mdl");
+	precache_model("models/p_egon.mdl");
 }
 public plugin_end()
 {
@@ -41,7 +41,7 @@ public EventRoundStart()
 public TaskSpawnJetpacks()
 {
 	new Float:fOrigin[3];
-	if(GetOrigin(fOrigin))
+	if(GetOrigin(fOrigin)) 
 	{
 		new iEnt = engfunc(EngFunc_CreateNamedEntity,engfunc(EngFunc_AllocString,"info_target"));
 		if(pev_valid(iEnt))

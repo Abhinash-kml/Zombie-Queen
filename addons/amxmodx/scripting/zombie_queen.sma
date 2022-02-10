@@ -501,6 +501,9 @@ new Float:BombardierVsGrenadier_raio
 new Float:BombardierVsGrenadier_bombardier_HealthMultiply
 new Float:BombardierVsGrenadier_grenadier_HealthMultiply
 
+// Free VIP Timings
+new freeVIP_Start, freeVIP_End, freeVIP_Flags[10]
+
 // Models stuff
 new Float:g_modelchange_delay = 0.2 
 
@@ -601,7 +604,7 @@ enum _: adminInfoStruct
 {
 	_aName[32],
 	_aPassword[32],
-	_aFlags[32],
+	_aFlags[50],
 	_aRank[32]
 }
 
@@ -1491,6 +1494,11 @@ LoadCustomizationFromFile()
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "NEMESIS HEALTH MULTIPLY", Nightmare_nemesis_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SNIPER HEALTH MULTIPLY", Nightmare_sniper_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SURVIVOR HEALTH MULTIPLY", Nightmare_survivor_HealthMultiply)
+
+	// Free VIP
+	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "START", freeVIP_Start)
+	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "END", freeVIP_End)
+	AmxLoadString("zombie_queen/Extras.ini", "FREE VIP", "FLAGS", freeVIP_Flags, charsmax(freeVIP_Flags))
 }
 
 // Forward enums
@@ -1681,14 +1689,14 @@ enum _:ExtraItemsData
 new g_cExtraItems[][ExtraItemsData] =
 {
 	{"Nightvision Goggles", 		  "\r[2 packs]", 	 2, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER, 5, 50}, // 1
-	{"Forcefield Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI, 5, 50}, // 2
-	{"Killing Grenade", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 3
-	{"Explosion Grenade", 	  		  "\r[15 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 4
+	{"Forcefield Grenade", 			  "\r[20 packs]", 	20, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI, 5, 50}, // 2
+	{"Killing Grenade", 			  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 3
+	{"Explosion Grenade", 	  		  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 4
 	{"Napalm Grenade", 				  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 5
-	{"Frost Grenade", 			 	  "\r[20 packs]", 	20, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 6
-	{"Antidote Grenade", 			  "\r[15 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 7
-	{"Multijump +1", 				  "\r[5 packs]", 	15, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER, 5, 50}, // 1
-	{"Jetpack + Bazooka", 			  "\r[32 packs]", 	32, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_GRENADIER, 5, 50}, // 2
+	{"Frost Grenade", 			 	  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 6
+	{"Antidote Grenade", 			  "\r[40 packs]", 	40, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 7
+	{"Multijump +1", 				  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER, 5, 50}, // 1
+	{"Jetpack + Bazooka", 			  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_GRENADIER|ZQ_EXTRA_TERMINATOR, 5, 50}, // 2
 	{"Tryder", 						  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 3
 	{"Armor \y(100 AP)", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 4
 	{"Armor \y(200 AP)", 			  "\r[10 packs]", 	10, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 5
@@ -4094,7 +4102,7 @@ public MakeUserAdmin(id)
 		if (equali(Data[_aPassword], g_password))
 		{
 			g_admin[id] = true
-			copy(g_adminInfo[id][_aFlags], 31, Data[_aFlags])
+			copy(g_adminInfo[id][_aFlags], 49, Data[_aFlags])
 			copy(g_adminInfo[id][_aRank], 31, Data[_aRank])
 
 			log_amx("Login: ^"%s^" became an admin. [ %s ] - [ %s ] - [ %s ]", g_playerName[id], g_adminInfo[id][_aFlags], g_adminInfo[id][_aRank], g_playerIP[id])
@@ -4121,6 +4129,7 @@ public MakeUserVip(id)
 		if (equali(Data[_vPassword], g_password))
 		{
 			g_vip[id] = true
+			g_jumpnum[id] = 2
 			copy(g_vipInfo[id][_vFlags], 31, Data[_vFlags])
 			log_amx("Login: ^"%s^" became an Vip. [ %s ] - [ %s ] ", g_playerName[id], g_vipInfo[id][_vFlags], g_playerIP[id])
 			set_task(5.0, "Task_Rays", .flags = "b")
@@ -4138,7 +4147,7 @@ public MakeUserVip(id)
 public MakeFreeVIP(id)
 {
 	g_vip[id] = true
-	copy(g_vipInfo[id][_vFlags], 31, "abc")
+	copy(g_vipInfo[id][_vFlags], 31, freeVIP_Flags)
 
 	set_dhudmessage(random_num(0, 255), random_num(0, 255), random_num(0, 255), 0.03, 0.5, 2, 6.0, 10.0)
 	show_dhudmessage(id, "You are now VIP!")
@@ -4202,7 +4211,7 @@ public CheckBots()
 	}
 	else if (get_playersnum(1) > g_maxplayers - 1 && g_iBotsCount) RemoveBot()
 
-	if (IsCurrentTimeBetween(13, 20))
+	if (IsCurrentTimeBetween(freeVIP_Start, freeVIP_End))
 	{
 		for (new i = 1; i <= 32; i++)
 		{
@@ -5739,6 +5748,7 @@ public client_infochanged(id)
 		if (g_vip[id]) 
 		{
 			g_vip[id] = false
+			g_jumpnum[id] = 1
 			g_vipInfo[id][_vFlags] = EOS
 		}
 
@@ -7890,7 +7900,7 @@ public client_putinserver(id)
 		if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[id]))
 			MakeUserAdmin(id)	// If Key Exists then make him Admin
 
-		if (IsCurrentTimeBetween(13, 20))
+		if (IsCurrentTimeBetween(freeVIP_Start, freeVIP_End))
 		{
 			if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[id]))
 			MakeUserVip(id)		// If Key Exists then make him VIP
@@ -9160,6 +9170,7 @@ public Client_Say(id)
 		if (CheckBit(g_playerTeam[id], TEAM_HUMAN)) client_print_color(id, print_team_grey, "^4Your team: ^3Human")
 		else client_print_color(id, print_team_grey, "^4Your team: ^3Zombie")
 	}
+	else if (equali(cMessage, "flags", 5)) client_print_color(id, print_team_grey, "Your ^4VIP ^1flags are: ^3%s", g_vipInfo[id][_vFlags])
 	else if (equali(cMessage, "hash", 4)) client_print_color(id, print_team_grey, "Your ^4Name ^1+ ^4Steam ID ^3Hash ^1is : ^3%s", g_playerHash[id])
 	else if (equali(cMessage, "id", 4)) client_print_color(id, print_team_grey, "Your ^4Steam ID ^3is : ^3%s", g_playerSteamID[id])
 	else if (equali(cMessage, "/help", 5) || equali(cMessage, "help", 4))
@@ -12927,7 +12938,8 @@ public message_teaminfo(msg_id, msg_dest)
 	// Round didn't start yet, nothing to worry about
 	if (g_newround) return
 
-	//if (g_newround) set_msg_arg_string(2 , "CT")
+	// Show everyone in CT Team before round start
+	if (g_newround) set_msg_arg_string(2 , "CT")
 	
 	// Get his new team
 	static team[2]
@@ -14471,7 +14483,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	fm_give_item(victim, "weapon_knife")
 	
 	// Give Bombardier Killing grenade
-	if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) fm_give_item(victim, "weapon_hegrenade")
+	if (CheckBit(g_playerClass[victim], CLASS_BOMBARDIER)) { fm_give_item(victim, "weapon_hegrenade"); client_cmd(victim, "weapon_hegrenade"); }
 
 	if (g_firstzombie[victim])
 		if (!CheckBit(g_currentmode, MODE_SWARM) && 
@@ -17412,7 +17424,7 @@ set_player_maxspeed(id)
 AdminHasFlag(id, flag)
 {
 	new i
-	while (i < MAX_ACCESS_FLAGS)
+	while (i < 49)
 	{
 		if (flag == g_adminInfo[id][_aFlags][i]) return true
 		i++
