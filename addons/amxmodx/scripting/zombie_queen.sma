@@ -504,6 +504,9 @@ new Float:BombardierVsGrenadier_grenadier_HealthMultiply
 // Free VIP Timings
 new freeVIP_Start, freeVIP_End, freeVIP_Flags[10]
 
+// Happy hour settings
+new happyHour_Start, happyHour_End
+
 // Models stuff
 new Float:g_modelchange_delay = 0.2 
 
@@ -1499,6 +1502,10 @@ LoadCustomizationFromFile()
 	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "START", freeVIP_Start)
 	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "END", freeVIP_End)
 	AmxLoadString("zombie_queen/Extras.ini", "FREE VIP", "FLAGS", freeVIP_Flags, charsmax(freeVIP_Flags))
+
+	// Happy Hour
+	AmxLoadInt("zombie_queen/Extras.ini", "HAPPY HOUR", "START", happyHour_Start)
+	AmxLoadInt("zombie_queen/Extras.ini", "HAPPY HOUR", "END", happyHour_End)
 }
 
 // Forward enums
@@ -4499,7 +4506,7 @@ public _ExtraItems(id, menu, item)
 					g_bubblebomb[id] = 100
 
 					// Give weapon to the player
-					set_weapon(id, CSW_SMOKEGRENADE, 100)	
+					set_weapon(id, CSW_SMOKEGRENADE, 1)	
 
 					// Show HUD message
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
@@ -5818,6 +5825,14 @@ public event_round_start()
 
 	// Increase round count var
 	g_roundcount++
+
+	if (IsCurrentTimeBetween(happyHour_Start, happyHour_End))
+	{
+		static x; x = random_num(1, fnGetPlaying())
+		static y; y = random_num(1, 60)
+		g_ammopacks[x] += y
+		client_print_color(0, print_team_grey, "^4[^3Happy Hour^4] ^1Player ^4%s ^1got ^3%i ^1ammo packs...", g_playerName[x], y)
+	}
 
 	// countdown
 	if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
