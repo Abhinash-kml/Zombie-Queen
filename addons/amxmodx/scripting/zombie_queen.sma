@@ -120,7 +120,7 @@ enum (+= 100)
 #define ID_SHOWHUD 	(taskid - TASK_SHOWHUD)
 
 // Chat prefix
-#define CHAT_PREFIX "^4[PerfectZM]^1"
+new CHAT_PREFIX[50] // "^4[PerfectZM]^1"
 
 // Max Admin Ranks
 #define MAX_GROUPS 10
@@ -813,6 +813,7 @@ enum _: adminCommandsAccess
 	ACCESS_PUNISH,
 	ACCESS_MAP,
 	ACCESS_DESTROY,
+	ACCESS_PUNISH,
 	ACCESS_JETPACK,
 	ACCESS_MAKE_HUMAN,
 	ACCESS_MAKE_ZOMBIE,
@@ -1029,7 +1030,7 @@ LoadCustomizationFromFile()
 	// Section Access Flags
 	new user_access[2]
 	new access_names[MAX_ACCESS_FLAGS][] = { "ACCESS IMMUNITY", "ACCESS NICK", "ACCESS SLAP", "ACCESS SLAY", "ACCESS KICK", "ACCESS RESPAWN", "ACCESS FREEZE", "ACCESS GAG", "ACCESS PUNISH", "ACCESS MAP", 
-	"ACCESS DESTROY", "ACCESS JETPACK", "ACCESS HUMAN", "ACCESS ZOMBIE", "ACCESS ASSASIN", "ACCESS NEMESIS", "ACCESS BOMBARDIER", "ACCESS REVENANT", "ACCESS SURVIVOR", "ACCESS SNIPER", "ACCESS SAMURAI", 
+	"ACCESS DESTROY", "ACCESS PUNISH", "ACCESS JETPACK", "ACCESS HUMAN", "ACCESS ZOMBIE", "ACCESS ASSASIN", "ACCESS NEMESIS", "ACCESS BOMBARDIER", "ACCESS REVENANT", "ACCESS SURVIVOR", "ACCESS SNIPER", "ACCESS SAMURAI", 
 	"ACCESS GRENADIER", "ACCESS TERMINATOR", "ACCESS MULTI INFECTION", "ACCESS SWARM", "ACCESS PLAGUE", "ACCESS SYNAPSIS", "ACCESS SURVIVOR VS NEMESIS", "ACCESS SURVIVOR VS ASSASIN", "ACCESS SNIPER VS ASSASIN", 
 	"ACCESS SNIPER VS NEMESIS", "ACCESS BOMBARDIER VS GRENADIER", "ACCESS NIGHTMARE", "ACCESS RELOAD ADMINS", "ACCESS POINTS" }
 
@@ -1506,6 +1507,10 @@ LoadCustomizationFromFile()
 	// Happy Hour
 	AmxLoadInt("zombie_queen/Extras.ini", "HAPPY HOUR", "START", happyHour_Start)
 	AmxLoadInt("zombie_queen/Extras.ini", "HAPPY HOUR", "END", happyHour_End)
+
+	// Chat Prefix
+	AmxLoadString("zombie_queen/Extras.ini", "CHAT PREFIX", "CHAT PREFIX", CHAT_PREFIX, charsmax(CHAT_PREFIX))
+	format(CHAT_PREFIX, charsmax(CHAT_PREFIX), "^4%s^1", CHAT_PREFIX)
 }
 
 // Forward enums
@@ -2410,6 +2415,8 @@ new g_firstzombie[33] // is first zombie
 new g_lastzombie[33] // is last zombie
 new g_lasthuman[33] // is last human
 new g_frozen[33] // is frozen (can't move)
+new g_burning[33] // is burning
+new g_punished[33] // is punished
 new Float:g_frozen_gravity[33] // store previous gravity when frozen
 new g_nodamage[33] // has spawn protection/zombie madness
 new g_respawn_as_zombie[33] // should respawn as zombie
@@ -3441,6 +3448,8 @@ public plugin_init()
 	register_concmd("zp_psay", "cmd_psay", -1, _, -1)
 	register_concmd("amx_showip", "cmd_showip", -1, _, -1)
 	register_concmd("zp_showip", "cmd_showip", -1, _, -1)
+	register_concmd("zp_punish", "cmd_punish", -1, _, -1)
+	register_concmd("amx_punish", "cmd_punish", -1, _, -1)
 	register_concmd("amx_reloadadmins", "cmd_reloadadmins", -1, _, -1)
 	register_concmd("zp_reloadadmins", "cmd_reloadadmins", -1, _, -1)
 
@@ -6828,12 +6837,18 @@ public OnPlayerSpawn(id)
 	remove_task(id + TASK_CHARGE)
 	remove_task(id + TASK_FLASH)
 	remove_task(id + TASK_NVISION)
+
+	if (g_punished[id])
+	{
+		user_kill(id)
+		client_print_color(0, print_team_grey, "%s ^3%s ^1got slayed as he was ^4punished", CHAT_PREFIX, g_playerName[id])
+	}
 	
 	// Hide money?
-	if (RemoveMoney) set_task(0.4, "task_hide_money", id+TASK_SPAWN)
+	if (RemoveMoney) set_task(0.4, "task_hide_money", id + TASK_SPAWN)
 	
 	// Respawn player if he dies because of a worldspawn kill?
-	if (RespawnOnWorldSpawnKill) set_task(2.0, "respawn_player_check_task", id+TASK_SPAWN)
+	if (RespawnOnWorldSpawnKill && !g_punished[id]) set_task(2.0, "respawn_player_check_task", id + TASK_SPAWN)
 	
 	// Spawn as zombie?
 	if (g_respawn_as_zombie[id] && !g_newround)
@@ -10885,7 +10900,10 @@ public cmd_unfreeze(id)
 			return PLUGIN_HANDLED
 		}
 		
-		remove_freeze(target)
+		static iParams[2]
+		iParams[0] = target
+		iParams[1] = 1
+		remove_effects(iParams)
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
 		// Log to Zombie Plague log file?
@@ -11020,6 +11038,60 @@ public cmd_showip(id)
 	}
 
 	return PLUGIN_HANDLED
+}
+
+public cmd_punish(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_PUNISH]))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_punish"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_punish <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_punish"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_punish <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		// Initialize Target
+		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+		{
+			console_print(id, "[Zombie Queen] You cannot punish an Admin with immunity!")
+			return PLUGIN_HANDLED
+		}
+
+		// Punish the target
+		g_punished[target] = true
+		user_kill(target)
+		
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 punished^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_KICK, id, target)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
 }
 
 public cmd_reloadadmins(id)
@@ -15965,7 +16037,10 @@ OnNapalmExplode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive zombies
-		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_nodamage[victim]) continue
+		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_frozen[victim] || g_nodamage[victim]) continue
+
+		// Set the burning flag
+		g_burning[victim] = true
 		
 		// Set Yellow Rendering ( Glow ) on Victims.
 		set_glow(victim, 200, 200, 0, 25)
@@ -15993,8 +16068,11 @@ OnNapalmExplode(ent)
 		if (!task_exists(victim + TASK_BURN))
 			set_task(0.2, "burning_flame", victim + TASK_BURN, _, _, "b")
 		
+		static iParams[2]
+		iParams[0] = victim
+		iParams[1] = 0
 		// Set a task to remove the burn effects from victim
-		set_task(float(FireDuration), "remove_fire", victim)
+		set_task(float(FireDuration), "remove_effects", _, iParams, sizeof(iParams))
 	}
 	
 	// Get rid of the grenade
@@ -16026,7 +16104,7 @@ OnFrostExplode(ent)
 	while ((victim = engfunc(EngFunc_FindEntityInSphere, victim, originF, NADE_EXPLOSION_RADIUS)) != 0)
 	{
 		// Only effect alive unfrozen zombies
-		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_frozen[victim] || g_nodamage[victim]) continue
+		if (!is_user_valid_alive(victim) || CheckBit(g_playerTeam[victim], TEAM_HUMAN) || g_frozen[victim] || g_burning[victim] || g_nodamage[victim]) continue
 		
 		// Nemesis shouldn't be frozen
 		if (CheckBit(g_playerClass[victim], CLASS_NEMESIS) || CheckBit(g_playerClass[victim], CLASS_ASSASIN) || CheckBit(g_playerClass[victim], CLASS_BOMBARDIER))
@@ -16083,27 +16161,45 @@ OnFrostExplode(ent)
 		// Prevent from moving
 		ExecuteHamB(Ham_Player_ResetMaxSpeed, victim)
 		
+		static iParams[2]
+		iParams[0] = victim
+		iParams[1] = 1
 		// Set a task to remove the freeze
-		set_task(FrostDuration, "remove_freeze", victim)
+		set_task(FrostDuration, "remove_effects", _, iParams, sizeof(iParams))
 	}
 	
 	// Get rid of the grenade
 	engfunc(EngFunc_RemoveEntity, ent)
 }
 
-// Remove freeze task
-public remove_freeze(id)
+public remove_effects(iParams[])
 {
-	// Not alive or not frozen anymore
-	if (!g_isalive[id] || !g_frozen[id]) return
+	new id = iParams[0]
+
+	if (!g_isalive[id]) return 
+
+	switch (iParams[1])
+	{
+		case 0: { if (!g_burning[id]) return; g_burning[id] = false; }
+		case 1:
+		{
+			if (!g_frozen[id]) return; g_frozen[id] = false;
+
+			// Restore gravity and maxspeed (bugfix)
+			set_pev(id, pev_gravity, g_frozen_gravity[id])
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
+
+			// Broken glass sound
+			static iRand, buffer[100]
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK], iRand, buffer, charsmax(buffer))
+			emit_sound(id, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 	
-	// Unfreeze
-	g_frozen[id] = false
-	
-	// Restore gravity and maxspeed (bugfix)
-	set_pev(id, pev_gravity, g_frozen_gravity[id])
-	ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
-	
+			// Glass shatter
+			SendGlassBreak(id)
+		}
+	}
+
 	// Nemesis or Survivor glow / remove glow
 	if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 	{
@@ -16154,73 +16250,6 @@ public remove_freeze(id)
 	
 	// Gradually remove screen's blue tint
 	UTIL_ScreenFade(id, {0, 200, 200}, 1.0, 0.0, 100, FFADE_IN, true, false)
-	
-	// Broken glass sound
-	static iRand, buffer[100]
-	iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK]) - 1)
-	ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_BREAK], iRand, buffer, charsmax(buffer))
-	emit_sound(id, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
-	
-	// Glass shatter
-	SendGlassBreak(id)
-}
-
-// Remove fire task
-public remove_fire(id)
-{
-	// Not alive or not frozen anymore
-	if (!g_isalive[id]) return
-	
-	// Nemesis or Survivor glow / remove glow
-	if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
-	{
-		if (NemesisGlow) set_glow(id, g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
-	{
-		if (AssassinGlow) set_glow(id, g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
-	{
-		if (SurvivorGlow) set_glow(id, g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
-	{ 
-		if (SniperGlow) set_glow(id, g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
-	{
-		if (SamuraiGlow) set_glow(id, g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
-	{
-		if (GrenadierGlow) set_glow(id, g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
-	{
-		if (TerminatorGlow) set_glow(id, g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
-	{
-		if (RevenantGlow) set_glow(id, g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue], 25)
-		else remove_glow(id)
-	}
-	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
-	{
-		if (BombardierGlow) set_glow(id, g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue], 25)
-		else remove_glow(id)
-	}
-	else remove_glow(id)
-	
-	// Gradually remove screen fade
-	UTIL_ScreenFade(id, {200, 200, 0}, 1.0, 0.0, 100, FFADE_IN, true, false)
 }
 
 // Set Custom Weapon Models
