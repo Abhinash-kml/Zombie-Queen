@@ -304,7 +304,7 @@ new SaveStats = 1
 new RespawnOnWorldSpawnKill = 1
 new PreventConsecutiveRounds = 1
 new KeepHealthOnDisconnect = 1
-new StartingPacks = 10
+new StartingPacks = 15
 
 // Nightvision Configs
 new NightVisionEnabled = 1
@@ -7975,8 +7975,8 @@ public client_putinserver(id)
 	if (containi(g_playercountry[id], "err") != -1) g_playercountry[id] = "N/A"
 	if (!g_playercity[id][0]) g_playercity[id] = "N/A"
 
-	if (g_vip[id]) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
-	else client_print_color(0, print_team_grey, "^1Player^4 %s^1 connected from ^4[ ^3%s ^4] ^4[ ^3%s ^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
+	if (g_vip[id]) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected ^4[^3%s^4]^4[^3%s^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
+	else client_print_color(0, print_team_grey, "^1Player^4 %s^1 connected ^4[^3%s^4]^4[^3%s^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
 }
 
 public FwTraceLine(Float:start[3], Float:end[3], conditions, id, trace)
