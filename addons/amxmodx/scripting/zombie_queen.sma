@@ -3457,6 +3457,8 @@ public plugin_init()
 	register_concmd("amx_punish", "cmd_punish", -1, _, -1)
 	register_concmd("amx_reloadadmins", "cmd_reloadadmins", -1, _, -1)
 	register_concmd("zp_reloadadmins", "cmd_reloadadmins", -1, _, -1)
+	register_concmd("amx_reloadvips", "cmd_reloadvips", -1, _, -1)
+	register_concmd("zp_reloadvips", "cmd_reloadvips", -1, _, -1)
 
 	//register_concmd("amx_votemap", "cmd_votemap", -1, _, -1)
 	//register_concmd("zp_votemap", "cmd_votemap", -1, _, -1)
@@ -11156,7 +11158,30 @@ public cmd_reloadadmins(id)
 			}
 			i++
 		}
-		console_print(id, "[PerfectZM] Successfully loaded %d acounts from file", g_adminCount)
+		console_print(id, "[PerfectZM] Successfully loaded %d admins from file", g_adminCount)
+	}
+
+	return PLUGIN_HANDLED
+}
+
+public cmd_reloadvips(id)
+{
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RELOAD_ADMINS]))
+	{
+		g_vipCount = 0
+		ReadVipsFromFile()
+		new i = 1
+
+		while (i < g_maxplayers + 1)
+		{
+			if (g_isconnected[i] && !g_bot[i]) 
+			{
+				if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[i]))
+				MakeUserVip(i)
+			}
+			i++
+		}
+		console_print(id, "[PerfectZM] Successfully loaded %d vips from file", g_vipCount)
 	}
 
 	return PLUGIN_HANDLED
