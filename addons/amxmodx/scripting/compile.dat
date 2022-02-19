@@ -133,7 +133,7 @@ Age=1382464499
 [zombie_queen backup.sma]
 Age=1382417100
 [advanced_bans.sma]
-Age=1382787662
+Age=1414575485
 [AdminMenu.sma]
 Age=1413241571
 [test_item.sma]
@@ -146,3 +146,7 @@ Age=1413826232
 Age=1413373819
 [ethereal_v2.sma]
 Age=1413960744
+[autojoin.sma]
+Age=1197843305
+[JetpackSpawns.sma]
+Age=1414136323

@@ -121,6 +121,7 @@ enum (+= 100)
 
 // Chat prefix
 new CHAT_PREFIX[50] // "^4[PerfectZM]^1"
+new ROUND_WELCOME_TEXT[100]
 
 // Max Admin Ranks
 #define MAX_GROUPS 10
@@ -1509,8 +1510,12 @@ LoadCustomizationFromFile()
 	AmxLoadInt("zombie_queen/Extras.ini", "HAPPY HOUR", "END", happyHour_End)
 
 	// Chat Prefix
-	AmxLoadString("zombie_queen/Extras.ini", "CHAT PREFIX", "CHAT PREFIX", CHAT_PREFIX, charsmax(CHAT_PREFIX))
+	AmxLoadString("zombie_queen/Extras.ini", "MESSAGES", "CHAT PREFIX", CHAT_PREFIX, charsmax(CHAT_PREFIX))
 	format(CHAT_PREFIX, charsmax(CHAT_PREFIX), "^4%s^1", CHAT_PREFIX)
+
+	// Round Welcome message
+	AmxLoadString("zombie_queen/Extras.ini", "MESSAGES", "ROUND WELCOME TEXT", ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT))
+	format(ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT), "^1**** ^4%s ^1|| ^4Zombie Queen 11.5 ^1by ^3Eye NeO- ^1****", ROUND_WELCOME_TEXT)
 }
 
 // Forward enums
@@ -3690,6 +3695,9 @@ public plugin_init()
 	ReadVipsFromFile()
 	ReadChatAdvertisementsFromFile()
 	ReadHudAdvertisementsFromFile()
+
+	register_points_shop_weapon("Golden Weapons", 2000)
+	register_points_shop_weapon("Crossbow", 4000)
 	
 	set_task(3.0, "CheckBots", .flags = "b")
 	set_task(30.0, "Advertise", .flags = "b")
@@ -5178,7 +5186,7 @@ public _AmmoMenu(id, menu, item)
 					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 100 ammo packs!", g_playerName[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 100 ammo packs", CHAT_PREFIX, g_playerName[id])
+					client_print_color(0, print_team_grey, "%s ^3%s^1 bought^4 100 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5197,7 +5205,7 @@ public _AmmoMenu(id, menu, item)
 					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 200 ammo packs!", g_playerName[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 200 ammo packs", CHAT_PREFIX, g_playerName[id])
+					client_print_color(0, print_team_grey, "%s ^3%s^1 bought^4 200 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5216,7 +5224,7 @@ public _AmmoMenu(id, menu, item)
 					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 300 ammo packs!", g_playerName[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 300 ammo packs", CHAT_PREFIX, g_playerName[id])
+					client_print_color(0, print_team_grey, "%s ^3%s^1 bought^4 300 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5235,7 +5243,7 @@ public _AmmoMenu(id, menu, item)
 					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 400 ammo packs!", g_playerName[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 400 ammo packs", CHAT_PREFIX, g_playerName[id])
+					client_print_color(0, print_team_grey, "%s ^3%s^1 bought^4 400 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5254,7 +5262,7 @@ public _AmmoMenu(id, menu, item)
 					g_points[id] -= g_cAmmoMenu[iChoice][_ammoItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought 500 ammo packs!", g_playerName[id])
-					client_print_color(0, print_team_grey, "%s %s^1 bought^4 500 ammo packs", CHAT_PREFIX, g_playerName[id])
+					client_print_color(0, print_team_grey, "%s ^3%s^1 bought^4 500 ammo packs", CHAT_PREFIX, g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -10378,8 +10386,45 @@ public PointsShopWeaponsMenuHandler(id, menu, item)
 		g_points[id] -= itemData[ItemCost]
 		MySQL_UPDATE_DATABASE(id)
 
-		// Notify plugins that the player bought this item
-		ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
+		switch (itemIndex)
+		{
+			case 0:
+			{
+				g_goldenweapons[id] = true
+
+				if (!user_has_weapon(id, CSW_AK47)) set_weapon(id, CSW_AK47, 10000)
+				if (!user_has_weapon(id, CSW_M4A1)) set_weapon(id, CSW_M4A1, 10000)
+				if (!user_has_weapon(id, CSW_XM1014)) set_weapon(id, CSW_XM1014, 10000)
+				if (!user_has_weapon(id, CSW_DEAGLE)) set_weapon(id, CSW_DEAGLE, 10000)
+
+				switch (random_num(0, 2))
+				{		
+					case 0: { client_cmd(id, "weapon_ak47"); set_goldenak47(id); }
+					case 1: { client_cmd(id, "weapon_m4a1"); set_goldenm4a1(id); }
+					case 2: { client_cmd(id, "weapon_xm1014"); set_goldenxm1014(id); }
+				}
+				
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				ShowSyncHudMsg(0, g_MsgSync6, "%s now has Golden Weapons", g_playerName[id])
+			}
+			case 1:
+			{
+				if (user_has_weapon(id, CSW_SG550)) drop_prim(id)
+
+				g_has_crossbow[id] = true
+				new iWep2 = give_item(id,"weapon_sg550")
+				client_cmd(id, "spk ^"fvox/get_crossbow acquired^"")
+				cs_set_weapon_ammo(iWep2, CROSSBOW_CLIP)
+				cs_set_user_bpammo (id, CSW_SG550, 10000)
+				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+				ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playerName[id])
+			}
+			default:
+			{
+				// Notify plugins that the player bought this item
+				ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
+			}
+		}
 	}
 
 	return PLUGIN_CONTINUE
@@ -15148,7 +15193,7 @@ public welcome_msg()
 	get_mapname(map, 32)
 
 	// Show mod info
-	client_print_color(0, print_team_grey, "^1*** ^4PerfectZM.CsBlackDevil.com ^1|| ^3Zombie Queen UltimateX ^1***")
+	client_print_color(0, print_team_grey, "%s", ROUND_WELCOME_TEXT)
 	client_print_color(0, print_team_grey, "Round: ^3%d ^4| ^1Map: ^3%s ^4| ^1Players: ^3%d^1/^3%d", g_roundcount, map, fnGetPlaying(), g_maxplayers)
 	
 	// Show T-virus HUD notice
@@ -18314,6 +18359,27 @@ public native_register_points_shop_weapon(plugin, param)
     
     // Get item cost from function
     ItemData[ItemCost] = get_param(2)
+    
+    // Add item to array and increase size
+    ArrayPushArray(g_pointsShopWeapons, ItemData)
+    g_pointsShopTotalWeapons++
+    
+    // Return the index of this item in the array
+    // This creates the unique item index
+    return (g_pointsShopTotalWeapons - 1)
+}
+
+// To be used internallly
+public register_points_shop_weapon(const name[], const price)
+{
+	// Create an array to hold our item data
+    new ItemData[pointsShopDataStructure]
+    
+    // Get item name from function
+    formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
+    
+    // Get item cost from function
+    ItemData[ItemCost] = price
     
     // Add item to array and increase size
     ArrayPushArray(g_pointsShopWeapons, ItemData)

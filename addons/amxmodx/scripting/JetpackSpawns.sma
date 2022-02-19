@@ -8,9 +8,7 @@ new const Float:g_fOffsets[] = { 3500.0, 3500.0, 1500.0 }
 new Array:g_vOrigins;
 new Array:g_vSpawns;
 
-
-new g_iRoundsCount;
-new g_iStop;
+new g_roundCount
 
 public plugin_init()
 {
@@ -18,9 +16,6 @@ public plugin_init()
 	g_vSpawns = ArrayCreate(3,1);
 	
 	ScanMap();
-	
-	g_iRoundsCount = 0;
-	g_iStop = 0;
 	
 	register_logevent("EventRoundStart", 2, "1=Round_Start");
 }
@@ -30,13 +25,13 @@ public plugin_precache()
 }
 public plugin_end()
 {
-	g_iStop = 1;
 	ArrayDestroy(g_vOrigins);
 	ArrayDestroy(g_vSpawns);
 }
 public EventRoundStart()
 {
-	TaskSpawnJetpacks()	
+	g_roundCount++
+	if (g_roundCount >= 3) TaskSpawnJetpacks()	
 }
 public TaskSpawnJetpacks()
 {
