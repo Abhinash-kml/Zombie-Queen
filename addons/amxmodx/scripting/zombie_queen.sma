@@ -7353,10 +7353,10 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 
 			SetHamParamFloat(4, damage)
 		}
-		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) && g_currentweapon[attacker] == CSW_AWP) 
+		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) && g_currentweapon[attacker] == CSW_AWP && (damage_type & DMG_BULLET)) 
 		{
-			SetHamParamFloat(4, SniperDamage)
-			//return HAM_IGNORED
+			damage = 3000.0
+			SetHamParamFloat(4, 3000.0)
 		}
 
 		
