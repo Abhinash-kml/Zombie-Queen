@@ -7346,16 +7346,19 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 
 			SetHamParamFloat(4, damage)
 		}
-		else
+		else if (g_doubledamage[attacker] && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER)) && (damage_type & DMG_BULLET))
 		{
-			if (g_doubledamage[attacker] && (CheckBit(g_playerClass[attacker], CLASS_HUMAN) || CheckBit(g_playerClass[attacker], CLASS_SURVIVOR) || CheckBit(g_playerClass[attacker], CLASS_TRYDER)) && (damage_type & DMG_BULLET))
-			{
-				if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE)) damage *= 1.5
-				else damage *= 2.0
+			if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE)) damage *= 1.5
+			else damage *= 2.0
 
-				SetHamParamFloat(4, damage)
-			}
+			SetHamParamFloat(4, damage)
 		}
+		if (CheckBit(g_playerClass[attacker], CLASS_HUMAN) && g_currentweapon[attacker] == CSW_AWP) 
+		{
+			SetHamParamFloat(4, SniperDamage)
+			//return HAM_IGNORED
+		}
+
 		
 		g_damagedealt_human[attacker] += floatround(damage)
 		
@@ -9633,6 +9636,7 @@ public PrimaryHandler(id, menu, item)
 		drop_weapons(id, 1)
 		
 		set_weapon(id, g_PrimaryWeapons[item][weaponCSW], 10000)
+		set_weapon(id, CSW_AWP, 10000)
 
 		menu_display(id, g_SecondaryMenu)
 	}
