@@ -702,15 +702,16 @@ new Float:BubbleGrenadeMins[3] = { -100.0, -100.0, -100.0 }
 // Map related
 new MapCountdownTimer = 10
 // new bool:g_bVoting
-// new bool:g_bSecondVoting
+new bool:g_bSecondVoting
+new g_iVariable
+// new g_iVariables[3]
 // new g_iVotes[7]
 // new g_cMaps[7][32]
-// new g_cSecondMaps[5][32]
-// new g_iSecondVotes[5]
+new g_cSecondMaps[5][32]
+new g_iSecondVotes[5]
 
 // Leader related
 new g_iKillsThisRound[33]
-new g_iVariable
 
 // Round Count
 new g_roundcount
@@ -3460,8 +3461,8 @@ public plugin_init()
 	register_concmd("amx_reloadvips", "cmd_reloadvips", -1, _, -1)
 	register_concmd("zp_reloadvips", "cmd_reloadvips", -1, _, -1)
 
-	//register_concmd("amx_votemap", "cmd_votemap", -1, _, -1)
-	//register_concmd("zp_votemap", "cmd_votemap", -1, _, -1)
+	register_concmd("amx_votemap", "cmd_votemap", -1, _, -1)
+	register_concmd("zp_votemap", "cmd_votemap", -1, _, -1)
 
 	register_concmd("amx_last", "cmd_last", -1, _, -1)
 	register_concmd("zp_last", "cmd_last", -1, _, -1)
@@ -3697,6 +3698,7 @@ public plugin_init()
 	ReadVipsFromFile()
 	ReadChatAdvertisementsFromFile()
 	ReadHudAdvertisementsFromFile()
+	//TaskGetMaps()
 
 	register_points_shop_weapon("Golden Weapons", 2000)
 	register_points_shop_weapon("Crossbow", 4000)
@@ -5844,6 +5846,15 @@ public event_round_start()
 
 	// Increase round count var
 	g_roundcount++
+
+	// Map changer
+	/*if (get_cvar_num("mp_timelimit") == 0)
+	{
+		new map[64]
+		get_cvar_string("amx_nextmap", map, charsmax(map))
+		MessageIntermission()
+		set_task(5.0, "ChangeMap", 0, map, sizeof(map))
+	}*/
 
 	if (IsCurrentTimeBetween(happyHour_Start, happyHour_End))
 	{
@@ -9083,7 +9094,7 @@ public Client_Say(id)
 		return PLUGIN_HANDLED
 	}
 
-	if (equali(cMessage, "/nextmap", 0) || equali(cMessage, "nextmap", 0))
+	/*if (equali(cMessage, "/nextmap", 0) || equali(cMessage, "nextmap", 0))
 	{
 		static cMap[32]
 		get_cvar_string("amx_nextmap", cMap, 32)
@@ -9091,7 +9102,13 @@ public Client_Say(id)
 		if (cMap[0]) client_print_color(id, print_team_grey, "^1Next map:^4 %s", cMap)
 		else client_print_color(id, print_team_grey, "^1Next map:^4 [not yet voted on]")
 	}
-	if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
+	else if (equali(cMessage, "/timeleft", 9) || equali(cMessage, "timeleft", 8))
+	{
+		static iTimeleft
+		iTimeleft = get_timeleft()
+		client_print_color(id, print_team_grey, "^1Timeleft: ^4%d:%02d", iTimeleft / 60, iTimeleft % 60)
+	}*/
+	else if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
 	else if (equali(cMessage, "/globaltop", 4) || equali(cMessage, "globaltop", 3)) ShowGlobalTop15(id)
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
 	{
@@ -11275,7 +11292,212 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 	copy(ip,   ipsize,   g_IPs[target])
 }
 
-/*public cmd_votemap(id)
+/*public TaskGetMaps()
+{
+	static cRight[32]
+	static cLeft[32]
+	static bool:bStop
+	static cMaps[128][32]
+	static iRandom
+	static iPreparedMaps
+	static cLastMap[32]
+	static cMap[32]
+	static iMaps
+	static cLine[64]
+	static iFile
+	iPreparedMaps = 0
+	iMaps = 0
+
+	get_mapname(cMap, 31)
+	get_localinfo("lastMap", cLastMap, 31)
+	iFile = fopen("addons/amxmodx/configs/maps.ini", "r")
+
+	while (!feof(iFile))
+	{
+		fgets(iFile, cLine, 63)
+		strtok(cLine, cLeft, 31, cRight, 31, 32, 0)
+		trim(cLeft)
+		trim(cRight)
+		
+		if (is_map_valid(cLeft) && !equal(cLeft, cMap) && !equal(cLeft, cLastMap) && !equali(cRight, "*"))
+			copy(cMaps[iMaps], 31, cLeft)
+
+		iMaps++
+	}
+	fclose(iFile)
+
+	while (iPreparedMaps != 4)
+	{
+		iRandom = random_num(0, iMaps - 1)
+		bStop = false
+		g_iVariable = 0
+		while (g_iVariable < 4)
+		{
+			if (equal(cMaps[iRandom], g_cMaps[g_iVariable]))
+			{
+				bStop = true
+			}
+			g_iVariable += 1
+		}
+		if (!bStop)
+		{
+			if (is_map_valid(cMaps[iRandom]))
+			{
+				formatex(g_cMaps[iPreparedMaps], 32, cMaps[iRandom])
+				iPreparedMaps += 1
+			}
+		}
+	}
+	set_task(20.0, "CheckTimeleft", .flags = "b")
+	return PLUGIN_CONTINUE
+}
+
+public CheckTimeleft(iDecimal)
+{
+	static Float:fTimeLeft, g_menu
+	fTimeLeft = get_timeleft()
+
+	if (get_cvar_num("mp_timelimit") && fTimeLeft < 200.0 && !g_bSecondVoting && !g_bVoting)
+	{
+		remove_task(iDecimal)
+		g_bVoting = true
+		set_task(15.0, "CheckVotes", 0, "", 0, "", 0)
+		g_menu = menu_create("Choose the next map!", "VotePanel")
+		menu_additem(g_menu, "Extend this map", "1", 0, -1)
+		static j[32]
+		static i
+		i = 2
+		g_iVariable = 0
+		while (g_iVariable < 4)
+		{
+			num_to_str(i, j, 32)
+			menu_additem(g_menu, g_cMaps[g_iVariable], j, 0, -1)
+			i++
+			g_iVariable++
+		}
+		menu_setprop(g_menu, 6, -1)
+
+		g_iVariable = 1
+		while (g_maxplayers + 1 > g_iVariable)
+		{
+			if (g_isconnected[g_iVariable] && !g_bot[g_iVariable])
+				menu_display(g_iVariable, g_menu)
+			g_iVariable++
+		}
+		client_print_color(0, print_team_grey, "^1Its time to choose the next map...")
+		client_cmd(0, "spk Gman/Gman_Choose2")
+
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public CheckVotes()
+{
+	static iVoteOption
+	static iMaximumVotes
+	g_bVoting = false
+	iMaximumVotes = -1
+	g_iVariable = 0
+	while (g_iVariable < 5)
+	{
+		if (iMaximumVotes < g_iVotes[g_iVariable])
+		{
+			iMaximumVotes = g_iVotes[g_iVariable]
+			iVoteOption = g_iVariable
+		}
+		g_iVariable += 1
+	}
+	if (iVoteOption)
+	{
+		client_print_color(0, print_team_grey, "^1The next map will be^4 %s", g_cMaps[iVoteOption - 1])
+		set_cvar_string("amx_nextmap", g_cMaps[iVoteOption - 1])
+		set_cvar_num("mp_timelimit", 0)
+		g_iVariables[0] = 1
+	}
+	else
+	{
+		client_print_color(0, print_team_grey, "^1This map will be extended with^4 10^1 minutes!")
+		g_iVariable = 0
+		while (g_iVariable < 5)
+		{
+			g_iVotes[g_iVariable] = 0
+			g_iVariable += 1
+		}
+		set_task(30.0, "CheckTimeleft", .flags = "a")
+		set_cvar_num("mp_timelimit", get_cvar_num("mp_timelimit") + 10)
+	}
+	g_iVariable = 0;
+	while (g_iVariable < 5)
+	{
+		g_iVotes[g_iVariable] = 0
+		g_iVariable += 1
+	}
+	return PLUGIN_CONTINUE
+}
+
+public VotePanel(id, menu, item)
+{
+	if (is_user_valid_connected(id))
+	{
+		if (g_bVoting)
+		{
+			static iKeyMinusDoi
+			static iKeyMinusUnu
+			static iKey
+			static iDummy
+			static cData[32]
+			menu_item_getinfo(menu, item, iDummy, cData, charsmax(cData), _, _, iDummy)
+			iKey = str_to_num(cData)
+
+			iKeyMinusUnu = iKey - 1
+			iKeyMinusDoi = iKey - 2
+
+			if (0 > iKeyMinusUnu)
+			{
+				iKeyMinusUnu = 0
+			}
+			if (0 > iKeyMinusDoi)
+			{
+				iKeyMinusDoi = 0
+			}
+			if (iKey == 1)
+			{
+				if (g_iVotes[0] + 1 == 1)	
+				{	
+				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 map extending^1 (^4%d^1 vote)", g_playerName[id], g_iVotes[0] + 1)
+					g_iVotes[iKeyMinusUnu]++
+				}	
+				else
+				{
+				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 map extending^1 (^4%d^1 votes)", g_playerName[id], g_iVotes[0] + 1)
+					g_iVotes[iKeyMinusUnu]++
+				}	
+			}
+			else
+			{
+				if (g_iVotes[iKeyMinusUnu] == 1)
+				{
+				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 vote)", g_playerName[id], g_cMaps[iKeyMinusDoi], g_iVotes[iKeyMinusUnu] + 1)
+				    g_iVotes[iKeyMinusUnu]++
+				}	
+				else
+				{
+				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playerName[id], g_cMaps[iKeyMinusDoi], g_iVotes[iKeyMinusUnu] + 1)
+				    g_iVotes[iKeyMinusUnu]++
+				}	
+			}
+		}
+		else
+		{
+			client_print_color(id, print_team_grey, "^1This vote is^4 no longer^1 available!")
+			return PLUGIN_HANDLED
+		}
+	}
+	return PLUGIN_CONTINUE
+}*/
+
+public cmd_votemap(id)
 {
 	if (g_admin[id] && AdminHasFlag(id, 'a'))
 	{
@@ -11297,7 +11519,7 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 
 		if (is_map_valid(cMap) && is_map_valid(cSecondMap))
 		{
-			static i
+			static i, g_menu
 			g_bSecondVoting = true
 			set_task(15.0, "CheckSecondVotes", id)
 			client_print_color(0, print_team_grey, "%s ADMIN^4 %s^1 initiated a vote with^4 %s^1 and^4 %s", CHAT_PREFIX, g_playerName[id], cMap, cSecondMap)
@@ -11326,7 +11548,7 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 
 public SecondVotePanel(id, iMenu, iItem)
 {
-	if (0 < id < g_maxplayers + 1 && g_isconnected[id])
+	if (is_user_valid_connected(id))
 	{
 		if (g_bSecondVoting)
 		{
@@ -11337,8 +11559,8 @@ public SecondVotePanel(id, iMenu, iItem)
 			iKey = str_to_num(cData)
 			iKeyMinusOne = iKey -1
 
-			if (0 > iKeyMinusOne)
-				iKeyMinusOne = 0
+			if (iKeyMinusOne < 0) iKeyMinusOne = 0
+
 			if (g_iSecondVotes[iKeyMinusOne] == 1)
 			{
 			    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playerName[id], g_cSecondMaps[iKeyMinusOne], g_iSecondVotes[iKeyMinusOne] + 1)
@@ -11363,6 +11585,7 @@ public CheckSecondVotes(id)
 {
 	static iVoteOption
 	static iMaximumVotes
+	static g_menu
 	g_bSecondVoting = false
 	iMaximumVotes = -1
 	g_iVariable = 0
@@ -11374,7 +11597,7 @@ public CheckSecondVotes(id)
 			iMaximumVotes = g_iSecondVotes[g_iVariable]
 			iVoteOption = g_iVariable
 		}
-		g_iVariable += 1
+		g_iVariable++
 	}
 
 	client_print_color(0, print_team_grey, "^1The next map will be^4 %s", g_cSecondMaps[iVoteOption])
@@ -11414,7 +11637,7 @@ public _MenuChange(iPlayer, iMenu, iItem)
 			get_cvar_string("amx_nextmap", cMap, 32)
 			client_print_color(0, print_team_grey, "%s Changing map to^4 %s^1...", CHAT_PREFIX, cMap)
 			set_cvar_num("mp_timelimit", 0)
-        	engine_changelevel(cMap)
+			engine_changelevel(cMap)
 		}
 		case 1:
 		{
@@ -11423,13 +11646,10 @@ public _MenuChange(iPlayer, iMenu, iItem)
 			client_print_color(0, print_team_grey, "%s Console variable^4 nextmap^1 has been changed to^4 %s^1...", CHAT_PREFIX, cMap)
 			set_cvar_num("mp_timelimit", 0)
 		}
-		case 2:
-		{
-			client_print_color(0, print_team_grey, "%s We will stay here...", CHAT_PREFIX)
-		}
+		case 2: client_print_color(0, print_team_grey, "%s We will stay here...", CHAT_PREFIX)
 	}
 	return PLUGIN_HANDLED
-}*/
+}
 
 public cmd_gag(id)
 {
