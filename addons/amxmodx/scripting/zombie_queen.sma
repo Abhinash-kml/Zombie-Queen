@@ -498,7 +498,7 @@ new Float:SurvivorVsAssasin_survivor_HealthMultiply
 new BombardierVsGrenadier_enable
 new BombardierVsGrenadier_chance
 new BombardierVsGrenadier_minPlayers
-new Float:BombardierVsGrenadier_raio
+new Float:BombardierVsGrenadier_ratio
 new Float:BombardierVsGrenadier_bombardier_HealthMultiply
 new Float:BombardierVsGrenadier_grenadier_HealthMultiply
 
@@ -1420,86 +1420,149 @@ LoadCustomizationFromFile()
 
 	// Multi Infection
 	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "ENABLE", MultiInfection_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infecion", "CHANCE", MultiInfection_chance)
+	log_amx("Multi Enable = %i", MultiInfection_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "CHANCE", MultiInfection_chance)
+	log_amx("Multi Chance = %i", MultiInfection_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "MIN PLAYERS", MultiInfection_minPlayers)
+	log_amx("Multi Min Players = %i", MultiInfection_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Multi-Infection", "RATIO", MultiInfection_ratio)
+	log_amx("Multi Ratio = %f", MultiInfection_ratio)
 
 	// Swarm
 	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "ENABLE", Swarm_enable)
+	log_amx("Swarm Enable = %i", Swarm_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "CHANCE", Swarm_chance)
+	log_amx("Swarm chance = %i", Swarm_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "MIN PLAYERS", Swarm_minPlayers)
+	log_amx("Swarm Min Players = %i", Swarm_minPlayers)
 
 	// Plague
 	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "ENABLE", Plague_enable)
+	log_amx("Plague enable = %i", Plague_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "CHANCE", Plague_chance)
+	log_amx("Plague chance = %i", Plague_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "MIN PLAYERS", Plague_minPlayers)
+	log_amx("Plague Min Players = %i", Plague_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "RATIO", Plague_ratio)
+	log_amx("Plague Ratio = %f", Plague_ratio)
 	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "NEMESIS COUNT", Plague_nemesisCount)
+	log_amx("Plague Nem Count = %i", Plague_nemesisCount)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "NEMESIS HEALTH MULTIPLY", Plague_nemesis_HealthMultiply)
+	log_amx("Plague nem hp mul = %f", Plague_nemesis_HealthMultiply)
 	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "SURVIVOR COUNT", Plague_survivorCount)
+	log_amx("Plague surv count = %i", Plague_survivorCount)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "SURVIVOR HEALTH MULTIPLY", Plague_survivor_HealthMultiply)
+	log_amx("Plague surv hp mul = %f", Plague_survivor_HealthMultiply)
 
 	// Synapsis
 	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "ENABLE", Synapsis_enable)
+	log_amx("Synapsis enable = %i", Synapsis_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "CHANCE", Synapsis_chance)
+	log_amx("Synapsis chance = %i", Synapsis_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "MIN PLAYERS", Synapsis_minPlayers)
+	log_amx("Synapsis min players = %i", Synapsis_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "RATIO", Synapsis_ratio)
+	log_amx("Synapsis ratio = %f", Synapsis_ratio)
 	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "NEMESIS COUNT", Synapsis_nemesisCount)
+	log_amx("Syanpsis nem count = %i", Synapsis_nemesisCount)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "NEMESIS HEALTH MULTIPLY", Synapsis_nemesis_HealthMultiply)
+	log_amx("Synapsis nem hp mul = %f", Synapsis_nemesis_HealthMultiply)
 	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR COUNT", Synapsis_survivorCount)
+	log_amx("Synapsis surv count = %i", Synapsis_survivorCount)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR HEALTH MULTIPLY", Synapsis_survivor_HealthMultiply)
+	log_amx("Synapsis surv hp mul = %f", Synapsis_survivor_HealthMultiply)
 	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SNIPER COUNT", Synapsis_sniperCount)
+	log_amx("Synapsis sni count = %i", Synapsis_sniperCount)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SNIPER HEALTH MULTIPLY", Synapsis_sniper_HealthMultiply)
+	log_amx("Synapsis sni hp mul = %f", Synapsis_sniper_HealthMultiply)
 
 	// Survior vs Assasin
 	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "ENABLE", SurvivorVsAssasin_enable)
+	log_amx("SVA anable = %i", SurvivorVsAssasin_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "CHANCE", SurvivorVsAssasin_chance)
+	log_amx("SVA chance = %i", SurvivorVsAssasin_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "MIN PLAYERS", SurvivorVsAssasin_minPlayers)
+	log_amx("SVA min players = %i", SurvivorVsAssasin_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "RATIO", SurvivorVsAssasin_ratio)
+	log_amx("SVA ratio = %f", SurvivorVsAssasin_ratio)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "ASSASIN HEALTH MULTIPLY", SurvivorVsAssasin_assasin_HealthMultiply)
+	log_amx("SVA assa hp mul = %f", SurvivorVsAssasin_assasin_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "SURVIVOR HEALTH MULTIPLY", SurvivorVsAssasin_survivor_HealthMultiply)
+	log_amx("SVA surv hp mul = %f", SurvivorVsAssasin_survivor_HealthMultiply)
 
 	// Survivor vs Nemesis
 	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "ENABLE", Armageddon_enable)
+	log_amx("SNV enable = %i", Armageddon_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "CHANCE", Armageddon_chance)
+	log_amx("SNV chance = %i", Armageddon_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "MIN PLAYERS", Armageddon_minPlayers)
+	log_amx("SNV min player = %i", Armageddon_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "RATIO", Armageddon_ratio)
+	log_amx("SNV ratio = %f", Armageddon_ratio)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "NEMESIS HEALTH MULTIPLY", Armageddon_nemesis_HealthMultiply)
+	log_amx("SNV nem hp mul = %f", Armageddon_nemesis_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "SURVIVOR HEALTH MULTIPLY", Armageddon_survivor_HealthMultiply)
+	log_amx("SNV surv hp mul = %f", Armageddon_survivor_HealthMultiply)
 
 	// Sniper vs Assasin
 	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "ENABLE", Apocalypse_enable)
+	log_amx("SNVA enable = %i", Apocalypse_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "CHANCE", Apocalypse_chance)
+	log_amx("SNVA chance = %i", Apocalypse_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "MIN PLAYERS", Apocalypse_minPlayers)
+	log_amx("SNVA min players = %i", Apocalypse_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "RATIO", Apocalypse_ratio)
+	log_amx("SNVA ratio = %f", Apocalypse_ratio)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "ASSASIN HEALTH MULTIPLY", Apocalypse_assasin_HealthMultiply)
+	log_amx("SNVA assa hp mul = %f", Apocalypse_assasin_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "SNIPER HEALTH MULTIPLY", Apocalypse_sniper_HealthMultiply)
+	log_amx("SNVA sni hp mul = %f", Apocalypse_sniper_HealthMultiply)
 
 	// Sniper vs Nemesis
 	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "ENABLE", SniperVsNemesis_enable)
+	log_amx("SNVN enable = %i", SniperVsNemesis_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "CHANCE", SniperVsNemesis_chance)
+	log_amx("SNVN chance = %i", SniperVsNemesis_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "MIN PLAYERS", SniperVsNemesis_minPlayers)
+	log_amx("SNVN min players = %i", SniperVsNemesis_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "RATIO", SniperVsNemesis_ratio)
+	log_amx("SNVN ratio = %f", SniperVsNemesis_ratio)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "SNIPER HEALTH MULTIPLY", SniperVsNemesis_sniper_HealthMultiply)
+	log_amx("SNVN sni hp mul = %f", SniperVsNemesis_sniper_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "NEMESIS HEALTH MULTIPLY", SniperVsNemesis_nemesis_HealthMultiply)
+	log_amx("SNVN nem hp mul = %f", SniperVsNemesis_nemesis_HealthMultiply)
 
 	// Bombardier vs Grenadier
 	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "ENABLE", BombardierVsGrenadier_enable)
+	log_amx("BVG enable = %i", BombardierVsGrenadier_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "CHANCE", BombardierVsGrenadier_chance)
+	log_amx("BVG chance = %i", BombardierVsGrenadier_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "MIN PLAYERS", BombardierVsGrenadier_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "RATIO", BombardierVsGrenadier_raio)
+	log_amx("BVG min players = %i", BombardierVsGrenadier_minPlayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "RATIO", BombardierVsGrenadier_ratio)
+	log_amx("BVG ratio = %f", BombardierVsGrenadier_ratio)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "BOMBARDIER HEALTH MULTIPLY", BombardierVsGrenadier_bombardier_HealthMultiply)
+	log_amx("BVG bomb hp mul = %f", BombardierVsGrenadier_bombardier_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "GRENADIER HEALTH MULTIPLY", BombardierVsGrenadier_grenadier_HealthMultiply)
+	log_amx("BVG grenade hp mul = %f", BombardierVsGrenadier_grenadier_HealthMultiply)
 
 	// Nightmare
 	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "ENABLE", Nightmare_enable)
+	log_amx("NIGHTMARE enable = %i", Nightmare_enable)
 	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "CHANCE", Nightmare_chance)
+	log_amx("NIGHTMARE chance = %i", Nightmare_chance)
 	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "MIN PLAYERS", Nightmare_minPlayers)
+	log_amx("NIGHTMARE min players = %i", Nightmare_minPlayers)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "RATIO", Nightmare_ratio)
+	log_amx("NIGHTMARE ratio = %f", Nightmare_ratio)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "ASSASIN HEALTH MULTIPLY", Nightmare_assasin_HealthMultiply)
+	log_amx("NIGHTMARE assa hp mul = %f", Nightmare_assasin_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "NEMESIS HEALTH MULTIPLY", Nightmare_nemesis_HealthMultiply)
+	log_amx("NIGHTMARE nem hp mul = %f", Nightmare_nemesis_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SNIPER HEALTH MULTIPLY", Nightmare_sniper_HealthMultiply)
+	log_amx("NIGHTMARE sni hp mul = %f", Nightmare_sniper_HealthMultiply)
 	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SURVIVOR HEALTH MULTIPLY", Nightmare_survivor_HealthMultiply)
+	log_amx("NIGHTMARE surv hp mul = %f", Nightmare_survivor_HealthMultiply)
 
 	// Free VIP
 	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "START", freeVIP_Start)
@@ -14197,7 +14260,7 @@ start_mode(mode, id)
 		g_lastmode = MODE_BOMBARDIER_VS_GRENADIER
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * BombardierVsGrenadier_raio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * BombardierVsGrenadier_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Bombardier
@@ -17394,7 +17457,7 @@ allowed_survivor_vs_assasin()
 // Checks if bombardier vs grenadier mode is allowed
 allowed_bombardier_vs_grenadier()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * BombardierVsGrenadier_raio, floatround_ceil) < 2 || floatround(fnGetAlive() * BombardierVsGrenadier_raio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * BombardierVsGrenadier_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * BombardierVsGrenadier_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true

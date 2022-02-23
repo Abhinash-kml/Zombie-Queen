@@ -46,7 +46,7 @@ public plugin_init()
 
 	LoadQuizFromFile()
 
-	set_task(50.0, "SelectQuestion", .flags = "b")
+	set_task(70.0, "SelectQuestion", .flags = "b")
 
 	return PLUGIN_CONTINUE
 }
@@ -127,7 +127,7 @@ public ShowTimeUp()
 
 public GiveReward(id)
 {					
-	static r; r = random_num(1, 50)
+	static r; r = random_num(10, 30)
 	static name[32]; get_user_name(id, name, charsmax(name))
 	AddPacks(id, r)
 	client_print_color(0, print_team_grey, "^4[NewlifeZM] ^3%s ^1got ^4%i ^1packs for solving the question...", name, r)
