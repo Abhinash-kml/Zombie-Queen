@@ -11707,7 +11707,6 @@ public _MenuChange(iPlayer, iMenu, iItem)
 			static cMap[32]
 			get_cvar_string("amx_nextmap", cMap, 32)
 			client_print_color(0, print_team_grey, "%s Console variable^4 nextmap^1 has been changed to^4 %s^1...", CHAT_PREFIX, cMap)
-			set_cvar_num("mp_timelimit", 0)
 		}
 		case 2: client_print_color(0, print_team_grey, "%s We will stay here...", CHAT_PREFIX)
 	}
