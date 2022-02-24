@@ -1772,25 +1772,6 @@ enum _: structExtrasTeam (<<=1)
 	ZQ_EXTRA_REVENANT
 }
 
-enum _:ExtraItemsData2
-{
-	ZItemName[32],
-	ZPriceTag[20],
-	ZPrice,
-	ZTeam,
-	ZLimitPerRound,
-	ZLimitPerMap
-}
-
-new g_cExtraItemsZombie[][ExtraItemsData2] =
-{
-	{"Antidote", 		 "\r[15 packs]", 15, ZQ_EXTRA_ZOMBIE, 5, 50}, // 1
-	{"Zombie Madness",   "\r[17 packs]", 17, ZQ_EXTRA_ZOMBIE, 5, 50}, // 2
-	{"Infection bomb",   "\r[25 packs]", 25, ZQ_EXTRA_ZOMBIE, 5, 50}, // 3
-	{"Concussion bomb",  "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE, 5, 50}, // 4
-	{"Knife Blink", 	 "\r[10 packs]", 10, ZQ_EXTRA_ZOMBIE, 5, 50} // 4
-}
-
 enum _:Items
 {
 	KILL_NADE,
@@ -1955,13 +1936,8 @@ enum _: ExtraItemsHumans
 	EXTRA_CLASS_NEMESIS,
 	EXTRA_CLASS_ASSASIN,
 	EXTRA_CLASS_SNIPER,
-	EXTRA_CLASS_SURVIVOR
-}
-
-// Extra item for zombies
-enum _: extraItemZomies
-{
-	EXTRA_ANTIDOTE = 0,
+	EXTRA_CLASS_SURVIVOR,
+	EXTRA_ANTIDOTE,
 	EXTRA_MADNESS,
 	EXTRA_INFECTION_NADE,
 	EXTRA_CONCUSSION_NADE,
@@ -3766,6 +3742,12 @@ public plugin_init()
 	register_extra_item("Assasin", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
 	register_extra_item("Sniper", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
 	register_extra_item("Survivor", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Antidote", 15, ZQ_EXTRA_ZOMBIE)
+	register_extra_item("Zombie Maddness", 17, ZQ_EXTRA_ZOMBIE)
+	register_extra_item("Infection Bomb", 25, ZQ_EXTRA_ZOMBIE)
+	register_extra_item("Concussion Bomb", 10, ZQ_EXTRA_ZOMBIE)
+	register_extra_item("Knife Blink", 10, ZQ_EXTRA_ZOMBIE)
+
 
 	register_points_shop_weapon("Golden Weapons", 2000)
 	register_points_shop_weapon("Crossbow", 4000)
@@ -4430,14 +4412,8 @@ public _GameMenu(id, menu, item)
 		{
 		case 0:
 			{
-				if (g_isalive[id])
-				{
-					if (CheckBit(g_playerTeam[id], TEAM_HUMAN))
-						ShowMenuExtraItemHumans(id)
-					else if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE))
-						ShowMenuExtraItemZombies(id)
-					else client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
-				}
+				if (g_isalive[id]) ShowMenuExtraItems(id)
+				else client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
 			}
 		case 1: menu_display(id, g_iZombieClassMenu, 0)
 		case 2:
@@ -4483,7 +4459,7 @@ public _GameMenu(id, menu, item)
 	return  PLUGIN_CONTINUE
 }
 
-ShowMenuExtraItemHumans(id)
+ShowMenuExtraItems(id)
 {
 	// Check if there are no items
 	if (!g_extraitemsCount)
@@ -4507,7 +4483,12 @@ ShowMenuExtraItemHumans(id)
 		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SNIPER)))
 		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SAMURAI)))
 		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_GRENADIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TERMINATOR)))) continue
+		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TERMINATOR)))
+		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ZOMBIE))) 
+		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ASSASIN))) 
+		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_NEMESIS)))
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_BOMBARDIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_REVENANT)))) continue
 		
 		formatex(line, charsmax(line), "%s \r[%i packs]", ItemData[ItemName], ItemData[ItemCost])
 		num_to_str(i, number, 3)
@@ -4517,28 +4498,6 @@ ShowMenuExtraItemHumans(id)
 	menu_display(id, g_menu, 0)
 
 	return PLUGIN_CONTINUE
-}
-
-public ShowMenuExtraItemZombies(id)
-{
-	static g_ZombieExtraItemsMenu, line[128], number[3]
-
-	g_ZombieExtraItemsMenu = menu_create(fmt("%s's Extra Items", g_classString[id]), "_ExtraItems2", 0)	// Human Extra items menu
-
-	for (new i = 0; i < sizeof(g_cExtraItemsZombie); i++)
-	{
-		if ((CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ZOMBIE))) 
-		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_ASSASIN))) 
-		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_NEMESIS)))
-		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_BOMBARDIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_REVENANT)))) continue
-
-		formatex(line, charsmax(line), "%s %i", g_cExtraItemsZombie[i][ItemName], g_cExtraItemsZombie[i][ZPrice])
-		num_to_str(i, number, 3)
-		menu_additem(g_ZombieExtraItemsMenu, line, number, 0, -1)
-	}
-	
-	menu_display(id, g_ZombieExtraItemsMenu, 0)
 }
 
 public _ExtraItems(id, menu, item)
@@ -4562,8 +4521,25 @@ public _ExtraItems(id, menu, item)
 	// Check if player's points is less then the item's cost // If not then set the item
 	if (g_ammopacks[id] < ItemData[ItemCost])
 	{
-		// notify player
+		// Notify player
 		client_print_color(id, print_team_grey, "%s You dont have enough ^3packs ^1to buy this item...", CHAT_PREFIX)
+		return PLUGIN_HANDLED
+	}
+	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_HUMAN)))
+	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TRYDER)))
+	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SURVIVOR)))
+	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SNIPER)))
+	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SAMURAI)))
+	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_GRENADIER)))
+	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TERMINATOR)))
+	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ZOMBIE))) 
+	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ASSASIN))) 
+	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_NEMESIS)))
+	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_BOMBARDIER)))
+	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_REVENANT))))
+	{
+		// Notify player
+		client_print_color(id, print_team_grey, "%s This ^3item ^1is not for your ^4team^1...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
 	else
@@ -4901,176 +4877,115 @@ public _ExtraItems(id, menu, item)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Survivor", g_playerName[id])
 				}
 			}
+		case EXTRA_ANTIDOTE:
+			{
+				if (CanBuy(EXTRA_ZOMBIES, EXTRA_ANTIDOTE, id))
+				{
+					// Make him human
+					MakeHuman(id)
+
+					// Antidote sound
+					static iRand, buffer[100]
+					iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ANTIDOTE]) - 1)
+					ArrayGetString(Array:g_miscSounds[SOUND_ANTIDOTE], iRand, buffer, charsmax(buffer))
+					emit_sound(id, CHAN_ITEM, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+					// Make teleport effect
+					SendTeleport(id)
+					
+					// Show Antidote HUD notice
+					set_hudmessage(9, 201, 214, HUD_INFECT_X, HUD_INFECT_Y, 1, 0.0, 3.0, 2.0, 1.0, -1)
+					ShowSyncHudMsg(0, g_MsgSync, "%s has used an antidote!", g_playerName[id])
+
+					client_print_color(id, print_team_grey, "%s You are human now", CHAT_PREFIX)
+				}
+			}
+		case EXTRA_MADNESS:
+			{
+				if (CanBuy(EXTRA_ZOMBIES, EXTRA_MADNESS, id))
+				{
+					// Show the player HUD message
+					set_hudmessage(255, 0, 0, -1.0, 0.70, 1, 0.0, 3.0, 2.0, 1.0, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Zombie Madness!")
+
+					// Set the bool to true
+					g_nodamage[id] = true
+
+					// Set glow on player
+					set_glow(id, 255, 0, 0, 255)
+
+					//set_task(0.1, "zombie_aura", id+TASK_AURA, _, _, "b")
+					set_task(float(MadnessDuration), "madness_over", id+TASK_BLOOD)
+					
+					// Play madness sound
+					new iRand, buffer[100]
+					iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS]) - 1)
+					ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS], iRand, buffer, charsmax(buffer))
+					emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+				}
+			}
+		case EXTRA_INFECTION_NADE:
+			{
+				if (CanBuy(EXTRA_ZOMBIES, EXTRA_INFECTION_NADE, id))
+				{
+					// Already own one
+					if (user_has_weapon(id, CSW_HEGRENADE))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+
+					// Show HUD message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Infection Bomb!")
+
+					// Play clip purchase sound
+					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+					// Give weapon to the player
+					set_weapon(id, CSW_HEGRENADE, 1)	
+				}
+			}
+		case EXTRA_CONCUSSION_NADE:
+			{
+				if (CanBuy(EXTRA_ZOMBIES, EXTRA_CONCUSSION_NADE, id))
+				{
+					// Already own one
+					if (user_has_weapon(id, CSW_FLASHBANG))
+					{
+						client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
+						return PLUGIN_HANDLED
+					}
+						
+					// Set the boolean to true
+					g_concussionbomb[id]++
+
+					// Give weapon to the player
+					set_weapon(id, CSW_FLASHBANG, 1)	
+
+					// Show HUD message
+					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Concussion Bomb!")
+
+					// Play clip purchase sound
+					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
+				}
+			}
+		case EXTRA_KNIFE_BLINK:
+			{
+				if (CanBuy(EXTRA_ZOMBIES, EXTRA_KNIFE_BLINK, id))
+				{
+					g_blinks[id] += 5
+
+					// Show HUD message
+					set_hudmessage(115, 230, 1, -1.0, 0.80, 1, 0.0, 0.0, 3.0, 2.0, -1)
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought knife blinks!", g_playerName[id])
+				}
+			}
 		default:
 			{
 				// Notify plugins that the player bought this item
 				ExecuteForward(g_forwards[EXTRA_ITEM_SELECTED], g_forwardRetVal, id, ItemIndex)
-			}
-		}
-	}
-
-	return PLUGIN_CONTINUE
-}
-
-public _ExtraItems2(id, menu, item)
-{
-	if (g_isalive[id] && item != -3)
-	{
-		static iChoice
-		static cBuffer[3]
-		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
-		iChoice = str_to_num(cBuffer)
-
-		// Additional check to prevent humans classes from buying items if menu is left open
-		if (CheckBit(g_playerClass[id], CLASS_ZOMBIE))
-		{
-			switch (iChoice)
-			{
-			case EXTRA_ANTIDOTE:
-				{
-					if (CanBuy(EXTRA_ZOMBIES, EXTRA_ANTIDOTE, id))
-					{
-						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-
-						// Make him human
-						MakeHuman(id)
-
-						// Antidote sound
-						static iRand, buffer[100]
-						iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ANTIDOTE]) - 1)
-						ArrayGetString(Array:g_miscSounds[SOUND_ANTIDOTE], iRand, buffer, charsmax(buffer))
-						emit_sound(id, CHAN_ITEM, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-						// Make teleport effect
-						SendTeleport(id)
-						
-						// Show Antidote HUD notice
-						set_hudmessage(9, 201, 214, HUD_INFECT_X, HUD_INFECT_Y, 1, 0.0, 3.0, 2.0, 1.0, -1)
-						ShowSyncHudMsg(0, g_MsgSync, "%s has used an antidote!", g_playerName[id])
-
-						client_print_color(id, print_team_grey, "%s You are human now", CHAT_PREFIX)
-
-						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-					}
-				}
-			case EXTRA_MADNESS:
-				{
-					if (CanBuy(EXTRA_ZOMBIES, EXTRA_MADNESS, id))
-					{
-						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-
-						// Show the player HUD message
-						set_hudmessage(255, 0, 0, -1.0, 0.70, 1, 0.0, 3.0, 2.0, 1.0, -1)
-						ShowSyncHudMsg(id, g_MsgSync6, "You bought Zombie Madness!")
-
-						// Set the bool to true
-						g_nodamage[id] = true
-
-						// Set glow on player
-						set_glow(id, 255, 0, 0, 255)
-
-						//set_task(0.1, "zombie_aura", id+TASK_AURA, _, _, "b")
-						set_task(float(MadnessDuration), "madness_over", id+TASK_BLOOD)
-						
-						// Play madness sound
-						new iRand, buffer[100]
-						iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS]) - 1)
-						ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_MADNESS], iRand, buffer, charsmax(buffer))
-						emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-					}
-				}
-			case EXTRA_INFECTION_NADE:
-				{
-					if (CanBuy(EXTRA_ZOMBIES, EXTRA_INFECTION_NADE, id))
-					{
-						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-
-						// Already own one
-						if (user_has_weapon(id, CSW_HEGRENADE))
-						{
-							client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-
-						// Show HUD message
-						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-						ShowSyncHudMsg(id, g_MsgSync6, "You bought Infection Bomb!")
-
-						// Play clip purchase sound
-						emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-						// Give weapon to the player
-						set_weapon(id, CSW_HEGRENADE, 1)	
-
-						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-					}
-				}
-			case EXTRA_CONCUSSION_NADE:
-				{
-					if (CanBuy(EXTRA_ZOMBIES, EXTRA_CONCUSSION_NADE, id))
-					{
-						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-
-						// Already own one
-						if (user_has_weapon(id, CSW_FLASHBANG))
-						{
-							client_print_color(id, print_team_grey, "%s You already have one, first use it", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-							
-						// Set the boolean to true
-						g_concussionbomb[id]++
-
-						// Give weapon to the player
-						set_weapon(id, CSW_FLASHBANG, 1)	
-
-						// Show HUD message
-						set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-						ShowSyncHudMsg(id, g_MsgSync6, "You bought Concussion Bomb!")
-
-						// Play clip purchase sound
-						emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-					}
-				}
-				case EXTRA_KNIFE_BLINK:
-				{
-					if (CanBuy(EXTRA_ZOMBIES, EXTRA_KNIFE_BLINK, id))
-					{
-						if (g_ammopacks[id] < g_cExtraItemsZombie[iChoice][ZPrice])
-						{
-							client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-							return PLUGIN_HANDLED
-						}
-
-						g_blinks[id] += 5
-
-						// Show HUD message
-						set_hudmessage(115, 230, 1, -1.0, 0.80, 1, 0.0, 0.0, 3.0, 2.0, -1)
-						ShowSyncHudMsg(0, g_MsgSync6, "%s bought knife blinks!", g_playerName[id])
-
-						g_ammopacks[id] -= g_cExtraItemsZombie[iChoice][ZPrice]	// Deduct the packs
-					}
-				}
 			}
 		}
 	}
