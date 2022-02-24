@@ -1596,6 +1596,7 @@ enum _: forwardNames
 	USER_LAST_ZOMBIE,
 	USER_LAST_HUMAN,
 	ADMIN_MODE_START,
+	EXTRA_ITEM_SELECTED,
 	POINTS_SHOP_WEAPON_SELECTED,
 	MAX_FORWARDS
 	// PLAYER_SPAWN_POST,
@@ -1738,8 +1739,22 @@ enum _:pointsShopDataStructure
 // create a dynamic array to hold all the items
 new Array:g_pointsShopWeapons
 
+// Data structure for extra items
+enum _:extraItemsDataStructure
+{
+	ItemName[32],
+	ItemCost,
+	ItemTeam
+}
+
+// Create a dynamic array to hold all the items
+new Array:g_extraitems
+
 // this will tell how many are in the array instead of using ArraySize()
 new g_pointsShopTotalWeapons
+
+// this will tell howw many are in the array instead of using ArraySize()
+new g_extraitemsCount
 
 enum _: structExtrasTeam (<<=1)
 {
@@ -1755,38 +1770,6 @@ enum _: structExtrasTeam (<<=1)
 	ZQ_EXTRA_NEMESIS,
 	ZQ_EXTRA_BOMBARDIER,
 	ZQ_EXTRA_REVENANT
-}
-
-enum _:ExtraItemsData
-{
-	ItemName[32],
-	PriceTag[20],
-	Price,
-	Team,
-	LimitPerRound,
-	LimitPerMap
-}
-
-new g_cExtraItems[][ExtraItemsData] =
-{
-	{"Nightvision Goggles", 		  "\r[2 packs]", 	 2, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER, 5, 50}, // 1
-	{"Forcefield Grenade", 			  "\r[20 packs]", 	20, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI, 5, 50}, // 2
-	{"Killing Grenade", 			  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 3
-	{"Explosion Grenade", 	  		  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 4
-	{"Napalm Grenade", 				  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 5
-	{"Frost Grenade", 			 	  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER, 5, 50}, // 6
-	{"Antidote Grenade", 			  "\r[40 packs]", 	40, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 7
-	{"Multijump +1", 				  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER, 5, 50}, // 1
-	{"Jetpack + Bazooka", 			  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_GRENADIER|ZQ_EXTRA_TERMINATOR, 5, 50}, // 2
-	{"Tryder", 						  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 3
-	{"Armor \y(100 AP)", 			  "\r[5 packs]", 	 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 4
-	{"Armor \y(200 AP)", 			  "\r[10 packs]", 	10, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 5
-	{"Crossbow", 					  "\r[30 packs]", 	30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 5, 50}, // 6
-	{"Golden Weapons", 				  "\r[50 packs]",   50, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR, 5, 50}, // 7
-	{"Nemesis", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1}, // 1
-	{"Assassin", 					  "\r[150 packs]", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1}, // 2
-	{"Sniper", 						  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1}, // 3
-	{"Survivor", 					  "\r[180 packs]", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER, 1,  1} // 4
 }
 
 enum _:ExtraItemsData2
@@ -3624,9 +3607,11 @@ public plugin_init()
 	g_forwards[USER_LAST_HUMAN] = CreateMultiForward("OnLastHuman", ET_IGNORE, FP_CELL)
 	g_forwards[ADMIN_MODE_START] = CreateMultiForward("OnAdminModeStart", ET_IGNORE, FP_CELL, FP_CELL)
 	g_forwards[POINTS_SHOP_WEAPON_SELECTED] = CreateMultiForward("OnPointsShopWeaponSelected", ET_IGNORE, FP_CELL, FP_CELL)
+	g_forwards[EXTRA_ITEM_SELECTED] = CreateMultiForward("OnExtraItemSelected", ET_IGNORE, FP_CELL, FP_CELL)
 
 	// create our array with the size of the item structure
 	g_pointsShopWeapons = ArrayCreate(pointsShopDataStructure)
+	g_extraitems = ArrayCreate(extraItemsDataStructure)
 	
 	// CVARS - Others
 	cvar_botquota = get_cvar_pointer("bot_quota")
@@ -3762,6 +3747,25 @@ public plugin_init()
 	ReadChatAdvertisementsFromFile()
 	ReadHudAdvertisementsFromFile()
 	//TaskGetMaps()
+
+	register_extra_item("Nightvision Goggles", 2, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER)
+	register_extra_item("Forcefield Grenade", 20, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI)
+	register_extra_item("Killing Grenade", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Explosion Grenade", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER)
+	register_extra_item("Napalm Grenade", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER)
+	register_extra_item("Frost Grenade", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER)
+	register_extra_item("Antidote Grenade", 40, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Multijump +1", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER)
+	register_extra_item("Jetpack + Bazooka", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_GRENADIER|ZQ_EXTRA_TERMINATOR)
+	register_extra_item("Tryder", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Armor \y(100 AP)", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Armor \y(200 AP)", 10, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Crossbow", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Golden Weapons", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Nemesis", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Assasin", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Sniper", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
+	register_extra_item("Survivor", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
 
 	register_points_shop_weapon("Golden Weapons", 2000)
 	register_points_shop_weapon("Crossbow", 4000)
@@ -4481,26 +4485,38 @@ public _GameMenu(id, menu, item)
 
 ShowMenuExtraItemHumans(id)
 {
-	static g_humanExtraItemsMenu, line[128], number[3]
-
-	g_humanExtraItemsMenu = menu_create(fmt("%s's Extra Items", g_classString[id]), "_ExtraItems", 0)	// Human Extra items menu
-
-	for (new i = 0; i < sizeof(g_cExtraItems); i++)
+	// Check if there are no items
+	if (!g_extraitemsCount)
 	{
-		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_HUMAN)))
-		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_TRYDER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SURVIVOR)))
-		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SNIPER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_SAMURAI)))
-		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_GRENADIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(g_cExtraItems[i][Team], ZQ_EXTRA_TERMINATOR)))) continue
+		client_print_color(id, print_team_grey, "%s There are no ^3items ^1available right now", CHAT_PREFIX)
+		return PLUGIN_HANDLED
+    }
+
+	static g_menu, line[128], number[3], ItemData[extraItemsDataStructure]
+
+	g_menu = menu_create(fmt("%s's Extra Items", g_classString[id]), "_ExtraItems", 0)	// Human Extra items menu
+
+	for (new i = 0; i < g_extraitemsCount; i++)
+	{
+		// Get item data from array
+		ArrayGetArray(g_extraitems, i, ItemData)
+
+		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_HUMAN)))
+		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TRYDER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SURVIVOR)))
+		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SNIPER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SAMURAI)))
+		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_GRENADIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TERMINATOR)))) continue
 		
-		formatex(line, charsmax(line), "%s %s", g_cExtraItems[i][ItemName], g_cExtraItems[i][PriceTag])
+		formatex(line, charsmax(line), "%s \r[%i packs]", ItemData[ItemName], ItemData[ItemCost])
 		num_to_str(i, number, 3)
-		menu_additem(g_humanExtraItemsMenu, line, number, 0, -1)
+		menu_additem(g_menu, line, number, 0, -1)
 	}
 	
-	menu_display(id, g_humanExtraItemsMenu, 0)
+	menu_display(id, g_menu, 0)
+
+	return PLUGIN_CONTINUE
 }
 
 public ShowMenuExtraItemZombies(id)
@@ -4517,7 +4533,7 @@ public ShowMenuExtraItemZombies(id)
 		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_BOMBARDIER)))
 		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(g_cExtraItemsZombie[i][ZTeam], ZQ_EXTRA_REVENANT)))) continue
 
-		formatex(line, charsmax(line), "%s %s", g_cExtraItemsZombie[i][ItemName], g_cExtraItemsZombie[i][PriceTag])
+		formatex(line, charsmax(line), "%s %i", g_cExtraItemsZombie[i][ItemName], g_cExtraItemsZombie[i][ZPrice])
 		num_to_str(i, number, 3)
 		menu_additem(g_ZombieExtraItemsMenu, line, number, 0, -1)
 	}
@@ -4527,25 +4543,40 @@ public ShowMenuExtraItemZombies(id)
 
 public _ExtraItems(id, menu, item)
 {
-	if (g_isalive[id] && item != -3)
+	if (item == MENU_EXIT)
 	{
-		static iChoice
-		static cBuffer[3]
-		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
-		iChoice = str_to_num(cBuffer)
+		menu_destroy(menu)
+		return PLUGIN_HANDLED
+	}
 
-		switch (iChoice)
+	new data[3]
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+
+	// Get item index from menu
+	new ItemIndex = str_to_num(data)
+
+	// Get item data from array
+	new ItemData[extraItemsDataStructure]
+	ArrayGetArray(g_extraitems, ItemIndex, ItemData)
+
+	// Check if player's points is less then the item's cost // If not then set the item
+	if (g_ammopacks[id] < ItemData[ItemCost])
+	{
+		// notify player
+		client_print_color(id, print_team_grey, "%s You dont have enough ^3packs ^1to buy this item...", CHAT_PREFIX)
+		return PLUGIN_HANDLED
+	}
+	else
+	{
+		// Reduce his packs
+		g_ammopacks[id] -= ItemData[ItemCost]
+
+		switch (ItemIndex)
 		{
 		case EXTRA_NIGHTVISION:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_NIGHTVISION, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					g_nvision[id] = true
 					
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
@@ -4565,20 +4596,12 @@ public _ExtraItems(id, menu, item)
 						else set_user_gnvision(id, 1)
 					}
 					else cs_set_user_nvg(id, 1)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_FORCEFIELD_NADE:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_FORCEFIELD_NADE, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					// Already own one
 					if (user_has_weapon(id, CSW_SMOKEGRENADE))
 					{
@@ -4598,20 +4621,12 @@ public _ExtraItems(id, menu, item)
 
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_KILL_NADE:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_KILL_NADE, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-					
 					// Already own one
 					if (user_has_weapon(id, CSW_HEGRENADE))
 					{
@@ -4633,20 +4648,12 @@ public _ExtraItems(id, menu, item)
 
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_EXPLOSION_NADE:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_EXPLOSION_NADE, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					// Already own one
 					if (user_has_weapon(id, CSW_HEGRENADE))
 					{
@@ -4663,20 +4670,12 @@ public _ExtraItems(id, menu, item)
 					
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_NAPALM_NADE:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_NAPALM_NADE, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					// Already own one
 					if (user_has_weapon(id, CSW_FLASHBANG))
 					{
@@ -4693,20 +4692,12 @@ public _ExtraItems(id, menu, item)
 
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_FROST_NADE:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_FROST_NADE, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					// Already own one
 					if (user_has_weapon(id, CSW_SMOKEGRENADE))
 					{
@@ -4723,20 +4714,12 @@ public _ExtraItems(id, menu, item)
 
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_ANTIDOTE_NADE:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_ANTIDOTE_NADE, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					// Already own one
 					if (user_has_weapon(id, CSW_HEGRENADE))
 					{
@@ -4755,38 +4738,22 @@ public _ExtraItems(id, menu, item)
 					// Show HUD message
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Antidote Grenade!")
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_MULTIJUMP:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_MULTIJUMP, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					g_multijump[id] = true
 					g_jumpnum[id]++
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You can now jump %d times!", g_jumpnum[id] + 1)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_JETPACK:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_JETPACK, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					if (get_user_jetpack(id)) 
 					user_drop_jetpack(id, 1)
 
@@ -4799,39 +4766,24 @@ public _ExtraItems(id, menu, item)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Jetpack!", g_playerName[id])
 
 					emit_sound(id, CHAN_STATIC, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
-
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_TRYDER:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_TRYDER, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					LIMIT[id][TRYDER]++
 
 					MakeHuman(id, CLASS_TRYDER)		// Make him tryder
 					set_hudmessage(190, 55, 115, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s is now a Tryder!", g_playerName[id])
 					client_cmd(id, "spk PerfectZM/armor_equip")
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_ARMOR_100:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_ARMOR_100, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					if (pev(id, pev_armorvalue) > 120)
 					{
 						client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
@@ -4842,19 +4794,12 @@ public _ExtraItems(id, menu, item)
 					client_cmd(id, "spk PerfectZm/armor_equip")
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You've been equiped with armor (100ap)")
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_ARMOR_200:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_ARMOR_200, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					if (pev(id, pev_armorvalue) > 120)
 					{
 						client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
@@ -4865,19 +4810,12 @@ public _ExtraItems(id, menu, item)
 					client_cmd(id, "spk PerfectZM/armor_equip")
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You've been equiped with armor (200ap)")
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_CROSSBOW:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_CROSSBOW, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					if (user_has_weapon(id, CSW_SG550)) drop_prim(id)
 
 					g_has_crossbow[id] = true
@@ -4887,19 +4825,12 @@ public _ExtraItems(id, menu, item)
 					cs_set_user_bpammo (id, CSW_SG550, 10000)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playerName[id])
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_GOLDEN_WEAPONS:
 		{
 			if (CanBuy(EXTRA_HUMANS, EXTRA_GOLDEN_WEAPONS, id))
 			{
-				if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-				{
-					client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-					return PLUGIN_HANDLED
-				}
-
 				g_goldenweapons[id] = true
 
 				if (!user_has_weapon(id, CSW_AK47)) set_weapon(id, CSW_AK47, 10000)
@@ -4916,19 +4847,12 @@ public _ExtraItems(id, menu, item)
 				
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s now has Golden Weapons", g_playerName[id])
-				g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 			}
 		}
 		case EXTRA_CLASS_NEMESIS:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_NEMESIS, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					LIMIT[id][MODES]++
 
 					remove_task(TASK_COUNTDOWN)
@@ -4936,19 +4860,12 @@ public _ExtraItems(id, menu, item)
 					start_mode(MODE_NEMESIS, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Nemesis", g_playerName[id])
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_CLASS_ASSASIN:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_ASSASIN, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					LIMIT[id][MODES]++
 
 					remove_task(TASK_COUNTDOWN)
@@ -4956,19 +4873,12 @@ public _ExtraItems(id, menu, item)
 					start_mode(MODE_ASSASIN, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Assassin", g_playerName[id])
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_CLASS_SNIPER:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_SNIPER, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					LIMIT[id][MODES]++
 
 					remove_task(TASK_COUNTDOWN)
@@ -4976,19 +4886,12 @@ public _ExtraItems(id, menu, item)
 					start_mode(MODE_SNIPER, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Sniper", g_playerName[id])
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
 			}
 		case EXTRA_CLASS_SURVIVOR:
 			{
 				if (CanBuy(EXTRA_HUMANS, EXTRA_CLASS_SURVIVOR, id))
 				{
-					if (g_ammopacks[id] < g_cExtraItems[iChoice][Price])
-					{
-						client_print_color(id, print_team_grey, "%s You dont have enough ammo packs", CHAT_PREFIX)
-						return PLUGIN_HANDLED
-					}
-
 					LIMIT[id][MODES]++
 
 					remove_task(TASK_COUNTDOWN)
@@ -4996,8 +4899,12 @@ public _ExtraItems(id, menu, item)
 					start_mode(MODE_SURVIVOR, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Survivor", g_playerName[id])
-					g_ammopacks[id] -= g_cExtraItems[iChoice][Price]	// Deduct the packs
 				}
+			}
+		default:
+			{
+				// Notify plugins that the player bought this item
+				ExecuteForward(g_forwards[EXTRA_ITEM_SELECTED], g_forwardRetVal, id, ItemIndex)
 			}
 		}
 	}
@@ -18699,6 +18606,30 @@ public register_points_shop_weapon(const name[], const price)
     // Return the index of this item in the array
     // This creates the unique item index
     return (g_pointsShopTotalWeapons - 1)
+}
+
+// To be used internally
+public register_extra_item(const name[], price, team)
+{
+	// Create an array to hold our item data
+	new ItemData[extraItemsDataStructure]
+
+	// Get item name from function
+	formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
+
+	// Get item cost from function
+	ItemData[ItemCost] = price
+
+	// Get item team from function
+	ItemData[ItemTeam] = team
+
+	// Add item to array and increase size
+	ArrayPushArray(g_extraitems, ItemData)
+	g_extraitemsCount++
+
+	// Return the index of this item in the array
+	// This creates the unique item index
+	return (g_extraitemsCount - 1)
 }
 
 /*================================================================================
