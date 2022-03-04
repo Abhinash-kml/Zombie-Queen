@@ -14,6 +14,7 @@
 #include <      xs        >
 #include <     geoip      >
 #include <		sqlx	  >
+#include <      rog       >
 
 // Jetapck
 native set_user_jetpack(id, jetpack)
@@ -6760,7 +6761,15 @@ public OnPlayerSpawn(id)
 {
 	// Not alive or didn't join a team yet
 	if (!is_user_alive(id) || !fm_cs_get_user_team(id)) return
-	
+
+	ROGInitialize(250.0) // Initialize Rog
+	// ROGDumpOriginData() // Dump the origin data
+
+	// Get the next origin and spawn the player there
+	new Float:Origin[3] 
+	ROGGetOrigin(Origin) 
+	engfunc(EngFunc_SetOrigin, id, Origin)
+
 	// Player spawned
 	g_isalive[id] = true
 	g_specialclass[id] = false
