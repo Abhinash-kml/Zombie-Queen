@@ -46,7 +46,7 @@ public plugin_init()
 
 	LoadQuizFromFile()
 
-	set_task(70.0, "SelectQuestion", .flags = "b")
+	set_task(90.0, "SelectQuestion", .flags = "b")
 
 	return PLUGIN_CONTINUE
 }
