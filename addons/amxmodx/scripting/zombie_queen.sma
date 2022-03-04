@@ -19094,9 +19094,14 @@ public AddCommas(number)
 
 public CreateBot(const iBotName[])
 {
-	static iBot
-	iBot = engfunc(EngFunc_CreateFakeClient, iBotName)
+	static iBot; iBot = engfunc(EngFunc_CreateFakeClient, iBotName)
 	
+	if (!iBot || !pev_valid(iBot))
+	{
+		log_amx("Bot creation failed")
+		return FMRES_IGNORED
+	}
+
 	dllfunc(MetaFunc_CallGameEntity, "player", iBot)
 	set_pev(iBot, pev_flags, FL_FAKECLIENT)
 	
@@ -19116,7 +19121,8 @@ public CreateBot(const iBotName[])
 	
 	g_bot[iBot] = true
 	g_iBotsCount++
-	
+
+	return FMRES_HANDLED
 }  
 
 public RemoveBot()
@@ -19124,7 +19130,7 @@ public RemoveBot()
 	static i
 	for(i = 1; i <= get_maxplayers(); i++) 
 	{
-		if(g_bot[i]) server_cmd("kick #%d", get_user_userid(i))
+		if (g_bot[i]) server_cmd("kick #%d", get_user_userid(i))
 	}
 }
 
