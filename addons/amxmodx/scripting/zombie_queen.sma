@@ -5625,6 +5625,38 @@ public client_disconnected(id)
 
 	InsertInfo(id)
 
+	if (g_punished[id]) g_punished[id] = false
+
+	if (g_admin[id] || g_vip[id]) 
+	{
+		g_adminInfo[id][_aFlags] = EOS
+		g_adminInfo[id][_aRank] = EOS
+		g_admin[id] = false
+
+		g_vip[id] = false
+		g_jumpnum[id] = 1
+		g_vipInfo[id][_vFlags] = EOS
+	}
+
+	g_tag[id][0] = EOS
+	g_ammopacks[id] = 0
+
+	// if there are results found
+	g_kills[id]  		  = 0
+	g_deaths[id] 		  = 0
+	g_infections[id] 	  = 0
+	g_nemesiskills[id] 	  = 0
+	g_assasinkills[id] 	  = 0
+	g_bombardierkills[id] = 0
+	g_survivorkills[id]   = 0
+	g_sniperkills[id] 	  = 0
+	g_samuraikills[id] 	  = 0
+	g_grenadierkills[id]  = 0
+	g_terminatorkills[id] = 0
+	g_revenantkills[id]	  = 0
+	g_points[id] 		  = 0
+	g_score[id] 		  = 0
+
 	// Reset some vars
 	g_antidotebomb[id] = 0
 	g_concussionbomb[id] = 0
