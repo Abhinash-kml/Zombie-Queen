@@ -728,7 +728,7 @@ new g_playercountry[33][32]
 new g_playercity[33][32]
 
 // Array for Weapon menu
-new Array:g_weapon_name[2], Array:g_weapon_ids[2]
+new Array:g_full_weapon_names, Array:g_weapon_name[2], Array:g_weapon_ids[2]
 
 /*================================================================================
 	[Core stuffs...]
@@ -1585,8 +1585,9 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Extras.ini", "MESSAGES", "ROUND WELCOME TEXT", ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT))
 	format(ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT), "^1**** ^4%s ^1|| ^4Zombie Queen 11.5 ^1by ^3Eye NeO- ^1****", ROUND_WELCOME_TEXT)
 
-	// Primary weapons
+	// Primary and secondary weapon sections
 	new wpn_ids[32]
+	AmxLoadStringArray("zombie_queen/Extras.ini", "BUY MENU WEAPONS", "WEAPON NAMES", g_full_weapon_names)
 
 	AmxLoadStringArray("zombie_queen/Extras.ini", "BUY MENU WEAPONS", "PRIMARY", g_weapon_name[0])
 	for (i = 0; i < ArraySize(g_weapon_name[0]); i++) 
@@ -1806,36 +1807,6 @@ enum _:Items
 }
 
 new LIMIT[33][Items]
-
-enum _:WeaponsData
-{
-	weaponName[20],
-	weaponID[20],
-	weaponCSW
-}
-
-new g_PrimaryWeapons[][WeaponsData] =
-{
-	{"GALIL", 	"weapon_galil", 	CSW_GALIL},
-	{"FAMAS", 	"weapon_famas", 	CSW_FAMAS},
-	{"M4A1", 	"weapon_m4a1", 		CSW_M4A1},
-	{"AK47", 	"weapon_ak47", 		CSW_AK47},
-	{"AUG", 	"weapon_aug", 		CSW_AUG},
-	{"SG550", 	"weapon_sg550",  	CSW_SG550},
-	{"XM1014",  "weapon_xm1014", 	CSW_XM1014},
-	{"M3", 		"weapon_m3", 		CSW_M3},
-	{"MP5NAVY", "weapon_mp5navy", 	CSW_MP5NAVY},
-	{"P90", 	"weaponp90", 		CSW_P90}
-}
-new g_SecondaryWeapons[][WeaponsData] =
-{
-	{"USP", 		"weapon_usp", 		 CSW_USP},
-	{"GLOCK18", 	"weapon_glock18",  	 CSW_GLOCK18},
-	{"P228", 		"weapon_p228", 		 CSW_P228},
-	{"DEAGLE", 		"weapon_deagle", 	 CSW_DEAGLE},
-	{"ELITE", 		"weapon_elite", 	 CSW_ELITE},
-	{"FIVESEVEN", 	"weapon_fiveseven",  CSW_FIVESEVEN}
-}
 
 // Static game menus
 new g_iGameMenu
@@ -2143,14 +2114,6 @@ new const WEAPONENTNAMES[][] =
 	"", "weapon_p228", "", "weapon_scout", "weapon_hegrenade", "weapon_xm1014", "weapon_c4", "weapon_mac10", "weapon_aug", "weapon_smokegrenade", "weapon_elite", "weapon_fiveseven",
 	"weapon_ump45", "weapon_sg550", "weapon_galil", "weapon_famas", "weapon_usp", "weapon_glock18", "weapon_awp", "weapon_mp5navy", "weapon_m249", "weapon_m3", "weapon_m4a1", 
 	"weapon_tmp", "weapon_g3sg1", "weapon_flashbang", "weapon_deagle", "weapon_sg552", "weapon_ak47", "weapon_knife", "weapon_p90" 
-}
-
-// Primary and Secondary Weapon Names
-new const WEAPONNAMES[][] = 
-{ 
-	"", "P228 Compact", "", "Schmidt Scout", "", "XM1014 M4", "", "Ingram MAC-10", "Steyr AUG A1", "", "Dual Elite Berettas", "FiveseveN", "UMP 45", 
-	"SG-550 Auto-Sniper", "IMI Galil", "Famas", "USP .45 ACP Tactical", "Glock 18C", "AWP Magnum Sniper", "MP5 Navy", "M249 for Machinegun", "M3 Super 90", "M4A1 Carbine", 
-	"Schmidt TMP", "G3SG1 Auto-Sniper", "", "Desert Eagle .50 AE", "SG-552 Commando", "AK-47 Kalashnikov", "", "ES P90" 
 }
 
 new g_BlockedMessages[][] =
@@ -2633,6 +2596,8 @@ public plugin_precache()
 		g_weapon_name[i] = ArrayCreate(32, 1)
 		g_weapon_ids[i] = ArrayCreate(1, 1)
 	}
+
+	g_full_weapon_names = ArrayCreate(64, 1)
 
 	LoadCustomizationFromFile()
 	
@@ -9328,14 +9293,14 @@ public show_menu_buy1(taskid)
 	// Zombies, Survivors and Snipers get no guns.
 	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
 	{
-		static text[32]
+		static text[2][32], size; size = 31
 		new g_menu = menu_create("\yPrimary Weapons", "PrimaryHandler", 0)
 		
 		for (new i = 0; i < ArraySize(g_weapon_name[0]); i++)
 		{
-			format(text, charsmax(text), "%d", ArrayGetCell(g_weapon_ids[0], i))
-			menu_additem(g_menu, WEAPONNAMES[ArrayGetCell(g_weapon_ids[0], i)], text, 0)
-			client_print_color(0, print_team_grey, "Weapon data sent = %s", text)
+			num_to_str(ArrayGetCell(g_weapon_ids[0], i), text[0], size)
+			ArrayGetString(g_full_weapon_names, ArrayGetCell(g_weapon_ids[0], i), text[1], size)
+			menu_additem(g_menu, text[1], text[0], 0)
 		}
 
 		menu_display(id, g_menu)
@@ -9355,14 +9320,14 @@ public show_menu_buy2(id)
 	// Show mwnu only to Human Class
 	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
 	{
-		static text[32]
+		static text[2][32], size; size = 31
 		new g_menu = menu_create("\ySecondary Weapons", "SecondaryHandler", 0)
 
 		for (new i = 0; i < ArraySize(g_weapon_name[1]); i++)
 		{
-			format(text, charsmax(text), "%d", ArrayGetCell(g_weapon_ids[1], i))
-			menu_additem(g_menu, WEAPONNAMES[ArrayGetCell(g_weapon_ids[1], i)], text, 0)
-			client_print_color(0, print_team_grey, "Weapon data sent = %s", text)
+			num_to_str(ArrayGetCell(g_weapon_ids[1], i), text[0], size)
+			ArrayGetString(g_full_weapon_names, ArrayGetCell(g_weapon_ids[1], i), text[1], size)
+			menu_additem(g_menu, text[1], text[0], 0)
 		}
 
 		menu_display(id, g_menu)
@@ -9545,8 +9510,6 @@ public PrimaryHandler(id, menu, item)
 	{
 		// Drop previous weapons
 		drop_weapons(id, 1)
-		
-		client_print_color(id, print_team_grey, "Choice = %i", choice)
 
 		set_weapon(id, choice, 10000)
 
@@ -9572,8 +9535,6 @@ public SecondaryHandler(id, menu, item)
 		// Drop Previous Weapons
 		drop_weapons(id, 2)
 		g_canbuy[id] = false
-
-		client_print_color(id, print_team_grey, "Choice = %i", choice)
 		
 		// Set weapon and ammo
 		set_weapon(id, choice, 10000)
