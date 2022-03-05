@@ -727,6 +727,9 @@ new Array:g_hudAdvertisementMessages
 new g_playercountry[33][32]
 new g_playercity[33][32]
 
+// Array for Weapon menu
+new Array:g_weapon_name[2], Array:g_weapon_ids[2]
+
 /*================================================================================
 	[Core stuffs...]
 =================================================================================*/
@@ -1581,6 +1584,25 @@ LoadCustomizationFromFile()
 	// Round Welcome message
 	AmxLoadString("zombie_queen/Extras.ini", "MESSAGES", "ROUND WELCOME TEXT", ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT))
 	format(ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT), "^1**** ^4%s ^1|| ^4Zombie Queen 11.5 ^1by ^3Eye NeO- ^1****", ROUND_WELCOME_TEXT)
+
+	// Primary weapons
+	new wpn_ids[32]
+
+	AmxLoadStringArray("zombie_queen/Extras.ini", "BUY MENU WEAPONS", "PRIMARY", g_weapon_name[0])
+	for (i = 0; i < ArraySize(g_weapon_name[0]); i++) 
+	{
+		ArrayGetString(g_weapon_name[0], i, wpn_ids, charsmax(wpn_ids))
+		ArrayPushCell(g_weapon_ids[0], cs_weapon_name_to_id(wpn_ids))
+		log_amx("cs_weapon_name_to_id = %i", cs_weapon_name_to_id(wpn_ids))
+	}
+
+	AmxLoadStringArray("zombie_queen/Extras.ini", "BUY MENU WEAPONS", "SECONDARY", g_weapon_name[1])
+	for (i = 0; i < ArraySize(g_weapon_name[1]); i++) 
+	{
+		ArrayGetString(g_weapon_name[1], i, wpn_ids, charsmax(wpn_ids))
+		ArrayPushCell(g_weapon_ids[1], cs_weapon_name_to_id(wpn_ids))	
+		log_amx("cs_weapon_name_to_id = %i", cs_weapon_name_to_id(wpn_ids))
+	}
 }
 
 // Forward enums
@@ -1823,10 +1845,6 @@ new g_iPointShopMenu
 new g_iAmmoMenu
 new g_iFeaturesMenu
 new g_iModesMenu
-
-// Primary and secondary weapon menus
-new g_PrimaryMenu
-new g_SecondaryMenu
 
 // String for holding name of a class
 new g_classString[33][14]
@@ -2095,14 +2113,8 @@ const PEV_SPEC_TARGET 		= pev_iuser2
 // Max BP ammo for weapons
 new const MAXBPAMMO[] =
 {
-	-1 , 52 , -1 , 90 ,
-	1  , 32 , 1  , 100,
-	90 , 1  , 120, 100,
-	100, 90 , 90 , 90 ,
-	100, 120, 30 , 120,
-	200, 32 ,  90, 120,
-	90 , 2  , 35 , 90 ,
-	90 , -1 , 100
+	-1 , 52, -1, 90, 1, 32, 1, 100, 90, 1, 120, 100, 100, 90, 90, 90,
+	100, 120, 30 , 120, 200, 32, 90, 120, 90, 2, 35, 90, 90, -1, 100
 }
 
 // Max Clip for weapons
@@ -2121,73 +2133,24 @@ new const MAXCLIP[] =
 // Ammo Type Names for weapons
 new const AMMOTYPE[][] = 
 {
-	"",
-	"357sig",
-	"",
-	"762nato",
-	"",
-	"buckshot",
-	"",
-	"45acp", 
-	"556nato",
-	"",
-	"9mm",
-	"57mm", 
-	"45acp",
-	"556nato",
-	"556nato", 
-	"556nato",
-	"45acp",
-	"9mm",
-	"338magnum", 
-	"9mm",
-	"556natobox",
-	"buckshot",
-	"556nato", 
-	"9mm",
-	"762nato",
-	"",
-	"50ae",
-	"556nato", 
-	"762nato",
-	"",
-	"57mm" 
+	"", "357sig", "", "762nato", "", "buckshot", "", "45acp", "556nato", "", "9mm", "57mm", "45acp", "556nato", "556nato", "556nato", "45acp", "9mm", "338magnum", "9mm",
+	"556natobox", "buckshot", "556nato", "9mm", "762nato", "", "50ae", "556nato", "762nato", "", "57mm" 
 }
 
 // Weapon entity names
 new const WEAPONENTNAMES[][] =
 { 
-	"",
-	"weapon_p228",
-	"",
-	"weapon_scout",
-	"weapon_hegrenade",
-	"weapon_xm1014",
-	"weapon_c4",
-	"weapon_mac10",
-	"weapon_aug",
-	"weapon_smokegrenade",
-	"weapon_elite",
-	"weapon_fiveseven",
-	"weapon_ump45",
-	"weapon_sg550",
-	"weapon_galil",
-	"weapon_famas",
-	"weapon_usp",
-	"weapon_glock18",
-	"weapon_awp",
-	"weapon_mp5navy",
-	"weapon_m249",
-	"weapon_m3",
-	"weapon_m4a1",
-	"weapon_tmp",
-	"weapon_g3sg1",
-	"weapon_flashbang",
-	"weapon_deagle",
-	"weapon_sg552",
-	"weapon_ak47",
-	"weapon_knife",
-	"weapon_p90" 
+	"", "weapon_p228", "", "weapon_scout", "weapon_hegrenade", "weapon_xm1014", "weapon_c4", "weapon_mac10", "weapon_aug", "weapon_smokegrenade", "weapon_elite", "weapon_fiveseven",
+	"weapon_ump45", "weapon_sg550", "weapon_galil", "weapon_famas", "weapon_usp", "weapon_glock18", "weapon_awp", "weapon_mp5navy", "weapon_m249", "weapon_m3", "weapon_m4a1", 
+	"weapon_tmp", "weapon_g3sg1", "weapon_flashbang", "weapon_deagle", "weapon_sg552", "weapon_ak47", "weapon_knife", "weapon_p90" 
+}
+
+// Primary and Secondary Weapon Names
+new const WEAPONNAMES[][] = 
+{ 
+	"", "P228 Compact", "", "Schmidt Scout", "", "XM1014 M4", "", "Ingram MAC-10", "Steyr AUG A1", "", "Dual Elite Berettas", "FiveseveN", "UMP 45", 
+	"SG-550 Auto-Sniper", "IMI Galil", "Famas", "USP .45 ACP Tactical", "Glock 18C", "AWP Magnum Sniper", "MP5 Navy", "M249 for Machinegun", "M3 Super 90", "M4A1 Carbine", 
+	"Schmidt TMP", "G3SG1 Auto-Sniper", "", "Desert Eagle .50 AE", "SG-552 Commando", "AK-47 Kalashnikov", "", "ES P90" 
 }
 
 new g_BlockedMessages[][] =
@@ -2664,6 +2627,12 @@ public plugin_precache()
 	for (new i = 0; i < MAX_AMBIENCE_SOUNDS; i++) g_ambience[i] = ArrayCreate(64, 1)
 	for (new i = 0; i < MAX_START_SOUNDS; i++) g_startSound[i] = ArrayCreate(64, 1)
 	for (new i = 0; i < MAX_MISC_SOUNDS; i++) g_miscSounds[i] = ArrayCreate(64, 1)
+
+	for (new i = 0; i < 2; i++) 
+	{
+		g_weapon_name[i] = ArrayCreate(32, 1)
+		g_weapon_ids[i] = ArrayCreate(1, 1)
+	}
 
 	LoadCustomizationFromFile()
 	
@@ -3695,18 +3664,6 @@ public plugin_init()
 		num_to_str(i, cNumber, 3)
 		menu_additem(g_iModesMenu, cLine, cNumber, 0, -1)
 	}
-	
-	g_PrimaryMenu = menu_create("Primary Weapons", "PrimaryHandler")
-	for (new i; i < sizeof g_PrimaryWeapons; i++)
-	{
-		menu_additem(g_PrimaryMenu, g_PrimaryWeapons[i][weaponName])
-	}
-
-	g_SecondaryMenu = menu_create("Secondary Weapons", "SecondaryHandler")
-	for (new i; i < sizeof g_SecondaryWeapons; i++)
-	{
-		menu_additem(g_SecondaryMenu, g_SecondaryWeapons[i][weaponName])
-	}
 
 	//register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
 
@@ -3748,7 +3705,6 @@ public plugin_init()
 	register_extra_item("Infection Bomb", 25, ZQ_EXTRA_ZOMBIE)
 	register_extra_item("Concussion Bomb", 10, ZQ_EXTRA_ZOMBIE)
 	register_extra_item("Knife Blink", 10, ZQ_EXTRA_ZOMBIE)
-
 
 	register_points_shop_weapon("Golden Weapons", 2000)
 	register_points_shop_weapon("Crossbow", 4000)
@@ -9371,13 +9327,45 @@ public show_menu_buy1(taskid)
 	
 	// Zombies, Survivors and Snipers get no guns.
 	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
-		menu_display(id, g_PrimaryMenu)
+	{
+		static text[32]
+		new g_menu = menu_create("\yPrimary Weapons", "PrimaryHandler", 0)
+		
+		for (new i = 0; i < ArraySize(g_weapon_name[0]); i++)
+		{
+			format(text, charsmax(text), "%d", ArrayGetCell(g_weapon_ids[0], i))
+			menu_additem(g_menu, WEAPONNAMES[ArrayGetCell(g_weapon_ids[0], i)], text, 0)
+			client_print_color(0, print_team_grey, "Weapon data sent = %s", text)
+		}
+
+		menu_display(id, g_menu)
+	}
 	
 	// Bots get weapons randomly.
 	if (g_isbot[id])
 	{
 		set_weapon(id, CSW_KNIFE)
-		set_weapon(id, CSW_AWP)
+		set_weapon(id, CSW_AK47)
+	}
+}
+
+// Buy menu 2
+public show_menu_buy2(id)
+{
+	// Show mwnu only to Human Class
+	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
+	{
+		static text[32]
+		new g_menu = menu_create("\ySecondary Weapons", "SecondaryHandler", 0)
+
+		for (new i = 0; i < ArraySize(g_weapon_name[1]); i++)
+		{
+			format(text, charsmax(text), "%d", ArrayGetCell(g_weapon_ids[1], i))
+			menu_additem(g_menu, WEAPONNAMES[ArrayGetCell(g_weapon_ids[1], i)], text, 0)
+			client_print_color(0, print_team_grey, "Weapon data sent = %s", text)
+		}
+
+		menu_display(id, g_menu)
 	}
 }
 
@@ -9541,36 +9529,16 @@ public ShowPointsShopWeaponsMenu(id)
 /*================================================================================
 	[Menu Handlers]
 =================================================================================*/
+
 // Buy Menu 1
-public SecondaryHandler(id, menu, item)
-{
-	if (item == MENU_EXIT) return PLUGIN_HANDLED
-	
-	// Zombies, Survivors and Snipers get no guns.
-	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
-	{
-		// Drop Previous Weapons
-		drop_weapons(id, 2)
-		g_canbuy[id] = false
-		
-		// Set weapon and ammo
-		//fm_give_item(id, g_SecondaryWeapons[item][weaponID])
-		//cs_set_user_bpammo(id, g_SecondaryWeapons[item][weaponCSW], 99999)
-		set_weapon(id, g_SecondaryWeapons[item][weaponCSW], 10000)
-
-		// Set grenades
-		set_weapon(id, CSW_HEGRENADE, 1)
-		set_weapon(id, CSW_FLASHBANG, 1)
-		set_weapon(id, CSW_SMOKEGRENADE, 1)
-	}
-
-	return PLUGIN_HANDLED
-}
-
-// Buy Menu 2
 public PrimaryHandler(id, menu, item)
 {
 	if (item == MENU_EXIT) return PLUGIN_HANDLED
+
+	new data[32]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
 	
 	// Zombies, Survivors and Snipers get no guns.
 	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
@@ -9578,12 +9546,44 @@ public PrimaryHandler(id, menu, item)
 		// Drop previous weapons
 		drop_weapons(id, 1)
 		
-		set_weapon(id, g_PrimaryWeapons[item][weaponCSW], 10000)
-		set_weapon(id, CSW_AWP, 10000)
+		client_print_color(id, print_team_grey, "Choice = %i", choice)
 
-		menu_display(id, g_SecondaryMenu)
+		set_weapon(id, choice, 10000)
+
+		show_menu_buy2(id)
 	}
 	
+	return PLUGIN_HANDLED
+}
+
+// Buy Menu 2
+public SecondaryHandler(id, menu, item)
+{
+	if (item == MENU_EXIT) return PLUGIN_HANDLED
+
+	new data[32]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+	
+	// Zombies, Survivors and Snipers get no guns.
+	if (g_isalive[id] && CheckBit(g_playerClass[id], CLASS_HUMAN))
+	{
+		// Drop Previous Weapons
+		drop_weapons(id, 2)
+		g_canbuy[id] = false
+
+		client_print_color(id, print_team_grey, "Choice = %i", choice)
+		
+		// Set weapon and ammo
+		set_weapon(id, choice, 10000)
+
+		// Set grenades
+		set_weapon(id, CSW_HEGRENADE, 1)
+		set_weapon(id, CSW_FLASHBANG, 1)
+		set_weapon(id, CSW_SMOKEGRENADE, 1)
+	}
+
 	return PLUGIN_HANDLED
 }
 
@@ -16687,7 +16687,7 @@ public ShowHUD(taskid)
 	// Format classname
 	static message[128], red, green, blue
 	
-	if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) // zombies
+	if (CheckBit(g_playerTeam[id], TEAM_ZOMBIE)) // Zombies
 	{
 		red   = 255
 		green = 50
@@ -16695,11 +16695,11 @@ public ShowHUD(taskid)
 		
 		formatex(message, charsmax(message), "%s - Health: %s - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(clamp(g_points[ID_SHOWHUD], 0, 99999)))
 	}	
-	else // humans
+	else // Humans
 	{
-		red   = 10
-		green = 180
-		blue  = 150
+		red   = 0
+		green = 150
+		blue  = 0
 		
 		formatex(message, charsmax(message), "%s - Health: %s - Armor: %d - Packs: %s - Points: %s", g_classString[ID_SHOWHUD], AddCommas(pev(ID_SHOWHUD, pev_health)), pev(ID_SHOWHUD, pev_armorvalue), AddCommas(g_ammopacks[ID_SHOWHUD]), AddCommas(clamp(g_points[ID_SHOWHUD], 0, 99999)))
 	}
@@ -16707,9 +16707,9 @@ public ShowHUD(taskid)
 	// Spectating someone else?
 	if (id != ID_SHOWHUD)
 	{
-		set_hudmessage(10, 180, 150, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
-		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s %s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
-		g_vip[id] ? "(Gold Member ®)" : "", g_playerName[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(clamp(g_points[id], 0, 99999)), g_playercountry[id], g_playercity[id])
+		set_hudmessage(red, green, blue, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
+		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s%s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
+		g_vip[id] ? " (Gold Member ®)" : "", g_playerName[id], g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(clamp(g_points[id], 0, 99999)), g_playercountry[id], g_playercity[id])
 	}
 	else
 	{
@@ -16755,32 +16755,32 @@ public madness_over(taskid)
 }
 
 // NeO's set weapon function
-set_weapon(id , iWeaponTypeID , iClip=0)
+set_weapon(id, weapon_id, clip = 0)
 {
-	if (!(CSW_P228 <= iWeaponTypeID <= CSW_P90) || !is_user_alive(id)) return -1
+	if (!(CSW_P228 <= weapon_id <= CSW_P90) || !is_user_alive(id)) return -1
 	
-	new szWeaponName[20] , iWeaponEntity , bool:bIsGrenade
+	new weapon_name[20] , iWeaponEntity , bool:bIsGrenade
 	
 	const GrenadeBits = ((1 << CSW_HEGRENADE) | (1 << CSW_FLASHBANG) | (1 << CSW_SMOKEGRENADE) | (1 << CSW_C4))
 	
-	if ((bIsGrenade = bool:!!(GrenadeBits & (1 << iWeaponTypeID))))
-	iClip = clamp(iClip ? iClip : 10000 , 1)
+	if ((bIsGrenade = bool:!!(GrenadeBits & (1 << weapon_id))))
+	clip = clamp(clip ? clip : 10000 , 1)
 	
-	get_weaponname(iWeaponTypeID, szWeaponName, charsmax(szWeaponName))
+	get_weaponname(weapon_id, weapon_name, charsmax(weapon_name))
 	
-	if ((iWeaponEntity = user_has_weapon(id, iWeaponTypeID) ? find_ent_by_owner(-1, szWeaponName, id) : give_item(id, szWeaponName)) > 0)
+	if ((iWeaponEntity = user_has_weapon(id, weapon_id) ? find_ent_by_owner(-1, weapon_name, id) : give_item(id, weapon_name)) > 0)
 	{
-		if (iWeaponTypeID != CSW_KNIFE)
+		if (weapon_id != CSW_KNIFE)
 		{
-			if (!iClip && !bIsGrenade) cs_set_weapon_ammo(iWeaponEntity, 10000) 
-			else if (iClip && !bIsGrenade)
+			if (!clip && !bIsGrenade) cs_set_weapon_ammo(iWeaponEntity, 10000) 
+			else if (clip && !bIsGrenade)
 			{
-				cs_set_user_bpammo(id, iWeaponTypeID, iClip)
+				cs_set_user_bpammo(id, weapon_id, clip)
 				
-				if (iWeaponTypeID == CSW_C4) 
+				if (weapon_id == CSW_C4) 
 				cs_set_user_plant(id, 1, 1)
 			}
-			else if (iClip && bIsGrenade) cs_set_user_bpammo(id, iWeaponTypeID, iClip) 
+			else if (clip && bIsGrenade) cs_set_user_bpammo(id, weapon_id, clip) 
 		}
 	}
 	
@@ -18890,6 +18890,15 @@ stock remove_glow(entity)
 	set_pev(entity, pev_renderfx, kRenderFxNone)
 	set_pev(entity, pev_rendermode, kRenderNormal)
 	set_pev(entity, pev_renderamt, float(0))
+}
+
+// Simplified get_weaponid (CS only)
+stock cs_weapon_name_to_id(const weapon[]) 
+{
+	static i
+	for (i = 0; i < sizeof WEAPONENTNAMES; i++) if (equal(weapon, WEAPONENTNAMES[i])) return i
+
+	return 0
 }
 
 // Get entity's speed (from fakemeta_util)
