@@ -165,149 +165,64 @@ new g_Tracker
 new g_Size
 
 /*================================================================================
-	[Configurations]
+	[Class Variables]
 =================================================================================*/
 
-// Classes Configurations
+// --- Human ---
+new HumanHealth, Float:HumanSpeed, Float:HumanGravity, HumanArmorProtect, HumanFragsForKill, LastHumanExtraHealth
 
-// Human Class Configs
-new HumanHealth
-new Float:HumanSpeed
-new Float:HumanGravity
-new HumanArmorProtect
-new HumanFragsForKill
-new LastHumanExtraHealth
+// --- Assassin ---
+new AssassinEnabled, AssassinChance, AssassinMinPlayers, AssassinHealth, Float:AssassinSpeed, Float:AssassinGravity, Float:AssassinDamage
 
-// Assassin
-new AssassinEnabled
-new AssassinChance
-new AssassinMinPlayers
-new AssassinHealth
-new Float:AssassinSpeed
-new Float:AssassinGravity
-new Float:AssassinDamage
+// --- Nemesis ---
+new NemesisEnabled, NemesisChance, NemesisMinPlayers, NemesisHealth, Float:NemesisSpeed, Float:NemesisGravity, Float:NemesisDamage
 
-// Nemesis
-new NemesisEnabled
-new NemesisChance
-new NemesisMinPlayers
-new NemesisHealth
-new Float:NemesisSpeed
-new Float:NemesisGravity
-new Float:NemesisDamage
+// --- Bombardier ---
+new BombardierEnabled, BombardierChance, BombardierMinPlayers, BombardierHealth, Float:BombardierSpeed, Float:BombardierGravity, Float:BombardierDamage
 
-// Bombardier
-new BombardierEnabled
-new BombardierChance
-new BombardierMinPlayers
-new BombardierHealth
-new Float:BombardierSpeed
-new Float:BombardierGravity
-new Float:BombardierDamage
+// --- Revenant ---
+new RevenantEnabled, RevenantChance, RevenantMinPlayers, RevenantHealth, Float:RevenantSpeed, Float:Revenantgravity, Float:RevenantDamage
 
-// Revenant
-new RevenantEnabled
-new RevenantChance
-new RevenantMinPlayers
-new RevenantHealth
-new Float:RevenantSpeed
-new Float:Revenantgravity
-new Float:RevenantDamage
+// --- Sniper ---
+new SniperEnabled, SniperChance, SniperMinPlayers, SniperHealth, Float:SniperSpeed, Float:SniperGravity, Float:SniperDamage
 
-// Sniper
-new SniperEnabled
-new SniperChance
-new SniperMinPlayers
-new SniperHealth
-new Float:SniperSpeed
-new Float:SniperGravity
-new Float:SniperDamage
+// --- Survivor ---
+new SurvivorEnabled, SurvivorChance, SurvivorMinPlayers, SurvivorHealth, Float:SurvivorSpeed, Float:SurvivorGravity
 
-// Survivor
-new SurvivorEnabled
-new SurvivorChance
-new SurvivorMinPlayers
-new SurvivorHealth
-new Float:SurvivorSpeed
-new Float:SurvivorGravity
+// --- Samurai ---
+new SamuraiEnabled, SamuraiChance, SamuraiMinPlayers, SamuraiHealth, Float:SamuraiSpeed, Float:SamuraiGravity, Float:SamuraiDamage
 
-// Samurai
-new SamuraiEnabled
-new SamuraiChance
-new SamuraiMinPlayers
-new SamuraiHealth
-new Float:SamuraiSpeed
-new Float:SamuraiGravity
-new Float:SamuraiDamage
+// --- Grenadier ---
+new GrenadierEnabled, GrenadierChance, GrenadierMinPlayers, GrenadierHealth, Float:GrenadierSpeed, Float:GrenadierGravity, Float:GrenadierDamage
 
-// Grenadier
-new GrenadierEnabled
-new GrenadierChance
-new GrenadierMinPlayers
-new GrenadierHealth
-new Float:GrenadierSpeed
-new Float:GrenadierGravity
-new Float:GrenadierDamage
+// --- Terminator ---
+new TerminatorEnabled, TerminatorChance, TerminatorMinPlayers, TerminatorHealth, Float:TerminatorSpeed, Float:TerminatorGravity
 
-// Terminator
-new TerminatorEnabled
-new TerminatorChance
-new TerminatorMinPlayers
-new TerminatorHealth
-new Float:TerminatorSpeed
-new Float:TerminatorGravity
+// --- Tryder ---
+new TryderHealth, Float:TryderSpeed, Float:TryderGravity
 
-// Tryder
-new TryderHealth
-new Float:TryderSpeed
-new Float:TryderGravity
+// --- Knockback ---
+new KnockbackEnabled, KnockbackDistance, Float:KnockbackDucking, Float:KnockbackAssassin, Float:KnockbackNemesis, Float:KnockbackBombardier, Float:KnockbackRevenant
 
-// Knockback
-new KnockbackEnabled
-new KnockbackDistance
-new Float:KnockbackDucking
-new Float:KnockbackAssassin
-new Float:KnockbackNemesis
-new Float:KnockbackBombardier
-new Float:KnockbackRevenant
+// --- Pain Shock free ----
+new AssassinPainfree, RevenantPainfree, NemesisPainfree, BombardierPainfree, SniperPainfree, SurvivorPainfree, SamuraiPainfree, GrenadierPainfree, TerminatorPainfree
 
-// Pain Shock free
-new AssassinPainfree
-new RevenantPainfree
-new NemesisPainfree
-new BombardierPainfree
-new SniperPainfree
-new SurvivorPainfree
-new SamuraiPainfree
-new GrenadierPainfree
-new TerminatorPainfree
+// --- Glow ---
+new NemesisGlow, AssassinGlow, RevenantGlow, SurvivorGlow, SniperGlow, SamuraiGlow, GrenadierGlow, TerminatorGlow, BombardierGlow, TryderGlow
 
-// Glow 
-new NemesisGlow
-new AssassinGlow
-new RevenantGlow
-new SurvivorGlow
-new SniperGlow
-new SamuraiGlow
-new GrenadierGlow
-new TerminatorGlow
-new BombardierGlow
-new TryderGlow
+// --- Leap ---
+new LeapZombies, LeapZombiesForce, Float:LeapZombiesHeight, Float:LeapZombiesCooldown
+new LeapNemesis, LeapNemesisForce, Float:LeapNemesisHeight, Float:LeapNemesisCooldown
+new LeapAssassin, LeapAssassinForce, Float:LeapAssassinHeight, Float:LeapAssassinCooldown
+new LeapRevenant, LeapRevenantForce, Float:LeapRevenantHeight, Float:LeapRevenantCooldown
+new LeapBombardier, LeapBombardierForce, Float:LeapBombardierHeight, Float:LeapBombardierCooldown
+new LeapSurvivor, LeapSurvivorForce, Float:LeapSurvivorHeight, Float:LeapSurvivorCooldown
+new LeapSniper, LeapSniperForce, Float:LeapSniperHeight, Float:LeapSniperCooldown
+new LeapSamurai, LeapSamuraiForce, Float:LeapSamuraiHeight, Float:LeapSamuraiCooldown
+new LeapGrenadier, LeapGrenadierForce, Float:LeapGrenadierHeight, Float:LeapGrenadierCooldown
+new LeapTerminator, LeapTerminatorForce, Float:LeapTerminatorHeight, Float:LeapTerminatorCooldown
 
-// General configs
-new ZpDelay = 14
-new Float:SpawnProtectionDelay = 5.0
-
-// General Purpose 
-new BlockSuicide = 1
-new RemoveMoney = 1
-new SaveStats = 1
-new RespawnOnWorldSpawnKill = 1
-new PreventConsecutiveRounds = 1
-new KeepHealthOnDisconnect = 1
-new StartingPacks = 15
-
-// Nightvision Configs
+// --- Nightvision ---
 new NightVisionEnabled = 1
 new CustomNightVision = 1
 new NColorHuman_R = 0
@@ -329,7 +244,7 @@ new NColorSpectator_R = 0
 new NColorSpectator_G = 160
 new NColorSpectator_B = 100
 
-// Flashlight Configs
+// --- Flashlight Configs ---
 new FlashLightEnabled = 1
 new FlashLightSize = 10
 new FlashLightDrain = 1
@@ -342,67 +257,70 @@ new FlColor2_R = 0
 new FlColor2_G = 0
 new FlColor2_B = 255
 
-// Leap Configs
-new LeapZombies
-new LeapZombiesForce
-new Float:LeapZombiesHeight
-new Float:LeapZombiesCooldown
+/*================================================================================
+	[Mode Variables]
+=================================================================================*/
 
-new LeapNemesis
-new LeapNemesisForce
-new Float:LeapNemesisHeight
-new Float:LeapNemesisCooldown
+// --- Swarm Mode ---
+new swarm_enable, swarm_chance, swarm_minplayers
 
-new LeapAssassin
-new LeapAssassinForce
-new Float:LeapAssassinHeight
-new Float:LeapAssassinCooldown
+// --- Multiple Infection ---
+new multi_enable, multi_chance, multi_minplayers, Float:multi_ratio
 
-new LeapRevenant
-new LeapRevenantForce
-new Float:LeapRevenantHeight
-new Float:LeapRevenantCooldown
+// --- Plague Mode ---
+new plague_enable, plague_chance, plague_minplayers, Float:plague_ratio, plague_nemesis_count, Float:plague_nemesis_hp_mul, 
+plague_survivor_count, Float:plague_survivor_hp_mul
 
-new LeapBombardier
-new LeapBombardierForce
-new Float:LeapBombardierHeight
-new Float:LeapBombardierCooldown
+// --- Armageddon / Survivor vs Nemesis Mode ---
+new svn_enable, svn_chance, svn_minplayers, Float:svn_ratio, Float:svn_nemesis_hp_mul, Float:svn_survivor_hp_mul
 
-new LeapSurvivor
-new LeapSurvivorForce
-new Float:LeapSurvivorHeight
-new Float:LeapSurvivorCooldown
+// --- Survivor vs Assasin ---
+new sva_enable, sva_chance, sva_minplayers, Float:sva_ratio, Float:sva_assasin_hp_mul, Float:sva_survivor_hp_mul
 
-new LeapSniper
-new LeapSniperForce
-new Float:LeapSniperHeight
-new Float:LeapSniperCooldown
+// --- Sniper vs Nemesis ---
+new snvn_enable, snvn_chance, snvn_minplayers, Float:snvn_ratio, Float:snvn_sniper_hp_mul, Float:snvn_nemesis_hp_mul
 
-new LeapSamurai
-new LeapSamuraiForce
-new Float:LeapSamuraiHeight
-new Float:LeapSamuraiCooldown
+// --- Sniper vs Assassin ---
+new snva_enable, snva_chance, snva_minplayers, Float:snva_ratio, Float:snva_assasin_hp_mul, Float:snva_sniper_hp_mul
 
-new LeapGrenadier
-new LeapGrenadierForce
-new Float:LeapGrenadierHeight
-new Float:LeapGrenadierCooldown
+// --- Nightmare ---
+new nightmare_enable, nightmare_chance, nightmare_minplayers, Float:nightmare_ratio, Float:nightmare_assasin_hp_mul, 
+Float:nightmare_nemesis_hp_mul, Float:nightmare_sniper_hp_mul, Float:nightmare_survivor_hp_mul
 
-new LeapTerminator
-new LeapTerminatorForce
-new Float:LeapTerminatorHeight
-new Float:LeapTerminatorCooldown
+// --- Synapsis ---
+new synapsis_enable, synapsis_chance, synapsis_minplayers, Float:synapsis_ratio, synapsis_nemesis_count, Float:synapsis_nemesis_hp_mul, 
+synapsis_survivor_count, Float:synapsis_survivor_hp_mul, synapsis_sniper_count, Float:synapsis_sniper_hp_mul
 
-// Custom grenades configs
+// --- Bombardier vs Grenadier ---
+new bvg_enable, bvg_chance, bvg_minplayers, Float:bvg_ratio, Float:bvg_bombardier_hp_mul, Float:bvg_grenadier_hp_mul
+
+/*================================================================================
+	[Others Variables]
+=================================================================================*/
+
+// --- General configs ---
+new ZpDelay = 14
+new Float:SpawnProtectionDelay = 5.0
+
+// --- General Purpose ---
+new BlockSuicide = 1
+new RemoveMoney = 1
+new SaveStats = 1
+new RespawnOnWorldSpawnKill = 1
+new PreventConsecutiveRounds = 1
+new KeepHealthOnDisconnect = 1
+new StartingPacks = 15
+
+// --- Custom grenades configs ---
 new FireDuration  = 10
 new Float:FireDamage = 5.0
 new Float:FireSlowdown  = 0.5
 new Float:FrostDuration = 5.0
 
-// Few Extra items configs
+// --- Few Extra items configs ---
 new MadnessDuration = 5
 
-// Zombies Configs
+// --- Zombies Configs ---
 new Float:FirstZombieHealth = 2.0
 new Float:ZombieArmor = 0.75
 new ZombieFOV = 110
@@ -412,102 +330,13 @@ new ZombieBleeding = 0
 new ZombieRewardInfectPacks = 1
 new ZombieRewardInfectFrags = 1
 
-// Special Effects Configs
+// --- Special Effects Configs ---
 new InfectionScreenFade = 1
 new InfectionScreenShake = 1
 new InfectionSparkle = 1
 new InfectionTracers = 1
 new InfectionParticles = 1
 new HUDIcons = 1
-
-// SWARM Mode Configs
-new Swarm_enable
-new Swarm_chance
-new Swarm_minPlayers
-
-// Multiple Infection Configs
-new MultiInfection_enable
-new MultiInfection_chance
-new MultiInfection_minPlayers
-new Float:MultiInfection_ratio
-
-// Plague Mode configs
-new Plague_enable
-new Plague_chance
-new Plague_minPlayers
-new Float:Plague_ratio
-new Plague_nemesisCount
-new Float:Plague_nemesis_HealthMultiply
-new Plague_survivorCount
-new Float:Plague_survivor_HealthMultiply
-
-// Armageddon Mode configs
-new Armageddon_enable
-new Armageddon_chance
-new Armageddon_minPlayers
-new Float:Armageddon_ratio
-new Float:Armageddon_nemesis_HealthMultiply
-new Float:Armageddon_survivor_HealthMultiply
-
-// Sniper vs Assassin mode configs
-new Apocalypse_enable
-new Apocalypse_chance
-new Apocalypse_minPlayers
-new Float:Apocalypse_ratio
-new Float:Apocalypse_assasin_HealthMultiply
-new Float:Apocalypse_sniper_HealthMultiply
-
-// Sniper vs Nemesis mode configs
-new SniperVsNemesis_enable
-new SniperVsNemesis_chance
-new SniperVsNemesis_minPlayers
-new Float:SniperVsNemesis_ratio
-new Float:SniperVsNemesis_sniper_HealthMultiply
-new Float:SniperVsNemesis_nemesis_HealthMultiply
-
-// Nightmare mode configs
-new Nightmare_enable
-new Nightmare_chance
-new Nightmare_minPlayers
-new Float:Nightmare_ratio
-new Float:Nightmare_assasin_HealthMultiply
-new Float:Nightmare_nemesis_HealthMultiply
-new Float:Nightmare_sniper_HealthMultiply
-new Float:Nightmare_survivor_HealthMultiply
-
-// Synapsis mode configs
-new Synapsis_enable
-new Synapsis_chance
-new Synapsis_minPlayers
-new Float:Synapsis_ratio
-new Synapsis_nemesisCount
-new Float:Synapsis_nemesis_HealthMultiply
-new Synapsis_survivorCount
-new Float:Synapsis_survivor_HealthMultiply
-new Synapsis_sniperCount
-new Float:Synapsis_sniper_HealthMultiply
-
-// Survivor vs Assasin configs
-new SurvivorVsAssasin_enable
-new SurvivorVsAssasin_chance
-new SurvivorVsAssasin_minPlayers
-new Float:SurvivorVsAssasin_ratio
-new Float:SurvivorVsAssasin_assasin_HealthMultiply
-new Float:SurvivorVsAssasin_survivor_HealthMultiply
-
-// Bombardier vs Grenadier configs
-new BombardierVsGrenadier_enable
-new BombardierVsGrenadier_chance
-new BombardierVsGrenadier_minPlayers
-new Float:BombardierVsGrenadier_ratio
-new Float:BombardierVsGrenadier_bombardier_HealthMultiply
-new Float:BombardierVsGrenadier_grenadier_HealthMultiply
-
-// Free VIP Timings
-new freeVIP_Start, freeVIP_End, freeVIP_Flags[10]
-
-// Happy hour settings
-new happyHour_Start, happyHour_End
 
 // Models stuff
 new Float:g_modelchange_delay = 0.2 
@@ -534,75 +363,8 @@ new g_totalplayers
 new Float:g_fGagTime[33]
 
 /*================================================================================
-	[Sounds]
+	[ ENUMERATIONS ]
 =================================================================================*/
-new const sound_thunder[][] =
-{
-	"PerfectZM/thunder1.wav" ,
-	"PerfectZM/thunder2.wav"
-}
-
-new const CountdownSounds[][] =
-{
-	"fvox/biohazard_detected.wav",
-	"fvox/one.wav", 
-	"fvox/two.wav", 
-	"fvox/three.wav", 
-	"fvox/four.wav", 
-	"fvox/five.wav", 
-	"fvox/six.wav", 
-	"fvox/seven.wav", 
-	"fvox/eight.wav", 
-	"fvox/nine.wav",
-	"fvox/ten.wav"
-}
-
-new const zombie_decals[] =
-{ 
-	99, 
-	107, 
-	108, 
-	184, 
-	185, 
-	186, 
-	187, 
-	188, 
-	189 
-}
-
-new const g_objective_ents[][] = 
-{ 
-	"func_bomb_target", 
-	"info_bomb_target", 
-	"info_vip_start", 
-	"func_vip_safetyzone", 
-	"func_escapezone", 
-	"hostage_entity",
-	"monster_scientist", 
-	"func_hostage_rescue", 
-	"info_hostage_rescue", 
-	"env_fog", 
-	"env_rain", 
-	"env_snow", 
-	"item_longjump", 
-	"func_vehicle" 
-}
-
-// Sky Names (randomly chosen if more than one)
-new const g_sky_names[][] = 
-{ 
-	"blood_" 
-}
-
-// Bots
-new g_bot[33]
-new g_iBotsCount
-
-new g_cBotNames[][] =
-{
-	"IP: 46.101.226.197:27015",
-	"Forum: CsBlackDevil.com"
-}
 
 // Admin info struct
 enum _: adminInfoStruct
@@ -613,11 +375,6 @@ enum _: adminInfoStruct
 	_aRank[32]
 }
 
-new g_adminInfo[33][adminInfoStruct]
-new g_admin[33]
-new g_adminCount
-new Trie:g_adminsTrie  // Trie Datat Structure handle for storing Admins info
-
 // Vip info struct
 enum _: vipInfoStruct
 {
@@ -625,11 +382,6 @@ enum _: vipInfoStruct
 	_vPassword[32],
 	_vFlags[32]
 }
-
-new g_vipInfo[33][vipInfoStruct]
-new g_vip[33]
-new g_vipCount
-new Trie:g_vipsTrie // Trie Data structure handle for storing Vip info
 
 // Player tag info struct
 enum _: playerTagInfoStruct
@@ -639,106 +391,84 @@ enum _: playerTagInfoStruct
 	_tTag[32]
 }
 
-new g_tagCount
-new g_tag[33][32]
-new Trie:g_tagTrie
+// Auto respond struct
+enum _: autoRespondStruct
+{
+	_command[20],
+	_respond[100]
+}
 
-new g_playerIP[33][24]
+// CS Teams
+enum _: csTeams
+{
+	FM_CS_TEAM_UNASSIGNED = 0,
+	FM_CS_TEAM_T,
+	FM_CS_TEAM_CT,
+	FM_CS_TEAM_SPECTATOR
+}
 
-// Zombie Classes Variables
+// Player Team names
+enum _: playerTeams 
+{
+	TEAM_NONE = 0,
+	TEAM_HUMAN,
+	TEAM_ZOMBIE,
+}
 
-// Frozen zombie
-new frost_distance = 1000
-new frost_cooldown = 10
-new Float:frost_time = 5.0
-new Float:g_lastability[33]
-new skillcooldown = 10
+// Zombie Sub-class Names
+enum _: classNames
+{
+	CLASS_HUMAN = 1,
+	CLASS_ZOMBIE,
+	CLASS_TRYDER,
+	CLASS_SURVIVOR,
+	CLASS_SNIPER,
+	CLASS_SAMURAI,
+	CLASS_GRENADIER,
+	CLASS_TERMINATOR,
+	CLASS_ASSASIN,
+	CLASS_NEMESIS,
+	CLASS_BOMBARDIER,
+	CLASS_REVENANT
+}
 
-// Raptor zombie
-new bool:g_raptor_speeded[33]
+// Mode names
+enum _: modNames 
+{
+	MODE_NONE = 0,
+	MODE_INFECTION,
+	MODE_MULTI_INFECTION,
+	MODE_NEMESIS,
+	MODE_ASSASIN,
+	MODE_BOMBARDIER,
+	MODE_SURVIVOR,
+	MODE_SNIPER,
+	MODE_SAMURAI,
+	MODE_GRENADIER,
+	MODE_TERMINATOR,
+	MODE_REVENANT,
+	MODE_SWARM,
+	MODE_PLAGUE,
+	MODE_SYNAPSIS,
+	MODE_SNIPER_VS_ASSASIN,
+	MODE_SNIPER_VS_NEMESIS,
+	MODE_SURVIVOR_VS_NEMESIS,
+	MODE_SURVIVOR_VS_ASSASIN,
+	MODE_BOMBARDIER_VS_GRENADIER,
+	MODE_NIGHTMARE
+}
 
-// Hunter zombie
-new hunter_cooldown = 10
-new hunter_distance = 1000
-
-// Predator zombie
-new predator_cooldown = 10
-new Float:predator_invisible_duration = 10.0
-new bool:g_invisible[33]
-
-// Extra items
-new bool:g_multijump[33]
-new g_jumpcount[33]
-new g_jumpnum[33]
-
-// Crossbow
-const Wep_sg550 = ((1<<CSW_SG550))
-new const GUNSHOT_DECALS[] = { 41, 42, 43, 44, 45 }
-new g_has_crossbow[33], Float:cl_pushangle[33][3], g_spriteLightning, g_orig_event_crossbow, g_IsInPrimaryAttack, g_clip_ammo[33], g_crossbow_TmpClip[33]
-new Trie:g_tClassNames
-new const crossbow_V_MODEL[] = { "models/PerfectZM/v_crossbow.mdl" }
-new const crossbow_P_MODEL[] = { "models/PerfectZM/p_crossbow.mdl" }
-new const crossbow_W_MODEL[] = { "models/PerfectZM/w_crossbow.mdl" }
-new Float:CROSSBOW_DAMAGE = 1.50
-new Float:CROSSBOW_RECOIL = 0.80
-new CROSSBOW_CLIP = 50
-
-// Golden Weapons
-new bool:g_goldenweapons[33]
-
-new bool:g_doubledamage[33]
-new bool:g_norecoil[33]
-new bool:g_speed[33]
-new bool:g_allheadshots[33]
-
-// Knife Blink
-new g_blinks[33]
-
-// Force Field Grenade Entity
-new const BubbleEntityClassName[] = "Force-Field_Grenade"
-new const BubbleGrenadeModel[] = "models/PerfectZM/aura8.mdl"
-new Float:BubbleGrenadeMaxs[3] = { 100.0 , 100.0 , 100.0 }
-new Float:BubbleGrenadeMins[3] = { -100.0, -100.0, -100.0 }
-
-// Map related
-new MapCountdownTimer = 10
-// new bool:g_bVoting
-new bool:g_bSecondVoting
-new g_iVariable
-// new g_iVariables[3]
-// new g_iVotes[7]
-// new g_cMaps[7][32]
-new g_cSecondMaps[5][32]
-new g_iSecondVotes[5]
-
-// Leader related
-new g_iKillsThisRound[33]
-
-// Round Count
-new g_roundcount
-
-// Advertisements
-new g_cAdvertisements[72][188]
-new g_iAdvertisementsCount
-new g_iMessage
-new Array:g_hudAdvertisementMessages
-
-// GeoIP
-new g_playercountry[33][32]
-new g_playercity[33][32]
-
-// Array for Weapon menu
-new Array:g_full_weapon_names, Array:g_weapon_name[2], Array:g_weapon_ids[2]
-
-/*================================================================================
-	[Core stuffs...]
-=================================================================================*/
-
-new g_adminMenuAction[33]
-new g_playersMenuBackAction[33]
-
-#define ADMIN_MENU_ACTION g_adminMenuAction[id]
-#define PL_MENU_BACK_ACTION g_playersMenuBackAction[id]
+// Zombie Class names
+enum _: zombieClassNames (<<=1)
+{
+	ZC_CLASSIC = 1,
+	ZC_RAPTOR,
+	ZC_MUTANT,
+	ZC_FROST,
+	ZC_REGENERATOR,
+	ZC_PREDATOR,
+	ZC_HUNTER
+}
 
 enum _: adminMenuActions
 {
@@ -803,7 +533,41 @@ enum _: menuBackActions
     MENU_BACK_RESPAWN_PLAYERS
 }
 
-new g_mainAdminMenuCallback, g_makeHumanClassMenuCallback, g_makeZombieClassMenuCallback, g_startNormalModesCallback, g_startSpecialModesCallback, g_playersMenuCallback
+// LogToFile actions enums
+enum _: logActions
+{
+	LOG_SLAY = 0,
+	LOG_SLAP,
+	LOG_KICK,
+	LOG_FREEZE,
+	LOG_NICK,
+	LOG_MAP,
+	LOG_GAG,
+	LOG_BAN,
+	LOG_MAKE_HUMAN,
+	LOG_MAKE_ZOMBIE,
+	LOG_MAKE_ASSASIN,
+	LOG_MAKE_NEMESIS,
+	LOG_MAKE_BOMBARDIER,
+	LOG_MAKE_SNIPER,
+	LOG_MAKE_SURVIVOR,
+	LOG_MAKE_SAMURAI,
+	LOG_MAKE_GRENADIER,
+	LOG_MAKE_TERMINATOR,
+	LOG_MAKE_REVENANT,
+	LOG_MODE_MULTIPLE_INFECTION,
+	LOG_MODE_SWARM,
+	LOG_MODE_PLAGUE,
+	LOG_MODE_SYNAPSIS,
+	LOG_MODE_NIGHTCRAWLER,
+	LOG_MODE_NIGHTMARE,
+	LOG_MODE_SURVIVOR_VS_NEMESIS,
+	LOG_MODE_SURVIVOR_VS_ASSASIN,
+	LOG_MODE_SNIPER_VS_NEMESIS,
+	LOG_MODE_SNIPER_VS_ASSASIN,
+	LOG_MODE_BOMBARDIER_VS_GRENADIER,
+	LOG_RESPAWN_PLAYER
+}
 
 // Admin commands access
 enum _: adminCommandsAccess
@@ -847,8 +611,6 @@ enum _: adminCommandsAccess
 	MAX_ACCESS_FLAGS
 }
 
-new g_accessFlag[MAX_ACCESS_FLAGS]
-
 // Class Models constants
 enum _: modelConsts
 {
@@ -868,8 +630,6 @@ enum _: modelConsts
 	MAX_CLASS_MODELS
 }
 
-new Array:g_playerModel[MAX_CLASS_MODELS]
-
 // Extra models ( weapons )
 enum _: extraWeaponModels
 {
@@ -888,9 +648,6 @@ enum _: extraWeaponModels
 	V_FROST_NADE,
 	MAX_WEAPON_MODELS
 }
-
-new Array:g_weaponModels[MAX_WEAPON_MODELS]
-
 // Sprites
 enum _: grenadeSprites
 {
@@ -899,29 +656,25 @@ enum _: grenadeSprites
 	MAX_SPRITES
 }
 
-new Array:g_sprites[MAX_SPRITES]
-
-enum _: __color
+enum _: COLOR
 {
-	__red,
-	__green,
-	__blue
+	RED,
+	GREEN,
+	BLUE
 }
 
-enum _: __nade_type
+enum _: NADE_TYPES
 {
-	__nade_type_infection,
-	__nade_type_explosion,
-	__nade_type_napalm,
-	__nade_type_frost,
-	__nade_type_forcefield,
-	__nade_type_killing,
-	__nade_type_concussion,
-	__nade_type_antidote,
-	__MAX_NADE_TYPE
+	NADE_TYPE_INFECTION,
+	NADE_TYPE_EXPLOSION,
+	NADE_TYPE_NAPALM,
+	NADE_TYPE_FROST,
+	NADE_TYPE_BUBBLE,
+	NADE_TYPE_KILLING,
+	NADE_TYPE_CONCUSSION,
+	NADE_TYPE_ANTIDOTE,
+	MAX_NADE_TYPE
 }
-
-new g_color[__nade_type][__color]
 
 // Ambience sounds
 enum _: ambienceSounds
@@ -948,8 +701,6 @@ enum _: ambienceSounds
 	AMBIENCE_NIGHTMARE,
 	MAX_AMBIENCE_SOUNDS
 }
-
-new Array:g_ambience[MAX_AMBIENCE_SOUNDS]
 
 // Round sounds
 enum _: roundSounds
@@ -979,8 +730,6 @@ enum _: roundSounds
 	MAX_START_SOUNDS
 }
 
-new Array:g_startSound[MAX_START_SOUNDS]
-
 // Misc Sounds
 enum _: miscSound
 {
@@ -1009,24 +758,401 @@ enum _: miscSound
 	MAX_MISC_SOUNDS
 }
 
-new Array:g_miscSounds[MAX_MISC_SOUNDS]
-
 // Enum for glow colors
 enum _: glowClasses
 {
-	__survivor,
-	__sniper,
-	__samurai,
-	__grenadier,
-	__terminator,
-	__assasin,
-	__nemesis,
-	__bombardier,
-	__revenant,
-	__MAX_GLOW_CLASSES
+	SURVIVOR,
+	SNIPER,
+	SAMURAI,
+	GRENADIER,
+	TERMINATOR,
+	ASSASIN,
+	NEMESIS,
+	BOMBARDIER,
+	REVENANT,
+	MAX_GLOW_CLASSES
 }
 
-new g_glowColor[__MAX_GLOW_CLASSES][__color]
+// Forward enums
+enum _: forwardNames
+{
+	ROUND_START = 0,
+	ROUND_END,
+	INFECT_ATTEMP,
+	INFECTED_PRE,
+	INFECTED_POST,
+	HUMANIZE_ATTEMP,
+	HUMANIZED_PRE,
+	HUMANIZED_POST,
+	USER_LAST_ZOMBIE,
+	USER_LAST_HUMAN,
+	ADMIN_MODE_START,
+	EXTRA_ITEM_SELECTED,
+	POINTS_SHOP_WEAPON_SELECTED,
+	MAX_FORWARDS
+}
+
+enum _:ZMenuData
+{
+	ZombieName[14],
+	ZombieAttribute[40],
+	Health,
+	Float:Speed,
+	Float:Gravity,
+	Float:Knockback,
+	Model[64],
+	ClawModel[64]
+}
+
+enum _:PMenuData
+{
+	_pName[20]
+}
+
+enum _:AMenuData
+{
+	_ammoItemName[20],
+	_ammoItemTag[32],
+	_ammoItemPrice
+}
+
+enum _:FMenuData
+{
+	_fItemName[32],
+	_fItemTag[32],
+	_fItemPrice
+}
+
+enum _:MMenuData
+{
+	_mItemName[64],
+	_mItemTag[32],
+	_mItemPrice
+}
+
+// Data structure for points shop weapons
+enum _:pointsShopDataStructure
+{
+    ItemName[32],
+    ItemCost
+}
+
+// Data structure for extra items
+enum _:extraItemsDataStructure
+{
+	ItemName[32],
+	ItemCost,
+	ItemTeam
+}
+
+enum _: structExtrasTeam (<<=1)
+{
+	ZP_EXTRA_HUMAN = 1,
+	ZP_EXTRA_TRYDER,
+	ZP_EXTRA_SURVIVOR,
+	ZP_EXTRA_SNIPER,
+	ZP_EXTRA_SAMURAI,
+	ZP_EXTRA_GRENADIER,
+	ZP_EXTRA_TERMINATOR,
+	ZP_EXTRA_ZOMBIE,
+	ZP_EXTRA_ASSASIN,
+	ZP_EXTRA_NEMESIS,
+	ZP_EXTRA_BOMBARDIER,
+	ZP_EXTRA_REVENANT
+}
+
+enum _:Items
+{
+	KILL_NADE,
+	ANTIDOTE_NADE,
+	TRYDER,
+	MODES,
+	CUSTOM_MODES,
+	PACKS
+}
+
+// Can() func enums
+enum _: canFunc
+{
+	EXTRA_HUMANS = 0,
+	EXTRA_ZOMBIES,
+	PSHOP_PACKS,
+	PSHOP_FEATURES,
+	PSHOP_MODES
+}
+
+// Extra item for Humans
+enum _: ExtraItemsHumans
+{
+	EXTRA_NIGHTVISION = 0,
+	EXTRA_FORCEFIELD_NADE,
+	EXTRA_KILL_NADE,
+	EXTRA_EXPLOSION_NADE,
+	EXTRA_NAPALM_NADE,
+	EXTRA_FROST_NADE,
+	EXTRA_ANTIDOTE_NADE, // First page ends here
+	EXTRA_MULTIJUMP,
+	EXTRA_JETPACK,
+	EXTRA_TRYDER,
+	EXTRA_ARMOR_100,
+	EXTRA_ARMOR_200,
+	EXTRA_CROSSBOW,
+	EXTRA_GOLDEN_WEAPONS,
+	EXTRA_CLASS_NEMESIS,
+	EXTRA_CLASS_ASSASIN,
+	EXTRA_CLASS_SNIPER,
+	EXTRA_CLASS_SURVIVOR,
+	EXTRA_ANTIDOTE,
+	EXTRA_MADNESS,
+	EXTRA_INFECTION_NADE,
+	EXTRA_CONCUSSION_NADE,
+	EXTRA_KNIFE_BLINK
+}
+
+// Points shop - ammo packs
+enum _: buyPacksWithPoints
+{
+	PSHOP_PACKS_100 = 0,
+	PSHOP_PACKS_200,
+	PSHOP_PACKS_300,
+	PSHOP_PACKS_400,
+	PSHOP_PACKS_500
+}
+
+// Points shop - features
+enum _: buyFeaturesWithPoints
+{
+	PSHOP_FEATURE_GOD_MODE = 0,
+	PSHOP_FEATURE_DOUBLE_DAMAGE,
+	PSHOP_FEATURE_NO_RECOIL,
+	PSHOP_FEATURE_INVISIBILITY,
+	PSHOP_FEATURE_SPRINT,
+	PSHOP_FEATURE_LOW_GRAVITY,
+	PSHOP_FEATURE_HEAD_HUNTER
+}
+
+// Points shop - modes
+enum _: buyModesWithPoints
+{
+	PSHOP_MODE_SAMURAI = 0,
+	PSHOP_MODE_GRENADIER,
+	PSHOP_MODE_TERMINATOR,
+	PSHOP_MODE_BOMBARDIER,
+	PSHOP_MODE_REVENANT,
+	PSHOP_MODE_SURVIVOR_VS_NEMESIS,
+	PSHOP_MODE_SURVIVOR_VS_ASSASIN,
+	PSHOP_MODE_SNIPER_VS_NEMESIS,
+	PSHOP_MODE_SNIPER_VS_ASSASIN,
+	PSHOP_MODE_NIGHTMARE,
+	PSHOP_MODE_SYNAPSIS,
+	PSHOP_MODE_BOMBARDIER_VS_GRENADIER,
+	PSHOP_MODE_SAMURAI_VS_NEMESIS,
+	PSHOP_MODE_SONIC_VS_SHADOW,
+	PSHOP_MODE_NIGHTCRAWLER
+}
+
+/*================================================================================
+	[ DYNAMIC ARRAYS ]
+=================================================================================*/
+
+// --- Advertisements ---
+new Array:g_hudAdvertisements, Array:g_chatAdvertisements
+
+// --- Main Weapon Menu ---
+new Array:g_full_weapon_names, Array:g_weapon_name[2], Array:g_weapon_ids[2]
+
+// --- Player models ---
+new Array:g_playerModel[MAX_CLASS_MODELS]
+
+// --- Weapon models ---
+new Array:g_weaponModels[MAX_WEAPON_MODELS]
+
+// --- Sprites ---
+new Array:g_sprites[MAX_SPRITES]
+
+// --- Ambience sounds ---
+new Array:g_ambience[MAX_AMBIENCE_SOUNDS]
+
+// --- Round sounds ---
+new Array:g_startSound[MAX_START_SOUNDS]
+
+// --- Misc sounds ---
+new Array:g_miscSounds[MAX_MISC_SOUNDS]
+
+/*================================================================================
+	[ GLOABL VARIABLES, STATIC ARRAYS, SOUNDS, OTHERS ]
+=================================================================================*/
+
+// --- CS sounds ---
+new const sound_flashlight[] = "items/flashlight1.wav"
+new const sound_buyammo[] = "items/9mmclip1.wav"
+new const sound_armorhit[] = "player/bhit_helmet-1.wav"
+
+// --- Thunder ---
+new const sound_thunder[][] =
+{
+	"PerfectZM/thunder1.wav" ,
+	"PerfectZM/thunder2.wav"
+}
+
+// --- Countdown ---
+new const CountdownSounds[][] =
+{
+	"fvox/biohazard_detected.wav",
+	"fvox/one.wav", 
+	"fvox/two.wav", 
+	"fvox/three.wav", 
+	"fvox/four.wav", 
+	"fvox/five.wav", 
+	"fvox/six.wav", 
+	"fvox/seven.wav", 
+	"fvox/eight.wav", 
+	"fvox/nine.wav",
+	"fvox/ten.wav"
+}
+
+new const g_objective_ents[][] = 
+{ 
+	"func_bomb_target", 
+	"info_bomb_target", 
+	"info_vip_start", 
+	"func_vip_safetyzone", 
+	"func_escapezone", 
+	"hostage_entity",
+	"monster_scientist", 
+	"func_hostage_rescue", 
+	"info_hostage_rescue", 
+	"env_fog", 
+	"env_rain", 
+	"env_snow", 
+	"item_longjump", 
+	"func_vehicle" 
+}
+
+// Sky Names (randomly chosen if more than one)
+new const g_sky_names[][] = { "blood_" }
+
+new g_cBotNames[][] =
+{
+	"IP: 46.101.226.197:27015",
+	"Forum: CsBlackDevil.com"
+}
+
+// Admin variables
+new g_adminInfo[33][adminInfoStruct]
+new g_admin[33]
+new g_adminCount
+new Trie:g_adminsTrie  // Trie Datat Structure handle for storing Admins info
+
+// Vip variables
+new g_vipInfo[33][vipInfoStruct]
+new g_vip[33]
+new g_vipCount
+new Trie:g_vipsTrie // Trie Data structure handle for storing Vip info
+
+// Free VIP Timings
+new freeVIP_Start, freeVIP_End, freeVIP_Flags[10]
+
+// Tag variables
+new g_tagCount
+new g_tag[33][32]
+new Trie:g_tagTrie
+
+// Happy hour settings
+new happyHour_Start, happyHour_End
+
+// Auto responder Trie
+new Trie:g_autoRespondTrie
+
+// Zombie Classes Variables
+
+// Frozen zombie
+new frost_distance = 1000
+new frost_cooldown = 10
+new Float:frost_time = 5.0
+new Float:g_lastability[33]
+new skillcooldown = 10
+
+// Raptor zombie
+new bool:g_raptor_speeded[33]
+
+// Hunter zombie
+new hunter_cooldown = 10
+new hunter_distance = 1000
+
+// Predator zombie
+new predator_cooldown = 10
+new Float:predator_invisible_duration = 10.0
+new bool:g_invisible[33]
+
+// Extra items
+new bool:g_multijump[33]
+new g_jumpcount[33]
+new g_jumpnum[33]
+
+// Crossbow
+const Wep_sg550 = ((1<<CSW_SG550))
+new const GUNSHOT_DECALS[] = { 41, 42, 43, 44, 45 }
+new g_has_crossbow[33], Float:cl_pushangle[33][3], g_spriteLightning, g_orig_event_crossbow, g_IsInPrimaryAttack, g_clip_ammo[33], g_crossbow_TmpClip[33]
+new Trie:g_tClassNames
+new const crossbow_V_MODEL[] = { "models/PerfectZM/v_crossbow.mdl" }
+new const crossbow_P_MODEL[] = { "models/PerfectZM/p_crossbow.mdl" }
+new const crossbow_W_MODEL[] = { "models/PerfectZM/w_crossbow.mdl" }
+new Float:CROSSBOW_DAMAGE = 1.50
+new Float:CROSSBOW_RECOIL = 0.80
+new CROSSBOW_CLIP = 50
+
+// Golden Weapons
+new bool:g_goldenweapons[33]
+
+// --- Features ---
+new bool:g_doubledamage[33]
+new bool:g_norecoil[33]
+new bool:g_speed[33]
+new bool:g_allheadshots[33]
+
+// Knife Blink
+new g_blinks[33]
+
+// Force Field Grenade Entity
+new const BubbleEntityClassName[] = "Force-Field_Grenade"
+new const BubbleGrenadeModel[] = "models/PerfectZM/aura8.mdl"
+new Float:BubbleGrenadeMaxs[3] = { 100.0 , 100.0 , 100.0 }
+new Float:BubbleGrenadeMins[3] = { -100.0, -100.0, -100.0 }
+
+// Map related
+new MapCountdownTimer = 10
+// new bool:g_bVoting
+new bool:g_bSecondVoting
+new g_iVariable
+// new g_iVariables[3]
+// new g_iVotes[7]
+// new g_cMaps[7][32]
+new g_cSecondMaps[5][32]
+new g_iSecondVotes[5]
+
+// Leader related
+new g_iKillsThisRound[33]
+
+// Round Count
+new g_roundcount
+
+// Admins
+new g_adminMenuAction[33]
+new g_playersMenuBackAction[33]
+
+#define ADMIN_MENU_ACTION g_adminMenuAction[id]
+#define PL_MENU_BACK_ACTION g_playersMenuBackAction[id]
+
+new g_mainAdminMenuCallback, g_makeHumanClassMenuCallback, g_makeZombieClassMenuCallback, g_startNormalModesCallback, g_startSpecialModesCallback, g_playersMenuCallback
+
+new g_accessFlag[MAX_ACCESS_FLAGS]
+
+// Color
+new g_color[NADE_TYPES][COLOR]
+
+// Glow color
+new g_glowColor[MAX_GLOW_CLASSES][COLOR]
 
 LoadCustomizationFromFile()
 {
@@ -1098,18 +1224,18 @@ LoadCustomizationFromFile()
 	}
 
 	// Section colors
-	new keyTrailNadeRGB[__MAX_NADE_TYPE][] = { "INFECTION TRAIL & GLOW RGB", "EXPLOSION TRAIL & GLOW RGB", "NAPALM TRAIL & GLOW RGB", "FROST TRAIL & GLOW RGB", "FORCEFIELD TRAIL & GLOW RGB", "KILLING TRAIL & GLOW RGB", "CONCUSSION TRAIL & GLOW RGB", "ANTIDOTE TRAIL & GLOW RGB" }
+	new keyTrailNadeRGB[MAX_NADE_TYPE][] = { "INFECTION TRAIL & GLOW RGB", "EXPLOSION TRAIL & GLOW RGB", "NAPALM TRAIL & GLOW RGB", "FROST TRAIL & GLOW RGB", "FORCEFIELD TRAIL & GLOW RGB", "KILLING TRAIL & GLOW RGB", "CONCUSSION TRAIL & GLOW RGB", "ANTIDOTE TRAIL & GLOW RGB" }
 	
-	for (i = 0; i < __MAX_NADE_TYPE; i++)
+	for (i = 0; i < MAX_NADE_TYPE; i++)
 	{
 		AmxLoadString("zombie_queen/Grenades.ini", "Grenade Trail & Glow Color", keyTrailNadeRGB[i], buffer, charsmax(buffer))
 
 		parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-		g_color[i][__red]   = str_to_num(rgb[0])
-		g_color[i][__green] = str_to_num(rgb[1])
-		g_color[i][__blue]  = str_to_num(rgb[2])
+		g_color[i][RED]   = str_to_num(rgb[0])
+		g_color[i][GREEN] = str_to_num(rgb[1])
+		g_color[i][BLUE]  = str_to_num(rgb[2])
 
-		log_amx("%s = %i %i %i", keyTrailNadeRGB[i], g_color[i][__red], g_color[i][__green], g_color[i][__blue])
+		log_amx("%s = %i %i %i", keyTrailNadeRGB[i], g_color[i][RED], g_color[i][GREEN], g_color[i][BLUE])
 	}
 
 	// Ambience Sounds
@@ -1186,11 +1312,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Survivor", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__survivor][__red]   = str_to_num(rgb[0])
-	g_glowColor[__survivor][__green] = str_to_num(rgb[1])
-	g_glowColor[__survivor][__blue]  = str_to_num(rgb[2])
+	g_glowColor[SURVIVOR][RED]   = str_to_num(rgb[0])
+	g_glowColor[SURVIVOR][GREEN] = str_to_num(rgb[1])
+	g_glowColor[SURVIVOR][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Survivor Glow RGB = %i %i %i", g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue])
+	log_amx("Survivor Glow RGB = %i %i %i", g_glowColor[SURVIVOR][RED], g_glowColor[SURVIVOR][GREEN], g_glowColor[SURVIVOR][BLUE])
 
 	// Sniper
 	AmxLoadInt("zombie_queen/Class.ini", "Sniper", "Enabled", SniperEnabled)
@@ -1205,11 +1331,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Sniper", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__sniper][__red]   = str_to_num(rgb[0])
-	g_glowColor[__sniper][__green] = str_to_num(rgb[1])
-	g_glowColor[__sniper][__blue]  = str_to_num(rgb[2])
+	g_glowColor[SNIPER][RED]   = str_to_num(rgb[0])
+	g_glowColor[SNIPER][GREEN] = str_to_num(rgb[1])
+	g_glowColor[SNIPER][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Sniper Glow RGB = %i %i %i", g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue])
+	log_amx("Sniper Glow RGB = %i %i %i", g_glowColor[SNIPER][RED], g_glowColor[SNIPER][GREEN], g_glowColor[SNIPER][BLUE])
 
 	// Samurai
 	AmxLoadInt("zombie_queen/Class.ini", "Samurai", "Enabled", SamuraiEnabled)
@@ -1224,11 +1350,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Samurai", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__samurai][__red]   = str_to_num(rgb[0])
-	g_glowColor[__samurai][__green] = str_to_num(rgb[1])
-	g_glowColor[__samurai][__blue]  = str_to_num(rgb[2])
+	g_glowColor[SAMURAI][RED]   = str_to_num(rgb[0])
+	g_glowColor[SAMURAI][GREEN] = str_to_num(rgb[1])
+	g_glowColor[SAMURAI][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Samurai Glow RGB = %i %i %i", g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue])
+	log_amx("Samurai Glow RGB = %i %i %i", g_glowColor[SAMURAI][RED], g_glowColor[SAMURAI][GREEN], g_glowColor[SAMURAI][BLUE])
 
 	// Grenadier
 	AmxLoadInt("zombie_queen/Class.ini", "Grenadier", "Enabled", GrenadierEnabled)
@@ -1243,11 +1369,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Grenadier", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__grenadier][__red]   = str_to_num(rgb[0])
-	g_glowColor[__grenadier][__green] = str_to_num(rgb[1])
-	g_glowColor[__grenadier][__blue]  = str_to_num(rgb[2])
+	g_glowColor[GRENADIER][RED]   = str_to_num(rgb[0])
+	g_glowColor[GRENADIER][GREEN] = str_to_num(rgb[1])
+	g_glowColor[GRENADIER][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Grenadier Glow RGB = %i %i %i", g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue])
+	log_amx("Grenadier Glow RGB = %i %i %i", g_glowColor[GRENADIER][RED], g_glowColor[GRENADIER][GREEN], g_glowColor[GRENADIER][BLUE])
 
 	// Terminator
 	AmxLoadInt("zombie_queen/Class.ini", "Terminator", "Enabled", TerminatorEnabled)
@@ -1261,11 +1387,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Terminator", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__terminator][__red]   = str_to_num(rgb[0])
-	g_glowColor[__terminator][__green] = str_to_num(rgb[1])
-	g_glowColor[__terminator][__blue]  = str_to_num(rgb[2])
+	g_glowColor[TERMINATOR][RED]   = str_to_num(rgb[0])
+	g_glowColor[TERMINATOR][GREEN] = str_to_num(rgb[1])
+	g_glowColor[TERMINATOR][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Terminator Glow RGB = %i %i %i", g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue])
+	log_amx("Terminator Glow RGB = %i %i %i", g_glowColor[TERMINATOR][RED], g_glowColor[TERMINATOR][GREEN], g_glowColor[TERMINATOR][BLUE])
 
 	// Tryder
 	AmxLoadInt("zombie_queen/Class.ini", "Tryder", "Health", TryderHealth)
@@ -1286,11 +1412,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Assasin", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__assasin][__red]   = str_to_num(rgb[0])
-	g_glowColor[__assasin][__green] = str_to_num(rgb[1])
-	g_glowColor[__assasin][__blue]  = str_to_num(rgb[2])
+	g_glowColor[ASSASIN][RED]   = str_to_num(rgb[0])
+	g_glowColor[ASSASIN][GREEN] = str_to_num(rgb[1])
+	g_glowColor[ASSASIN][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Assasin Glow RGB = %i %i %i", g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue])
+	log_amx("Assasin Glow RGB = %i %i %i", g_glowColor[ASSASIN][RED], g_glowColor[ASSASIN][GREEN], g_glowColor[ASSASIN][BLUE])
 
 	// Nemesis
 	AmxLoadInt("zombie_queen/Class.ini", "Nemesis", "Enabled", NemesisEnabled)
@@ -1305,11 +1431,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Nemesis", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__nemesis][__red]   = str_to_num(rgb[0])
-	g_glowColor[__nemesis][__green] = str_to_num(rgb[1])
-	g_glowColor[__nemesis][__blue]  = str_to_num(rgb[2])
+	g_glowColor[NEMESIS][RED]   = str_to_num(rgb[0])
+	g_glowColor[NEMESIS][GREEN] = str_to_num(rgb[1])
+	g_glowColor[NEMESIS][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Nemesis Glow RGB = %i %i %i", g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue])
+	log_amx("Nemesis Glow RGB = %i %i %i", g_glowColor[NEMESIS][RED], g_glowColor[NEMESIS][GREEN], g_glowColor[NEMESIS][BLUE])
 
 	// Bombardier
 	AmxLoadInt("zombie_queen/Class.ini", "Bombardier", "Enabled", BombardierEnabled)
@@ -1324,11 +1450,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Bombardier", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__bombardier][__red]   = str_to_num(rgb[0])
-	g_glowColor[__bombardier][__green] = str_to_num(rgb[1])
-	g_glowColor[__bombardier][__blue]  = str_to_num(rgb[2])
+	g_glowColor[BOMBARDIER][RED]   = str_to_num(rgb[0])
+	g_glowColor[BOMBARDIER][GREEN] = str_to_num(rgb[1])
+	g_glowColor[BOMBARDIER][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Bombardier Glow RGB = %i %i %i", g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue])
+	log_amx("Bombardier Glow RGB = %i %i %i", g_glowColor[BOMBARDIER][RED], g_glowColor[BOMBARDIER][GREEN], g_glowColor[BOMBARDIER][BLUE])
 
 	// Revenant
 	AmxLoadInt("zombie_queen/Class.ini", "Revenant", "Enabled", RevenantEnabled)
@@ -1343,11 +1469,11 @@ LoadCustomizationFromFile()
 	AmxLoadString("zombie_queen/Class.ini", "Revenant", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
-	g_glowColor[__revenant][__red]   = str_to_num(rgb[0])
-	g_glowColor[__revenant][__green] = str_to_num(rgb[1])
-	g_glowColor[__revenant][__blue]  = str_to_num(rgb[2])
+	g_glowColor[REVENANT][RED]   = str_to_num(rgb[0])
+	g_glowColor[REVENANT][GREEN] = str_to_num(rgb[1])
+	g_glowColor[REVENANT][BLUE]  = str_to_num(rgb[2])
 
-	log_amx("Revenant Glow RGB = %i %i %i", g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue])
+	log_amx("Revenant Glow RGB = %i %i %i", g_glowColor[REVENANT][RED], g_glowColor[REVENANT][GREEN], g_glowColor[REVENANT][BLUE])
 
 	// // Knockback
 	AmxLoadInt("zombie_queen/Class.ini", "Knockback", "Enabled", KnockbackEnabled)
@@ -1423,150 +1549,150 @@ LoadCustomizationFromFile()
 	// Custom rounds configs
 
 	// Multi Infection
-	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "ENABLE", MultiInfection_enable)
-	log_amx("Multi Enable = %i", MultiInfection_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "CHANCE", MultiInfection_chance)
-	log_amx("Multi Chance = %i", MultiInfection_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "MIN PLAYERS", MultiInfection_minPlayers)
-	log_amx("Multi Min Players = %i", MultiInfection_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Multi-Infection", "RATIO", MultiInfection_ratio)
-	log_amx("Multi Ratio = %f", MultiInfection_ratio)
+	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "ENABLE", multi_enable)
+	log_amx("Multi Enable = %i", multi_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "CHANCE", multi_chance)
+	log_amx("Multi Chance = %i", multi_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "MIN PLAYERS", multi_minplayers)
+	log_amx("Multi Min Players = %i", multi_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Multi-Infection", "RATIO", multi_ratio)
+	log_amx("Multi Ratio = %f", multi_ratio)
 
 	// Swarm
-	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "ENABLE", Swarm_enable)
-	log_amx("Swarm Enable = %i", Swarm_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "CHANCE", Swarm_chance)
-	log_amx("Swarm chance = %i", Swarm_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "MIN PLAYERS", Swarm_minPlayers)
-	log_amx("Swarm Min Players = %i", Swarm_minPlayers)
+	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "ENABLE", swarm_enable)
+	log_amx("Swarm Enable = %i", swarm_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "CHANCE", swarm_chance)
+	log_amx("Swarm chance = %i", swarm_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "MIN PLAYERS", swarm_minplayers)
+	log_amx("Swarm Min Players = %i", swarm_minplayers)
 
 	// Plague
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "ENABLE", Plague_enable)
-	log_amx("Plague enable = %i", Plague_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "CHANCE", Plague_chance)
-	log_amx("Plague chance = %i", Plague_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "MIN PLAYERS", Plague_minPlayers)
-	log_amx("Plague Min Players = %i", Plague_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "RATIO", Plague_ratio)
-	log_amx("Plague Ratio = %f", Plague_ratio)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "NEMESIS COUNT", Plague_nemesisCount)
-	log_amx("Plague Nem Count = %i", Plague_nemesisCount)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "NEMESIS HEALTH MULTIPLY", Plague_nemesis_HealthMultiply)
-	log_amx("Plague nem hp mul = %f", Plague_nemesis_HealthMultiply)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "SURVIVOR COUNT", Plague_survivorCount)
-	log_amx("Plague surv count = %i", Plague_survivorCount)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "SURVIVOR HEALTH MULTIPLY", Plague_survivor_HealthMultiply)
-	log_amx("Plague surv hp mul = %f", Plague_survivor_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "ENABLE", plague_enable)
+	log_amx("Plague enable = %i", plague_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "CHANCE", plague_chance)
+	log_amx("Plague chance = %i", plague_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "MIN PLAYERS", plague_minplayers)
+	log_amx("Plague Min Players = %i", plague_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "RATIO", plague_ratio)
+	log_amx("Plague Ratio = %f", plague_ratio)
+	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "NEMESIS COUNT", plague_nemesis_count)
+	log_amx("Plague Nem Count = %i", plague_nemesis_count)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "NEMESIS HEALTH MULTIPLY", plague_nemesis_hp_mul)
+	log_amx("Plague nem hp mul = %f", plague_nemesis_hp_mul)
+	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "SURVIVOR COUNT", plague_survivor_count)
+	log_amx("Plague surv count = %i", plague_survivor_count)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "SURVIVOR HEALTH MULTIPLY", plague_survivor_hp_mul)
+	log_amx("Plague surv hp mul = %f", plague_survivor_hp_mul)
 
 	// Synapsis
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "ENABLE", Synapsis_enable)
-	log_amx("Synapsis enable = %i", Synapsis_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "CHANCE", Synapsis_chance)
-	log_amx("Synapsis chance = %i", Synapsis_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "MIN PLAYERS", Synapsis_minPlayers)
-	log_amx("Synapsis min players = %i", Synapsis_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "RATIO", Synapsis_ratio)
-	log_amx("Synapsis ratio = %f", Synapsis_ratio)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "NEMESIS COUNT", Synapsis_nemesisCount)
-	log_amx("Syanpsis nem count = %i", Synapsis_nemesisCount)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "NEMESIS HEALTH MULTIPLY", Synapsis_nemesis_HealthMultiply)
-	log_amx("Synapsis nem hp mul = %f", Synapsis_nemesis_HealthMultiply)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR COUNT", Synapsis_survivorCount)
-	log_amx("Synapsis surv count = %i", Synapsis_survivorCount)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR HEALTH MULTIPLY", Synapsis_survivor_HealthMultiply)
-	log_amx("Synapsis surv hp mul = %f", Synapsis_survivor_HealthMultiply)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SNIPER COUNT", Synapsis_sniperCount)
-	log_amx("Synapsis sni count = %i", Synapsis_sniperCount)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SNIPER HEALTH MULTIPLY", Synapsis_sniper_HealthMultiply)
-	log_amx("Synapsis sni hp mul = %f", Synapsis_sniper_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "ENABLE", synapsis_enable)
+	log_amx("Synapsis enable = %i", synapsis_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "CHANCE", synapsis_chance)
+	log_amx("Synapsis chance = %i", synapsis_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "MIN PLAYERS", synapsis_minplayers)
+	log_amx("Synapsis min players = %i", synapsis_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "RATIO", synapsis_ratio)
+	log_amx("Synapsis ratio = %f", synapsis_ratio)
+	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "NEMESIS COUNT", synapsis_nemesis_count)
+	log_amx("Syanpsis nem count = %i", synapsis_nemesis_count)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "NEMESIS HEALTH MULTIPLY", synapsis_nemesis_hp_mul)
+	log_amx("Synapsis nem hp mul = %f", synapsis_nemesis_hp_mul)
+	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR COUNT", synapsis_survivor_count)
+	log_amx("Synapsis surv count = %i", synapsis_survivor_count)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR HEALTH MULTIPLY", synapsis_survivor_hp_mul)
+	log_amx("Synapsis surv hp mul = %f", synapsis_survivor_hp_mul)
+	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SNIPER COUNT", synapsis_sniper_count)
+	log_amx("Synapsis sni count = %i", synapsis_sniper_count)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SNIPER HEALTH MULTIPLY", synapsis_sniper_hp_mul)
+	log_amx("Synapsis sni hp mul = %f", synapsis_sniper_hp_mul)
 
 	// Survior vs Assasin
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "ENABLE", SurvivorVsAssasin_enable)
-	log_amx("SVA anable = %i", SurvivorVsAssasin_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "CHANCE", SurvivorVsAssasin_chance)
-	log_amx("SVA chance = %i", SurvivorVsAssasin_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "MIN PLAYERS", SurvivorVsAssasin_minPlayers)
-	log_amx("SVA min players = %i", SurvivorVsAssasin_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "RATIO", SurvivorVsAssasin_ratio)
-	log_amx("SVA ratio = %f", SurvivorVsAssasin_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "ASSASIN HEALTH MULTIPLY", SurvivorVsAssasin_assasin_HealthMultiply)
-	log_amx("SVA assa hp mul = %f", SurvivorVsAssasin_assasin_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "SURVIVOR HEALTH MULTIPLY", SurvivorVsAssasin_survivor_HealthMultiply)
-	log_amx("SVA surv hp mul = %f", SurvivorVsAssasin_survivor_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "ENABLE", sva_enable)
+	log_amx("SVA anable = %i", sva_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "CHANCE", sva_chance)
+	log_amx("SVA chance = %i", sva_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "MIN PLAYERS", sva_minplayers)
+	log_amx("SVA min players = %i", sva_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "RATIO", sva_ratio)
+	log_amx("SVA ratio = %f", sva_ratio)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "ASSASIN HEALTH MULTIPLY", sva_assasin_hp_mul)
+	log_amx("SVA assa hp mul = %f", sva_assasin_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "SURVIVOR HEALTH MULTIPLY", sva_survivor_hp_mul)
+	log_amx("SVA surv hp mul = %f", sva_survivor_hp_mul)
 
 	// Survivor vs Nemesis
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "ENABLE", Armageddon_enable)
-	log_amx("SNV enable = %i", Armageddon_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "CHANCE", Armageddon_chance)
-	log_amx("SNV chance = %i", Armageddon_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "MIN PLAYERS", Armageddon_minPlayers)
-	log_amx("SNV min player = %i", Armageddon_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "RATIO", Armageddon_ratio)
-	log_amx("SNV ratio = %f", Armageddon_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "NEMESIS HEALTH MULTIPLY", Armageddon_nemesis_HealthMultiply)
-	log_amx("SNV nem hp mul = %f", Armageddon_nemesis_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "SURVIVOR HEALTH MULTIPLY", Armageddon_survivor_HealthMultiply)
-	log_amx("SNV surv hp mul = %f", Armageddon_survivor_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "ENABLE", svn_enable)
+	log_amx("SNV enable = %i", svn_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "CHANCE", svn_chance)
+	log_amx("SNV chance = %i", svn_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "MIN PLAYERS", svn_minplayers)
+	log_amx("SNV min player = %i", svn_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "RATIO", svn_ratio)
+	log_amx("SNV ratio = %f", svn_ratio)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "NEMESIS HEALTH MULTIPLY", svn_nemesis_hp_mul)
+	log_amx("SNV nem hp mul = %f", svn_nemesis_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "SURVIVOR HEALTH MULTIPLY", svn_survivor_hp_mul)
+	log_amx("SNV surv hp mul = %f", svn_survivor_hp_mul)
 
 	// Sniper vs Assasin
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "ENABLE", Apocalypse_enable)
-	log_amx("SNVA enable = %i", Apocalypse_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "CHANCE", Apocalypse_chance)
-	log_amx("SNVA chance = %i", Apocalypse_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "MIN PLAYERS", Apocalypse_minPlayers)
-	log_amx("SNVA min players = %i", Apocalypse_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "RATIO", Apocalypse_ratio)
-	log_amx("SNVA ratio = %f", Apocalypse_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "ASSASIN HEALTH MULTIPLY", Apocalypse_assasin_HealthMultiply)
-	log_amx("SNVA assa hp mul = %f", Apocalypse_assasin_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "SNIPER HEALTH MULTIPLY", Apocalypse_sniper_HealthMultiply)
-	log_amx("SNVA sni hp mul = %f", Apocalypse_sniper_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "ENABLE", snva_enable)
+	log_amx("SNVA enable = %i", snva_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "CHANCE", snva_chance)
+	log_amx("SNVA chance = %i", snva_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "MIN PLAYERS", snva_minplayers)
+	log_amx("SNVA min players = %i", snva_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "RATIO", snva_ratio)
+	log_amx("SNVA ratio = %f", snva_ratio)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "ASSASIN HEALTH MULTIPLY", snva_assasin_hp_mul)
+	log_amx("SNVA assa hp mul = %f", snva_assasin_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "SNIPER HEALTH MULTIPLY", snva_sniper_hp_mul)
+	log_amx("SNVA sni hp mul = %f", snva_sniper_hp_mul)
 
 	// Sniper vs Nemesis
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "ENABLE", SniperVsNemesis_enable)
-	log_amx("SNVN enable = %i", SniperVsNemesis_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "CHANCE", SniperVsNemesis_chance)
-	log_amx("SNVN chance = %i", SniperVsNemesis_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "MIN PLAYERS", SniperVsNemesis_minPlayers)
-	log_amx("SNVN min players = %i", SniperVsNemesis_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "RATIO", SniperVsNemesis_ratio)
-	log_amx("SNVN ratio = %f", SniperVsNemesis_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "SNIPER HEALTH MULTIPLY", SniperVsNemesis_sniper_HealthMultiply)
-	log_amx("SNVN sni hp mul = %f", SniperVsNemesis_sniper_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "NEMESIS HEALTH MULTIPLY", SniperVsNemesis_nemesis_HealthMultiply)
-	log_amx("SNVN nem hp mul = %f", SniperVsNemesis_nemesis_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "ENABLE", snvn_enable)
+	log_amx("SNVN enable = %i", snvn_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "CHANCE", snvn_chance)
+	log_amx("SNVN chance = %i", snvn_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "MIN PLAYERS", snvn_minplayers)
+	log_amx("SNVN min players = %i", snvn_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "RATIO", snvn_ratio)
+	log_amx("SNVN ratio = %f", snvn_ratio)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "SNIPER HEALTH MULTIPLY", snvn_sniper_hp_mul)
+	log_amx("SNVN sni hp mul = %f", snvn_sniper_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "NEMESIS HEALTH MULTIPLY", snvn_nemesis_hp_mul)
+	log_amx("SNVN nem hp mul = %f", snvn_nemesis_hp_mul)
 
 	// Bombardier vs Grenadier
-	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "ENABLE", BombardierVsGrenadier_enable)
-	log_amx("BVG enable = %i", BombardierVsGrenadier_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "CHANCE", BombardierVsGrenadier_chance)
-	log_amx("BVG chance = %i", BombardierVsGrenadier_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "MIN PLAYERS", BombardierVsGrenadier_minPlayers)
-	log_amx("BVG min players = %i", BombardierVsGrenadier_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "RATIO", BombardierVsGrenadier_ratio)
-	log_amx("BVG ratio = %f", BombardierVsGrenadier_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "BOMBARDIER HEALTH MULTIPLY", BombardierVsGrenadier_bombardier_HealthMultiply)
-	log_amx("BVG bomb hp mul = %f", BombardierVsGrenadier_bombardier_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "GRENADIER HEALTH MULTIPLY", BombardierVsGrenadier_grenadier_HealthMultiply)
-	log_amx("BVG grenade hp mul = %f", BombardierVsGrenadier_grenadier_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "ENABLE", bvg_enable)
+	log_amx("BVG enable = %i", bvg_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "CHANCE", bvg_chance)
+	log_amx("BVG chance = %i", bvg_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "MIN PLAYERS", bvg_minplayers)
+	log_amx("BVG min players = %i", bvg_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "RATIO", bvg_ratio)
+	log_amx("BVG ratio = %f", bvg_ratio)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "BOMBARDIER HEALTH MULTIPLY", bvg_bombardier_hp_mul)
+	log_amx("BVG bomb hp mul = %f", bvg_bombardier_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "GRENADIER HEALTH MULTIPLY", bvg_grenadier_hp_mul)
+	log_amx("BVG grenade hp mul = %f", bvg_grenadier_hp_mul)
 
 	// Nightmare
-	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "ENABLE", Nightmare_enable)
-	log_amx("NIGHTMARE enable = %i", Nightmare_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "CHANCE", Nightmare_chance)
-	log_amx("NIGHTMARE chance = %i", Nightmare_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "MIN PLAYERS", Nightmare_minPlayers)
-	log_amx("NIGHTMARE min players = %i", Nightmare_minPlayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "RATIO", Nightmare_ratio)
-	log_amx("NIGHTMARE ratio = %f", Nightmare_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "ASSASIN HEALTH MULTIPLY", Nightmare_assasin_HealthMultiply)
-	log_amx("NIGHTMARE assa hp mul = %f", Nightmare_assasin_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "NEMESIS HEALTH MULTIPLY", Nightmare_nemesis_HealthMultiply)
-	log_amx("NIGHTMARE nem hp mul = %f", Nightmare_nemesis_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SNIPER HEALTH MULTIPLY", Nightmare_sniper_HealthMultiply)
-	log_amx("NIGHTMARE sni hp mul = %f", Nightmare_sniper_HealthMultiply)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SURVIVOR HEALTH MULTIPLY", Nightmare_survivor_HealthMultiply)
-	log_amx("NIGHTMARE surv hp mul = %f", Nightmare_survivor_HealthMultiply)
+	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "ENABLE", nightmare_enable)
+	log_amx("NIGHTMARE enable = %i", nightmare_enable)
+	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "CHANCE", nightmare_chance)
+	log_amx("NIGHTMARE chance = %i", nightmare_chance)
+	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "MIN PLAYERS", nightmare_minplayers)
+	log_amx("NIGHTMARE min players = %i", nightmare_minplayers)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "RATIO", nightmare_ratio)
+	log_amx("NIGHTMARE ratio = %f", nightmare_ratio)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "ASSASIN HEALTH MULTIPLY", nightmare_assasin_hp_mul)
+	log_amx("NIGHTMARE assa hp mul = %f", nightmare_assasin_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "NEMESIS HEALTH MULTIPLY", nightmare_nemesis_hp_mul)
+	log_amx("NIGHTMARE nem hp mul = %f", nightmare_nemesis_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SNIPER HEALTH MULTIPLY", nightmare_sniper_hp_mul)
+	log_amx("NIGHTMARE sni hp mul = %f", nightmare_sniper_hp_mul)
+	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SURVIVOR HEALTH MULTIPLY", nightmare_survivor_hp_mul)
+	log_amx("NIGHTMARE surv hp mul = %f", nightmare_survivor_hp_mul)
 
 	// Free VIP
 	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "START", freeVIP_Start)
@@ -1606,67 +1732,11 @@ LoadCustomizationFromFile()
 	}
 }
 
-// Forward enums
-enum _: forwardNames
-{
-	ROUND_START = 0,
-	ROUND_END,
-	INFECT_ATTEMP,
-	INFECTED_PRE,
-	INFECTED_POST,
-	HUMANIZE_ATTEMP,
-	HUMANIZED_PRE,
-	HUMANIZED_POST,
-	USER_LAST_ZOMBIE,
-	USER_LAST_HUMAN,
-	ADMIN_MODE_START,
-	EXTRA_ITEM_SELECTED,
-	POINTS_SHOP_WEAPON_SELECTED,
-	MAX_FORWARDS
-	// PLAYER_SPAWN_POST,
-	// FROZEN_PRE,
-	// FROZEN_POST,
-	// USER_UNFROZEN,
-	// BURN_PRE,
-	// BURN_POST,
-	// INFECTED_BY_BOMB_PRE,
-	// INFECTED_BY_BOMB_POST,
-	// UNSTUCK_PRE,
-	// UNSTUCK_POST,
-	//ROUND_START_PRE,
-	//ITEM_SELECTED_PRE,
-	//ITEM_SELECTED_POST,
-	//CLASS_CHOOSED_PRE,
-	//CLASS_CHOOSED_POST,
-	//RESET_RENDERING_PRE,
-	//RESET_RENDERING_POST,
-	//MODEL_CHANGE_PRE,
-	//MODEL_CHANGE_POST,
-	//HM_SP_CHOSSED_PRE,
-	//ZM_SP_CHOSSED_PRE,
-	//HM_SP_CHOSSED_POST,
-	//ZM_SP_CHOSSED_POST,
-	//GM_SELECTED_PRE,
-	//WEAPON_SELECTED_PRE,
-	//WEAPON_SELECTED_POST,
-}
 new g_forwards[MAX_FORWARDS], g_forwardRetVal
 
 // Custom forward return values
 const ZP_PLUGIN_HANDLED = 97
 const ZP_PLUGIN_SUPERCEDE = 98
-
-enum _:ZMenuData
-{
-	ZombieName[14],
-	ZombieAttribute[40],
-	Health,
-	Float:Speed,
-	Float:Gravity,
-	Float:Knockback,
-	Model[64],
-	ClawModel[64]
-}
 
 new g_cZombieClasses[][ZMenuData] =
 {
@@ -1679,25 +1749,12 @@ new g_cZombieClasses[][ZMenuData] =
 	{"Hunter", 			"\r[Stuns weapons]",    9000, 273.0, 0.61, 0.83, 	"PerfectZM_Hunter", 			 "models/PerfectZM/PerfectZM_hunter_claws.mdl"}
 }
 
-
-enum _:PMenuData
-{
-	_pName[20]
-}
-
 new g_cPointsMenu[][PMenuData] =
 {
 	{"Buy Ammo Packs"},
 	{"Buy Features"},
 	{"Buy Modes"},
 	{"Buy Premium weapons"}
-}
-
-enum _:AMenuData
-{
-	_ammoItemName[20],
-	_ammoItemTag[32],
-	_ammoItemPrice
 }
 
 new g_cAmmoMenu[][AMenuData] =
@@ -1709,13 +1766,6 @@ new g_cAmmoMenu[][AMenuData] =
 	{"Buy 500 packs", "\r[500 points]", 500}
 }
 
-enum _:FMenuData
-{
-	_fItemName[32],
-	_fItemTag[32],
-	_fItemPrice
-}
-
 new g_cFeaturesMenu[][FMenuData] =
 {
 	{"God Mode",       "\r[100 points]",   100},
@@ -1725,13 +1775,6 @@ new g_cFeaturesMenu[][FMenuData] =
 	{"Sprint Ability", "\r[400 points]",   400},
 	{"Low Gravity",    "\r[50 points]",     50},
 	{"Head Hunter",    "\r[600 points]",   600}
-}
-
-enum _:MMenuData
-{
-	_mItemName[64],
-	_mItemTag[32],
-	_mItemPrice
 }
 
 new g_cModesMenu[][MMenuData] =
@@ -1753,23 +1796,8 @@ new g_cModesMenu[][MMenuData] =
 	{"Nightcrawler round", "\r[500 round]", 500}
 }
 
-// Data structure for points shop weapons
-enum _:pointsShopDataStructure
-{
-    ItemName[32],
-    ItemCost
-}
-
 // create a dynamic array to hold all the items
 new Array:g_pointsShopWeapons
-
-// Data structure for extra items
-enum _:extraItemsDataStructure
-{
-	ItemName[32],
-	ItemCost,
-	ItemTeam
-}
 
 // Create a dynamic array to hold all the items
 new Array:g_extraitems
@@ -1779,32 +1807,6 @@ new g_pointsShopTotalWeapons
 
 // this will tell howw many are in the array instead of using ArraySize()
 new g_extraitemsCount
-
-enum _: structExtrasTeam (<<=1)
-{
-	ZQ_EXTRA_HUMAN = 1,
-	ZQ_EXTRA_TRYDER,
-	ZQ_EXTRA_SURVIVOR,
-	ZQ_EXTRA_SNIPER,
-	ZQ_EXTRA_SAMURAI,
-	ZQ_EXTRA_GRENADIER,
-	ZQ_EXTRA_TERMINATOR,
-	ZQ_EXTRA_ZOMBIE,
-	ZQ_EXTRA_ASSASIN,
-	ZQ_EXTRA_NEMESIS,
-	ZQ_EXTRA_BOMBARDIER,
-	ZQ_EXTRA_REVENANT
-}
-
-enum _:Items
-{
-	KILL_NADE,
-	ANTIDOTE_NADE,
-	TRYDER,
-	MODES,
-	CUSTOM_MODES,
-	PACKS
-}
 
 new LIMIT[33][Items]
 
@@ -1820,42 +1822,6 @@ new g_iModesMenu
 // String for holding name of a class
 new g_classString[33][14]
 
-// Can() func enums
-enum _: canFunc
-{
-	EXTRA_HUMANS = 0,
-	EXTRA_ZOMBIES,
-	PSHOP_PACKS,
-	PSHOP_FEATURES,
-	PSHOP_MODES
-}
-
-// Mode names
-enum _: modNames 
-{
-	MODE_NONE = 0,
-	MODE_INFECTION,
-	MODE_MULTI_INFECTION,
-	MODE_NEMESIS,
-	MODE_ASSASIN,
-	MODE_BOMBARDIER,
-	MODE_SURVIVOR,
-	MODE_SNIPER,
-	MODE_SAMURAI,
-	MODE_GRENADIER,
-	MODE_TERMINATOR,
-	MODE_REVENANT,
-	MODE_SWARM,
-	MODE_PLAGUE,
-	MODE_SYNAPSIS,
-	MODE_SNIPER_VS_ASSASIN,
-	MODE_SNIPER_VS_NEMESIS,
-	MODE_SURVIVOR_VS_NEMESIS,
-	MODE_SURVIVOR_VS_ASSASIN,
-	MODE_BOMBARDIER_VS_GRENADIER,
-	MODE_NIGHTMARE
-}
-
 // Mode type variable
 new g_currentmode
 
@@ -1863,154 +1829,11 @@ new g_currentmode
 new g_playerTeam[33]
 new g_playerClass[33]
 
-// Player Team names
-enum _: playerTeams 
-{
-	TEAM_NONE = 0,
-	TEAM_HUMAN,
-	TEAM_ZOMBIE,
-}
-
-// Zombie Sub-class Names
-enum _: classNames
-{
-	CLASS_HUMAN = 1,
-	CLASS_ZOMBIE,
-	CLASS_TRYDER,
-	CLASS_SURVIVOR,
-	CLASS_SNIPER,
-	CLASS_SAMURAI,
-	CLASS_GRENADIER,
-	CLASS_TERMINATOR,
-	CLASS_ASSASIN,
-	CLASS_NEMESIS,
-	CLASS_BOMBARDIER,
-	CLASS_REVENANT
-}
-
 // Macros
 #define SetBit(%1,%2)			(%1 |= (1<<(%2-1)))
 #define CheckBit(%1,%2)			(%1 & (1<<(%2-1)))  
 #define ClearBit(%1,%2)         (%1 &= ~(1<<(%2-1)))
 #define CheckFlag(%1,%2)		(%1 & %2)
-
-// Zombie Class names
-enum _: zombieClassNames (<<=1)
-{
-	ZC_CLASSIC = 1,
-	ZC_RAPTOR,
-	ZC_MUTANT,
-	ZC_FROST,
-	ZC_REGENERATOR,
-	ZC_PREDATOR,
-	ZC_HUNTER
-}
-
-// Extra item for Humans
-enum _: ExtraItemsHumans
-{
-	EXTRA_NIGHTVISION = 0,
-	EXTRA_FORCEFIELD_NADE,
-	EXTRA_KILL_NADE,
-	EXTRA_EXPLOSION_NADE,
-	EXTRA_NAPALM_NADE,
-	EXTRA_FROST_NADE,
-	EXTRA_ANTIDOTE_NADE, // First page ends here
-	EXTRA_MULTIJUMP,
-	EXTRA_JETPACK,
-	EXTRA_TRYDER,
-	EXTRA_ARMOR_100,
-	EXTRA_ARMOR_200,
-	EXTRA_CROSSBOW,
-	EXTRA_GOLDEN_WEAPONS,
-	EXTRA_CLASS_NEMESIS,
-	EXTRA_CLASS_ASSASIN,
-	EXTRA_CLASS_SNIPER,
-	EXTRA_CLASS_SURVIVOR,
-	EXTRA_ANTIDOTE,
-	EXTRA_MADNESS,
-	EXTRA_INFECTION_NADE,
-	EXTRA_CONCUSSION_NADE,
-	EXTRA_KNIFE_BLINK
-}
-
-// Points shop - ammo packs
-enum _: buyPacksWithPoints
-{
-	PSHOP_PACKS_100 = 0,
-	PSHOP_PACKS_200,
-	PSHOP_PACKS_300,
-	PSHOP_PACKS_400,
-	PSHOP_PACKS_500
-}
-
-// Points shop - features
-enum _: buyFeaturesWithPoints
-{
-	PSHOP_FEATURE_GOD_MODE = 0,
-	PSHOP_FEATURE_DOUBLE_DAMAGE,
-	PSHOP_FEATURE_NO_RECOIL,
-	PSHOP_FEATURE_INVISIBILITY,
-	PSHOP_FEATURE_SPRINT,
-	PSHOP_FEATURE_LOW_GRAVITY,
-	PSHOP_FEATURE_HEAD_HUNTER
-}
-
-// Points shop - modes
-enum _: buyModesWithPoints
-{
-	PSHOP_MODE_SAMURAI = 0,
-	PSHOP_MODE_GRENADIER,
-	PSHOP_MODE_TERMINATOR,
-	PSHOP_MODE_BOMBARDIER,
-	PSHOP_MODE_REVENANT,
-	PSHOP_MODE_SURVIVOR_VS_NEMESIS,
-	PSHOP_MODE_SURVIVOR_VS_ASSASIN,
-	PSHOP_MODE_SNIPER_VS_NEMESIS,
-	PSHOP_MODE_SNIPER_VS_ASSASIN,
-	PSHOP_MODE_NIGHTMARE,
-	PSHOP_MODE_SYNAPSIS,
-	PSHOP_MODE_BOMBARDIER_VS_GRENADIER,
-	PSHOP_MODE_SAMURAI_VS_NEMESIS,
-	PSHOP_MODE_SONIC_VS_SHADOW,
-	PSHOP_MODE_NIGHTCRAWLER
-}
-
-// LogToFile actions enums
-enum _: logActions
-{
-	LOG_SLAY = 0,
-	LOG_SLAP,
-	LOG_KICK,
-	LOG_FREEZE,
-	LOG_NICK,
-	LOG_MAP,
-	LOG_GAG,
-	LOG_BAN,
-	LOG_MAKE_HUMAN,
-	LOG_MAKE_ZOMBIE,
-	LOG_MAKE_ASSASIN,
-	LOG_MAKE_NEMESIS,
-	LOG_MAKE_BOMBARDIER,
-	LOG_MAKE_SNIPER,
-	LOG_MAKE_SURVIVOR,
-	LOG_MAKE_SAMURAI,
-	LOG_MAKE_GRENADIER,
-	LOG_MAKE_TERMINATOR,
-	LOG_MAKE_REVENANT,
-	LOG_MODE_MULTIPLE_INFECTION,
-	LOG_MODE_SWARM,
-	LOG_MODE_PLAGUE,
-	LOG_MODE_SYNAPSIS,
-	LOG_MODE_NIGHTCRAWLER,
-	LOG_MODE_NIGHTMARE,
-	LOG_MODE_SURVIVOR_VS_NEMESIS,
-	LOG_MODE_SURVIVOR_VS_ASSASIN,
-	LOG_MODE_SNIPER_VS_NEMESIS,
-	LOG_MODE_SNIPER_VS_ASSASIN,
-	LOG_MODE_BOMBARDIER_VS_GRENADIER,
-	LOG_RESPAWN_PLAYER
-}
 
 // Limiters for stuff not worth making dynamic arrays out of (increase if needed)
 const MAX_CSDM_SPAWNS = 128
@@ -2050,18 +1873,6 @@ const OFFSET_WEAPONOWNER = 41
 const OFFSET_LINUX 		   = 5 // offsets 5 higher in Linux builds
 const OFFSET_LINUX_WEAPONS = 4 // weapon offsets are only 4 steps higher on Linux
 
-// Private data of VGUI Menu
-const m_iMenuCode = 205
-
-// CS Teams
-enum
-{
-	FM_CS_TEAM_UNASSIGNED = 0,
-	FM_CS_TEAM_T,
-	FM_CS_TEAM_CT,
-	FM_CS_TEAM_SPECTATOR
-}
-
 new const CS_TEAM_NAMES[][] =
 {
 	"UNASSIGNED",
@@ -2091,14 +1902,8 @@ new const MAXBPAMMO[] =
 // Max Clip for weapons
 new const MAXCLIP[] = 
 {
-	-1 , 13, -1, 10,
-	-1 , 7 , -1, 30,
-	30 , -1, 30, 20,
-	25 , 30, 35, 25,
-	2  , 20, 10, 30,
-	100, 8 , 30, 30,
-	20 , -1, 7 , 30, 
-	30 , -1, 50 
+	-1 , 13, -1, 10, -1, 7, -1, 30, 30, -1, 30, 20, 25, 30, 35, 25,
+	2, 20, 10, 30, 100, 8, 30, 30, 20, -1, 7, 30, 30, -1, 50 
 }
 
 // Ammo Type Names for weapons
@@ -2118,188 +1923,30 @@ new const WEAPONENTNAMES[][] =
 
 new g_BlockedMessages[][] =
 { 
-	"#C4_Arming_Cancelled",
-	"#Bomb_Planted",
-	"#C4_Plant_Must_Be_On_Ground",
-	"#C4_Plant_At_Bomb_Spot",
-	"#CZero_LearningMap",
-	"#CZero_AnalyzingHidingSpots", 
-	"#CZero_AnalyzingApproachPoints",
-	"#Hint_careful_around_hostages",
-	"#Injured_Hostage",
-	"#Hint_removed_for_next_hostage_killed",
-	"#Hint_lost_money",
-	"#Killed_Hostage",
-	"#Only_CT_Can_Move_Hostages",
-	"#Cstrike_Chat_AllSpec",
-	"#Cstrike_Chat_AllDead",
-	"#Cstrike_Chat_All",
-	"#Cstrike_Chat_Spec",
-	"#Cstrike_Chat_T_Dead",
-	"#Cstrike_Chat_T",
-	"#Cstrike_Chat_T_Loc",
-	"#Cstrike_Chat_CT_Dead",
-	"#Cstrike_Chat_CT",
-	"#Cstrike_Chat_CT_Loc",
-	"#Cannot_Buy_This",
-	"#Cstrike_Already_Own_Weapon",
-	"#Not_Enough_Money",
-	"#Hint_use_nightvision",
-	"#Already_Have_One",
-	"#Cannot_Carry_Anymore",
-	"#Already_Have_Kevlar_Bought_Helmet",
-	"#Already_Have_Kevlar_Helmet", 
-	"#Already_Have_Helmet_Bought_Kevlar",
-	"#Already_Have_Kevlar",
-	"#Cannot_Be_Spectator",
-	"#Game_join_ct",
-	"#Game_join_terrorist",
-	"#Only_1_Team_Change",
-	"#Terrorist_Select",
-	"#CT_Select",
-	"#Humans_Join_Team_T",
-	"#Humans_Join_Team_CT",
-	"#Too_Many_CTs",
-	"#Too_Many_Terrorists",
-	"#All_Teams_Full",
-	"#CTs_Full",
-	"#Terrorists_Full",
-	"#Cannot_Switch_From_VIP",
-	"#Bomb_Defusal_Kit",
-	"#Game_unknown_command",
-	"#Buy",
-	"#Command_Not_Available",
-	"#Ignore_Broadcast_Team_Messages", 
-	"#Ignore_Broadcast_Messages",
-	"#IG_Team_Select_Spect",
-	"#IG_VIP_Team_Select_Spect",
-	"#IG_VIP_Team_Select",
-	"#T_BuyItem",
-	"#CT_BuyItem",
-	"#DT_BuyItem",
-	"#DCT_BuyItem",
-	"#BuyMachineGun",
-	"#AS_T_BuyMachineGun",
-	"#T_BuyRifle",
-	"#CT_BuyRifle",
-	"#AS_T_BuyRifle",
-	"#AS_CT_BuyRifle",
-	"#T_BuySubMachineGun",
-	"#CT_BuySubMachineGun",
-	"#AS_T_BuySubMachineGun",
-	"#AS_CT_BuySubMachineGun",
-	"#BuyShotgun",
-	"#AS_BuyShotgun",
-	"#T_BuyPistol",
-	"#CT_BuyPistol",
-	"#IG_Team_Select",
-	"#Team_Select",
-	"#Game_no_timelimit",
-	"#Game_timelimit",
-	"#Game_voted_for_map",
-	"#Cannot_Vote_Need_More_People",
-	"#Game_votemap_usage",
-	"#Cannot_Vote_Map",
-	"#Wait_3_Seconds",
-	"#Game_vote_cast",
-	"#Game_vote_not_yourself",
-	"#Game_vote_players_on_your_team",
-	"#Game_vote_player_not_Found",
-	"#Cannot_Vote_With_Less_Than_Three",
-	"#Game_vote_usage",
-	"#Cstrike_Name_Change",
-	"#Name_change_at_respawn",
-	"#Defusing_Bomb_Without_Defuse_Kit",
-	"#Defusing_Bomb_With_Defuse_Kit",
-	"#C4_Defuse_Must_Be_On_Ground",
-	"#Hint_you_have_the_bomb",
-	"#All_Hostages_Rescued",
-	"#Round_Draw",
-	"#Terrorists_Win",
-	"#CTs_Win",
-	"#BoGmb_Defused",
-	"#Target_Bombed",
-	"#Escaping_Terrorists_Neutralized",
-	"#CTs_PreventEscape",
-	"#Terrorists_Escaped",
-	"#VIP_Assassinated",
-	"#VIP_Escaped",
-	"#Game_Commencing",
-	"#Game_scoring",
-	"#Auto_Team_Balance_Next_Round",
-	"#All_VIP_Slots_Full",
-	"#Game_added_position",
-	"#VIP_Not_Escaped",
-	"#Terrorists_Not_Escaped",
-	"#Hostages_Not_Rescued",
-	"#Target_Saved",
-	"#Team_Select_Spect",
-	"#Hint_win_round_by_killing_enemy",
-	"#Hint_reward_for_killing_vip",
-	"#Hint_careful_around_teammates",
-	"#Banned_For_Killing_Teamates",
-	"#Game_teammate_kills",
-	"#Killed_Teammate",
-	"#Map_Vote_Extend",
-	"#Votes",
-	"#Vote", 
-	"#Game_required_votes",
-	"#Spec_Mode%i",
-	"#Spec_NoTarget",
-	"#Game_radio_location",
-	"#Game_radio",
-	"#Game_teammate_attack",
-	"#Hint_try_not_to_injure_teammates",
-	"#Spec_Duck",
-	"#Hint_cannot_play_because_tk",
-	"#Hint_use_hostage_to_stop_him",
-	"#Hint_lead_hostage_to_rescue_point",
-	"#Terrorist_cant_buy",
-	"#CT_cant_buy",
-	"#VIP_cant_buy",
-	"#Cant_buy",
-	"#Hint_press_buy_to_purchase",
-	"#Game_idle_kick",
-	"#Hint_you_are_the_vip",
-	"#Hint_hostage_rescue_zone",
-	"#Hint_you_are_in_targetzone",
-	"#Hint_terrorist_escape_zone",
-	"#Hint_terrorist_vip_zone",
-	"#Hint_ct_vip_zone",
-	"#Hint_out_of_ammo",
-	"#Hint_press_use_so_hostage_will_follow",
-	"#Hint_prevent_hostage_rescue",
-	"#Hint_rescue_the_hostages",
-	"#Hint_spotted_a_friend",
-	"#Hint_spotted_an_enemy",
-	"#Game_bomb_drop",
-	"#Weapon_Cannot_Be_Dropped",
-	"#Game_join_ct_auto",
-	"#Game_join_terrorist_auto",
-	"#Terrorist_Escaped",
-	"#Game_bomb_pickup",
-	"#Got_bomb",
-	"#CZero_Tutor_Turned_Off",
-	"#CZero_Tutor_Turned_On",
-	"#Cstrike_TutorState_Waiting_For_Start",
-	"#Cstrike_TutorState_Buy_Time",
-	"#Cstrike_TutorState_Running_Away_From_Ticking_Bomb",
-	"#Cstrike_TutorState_Looking_For_Loose_Bomb",
-	"#Cstrike_TutorState_Guarding_Bomb",
-	"#Cstrike_TutorState_Planting_Bomb",
-	"#Cstrike_TutorState_Moving_To_Bomb_Site",
-	"#Cstrike_TutorState_Escorting_Bomb_Carrier",
-	"#Cstrike_TutorState_Attacking_Hostage_Escort",
-	"#Cstrike_TutorState_Looking_For_Hostage_Escort",
-	"#Cstrike_TutorState_Moving_To_Intercept_Enemy",
-	"#Cstrike_TutorState_Guarding_Hostage",
-	"#Cstrike_TutorState_Defusing_Bomb",
-	"#Cstrike_TutorState_Guarding_Loose_Bomb",
-	"#Cstrike_TutorState_Looking_For_Bomb_Carrier",
-	"#Cstrike_TutorState_Moving_To_Bombsite",
-	"#Cstrike_TutorState_Following_Hostage_Escort",
-	"#Cstrike_TutorState_Escorting_Hostage",
-	"#Cstrike_TutorState_Undefine"
+	"#C4_Arming_Cancelled", "#Bomb_Planted", "#C4_Plant_Must_Be_On_Ground", "#C4_Plant_At_Bomb_Spot", "#CZero_LearningMap", "#CZero_AnalyzingHidingSpots", "#CZero_AnalyzingApproachPoints",
+	"#Hint_careful_around_hostages", "#Injured_Hostage", "#Hint_removed_for_next_hostage_killed", "#Hint_lost_money", "#Killed_Hostage", "#Only_CT_Can_Move_Hostages", "#Cstrike_Chat_AllSpec",
+	"#Cstrike_Chat_AllDead", "#Cstrike_Chat_All", "#Cstrike_Chat_Spec", "#Cstrike_Chat_T_Dead", "#Cstrike_Chat_T", "#Cstrike_Chat_T_Loc", "#Cstrike_Chat_CT_Dead", "#Cstrike_Chat_CT",
+	"#Cstrike_Chat_CT_Loc", "#Cannot_Buy_This", "#Cstrike_Already_Own_Weapon", "#Not_Enough_Money", "#Hint_use_nightvision", "#Already_Have_One", "#Cannot_Carry_Anymore", 
+	"#Already_Have_Kevlar_Bought_Helmet", "#Already_Have_Kevlar_Helmet", "#Already_Have_Helmet_Bought_Kevlar", "#Already_Have_Kevlar", "#Cannot_Be_Spectator", "#Game_join_ct",
+	"#Game_join_terrorist", "#Only_1_Team_Change", "#Terrorist_Select", "#CT_Select", "#Humans_Join_Team_T", "#Humans_Join_Team_CT", "#Too_Many_CTs", "#Too_Many_Terrorists",
+	"#All_Teams_Full", "#CTs_Full", "#Terrorists_Full", "#Cannot_Switch_From_VIP", "#Bomb_Defusal_Kit", "#Game_unknown_command", "#Buy", "#Command_Not_Available","#Ignore_Broadcast_Team_Messages", 
+	"#Ignore_Broadcast_Messages", "#IG_Team_Select_Spect", "#IG_VIP_Team_Select_Spect", "#IG_VIP_Team_Select", "#T_BuyItem", "#CT_BuyItem", "#DT_BuyItem", "#DCT_BuyItem", "#BuyMachineGun",
+	"#AS_T_BuyMachineGun", "#T_BuyRifle", "#CT_BuyRifle", "#AS_T_BuyRifle", "#AS_CT_BuyRifle", "#T_BuySubMachineGun", "#CT_BuySubMachineGun", "#AS_T_BuySubMachineGun", "#AS_CT_BuySubMachineGun",
+	"#BuyShotgun", "#AS_BuyShotgun", "#T_BuyPistol", "#CT_BuyPistol", "#IG_Team_Select", "#Team_Select", "#Game_no_timelimit", "#Game_timelimit", "#Game_voted_for_map", "#Cannot_Vote_Need_More_People",
+	"#Game_votemap_usage", "#Cannot_Vote_Map", "#Wait_3_Seconds", "#Game_vote_cast", "#Game_vote_not_yourself", "#Game_vote_players_on_your_team", "#Game_vote_player_not_Found", "#Cannot_Vote_With_Less_Than_Three",
+	"#Game_vote_usage", "#Cstrike_Name_Change", "#Name_change_at_respawn", "#Defusing_Bomb_Without_Defuse_Kit", "#Defusing_Bomb_With_Defuse_Kit", "#C4_Defuse_Must_Be_On_Ground", "#Hint_you_have_the_bomb",
+	"#All_Hostages_Rescued", "#Round_Draw", "#Terrorists_Win", "#CTs_Win", "#BoGmb_Defused", "#Target_Bombed", "#Escaping_Terrorists_Neutralized", "#CTs_PreventEscape", "#Terrorists_Escaped",
+	"#VIP_Assassinated", "#VIP_Escaped", "#Game_Commencing", "#Game_scoring", "#Auto_Team_Balance_Next_Round", "#All_VIP_Slots_Full", "#Game_added_position", "#VIP_Not_Escaped", "#Terrorists_Not_Escaped",
+	"#Hostages_Not_Rescued", "#Target_Saved", "#Team_Select_Spect", "#Hint_win_round_by_killing_enemy", "#Hint_reward_for_killing_vip", "#Hint_careful_around_teammates", "#Banned_For_Killing_Teamates",
+	"#Game_teammate_kills", "#Killed_Teammate", "#Map_Vote_Extend", "#Votes", "#Vote", "#Game_required_votes", "#Spec_Mode%i", "#Spec_NoTarget", "#Game_radio_location", "#Game_radio","#Game_teammate_attack",
+	"#Hint_try_not_to_injure_teammates", "#Spec_Duck", "#Hint_cannot_play_because_tk", "#Hint_use_hostage_to_stop_him", "#Hint_lead_hostage_to_rescue_point", "#Terrorist_cant_buy","#CT_cant_buy",
+	"#VIP_cant_buy", "#Cant_buy", "#Hint_press_buy_to_purchase", "#Game_idle_kick", "#Hint_you_are_the_vip", "#Hint_hostage_rescue_zone", "#Hint_you_are_in_targetzone", "#Hint_terrorist_escape_zone",
+	"#Hint_terrorist_vip_zone", "#Hint_ct_vip_zone", "#Hint_out_of_ammo", "#Hint_press_use_so_hostage_will_follow", "#Hint_prevent_hostage_rescue", "#Hint_rescue_the_hostages", "#Hint_spotted_a_friend",
+	"#Hint_spotted_an_enemy", "#Game_bomb_drop", "#Weapon_Cannot_Be_Dropped", "#Game_join_ct_auto", "#Game_join_terrorist_auto", "#Terrorist_Escaped", "#Game_bomb_pickup", "#Got_bomb", "#CZero_Tutor_Turned_Off",
+	"#CZero_Tutor_Turned_On", "#Cstrike_TutorState_Waiting_For_Start", "#Cstrike_TutorState_Buy_Time", "#Cstrike_TutorState_Running_Away_From_Ticking_Bomb", "#Cstrike_TutorState_Looking_For_Loose_Bomb",
+	"#Cstrike_TutorState_Guarding_Bomb", "#Cstrike_TutorState_Planting_Bomb", "#Cstrike_TutorState_Moving_To_Bomb_Site", "#Cstrike_TutorState_Escorting_Bomb_Carrier", "#Cstrike_TutorState_Attacking_Hostage_Escort",
+	"#Cstrike_TutorState_Looking_For_Hostage_Escort", "#Cstrike_TutorState_Moving_To_Intercept_Enemy", "#Cstrike_TutorState_Guarding_Hostage", "#Cstrike_TutorState_Defusing_Bomb", "#Cstrike_TutorState_Guarding_Loose_Bomb",
+	"#Cstrike_TutorState_Looking_For_Bomb_Carrier", "#Cstrike_TutorState_Moving_To_Bombsite", "#Cstrike_TutorState_Following_Hostage_Escort", "#Cstrike_TutorState_Escorting_Hostage", "#Cstrike_TutorState_Undefine"
 }
 
 new const Float:g_fSizes[70][3] =
@@ -2326,11 +1973,6 @@ new Float:g_flCoords[][] =
 	{0.44, 0.44}
 }
 
-// CS sounds
-new const sound_flashlight[] = "items/flashlight1.wav"
-new const sound_buyammo[] = "items/9mmclip1.wav"
-new const sound_armorhit[] = "player/bhit_helmet-1.wav"
-
 // Explosion radius for custom grenades
 const Float:NADE_EXPLOSION_RADIUS = 240.0
 
@@ -2339,17 +1981,6 @@ const PEV_ADDITIONAL_AMMO = pev_iuser1
 
 // HACK: pev_ field used to store custom nade types and their values
 const PEV_NADE_TYPE = pev_flTimeStepSound
-enum (+= 1111) 
-{
-	NADE_TYPE_INFECTION = 1111,
-	NADE_TYPE_EXPLOSION,
-	NADE_TYPE_NAPALM,
-	NADE_TYPE_FROST,
-	NADE_TYPE_ANTIDOTE,
-	NADE_TYPE_CONCUSSION,
-	NADE_TYPE_KILLING,
-	NADE_TYPE_BUBBLE
-}
 
 // Weapon bitsums
 const PRIMARY_WEAPONS_BIT_SUM = (1<<CSW_SCOUT)|(1<<CSW_XM1014)|(1<<CSW_MAC10)|(1<<CSW_AUG)|(1<<CSW_UMP45)|(1<<CSW_SG550)|(1<<CSW_GALIL)|(1<<CSW_FAMAS)|(1<<CSW_AWP)|(1<<CSW_MP5NAVY)|(1<<CSW_M249)|(1<<CSW_M3)|(1<<CSW_M4A1)|(1<<CSW_TMP)|(1<<CSW_G3SG1)|(1<<CSW_SG552)|(1<<CSW_AK47)|(1<<CSW_P90)
@@ -2359,7 +1990,7 @@ const SECONDARY_WEAPONS_BIT_SUM = (1<<CSW_P228)|(1<<CSW_ELITE)|(1<<CSW_FIVESEVEN
 const ZOMBIE_ALLOWED_WEAPONS_BITSUM = (1<<CSW_KNIFE)|(1<<CSW_HEGRENADE)|(1<<CSW_FLASHBANG)|(1<<CSW_SMOKEGRENADE)|(1<<CSW_C4)
 
 /*================================================================================
-	[Global Variables]
+	[ GLOBAL VARIABLES ]
 =================================================================================*/
 
 // Player vars
@@ -2439,9 +2070,16 @@ new g_isalive[33] // whether player is alive
 new g_isbot[33] // whether player is a bot
 new g_currentweapon[33] // player's current weapon id
 new g_playerName[33][32] // player's name
+new g_playerIP[33][24]
+new g_playercountry[33][32]
+new g_playercity[33][32]
 new g_playerSteamID[33][32] // player's steamid
 new g_playerHash[33][100] // player's hash
 new g_playerConcat[33][100] // Temp concat char array
+
+// Bots
+new g_bot[33]
+new g_iBotsCount
 
 #define is_user_valid_connected(%1) (1 <= %1 <= g_maxplayers && g_isconnected[%1])
 #define is_user_valid_alive(%1) (1 <= %1 <= g_maxplayers && g_isalive[%1])
@@ -3635,47 +3273,49 @@ public plugin_init()
 	g_adminsTrie = TrieCreate()
 	g_vipsTrie = TrieCreate()
 	g_tagTrie = TrieCreate()
+	g_autoRespondTrie = TrieCreate()
 
-	g_hudAdvertisementMessages = ArrayCreate(512)
+	g_hudAdvertisements  = ArrayCreate(256)
+	g_chatAdvertisements = ArrayCreate(256)
 
 	MySql_Init()
 	MySql_TotalPlayers()
 	ReadPlayerTagsFromFile()
 	ReadAdminsFromFile()
 	ReadVipsFromFile()
+	ReadAutoRespondsFromFile()
 	ReadChatAdvertisementsFromFile()
 	ReadHudAdvertisementsFromFile()
 	//TaskGetMaps()
 
-	register_extra_item("Nightvision Goggles", 2, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER)
-	register_extra_item("Forcefield Grenade", 20, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_SAMURAI)
-	register_extra_item("Killing Grenade", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Explosion Grenade", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER)
-	register_extra_item("Napalm Grenade", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER)
-	register_extra_item("Frost Grenade", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER)
-	register_extra_item("Antidote Grenade", 40, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Multijump +1", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_GRENADIER)
-	register_extra_item("Jetpack + Bazooka", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER|ZQ_EXTRA_SURVIVOR|ZQ_EXTRA_SNIPER|ZQ_EXTRA_GRENADIER|ZQ_EXTRA_TERMINATOR)
-	register_extra_item("Tryder", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Armor \y(100 AP)", 5, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Armor \y(200 AP)", 10, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Crossbow", 30, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Golden Weapons", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Nemesis", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Assasin", 150, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Sniper", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Survivor", 180, ZQ_EXTRA_HUMAN|ZQ_EXTRA_TRYDER)
-	register_extra_item("Antidote", 15, ZQ_EXTRA_ZOMBIE)
-	register_extra_item("Zombie Maddness", 17, ZQ_EXTRA_ZOMBIE)
-	register_extra_item("Infection Bomb", 25, ZQ_EXTRA_ZOMBIE)
-	register_extra_item("Concussion Bomb", 10, ZQ_EXTRA_ZOMBIE)
-	register_extra_item("Knife Blink", 10, ZQ_EXTRA_ZOMBIE)
+	register_extra_item("Nightvision Goggles", 2, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER)
+	register_extra_item("Forcefield Grenade", 20, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_SAMURAI)
+	register_extra_item("Killing Grenade", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Explosion Grenade", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER)
+	register_extra_item("Napalm Grenade", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER)
+	register_extra_item("Frost Grenade", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER)
+	register_extra_item("Antidote Grenade", 40, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Multijump +1", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER)
+	register_extra_item("Jetpack + Bazooka", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_GRENADIER|ZP_EXTRA_TERMINATOR)
+	register_extra_item("Tryder", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Armor \y(100 AP)", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Armor \y(200 AP)", 10, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Crossbow", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Golden Weapons", 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Nemesis", 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Assasin", 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Sniper", 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Survivor", 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
+	register_extra_item("Antidote", 15, ZP_EXTRA_ZOMBIE)
+	register_extra_item("Zombie Maddness", 17, ZP_EXTRA_ZOMBIE)
+	register_extra_item("Infection Bomb", 25, ZP_EXTRA_ZOMBIE)
+	register_extra_item("Concussion Bomb", 10, ZP_EXTRA_ZOMBIE)
+	register_extra_item("Knife Blink", 10, ZP_EXTRA_ZOMBIE)
 
 	register_points_shop_weapon("Golden Weapons", 2000)
 	register_points_shop_weapon("Crossbow", 4000)
 	
 	set_task(3.0, "CheckBots", .flags = "b")
-	set_task(30.0, "Advertise", .flags = "b")
 }
 
 public MySql_Init()
@@ -4010,6 +3650,36 @@ public ReadVipsFromFile()
 	return PLUGIN_CONTINUE
 }
 
+public ReadAutoRespondsFromFile()
+{
+	static iFile; iFile = fopen("addons/amxmodx/configs/auto_responds.ini", "r")
+	new Data[autoRespondStruct]
+
+	if (iFile)
+	{
+		static line[161]
+
+		while (!feof(iFile))
+		{
+			fgets(iFile, line, charsmax(line))
+			trim(line)
+
+			if (line[0] != 59 && strlen(line) > 5)
+			{
+				while (replace(line, charsmax(line), "!g", "^4")){ }
+				while (replace(line, charsmax(line), "!w", "^3")){ }
+				while (replace(line, charsmax(line), "!y", "^1")){ }
+
+				parse(line, Data[_command], charsmax(Data[_command]), Data[_respond], charsmax(Data[_respond]))
+				TrieSetArray(g_autoRespondTrie, Data[_command], Data, sizeof(Data))
+			}	
+		}
+		fclose (iFile)	
+	}
+
+	return PLUGIN_CONTINUE
+}
+
 public ReadPlayerTagsFromFile()
 {
 	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/PlayerTag/PlayerTags.ini", "r")
@@ -4043,7 +3713,7 @@ public ReadHudAdvertisementsFromFile()
 
 	if (file)
 	{
-		new line[512]
+		new line[526]
 
 		while (!feof(file))
 		{
@@ -4053,7 +3723,7 @@ public ReadHudAdvertisementsFromFile()
 			if (line[0])
 			{
 				while (replace(line, charsmax(line), "\n", "^n")){ }
-				ArrayPushString(g_hudAdvertisementMessages, line)
+				ArrayPushString(g_hudAdvertisements, line)
 			}
 		}
 
@@ -4061,32 +3731,33 @@ public ReadHudAdvertisementsFromFile()
 	} 
 	else log_amx("Failed to open hud_advertisements.ini file!")
 
-	if (ArraySize(g_hudAdvertisementMessages)) set_task(30.0, "Advertise_HUD", .flags = "b")
+	if (ArraySize(g_hudAdvertisements)) set_task(30.0, "Advertise_HUD", .flags = "b")
 }
 
 public ReadChatAdvertisementsFromFile()
 {
-	static iFile; iFile = fopen("addons/amxmodx/configs/chat_advertisements.ini", "r")
-	new cLine[161]
+	static file; file = fopen("addons/amxmodx/configs/chat_advertisements.ini", "r")
 
-	if (iFile)
+	if (file)
 	{
-		while (!feof(iFile))
+		new line[256]
+
+		while (!feof(file))
 		{
-			fgets(iFile, cLine, 160)
-			trim(cLine)
-			if (cLine[0] == 33)
-            {
-				copy(g_cAdvertisements[g_iAdvertisementsCount], 160, cLine)
-				replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!g", "^4")
-				replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!t", "^3")
-				replace_all(g_cAdvertisements[g_iAdvertisementsCount], 160, "!n", "^1")
-				g_iAdvertisementsCount++
-            }
+			fgets(file, line, charsmax(line))
+			trim(line)
+
+			while (replace(line, charsmax(line), "!g", "^4")){ }
+			while (replace(line, charsmax(line), "!w", "^3")){ }
+			while (replace(line, charsmax(line), "!y", "^1")){ }
+			if (line[0]) ArrayPushString(g_chatAdvertisements, line)
 		}
-		fclose(iFile);
-	}
-	return PLUGIN_CONTINUE;
+
+		fclose(file)
+	} 
+	else log_amx("Failed to open chat_advertisements.ini file!")
+
+	if (ArraySize(g_chatAdvertisements)) set_task(30.0, "Advertise_CHAT", .flags = "b")
 }
 
 public MakeUserAdmin(id)
@@ -4221,27 +3892,31 @@ public CheckBots()
 	}
 }
 
-public Advertise()
-{
-	if (g_iMessage >= g_iAdvertisementsCount) 
-	g_iMessage = 0
-
-	client_print_color(0, print_team_grey, g_cAdvertisements[g_iMessage])
-	g_iMessage += 1
-	return PLUGIN_CONTINUE
-}
-
 public Advertise_HUD()
 {
-	static a,msg[512]
+	static a, msg[256]
 
 	for (a = 1; a <= get_maxplayers(); a++)
 	{
 		if (g_isconnected[a] && !g_isbot[a])
 		{
 			set_hudmessage(random_num(0, 230), random_num(0, 240), random_num(0, 230), -1.0, 0.20, 2, 0.2, 7.0, 0.1, 0.7, 2)
-			ArrayGetString(g_hudAdvertisementMessages,random_num(0,ArraySize(g_hudAdvertisementMessages)-1), msg, 511)
+			ArrayGetString(g_hudAdvertisements, random_num(0, ArraySize(g_hudAdvertisements) - 1), msg, charsmax(msg))
 			ShowSyncHudMsg(a, g_MsgSync7, msg)
+		}
+	}
+}
+
+public Advertise_CHAT()
+{
+	static a, msg[256]
+
+	for (a = 1; a <= get_maxplayers(); a++)
+	{
+		if (g_isconnected[a] && !g_isbot[a])
+		{
+			ArrayGetString(g_chatAdvertisements, random_num(0, ArraySize(g_chatAdvertisements) - 1), msg, charsmax(msg))
+			client_print_color(0, print_team_grey, msg)
 		}
 	}
 }
@@ -4399,18 +4074,18 @@ ShowMenuExtraItems(id)
 		// Get item data from array
 		ArrayGetArray(g_extraitems, i, ItemData)
 
-		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_HUMAN)))
-		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TRYDER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SURVIVOR)))
-		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SNIPER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SAMURAI)))
-		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_GRENADIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TERMINATOR)))
-		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ZOMBIE))) 
-		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ASSASIN))) 
-		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_NEMESIS)))
-		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_BOMBARDIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_REVENANT)))) continue
+		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
+		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
+		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
+		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
+		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
+		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
+		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT)))) continue
 		
 		formatex(line, charsmax(line), "%s \r[%i packs]", ItemData[ItemName], ItemData[ItemCost])
 		num_to_str(i, number, 3)
@@ -4447,18 +4122,18 @@ public _ExtraItems(id, menu, item)
 		client_print_color(id, print_team_grey, "%s You dont have enough ^3packs ^1to buy this item...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
-	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_HUMAN)))
-	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TRYDER)))
-	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SURVIVOR)))
-	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SNIPER)))
-	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_SAMURAI)))
-	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_GRENADIER)))
-	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_TERMINATOR)))
-	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ZOMBIE))) 
-	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_ASSASIN))) 
-	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_NEMESIS)))
-	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_BOMBARDIER)))
-	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZQ_EXTRA_REVENANT))))
+	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
+	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
+	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
+	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
+	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
+	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
+	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
+	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
+	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
+	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
+	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
+	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT))))
 	{
 		// Notify player
 		client_print_color(id, print_team_grey, "%s This ^3item ^1is not for your ^4team^1...", CHAT_PREFIX)
@@ -5108,7 +4783,7 @@ public _Features(id, menu, item)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_glow(id, 192, 255, 62, 25)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage( id, "You bought God Mode!")
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought God Mode!")
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5126,7 +4801,7 @@ public _Features(id, menu, item)
 					g_doubledamage[id] = true
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage( id, "You bought Double damage!")
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Double damage!")
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5144,7 +4819,7 @@ public _Features(id, menu, item)
 					g_norecoil[id] = true
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage( id, "You bought No Recoil!")
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought No Recoil!")
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5161,7 +4836,7 @@ public _Features(id, menu, item)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_user_rendering(id, kRenderFxGlowShell, 0, 0, 0, kRenderTransAlpha, 0)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage( id, "You bought Invisibility!")
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Invisibility!")
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5180,7 +4855,7 @@ public _Features(id, menu, item)
 					ExecuteHamB(Ham_Player_ResetMaxSpeed, id)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage( id, "You bought High Speed!")
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought High Speed!")
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5197,7 +4872,7 @@ public _Features(id, menu, item)
 					set_pev(id, pev_gravity, 0.5)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage( id, "Now you have less gravity!")
+					ShowSyncHudMsg(id, g_MsgSync6, "Now you have less gravity!")
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5216,7 +4891,7 @@ public _Features(id, menu, item)
 
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage( 115, 230, 1, -1.0, 0.80, 1, 0.0, 5.0, 1.0, 1.0, -1 )
-					show_hudmessage( id, "Now all your bullet will connect to head!")
+					ShowSyncHudMsg(id, g_MsgSync6, "Now all your bullet will connect to head!")
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5254,7 +4929,7 @@ public _Modes(id, menu, item)
 
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				show_hudmessage(0, "%s bought Samurai with points!", g_playerName[id])
+				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Samurai with points!", g_playerName[id])
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5275,7 +4950,7 @@ public _Modes(id, menu, item)
 
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				show_hudmessage(0, "%s bought Grenadier with points!", g_playerName[id])
+				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Grenadier with points!", g_playerName[id])
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5296,7 +4971,7 @@ public _Modes(id, menu, item)
 
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				show_hudmessage(0, "%s bought Terminator with points!", g_playerName[id])
+				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Terminator with points!", g_playerName[id])
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5317,7 +4992,7 @@ public _Modes(id, menu, item)
 
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				show_hudmessage(0, "%s bought Bombardier with points!", g_playerName[id])
+				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Bombardier with points!", g_playerName[id])
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5338,7 +5013,7 @@ public _Modes(id, menu, item)
 
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				show_hudmessage(0, "%s bought Revenant with points!", g_playerName[id])
+				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Revenant with points!", g_playerName[id])
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5359,7 +5034,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Armageddon mode with points!", g_playerName[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Armageddon mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5382,7 +5057,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Survivor vs Assasin mode with points!", g_playerName[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Survivor vs Assasin mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5404,7 +5079,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Sniper vs Nemesis mode with points!", g_playerName[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Sniper vs Nemesis mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5425,7 +5100,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Sniper vs Assassin mode with points!", g_playerName[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Sniper vs Assassin mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5446,7 +5121,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Nightmare mode with points!", g_playerName[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Nightmare mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5467,7 +5142,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Synapsis mode with points!", g_playerName[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Synapsis mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			} 
@@ -5488,7 +5163,7 @@ public _Modes(id, menu, item)
 
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					show_hudmessage(0, "%s bought Bombardier vs Grenadier mode with points!", g_playerName[id])
+					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Bombardier vs Grenadier mode with points!", g_playerName[id])
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -8059,28 +7734,28 @@ public FwSetModel(entity, const model[])
 			{
 				if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 				{
-					if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) SetNadeType(entity, g_color[__nade_type_explosion][__red], g_color[__nade_type_explosion][__green], g_color[__nade_type_explosion][__blue], NADE_TYPE_EXPLOSION)
-					else SetNadeType(entity, g_color[__nade_type_killing][__red], g_color[__nade_type_killing][__green], g_color[__nade_type_killing][__blue], NADE_TYPE_KILLING)
+					if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) SetNadeType(entity, g_color[NADE_TYPE_EXPLOSION][RED], g_color[NADE_TYPE_EXPLOSION][GREEN], g_color[NADE_TYPE_EXPLOSION][BLUE], NADE_TYPE_EXPLOSION)
+					else SetNadeType(entity, g_color[NADE_TYPE_KILLING][RED], g_color[NADE_TYPE_KILLING][GREEN], g_color[NADE_TYPE_KILLING][BLUE], NADE_TYPE_KILLING)
 				} 
-				else SetNadeType(entity, g_color[__nade_type_infection][__red], g_color[__nade_type_infection][__green], g_color[__nade_type_infection][__blue], NADE_TYPE_INFECTION)
+				else SetNadeType(entity, g_color[NADE_TYPE_INFECTION][RED], g_color[NADE_TYPE_INFECTION][GREEN], g_color[NADE_TYPE_INFECTION][BLUE], NADE_TYPE_INFECTION)
 			}
 			else
 			{
 				if (g_killingbomb[id])
 				{
-					SetNadeType(entity, g_color[__nade_type_killing][__red], g_color[__nade_type_killing][__green], g_color[__nade_type_killing][__blue], NADE_TYPE_KILLING)
+					SetNadeType(entity, g_color[NADE_TYPE_KILLING][RED], g_color[NADE_TYPE_KILLING][GREEN], g_color[NADE_TYPE_KILLING][BLUE], NADE_TYPE_KILLING)
 
 					// Decrease count
 					g_killingbomb[id]--
 				}
 				else if (g_antidotebomb[id])
 				{
-					SetNadeType(entity, g_color[__nade_type_antidote][__red], g_color[__nade_type_antidote][__green], g_color[__nade_type_antidote][__blue], NADE_TYPE_ANTIDOTE)
+					SetNadeType(entity, g_color[NADE_TYPE_ANTIDOTE][RED], g_color[NADE_TYPE_ANTIDOTE][GREEN], g_color[NADE_TYPE_ANTIDOTE][BLUE], NADE_TYPE_ANTIDOTE)
 
 					// Decrease count
 					g_antidotebomb[id]--
 				}
-				else SetNadeType(entity, g_color[__nade_type_explosion][__red], g_color[__nade_type_explosion][__green], g_color[__nade_type_explosion][__blue], NADE_TYPE_EXPLOSION)
+				else SetNadeType(entity, g_color[NADE_TYPE_EXPLOSION][RED], g_color[NADE_TYPE_EXPLOSION][GREEN], g_color[NADE_TYPE_EXPLOSION][BLUE], NADE_TYPE_EXPLOSION)
 			}
 		}
 		case 'f':
@@ -8089,24 +7764,24 @@ public FwSetModel(entity, const model[])
 			{
 				if (g_concussionbomb[id])
 				{
-					SetNadeType(entity, g_color[__nade_type_concussion][__red], g_color[__nade_type_concussion][__green], g_color[__nade_type_concussion][__blue], NADE_TYPE_CONCUSSION)
+					SetNadeType(entity, g_color[NADE_TYPE_CONCUSSION][RED], g_color[NADE_TYPE_CONCUSSION][GREEN], g_color[NADE_TYPE_CONCUSSION][BLUE], NADE_TYPE_CONCUSSION)
 
 					// Decrease Counb
 					g_concussionbomb[id]--
 				}
 			}
-			else SetNadeType(entity, g_color[__nade_type_napalm][__red], g_color[__nade_type_napalm][__green], g_color[__nade_type_napalm][__blue], NADE_TYPE_NAPALM)
+			else SetNadeType(entity, g_color[NADE_TYPE_NAPALM][RED], g_color[NADE_TYPE_NAPALM][GREEN], g_color[NADE_TYPE_NAPALM][BLUE], NADE_TYPE_NAPALM)
 		}
 		case 's':
 		{
 			if (g_bubblebomb[id])
 			{
-				SetNadeType(entity, g_color[__nade_type_forcefield][__red], g_color[__nade_type_forcefield][__green], g_color[__nade_type_forcefield][__blue], NADE_TYPE_BUBBLE)
+				SetNadeType(entity, g_color[NADE_TYPE_BUBBLE][RED], g_color[NADE_TYPE_BUBBLE][GREEN], g_color[NADE_TYPE_BUBBLE][BLUE], NADE_TYPE_BUBBLE)
 
 				// Decrease Counb
 				g_bubblebomb[id]--
 			}
-			else SetNadeType(entity, g_color[__nade_type_frost][__red], g_color[__nade_type_frost][__green], g_color[__nade_type_frost][__blue], NADE_TYPE_FROST)	
+			else SetNadeType(entity, g_color[NADE_TYPE_FROST][RED], g_color[NADE_TYPE_FROST][GREEN], g_color[NADE_TYPE_FROST][BLUE], NADE_TYPE_FROST)	
 		}
 	}
 
@@ -8685,11 +8360,11 @@ public unfrozen_user(id)
 
 public OnSkillsCooldownHUD(id)
 {
-	if(g_isalive[id])
+	if (g_isalive[id])
 	{
 		skillcooldown--
 		set_hudmessage(200, 100, 0, 0.75, 0.92, 0, 1.0, 1.1, 0.0, 0.0, -1)
-		show_hudmessage(id, "Skill cooldown: %d", skillcooldown)
+		ShowSyncHudMsg(id, g_MsgSync6, "Skill cooldown: %d", skillcooldown)
 	}
 	else remove_task(id)
 
@@ -8955,6 +8630,12 @@ public Client_Say(id)
 		iTimeleft = get_timeleft()
 		client_print_color(id, print_team_grey, "^1Timeleft: ^4%d:%02d", iTimeleft / 60, iTimeleft % 60)
 	}*/
+	static Data[autoRespondStruct]
+
+	if (TrieGetArray(g_autoRespondTrie, cMessage, Data, sizeof Data))
+	{
+		client_print_color(id, print_team_grey, Data[_respond])
+	}
 	else if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
 	else if (equali(cMessage, "/globaltop", 4) || equali(cMessage, "globaltop", 3)) ShowGlobalTop15(id)
 	else if (equali(cMessage, "/rs", 3) || equali(cMessage, "rs", 2) || equali(cMessage, "/resetscore", 11) || equali(cMessage, "resetscore", 10))
@@ -13554,7 +13235,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_TERMINATOR, forward_id)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Swarm_chance) == Swarm_enable && iPlayersnum >= Swarm_minPlayers) || mode == MODE_SWARM)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, swarm_chance) == swarm_enable && iPlayersnum >= swarm_minplayers) || mode == MODE_SWARM)
 	{		
 		// Swarm Mode
 		SetBit(g_currentmode, MODE_SWARM)
@@ -13612,14 +13293,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SWARM, 0)
 	}
-	else if ((mode == MODE_NONE && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, MultiInfection_chance) == MultiInfection_enable && floatround(iPlayersnum * MultiInfection_ratio, floatround_ceil) >= 2 && floatround(iPlayersnum * MultiInfection_ratio, floatround_ceil) < iPlayersnum && iPlayersnum >= MultiInfection_minPlayers) || mode == MODE_MULTI_INFECTION)
+	else if ((mode == MODE_NONE && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, multi_chance) == multi_enable && floatround(iPlayersnum * multi_ratio, floatround_ceil) >= 2 && floatround(iPlayersnum * multi_ratio, floatround_ceil) < iPlayersnum && iPlayersnum >= multi_minplayers) || mode == MODE_MULTI_INFECTION)
 	{
 		// Multi Infection Mode
 		SetBit(g_currentmode, MODE_MULTI_INFECTION)
 		g_lastmode = MODE_MULTI_INFECTION
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround(iPlayersnum * MultiInfection_ratio, floatround_ceil)
+		iMaxZombies = floatround(iPlayersnum * multi_ratio, floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into zombies
@@ -13682,8 +13363,8 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_MULTI_INFECTION, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Plague_chance) == Plague_enable && floatround((iPlayersnum - (Plague_nemesisCount+Plague_survivorCount)) * Plague_ratio, floatround_ceil) >= 1
-	&& iPlayersnum - (Plague_survivorCount + Plague_nemesisCount + floatround((iPlayersnum - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil)) >= 1 && iPlayersnum >= Plague_minPlayers) || mode == MODE_PLAGUE)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, plague_chance) == plague_enable && floatround((iPlayersnum - (plague_nemesis_count+plague_survivor_count)) * plague_ratio, floatround_ceil) >= 1
+	&& iPlayersnum - (plague_survivor_count + plague_nemesis_count + floatround((iPlayersnum - (plague_nemesis_count + plague_survivor_count)) * plague_ratio, floatround_ceil)) >= 1 && iPlayersnum >= plague_minplayers) || mode == MODE_PLAGUE)
 	{
 		// Plague Mode
 		SetBit(g_currentmode, MODE_PLAGUE)
@@ -13691,7 +13372,7 @@ start_mode(mode, id)
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
-		iMaxSurvivors = Plague_survivorCount
+		iMaxSurvivors = plague_survivor_count
 		iSurvivors = 0
 		
 		while (iSurvivors < iMaxSurvivors)
@@ -13707,12 +13388,12 @@ start_mode(mode, id)
 			iSurvivors++
 			
 			// Apply survivor health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Plague_survivor_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * plague_survivor_hp_mul))
 		}
 		
 		// Turn specified amount of players into Nemesis
 		static iNemesis, iMaxNemesis
-		iMaxNemesis = Plague_nemesisCount
+		iMaxNemesis = plague_nemesis_count
 		iNemesis = 0
 		
 		while (iNemesis < iMaxNemesis)
@@ -13729,11 +13410,11 @@ start_mode(mode, id)
 			iNemesis++
 			
 			// Apply nemesis health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Plague_nemesis_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * plague_nemesis_hp_mul))
 		}
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum - (plague_nemesis_count + plague_survivor_count)) * plague_ratio, floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into zombies
@@ -13791,8 +13472,8 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_PLAGUE, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 3) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Synapsis_chance) == Synapsis_enable && floatround((iPlayersnum - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil) >= 1
-	&& iPlayersnum - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount + floatround((iPlayersnum - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil)) >= 1 && iPlayersnum >= Synapsis_minPlayers) || mode == MODE_SYNAPSIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 3) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, synapsis_chance) == synapsis_enable && floatround((iPlayersnum - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count)) * synapsis_ratio, floatround_ceil) >= 1
+	&& iPlayersnum - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count + floatround((iPlayersnum - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count)) * synapsis_ratio, floatround_ceil)) >= 1 && iPlayersnum >= synapsis_minplayers) || mode == MODE_SYNAPSIS)
 	{
 		// Synapsis Mode
 		SetBit(g_currentmode, MODE_SYNAPSIS)
@@ -13800,7 +13481,7 @@ start_mode(mode, id)
 
 		// Turn specified amount of players into Nemesis
 		static iNemesis, iMaxNemesis
-		iMaxNemesis = Synapsis_nemesisCount
+		iMaxNemesis = synapsis_nemesis_count
 		iNemesis = 0
 		
 		while (iNemesis < iMaxNemesis)
@@ -13815,12 +13496,12 @@ start_mode(mode, id)
 			iNemesis++
 		
 			// Apply nemesis health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Synapsis_nemesis_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * synapsis_nemesis_hp_mul))
 		}
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
-		iMaxSurvivors = Synapsis_survivorCount
+		iMaxSurvivors = synapsis_survivor_count
 		iSurvivors = 0
 		
 		while (iSurvivors < iMaxSurvivors)
@@ -13836,12 +13517,12 @@ start_mode(mode, id)
 			iSurvivors++
 
 			// Apply survivor health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Synapsis_survivor_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * synapsis_survivor_hp_mul))
 		}
 
 		// Turn specified amount of players into Snipers
 		static iSnipers, iMaxSnipers
-		iMaxSnipers = Synapsis_sniperCount
+		iMaxSnipers = synapsis_sniper_count
 		iSnipers = 0
 		
 		while (iSnipers < iMaxSnipers)
@@ -13857,7 +13538,7 @@ start_mode(mode, id)
 			iSnipers++
 
 			// Apply survivor health multiplier
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Synapsis_sniper_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * synapsis_sniper_hp_mul))
 		}
 		
 		// Turn the remaining players into humans
@@ -13890,14 +13571,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SYNAPSIS, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Armageddon_chance) == Armageddon_enable && iPlayersnum >= Armageddon_minPlayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, svn_chance) == svn_enable && iPlayersnum >= svn_minplayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
 	{
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
 		g_lastmode = MODE_SURVIVOR_VS_NEMESIS
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * Armageddon_ratio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * svn_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Nemesis
@@ -13915,7 +13596,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Nemesis
 				MakeZombie(id, CLASS_NEMESIS)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * Armageddon_nemesis_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * svn_nemesis_hp_mul))
 				iZombies++
 			}
 		}
@@ -13929,7 +13610,7 @@ start_mode(mode, id)
 			
 			// Turn into a Survivor
 			MakeHuman(id, CLASS_SURVIVOR)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Armageddon_survivor_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * svn_survivor_hp_mul))
 		}
 		
 		// Play armageddon sound
@@ -13952,14 +13633,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SurvivorVsAssasin_chance) == SurvivorVsAssasin_enable && iPlayersnum >= SurvivorVsAssasin_minPlayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_ASSASIN)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, sva_chance) == sva_enable && iPlayersnum >= sva_minplayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_ASSASIN)
 	{
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 		g_lastmode = MODE_SURVIVOR_VS_ASSASIN
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * SurvivorVsAssasin_ratio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * sva_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Assasin
@@ -13977,7 +13658,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Assasin
 				MakeZombie(id, CLASS_ASSASIN)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * SurvivorVsAssasin_assasin_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * sva_assasin_hp_mul))
 				iZombies++
 			}
 		}
@@ -13991,7 +13672,7 @@ start_mode(mode, id)
 			
 			// Turn into a Survivor
 			MakeHuman(id, CLASS_SURVIVOR)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * SurvivorVsAssasin_survivor_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * sva_survivor_hp_mul))
 		}
 		
 		// Play armageddon sound
@@ -14014,14 +13695,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR_VS_ASSASIN, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Apocalypse_chance) == Apocalypse_enable && iPlayersnum >= Apocalypse_minPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, snva_chance) == snva_enable && iPlayersnum >= snva_minplayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
 	{
 		// Apocalypse Mode
 		SetBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
 		g_lastmode = MODE_SNIPER_VS_ASSASIN
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * Apocalypse_ratio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * snva_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Assassin
@@ -14039,7 +13720,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Assassin
 				MakeZombie(id, CLASS_ASSASIN)
-				set_user_health(id, floatround(float(pev(id, pev_health)) * Apocalypse_assasin_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * snva_assasin_hp_mul))
 				iZombies++
 			}
 		}
@@ -14053,7 +13734,7 @@ start_mode(mode, id)
 			
 			// Turn into a Sniper
 			MakeHuman(id, CLASS_SNIPER)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Apocalypse_sniper_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * snva_sniper_hp_mul))
 		}
 		
 		// Play apocalypse sound
@@ -14076,14 +13757,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, BombardierVsGrenadier_chance) == BombardierVsGrenadier_enable && iPlayersnum >= BombardierVsGrenadier_minPlayers && iPlayersnum >= 2) || mode == MODE_BOMBARDIER_VS_GRENADIER)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, bvg_chance) == bvg_enable && iPlayersnum >= bvg_minplayers && iPlayersnum >= 2) || mode == MODE_BOMBARDIER_VS_GRENADIER)
 	{
 		// Bombardier vs Grenadier Mode
 		SetBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)
 		g_lastmode = MODE_BOMBARDIER_VS_GRENADIER
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * BombardierVsGrenadier_ratio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * bvg_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Bombardier
@@ -14100,7 +13781,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Bombardier
 				MakeZombie(id, CLASS_BOMBARDIER)
-				set_user_health(id, floatround(float(pev(id, pev_health)) * BombardierVsGrenadier_bombardier_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * bvg_bombardier_hp_mul))
 				iZombies++
 			}
 		}
@@ -14113,7 +13794,7 @@ start_mode(mode, id)
 			
 			// Turn into a Grenadier
 			MakeHuman(id, CLASS_GRENADIER)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * BombardierVsGrenadier_grenadier_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * bvg_grenadier_hp_mul))
 		}
 		
 		// Play Bombardier vs Grenadier sound
@@ -14136,7 +13817,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_BOMBARDIER_VS_GRENADIER, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, Nightmare_chance) == Nightmare_enable && iPlayersnum >= Nightmare_minPlayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, nightmare_chance) == nightmare_enable && iPlayersnum >= nightmare_minplayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
 	{
 		// Nightmare mode
 		SetBit(g_currentmode, MODE_NIGHTMARE)
@@ -14154,7 +13835,7 @@ start_mode(mode, id)
 			if (random_num(1, 5) == 1)
 			{
 				MakeZombie(id, CLASS_ASSASIN)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_assasin_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * nightmare_assasin_hp_mul))
 				iZombies++
 			}
 		}
@@ -14171,7 +13852,7 @@ start_mode(mode, id)
 			if (random_num(1, 5) == 1)
 			{
 				MakeZombie(id, CLASS_NEMESIS)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_nemesis_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * nightmare_nemesis_hp_mul))
 				iZombies++
 			}
 		}
@@ -14188,7 +13869,7 @@ start_mode(mode, id)
 			if (random_num(1, 5) == 1)
 			{
 				MakeHuman(id, CLASS_SURVIVOR)
-				set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_survivor_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * nightmare_survivor_hp_mul))
 				iZombies++
 			}
 		}
@@ -14199,7 +13880,7 @@ start_mode(mode, id)
 				continue
 
 			MakeHuman(id, CLASS_SNIPER)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * Nightmare_sniper_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * nightmare_sniper_hp_mul))
 		}
 		
 		// Play nightmare sound
@@ -14222,14 +13903,14 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_NIGHTMARE, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SniperVsNemesis_chance) == SniperVsNemesis_enable && iPlayersnum >= SniperVsNemesis_minPlayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, snvn_chance) == snvn_enable && iPlayersnum >= snvn_minplayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
 	{
 		// Devil Mode ( Sniper vs Nemesis)
 		SetBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 		g_lastmode = MODE_SNIPER_VS_NEMESIS
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
-		iMaxZombies = floatround((iPlayersnum * SniperVsNemesis_ratio), floatround_ceil)
+		iMaxZombies = floatround((iPlayersnum * snvn_ratio), floatround_ceil)
 		iZombies = 0
 		
 		// Randomly turn iMaxZombies players into Nemesis
@@ -14247,7 +13928,7 @@ start_mode(mode, id)
 			{
 				// Turn into a Nemesis
 				MakeZombie(id, CLASS_NEMESIS)	
-				set_user_health(id, floatround(float(pev(id, pev_health)) * SniperVsNemesis_nemesis_HealthMultiply))
+				set_user_health(id, floatround(float(pev(id, pev_health)) * snvn_nemesis_hp_mul))
 				iZombies++
 			}
 		}
@@ -14261,7 +13942,7 @@ start_mode(mode, id)
 			
 			// Turn into a Sniper
 			MakeHuman(id, CLASS_SNIPER)
-			set_user_health(id, floatround(float(pev(id, pev_health)) * SniperVsNemesis_sniper_HealthMultiply))
+			set_user_health(id, floatround(float(pev(id, pev_health)) * snvn_sniper_hp_mul))
 		}
 		
 		// Play devil sound
@@ -14575,7 +14256,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, NemesisGravity)
 
 				// Set Glow
-				if (NemesisGlow) set_glow(victim, g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue], 25)
+				if (NemesisGlow) set_glow(victim, g_glowColor[NEMESIS][RED], g_glowColor[NEMESIS][GREEN], g_glowColor[NEMESIS][BLUE], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = NemesisGravity
@@ -14601,7 +14282,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, AssassinGravity)
 
 				// Set Glow
-				if (AssassinGlow) set_glow(victim, g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue], 25)
+				if (AssassinGlow) set_glow(victim, g_glowColor[ASSASIN][RED], g_glowColor[ASSASIN][GREEN], g_glowColor[ASSASIN][BLUE], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = AssassinGravity
@@ -14625,7 +14306,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, BombardierGravity)
 
 				// Set glow
-				if (BombardierGlow) set_glow(victim, g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue], 25)
+				if (BombardierGlow) set_glow(victim, g_glowColor[BOMBARDIER][RED], g_glowColor[BOMBARDIER][GREEN], g_glowColor[BOMBARDIER][BLUE], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = BombardierGravity
@@ -14649,7 +14330,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_pev(victim, pev_gravity, Revenantgravity)
 
 				// Set glow
-				if (RevenantGlow) set_glow(victim, g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue], 25)
+				if (RevenantGlow) set_glow(victim, g_glowColor[REVENANT][RED], g_glowColor[REVENANT][GREEN], g_glowColor[REVENANT][BLUE], 25)
 				else remove_glow(victim)
 			}
 			else g_frozen_gravity[victim] = Revenantgravity
@@ -14989,7 +14670,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, SurvivorGravity)
 
 				// Set glow
-				if (SurvivorGlow) set_glow(id, g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue], 25)
+				if (SurvivorGlow) set_glow(id, g_glowColor[SURVIVOR][RED], g_glowColor[SURVIVOR][GREEN], g_glowColor[SURVIVOR][BLUE], 25)
 				else remove_glow(id)
 			}
 			
@@ -15032,7 +14713,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, SniperGravity)
 
 				// Set glow
-				if (SniperGlow) set_glow(id, g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue], 25)
+				if (SniperGlow) set_glow(id, g_glowColor[SNIPER][RED], g_glowColor[SNIPER][GREEN], g_glowColor[SNIPER][BLUE], 25)
 				else remove_glow(id)
 			}
 			
@@ -15070,7 +14751,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, SamuraiGravity)
 
 				// Set glow
-				if (SamuraiGlow) set_glow(id, g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue], 25)
+				if (SamuraiGlow) set_glow(id, g_glowColor[SAMURAI][RED], g_glowColor[SAMURAI][GREEN], g_glowColor[SAMURAI][BLUE], 25)
 				else remove_glow(id)
 			}
 			
@@ -15109,7 +14790,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, GrenadierGravity)
 
 				// Set glow
-				if (GrenadierGlow) set_glow(id, g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue], 25)
+				if (GrenadierGlow) set_glow(id, g_glowColor[GRENADIER][RED], g_glowColor[GRENADIER][GREEN], g_glowColor[GRENADIER][BLUE], 25)
 				else remove_glow(id)
 			}
 			
@@ -15149,7 +14830,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 				set_pev(id, pev_gravity, TerminatorGravity)
 
 				// Set glow
-				if (TerminatorGlow) set_glow(id, g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue], 25)
+				if (TerminatorGlow) set_glow(id, g_glowColor[TERMINATOR][RED], g_glowColor[TERMINATOR][GREEN], g_glowColor[TERMINATOR][BLUE], 25)
 				else remove_glow(id)
 			}
 			
@@ -16383,47 +16064,47 @@ public remove_effects(iParams[])
 	// Nemesis or Survivor glow / remove glow
 	if (CheckBit(g_playerClass[id], CLASS_NEMESIS))
 	{
-		if (NemesisGlow) set_glow(id, g_glowColor[__nemesis][__red], g_glowColor[__nemesis][__green], g_glowColor[__nemesis][__blue], 25)
+		if (NemesisGlow) set_glow(id, g_glowColor[NEMESIS][RED], g_glowColor[NEMESIS][GREEN], g_glowColor[NEMESIS][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_ASSASIN))
 	{
-		if (AssassinGlow) set_glow(id, g_glowColor[__assasin][__red], g_glowColor[__assasin][__green], g_glowColor[__assasin][__blue], 25)
+		if (AssassinGlow) set_glow(id, g_glowColor[ASSASIN][RED], g_glowColor[ASSASIN][GREEN], g_glowColor[ASSASIN][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SURVIVOR))
 	{
-		if (SurvivorGlow) set_glow(id, g_glowColor[__survivor][__red], g_glowColor[__survivor][__green], g_glowColor[__survivor][__blue], 25)
+		if (SurvivorGlow) set_glow(id, g_glowColor[SURVIVOR][RED], g_glowColor[SURVIVOR][GREEN], g_glowColor[SURVIVOR][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SNIPER))
 	{ 
-		if (SniperGlow) set_glow(id, g_glowColor[__sniper][__red], g_glowColor[__sniper][__green], g_glowColor[__sniper][__blue], 25)
+		if (SniperGlow) set_glow(id, g_glowColor[SNIPER][RED], g_glowColor[SNIPER][GREEN], g_glowColor[SNIPER][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_SAMURAI))
 	{
-		if (SamuraiGlow) set_glow(id, g_glowColor[__samurai][__red], g_glowColor[__samurai][__green], g_glowColor[__samurai][__blue], 25)
+		if (SamuraiGlow) set_glow(id, g_glowColor[SAMURAI][RED], g_glowColor[SAMURAI][GREEN], g_glowColor[SAMURAI][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_GRENADIER))
 	{
-		if (GrenadierGlow) set_glow(id, g_glowColor[__grenadier][__red], g_glowColor[__grenadier][__green], g_glowColor[__grenadier][__blue], 25)
+		if (GrenadierGlow) set_glow(id, g_glowColor[GRENADIER][RED], g_glowColor[GRENADIER][GREEN], g_glowColor[GRENADIER][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_TERMINATOR))
 	{
-		if (TerminatorGlow) set_glow(id, g_glowColor[__terminator][__red], g_glowColor[__terminator][__green], g_glowColor[__terminator][__blue], 25)
+		if (TerminatorGlow) set_glow(id, g_glowColor[TERMINATOR][RED], g_glowColor[TERMINATOR][GREEN], g_glowColor[TERMINATOR][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_REVENANT))
 	{
-		if (RevenantGlow) set_glow(id, g_glowColor[__revenant][__red], g_glowColor[__revenant][__green], g_glowColor[__revenant][__blue], 25)
+		if (RevenantGlow) set_glow(id, g_glowColor[REVENANT][RED], g_glowColor[REVENANT][GREEN], g_glowColor[REVENANT][BLUE], 25)
 		else remove_glow(id)
 	}
 	else if (CheckBit(g_playerClass[id], CLASS_BOMBARDIER))
 	{
-		if (BombardierGlow) set_glow(id, g_glowColor[__bombardier][__red], g_glowColor[__bombardier][__green], g_glowColor[__bombardier][__blue], 25)
+		if (BombardierGlow) set_glow(id, g_glowColor[BOMBARDIER][RED], g_glowColor[BOMBARDIER][GREEN], g_glowColor[BOMBARDIER][BLUE], 25)
 		else remove_glow(id)
 	}
 	else remove_glow(id)
@@ -17233,7 +16914,7 @@ allowed_swarm()
 // Checks if multi infection mode is allowed
 allowed_multi()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * MultiInfection_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * MultiInfection_ratio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * multi_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * multi_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -17242,8 +16923,8 @@ allowed_multi()
 // Checks if plague mode is allowed
 allowed_plague()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil) < 1
-		|| fnGetAlive() - (Plague_survivorCount + Plague_nemesisCount + floatround((fnGetAlive() - (Plague_nemesisCount + Plague_survivorCount)) * Plague_ratio, floatround_ceil)) < 1)
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (plague_nemesis_count + plague_survivor_count)) * plague_ratio, floatround_ceil) < 1
+		|| fnGetAlive() - (plague_survivor_count + plague_nemesis_count + floatround((fnGetAlive() - (plague_nemesis_count + plague_survivor_count)) * plague_ratio, floatround_ceil)) < 1)
 	return false
 	
 	return true
@@ -17252,8 +16933,8 @@ allowed_plague()
 // Checks if synapsis mode is allowed
 allowed_synapsis()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil) < 1
-		|| fnGetAlive() - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount + floatround((fnGetAlive() - (Synapsis_nemesisCount + Synapsis_survivorCount + Synapsis_sniperCount)) * Synapsis_ratio, floatround_ceil)) < 1)
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround((fnGetAlive() - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count)) * synapsis_ratio, floatround_ceil) < 1
+		|| fnGetAlive() - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count + floatround((fnGetAlive() - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count)) * synapsis_ratio, floatround_ceil)) < 1)
 	return false
 	
 	return true
@@ -17262,7 +16943,7 @@ allowed_synapsis()
 // Checks if armageddon mode is allowed
 allowed_armageddon()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * Armageddon_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * Armageddon_ratio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * svn_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * svn_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -17271,7 +16952,7 @@ allowed_armageddon()
 // Checks if survivor vs assasin mode is allowed
 allowed_survivor_vs_assasin()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * SurvivorVsAssasin_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * SurvivorVsAssasin_ratio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * sva_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * sva_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -17280,7 +16961,7 @@ allowed_survivor_vs_assasin()
 // Checks if bombardier vs grenadier mode is allowed
 allowed_bombardier_vs_grenadier()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * BombardierVsGrenadier_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * BombardierVsGrenadier_ratio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * bvg_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * bvg_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -17289,7 +16970,7 @@ allowed_bombardier_vs_grenadier()
 // Checks if apocalypse mode is allowed
 allowed_apocalypse()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * Apocalypse_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * Apocalypse_ratio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * snva_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * snva_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -17298,7 +16979,7 @@ allowed_apocalypse()
 // Checks if nightmare mode is allowed
 allowed_nightmare()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * Nightmare_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * Nightmare_ratio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * nightmare_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * nightmare_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -17308,7 +16989,7 @@ allowed_nightmare()
 // Checks if devil mode is allowed
 allowed_devil()
 {
-	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * SniperVsNemesis_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * SniperVsNemesis_ratio, floatround_ceil) >= fnGetAlive())
+	if (g_endround || !g_newround || task_exists(TASK_WELCOMEMSG) || floatround(fnGetAlive() * snvn_ratio, floatround_ceil) < 2 || floatround(fnGetAlive() * snvn_ratio, floatround_ceil) >= fnGetAlive())
 	return false
 	
 	return true
@@ -18699,7 +18380,7 @@ public make_blood(taskid)
 	engfunc(EngFunc_WriteCoord, originF[0]) // x
 	engfunc(EngFunc_WriteCoord, originF[1]) // y
 	engfunc(EngFunc_WriteCoord, originF[2]) // z
-	write_byte(zombie_decals[random(sizeof zombie_decals)] + (g_czero * 12)) // random decal number (offsets +12 for CZ)
+	write_byte(random_num(100, 200) + (g_czero * 12)) // random decal number (offsets +12 for CZ)
 	message_end()
 } 
 
