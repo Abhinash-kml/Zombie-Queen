@@ -391,13 +391,6 @@ enum _: playerTagInfoStruct
 	_tTag[32]
 }
 
-// Auto respond struct
-enum _: autoRespondStruct
-{
-	_command[20],
-	_respond[100]
-}
-
 // CS Teams
 enum _: csTeams
 {
@@ -3653,7 +3646,7 @@ public ReadVipsFromFile()
 public ReadAutoRespondsFromFile()
 {
 	static iFile; iFile = fopen("addons/amxmodx/configs/auto_responds.ini", "r")
-	new Data[autoRespondStruct]
+	new command[20], response[100]
 
 	if (iFile)
 	{
@@ -3670,8 +3663,8 @@ public ReadAutoRespondsFromFile()
 				while (replace(line, charsmax(line), "!w", "^3")){ }
 				while (replace(line, charsmax(line), "!y", "^1")){ }
 
-				parse(line, Data[_command], charsmax(Data[_command]), Data[_respond], charsmax(Data[_respond]))
-				TrieSetArray(g_autoRespondTrie, Data[_command], Data, sizeof(Data))
+				parse(line, command, charsmax(command), response, charsmax(response))
+				TrieSetString(g_autoRespondTrie, command, response)
 			}	
 		}
 		fclose (iFile)	
@@ -3894,31 +3887,26 @@ public CheckBots()
 
 public Advertise_HUD()
 {
-	static a, msg[256]
+	static a, msg[256], players[32], pnum
+	get_players(players, pnum, "ch")
 
-	for (a = 1; a <= get_maxplayers(); a++)
+	for (a = 1; a <= pnum; a++)
 	{
-		if (g_isconnected[a] && !g_isbot[a])
-		{
-			set_hudmessage(random_num(0, 230), random_num(0, 240), random_num(0, 230), -1.0, 0.20, 2, 0.2, 7.0, 0.1, 0.7, 2)
-			ArrayGetString(g_hudAdvertisements, random_num(0, ArraySize(g_hudAdvertisements) - 1), msg, charsmax(msg))
-			ShowSyncHudMsg(a, g_MsgSync7, msg)
-		}
+		if (g_isbot[a]) continue
+		
+		set_hudmessage(random_num(0, 230), random_num(0, 240), random_num(0, 230), -1.0, 0.20, 2, 0.2, 7.0, 0.1, 0.7, 2)
+		ArrayGetString(g_hudAdvertisements, random_num(0, ArraySize(g_hudAdvertisements) - 1), msg, charsmax(msg))
+		ShowSyncHudMsg(a, g_MsgSync7, msg)
+		
 	}
 }
 
 public Advertise_CHAT()
 {
-	static a, msg[256]
+	static msg[256]
 
-	for (a = 1; a <= get_maxplayers(); a++)
-	{
-		if (g_isconnected[a] && !g_isbot[a])
-		{
-			ArrayGetString(g_chatAdvertisements, random_num(0, ArraySize(g_chatAdvertisements) - 1), msg, charsmax(msg))
-			client_print_color(0, print_team_grey, msg)
-		}
-	}
+	ArrayGetString(g_chatAdvertisements, random_num(0, ArraySize(g_chatAdvertisements) - 1), msg, charsmax(msg))
+	client_print_color(0, print_team_grey, msg)
 }
 
 public TaskReminder()
@@ -8630,11 +8618,11 @@ public Client_Say(id)
 		iTimeleft = get_timeleft()
 		client_print_color(id, print_team_grey, "^1Timeleft: ^4%d:%02d", iTimeleft / 60, iTimeleft % 60)
 	}*/
-	static Data[autoRespondStruct]
+	static buffer[100]
 
-	if (TrieGetArray(g_autoRespondTrie, cMessage, Data, sizeof Data))
+	if (TrieGetString(g_autoRespondTrie, cMessage, buffer, charsmax(buffer)))
 	{
-		client_print_color(id, print_team_grey, Data[_respond])
+		client_print_color(id, print_team_grey, buffer)
 	}
 	else if (equali(cMessage, "/rank", 5) || equali(cMessage, "rank", 4)) ShowPlayerStatistics(id)
 	else if (equali(cMessage, "/globaltop", 4) || equali(cMessage, "globaltop", 3)) ShowGlobalTop15(id)
