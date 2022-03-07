@@ -307,7 +307,6 @@ new BlockSuicide = 1
 new RemoveMoney = 1
 new SaveStats = 1
 new RespawnOnWorldSpawnKill = 1
-new PreventConsecutiveRounds = 1
 new KeepHealthOnDisconnect = 1
 new StartingPacks = 15
 
@@ -823,19 +822,15 @@ enum _:MMenuData
 	_mItemPrice
 }
 
-// Data structure for points shop weapons
-enum _:pointsShopDataStructure
-{
-    ItemName[32],
-    ItemCost
-}
-
 // Data structure for extra items
 enum _:extraItemsDataStructure
 {
 	ItemName[32],
 	ItemCost,
-	ItemTeam
+	ItemTeam,
+	ItemMode,
+	ItemLimitRound,
+	ItemLimitMap
 }
 
 enum _: structExtrasTeam (<<=1)
@@ -852,6 +847,31 @@ enum _: structExtrasTeam (<<=1)
 	ZP_EXTRA_NEMESIS,
 	ZP_EXTRA_BOMBARDIER,
 	ZP_EXTRA_REVENANT
+}
+
+enum _: structShowConditions (<<=1)
+{
+	ZP_SHOW_NONE = 1,
+	ZP_SHOW_INFECTION,
+	ZP_SHOW_MULTI_INFECTION,
+	ZP_SHOW_SWARM,
+	ZP_SHOW_PLAGUE,
+	ZP_SHOW_SYNAPSIS,
+	ZP_SHOW_SURVIVOR_VS_NEMESIS,
+	ZP_SHOW_SURVIVOR_VS_ASSASIN,
+	ZP_SHOW_SNIPER_VS_NEMESIS,
+	ZP_SHOW_SNIPER_VS_ASSASIN,
+	ZP_SHOW_BOMBARDIER_VS_GRENADIER,
+	ZP_SHOW_NIGHTMARE,
+	ZP_SHOW_SURVIVOR,
+	ZP_SHOW_SNIPER,
+	ZP_SHOW_SAMURAI,
+	ZP_SHOW_GRENADIER,
+	ZP_SHOW_TERMINATOR,
+	ZP_SHOW_ASSASIN,
+	ZP_SHOW_NEMESIS,
+	ZP_SHOW_BOMBARDIER,
+	ZP_SHOW_REVENANT
 }
 
 enum _:Items
@@ -1976,8 +1996,8 @@ const PEV_ADDITIONAL_AMMO = pev_iuser1
 const PEV_NADE_TYPE = pev_flTimeStepSound
 
 // Weapon bitsums
-const PRIMARY_WEAPONS_BIT_SUM = (1<<CSW_SCOUT)|(1<<CSW_XM1014)|(1<<CSW_MAC10)|(1<<CSW_AUG)|(1<<CSW_UMP45)|(1<<CSW_SG550)|(1<<CSW_GALIL)|(1<<CSW_FAMAS)|(1<<CSW_AWP)|(1<<CSW_MP5NAVY)|(1<<CSW_M249)|(1<<CSW_M3)|(1<<CSW_M4A1)|(1<<CSW_TMP)|(1<<CSW_G3SG1)|(1<<CSW_SG552)|(1<<CSW_AK47)|(1<<CSW_P90)
-const SECONDARY_WEAPONS_BIT_SUM = (1<<CSW_P228)|(1<<CSW_ELITE)|(1<<CSW_FIVESEVEN)|(1<<CSW_USP)|(1<<CSW_GLOCK18)|(1<<CSW_DEAGLE)
+const PRIMARY_WEAPONS_BITSUM = (1<<CSW_SCOUT)|(1<<CSW_XM1014)|(1<<CSW_MAC10)|(1<<CSW_AUG)|(1<<CSW_UMP45)|(1<<CSW_SG550)|(1<<CSW_GALIL)|(1<<CSW_FAMAS)|(1<<CSW_AWP)|(1<<CSW_MP5NAVY)|(1<<CSW_M249)|(1<<CSW_M3)|(1<<CSW_M4A1)|(1<<CSW_TMP)|(1<<CSW_G3SG1)|(1<<CSW_SG552)|(1<<CSW_AK47)|(1<<CSW_P90)
+const SECONDARY_WEAPONS_BITSUM = (1<<CSW_P228)|(1<<CSW_ELITE)|(1<<CSW_FIVESEVEN)|(1<<CSW_USP)|(1<<CSW_GLOCK18)|(1<<CSW_DEAGLE)
 
 // Allowed weapons for zombies (added grenades/bomb for sub-plugin support, since they shouldn't be getting them anyway)
 const ZOMBIE_ALLOWED_WEAPONS_BITSUM = (1<<CSW_KNIFE)|(1<<CSW_HEGRENADE)|(1<<CSW_FLASHBANG)|(1<<CSW_SMOKEGRENADE)|(1<<CSW_C4)
@@ -2854,7 +2874,7 @@ public plugin_precache()
 		fm_set_kvd(ent, "density", "0.00086", "env_fog")
 		fm_set_kvd(ent, "rendercolor", "128 128 128", "env_fog")
 	}
-	//if (g_ambience_snow) engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_snow"))
+	// if (g_ambience_snow) engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_snow"))
 
 	// Custom buyzone for all players
 	g_buyzone_ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "func_buyzone"))
@@ -3004,7 +3024,6 @@ public plugin_init()
 	register_clcmd("radio2", "Admin_menu")
 	register_clcmd("radio3", "Admin_menu")
 	
-	
 	// CS Buy Menus (to prevent zombies/survivor from buying)
 	register_menucmd(register_menuid("#Buy", 1), 511, "menu_cs_buy")
 	register_menucmd(register_menuid("BuyPistol", 1), 511, "menu_cs_buy")
@@ -3152,7 +3171,7 @@ public plugin_init()
 	g_forwards[EXTRA_ITEM_SELECTED] = CreateMultiForward("OnExtraItemSelected", ET_IGNORE, FP_CELL, FP_CELL)
 
 	// create our array with the size of the item structure
-	g_pointsShopWeapons = ArrayCreate(pointsShopDataStructure)
+	g_pointsShopWeapons = ArrayCreate(extraItemsDataStructure)
 	g_extraitems = ArrayCreate(extraItemsDataStructure)
 	
 	// CVARS - Others
@@ -3179,7 +3198,6 @@ public plugin_init()
 	g_MsgSync5[3] = CreateHudSyncObj()
 	g_MsgSync6 	  = CreateHudSyncObj()
 	g_MsgSync7 	  = CreateHudSyncObj()
-
 	
 	// Get Max Players
 	g_maxplayers = get_maxplayers()
@@ -3193,7 +3211,7 @@ public plugin_init()
 	if (equal(mymod, "czero")) g_czero = 1
 
 	g_mainAdminMenuCallback = menu_makecallback("MainAdminMenuCallback")
-	g_makeHumanClassMenuCallback= menu_makecallback("MakeHumanClassMenuCallback")
+	g_makeHumanClassMenuCallback = menu_makecallback("MakeHumanClassMenuCallback")
 	g_makeZombieClassMenuCallback = menu_makecallback("MakeZombieClassMenuCallback")
 	g_startNormalModesCallback = menu_makecallback("StartNormalModesCallBack")
 	g_startSpecialModesCallback = menu_makecallback("StartSpecialModesCallBack")
@@ -3261,7 +3279,7 @@ public plugin_init()
 		menu_additem(g_iModesMenu, cLine, cNumber, 0, -1)
 	}
 
-	//register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
+	// register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
 
 	g_adminsTrie = TrieCreate()
 	g_vipsTrie = TrieCreate()
@@ -3281,32 +3299,29 @@ public plugin_init()
 	ReadHudAdvertisementsFromFile()
 	//TaskGetMaps()
 
-	register_extra_item("Nightvision Goggles", 2, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER)
-	register_extra_item("Forcefield Grenade", 20, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_SAMURAI)
-	register_extra_item("Killing Grenade", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Explosion Grenade", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER)
-	register_extra_item("Napalm Grenade", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER)
-	register_extra_item("Frost Grenade", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER)
-	register_extra_item("Antidote Grenade", 40, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Multijump +1", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER)
-	register_extra_item("Jetpack + Bazooka", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_GRENADIER|ZP_EXTRA_TERMINATOR)
-	register_extra_item("Tryder", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Armor \y(100 AP)", 5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Armor \y(200 AP)", 10, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Crossbow", 30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Golden Weapons", 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Nemesis", 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Assasin", 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Sniper", 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Survivor", 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER)
-	register_extra_item("Antidote", 15, ZP_EXTRA_ZOMBIE)
-	register_extra_item("Zombie Maddness", 17, ZP_EXTRA_ZOMBIE)
-	register_extra_item("Infection Bomb", 25, ZP_EXTRA_ZOMBIE)
-	register_extra_item("Concussion Bomb", 10, ZP_EXTRA_ZOMBIE)
-	register_extra_item("Knife Blink", 10, ZP_EXTRA_ZOMBIE)
-
-	register_points_shop_weapon("Golden Weapons", 2000)
-	register_points_shop_weapon("Crossbow", 4000)
+	register_extra_item("Nightvision Goggles", 2, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Forcefield Grenade", 20, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_SAMURAI, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Killing Grenade", 	  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Explosion Grenade",   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
+	register_extra_item("Napalm Grenade", 	   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Frost Grenade", 	   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Antidote Grenade",   40, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Multijump +1", 	   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
+	register_extra_item("Jetpack + Bazooka",  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_GRENADIER|ZP_EXTRA_TERMINATOR, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
+	register_extra_item("Tryder", 			  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Armor \y(100 AP)",    5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Armor \y(200 AP)",   10, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Crossbow", 		  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
+	register_extra_item("Golden Weapons", 	 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
+	register_extra_item("Nemesis", 			 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Assasin", 			 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Sniper", 			 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Survivor", 		 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Antidote", 		  15, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Zombie Maddness", 	  17, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Infection Bomb", 	  25, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Concussion Bomb", 	  10, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Knife Blink", 		  10, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
 	
 	set_task(3.0, "CheckBots", .flags = "b")
 }
@@ -4003,8 +4018,7 @@ public _GameMenu(id, menu, item)
 		case 1: menu_display(id, g_iZombieClassMenu, 0)
 		case 2:
 			{
-				if (g_isalive[id])
-					menu_display(id, g_iPointShopMenu, 0)
+				if (g_isalive[id]) menu_display(id, g_iPointShopMenu, 0)
 				else client_print_color(id, print_team_grey, "%s Points shop is unavailbale right now.", CHAT_PREFIX)
 			}
 		case 3:
@@ -4074,8 +4088,21 @@ ShowMenuExtraItems(id)
 		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
 		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
 		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT)))) continue
+
+		if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
+		|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
+		|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
+		|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
+		|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
+		|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
+		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
+		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
+		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
+		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
+		|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
+		|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE)))) continue
 		
-		formatex(line, charsmax(line), "%s \r[%i packs]", ItemData[ItemName], ItemData[ItemCost])
+		formatex(line, charsmax(line), "%s \r[ %i packs ]", ItemData[ItemName], ItemData[ItemCost])
 		num_to_str(i, number, 3)
 		menu_additem(g_menu, line, number, 0, -1)
 	}
@@ -4125,6 +4152,23 @@ public _ExtraItems(id, menu, item)
 	{
 		// Notify player
 		client_print_color(id, print_team_grey, "%s This ^3item ^1is not for your ^4team^1...", CHAT_PREFIX)
+		return PLUGIN_HANDLED
+	}
+	else if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
+	|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
+	|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
+	|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
+	|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
+	|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
+	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
+	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
+	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
+	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
+	|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
+	|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE))))
+	{
+		// Notify player
+		client_print_color(id, print_team_grey, "%s This ^3item ^1is forbidden to buy in ^4current ^1round...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
 	else
@@ -9073,50 +9117,50 @@ public ShowStartSpecialModesMenu(id)
 
 public ShowPlayersMenu(id)
 {
-    static buffer[64]
+	static buffer[64]
 
-    switch (ADMIN_MENU_ACTION)
-    {
-        case ACTION_MAKE_HUMAN: formatex(buffer, charsmax(buffer), "\yMake Human")
-        case ACTION_MAKE_SURVIVOR: formatex(buffer, charsmax(buffer), "\yMake Survivor")
-        case ACTION_MAKE_SNIPER: formatex(buffer, charsmax(buffer), "\yMake Sniper")
-        case ACTION_MAKE_SAMURAI: formatex(buffer, charsmax(buffer), "\yMake Samurai")
-        case ACTION_MAKE_GRENADIER: formatex(buffer, charsmax(buffer), "\yMake Grenadier")
-        case ACTION_MAKE_TERMINATOR: formatex(buffer, charsmax(buffer), "\yMake Terminator")
-        case ACTION_MAKE_ZOMBIE: formatex(buffer, charsmax(buffer), "\yMake Zombie")
-        case ACTION_MAKE_ASSASIN: formatex(buffer, charsmax(buffer), "\yMake Assasin")
-        case ACTION_MAKE_NEMESIS: formatex(buffer, charsmax(buffer), "\yMake Nemesis")
-        case ACTION_MAKE_BOMBARDIER: formatex(buffer, charsmax(buffer), "\yMake Bombardier")
-        case ACTION_MAKE_REVENANT: formatex(buffer, charsmax(buffer), "\yMake Revenant")
-        case ACTION_RESPAWN_PLAYER: formatex(buffer, charsmax(buffer), "\yRespawn Players")
-    }
+	switch (ADMIN_MENU_ACTION)
+	{
+		case ACTION_MAKE_HUMAN: formatex(buffer, charsmax(buffer), "\yMake Human")
+		case ACTION_MAKE_SURVIVOR: formatex(buffer, charsmax(buffer), "\yMake Survivor")
+		case ACTION_MAKE_SNIPER: formatex(buffer, charsmax(buffer), "\yMake Sniper")
+		case ACTION_MAKE_SAMURAI: formatex(buffer, charsmax(buffer), "\yMake Samurai")
+		case ACTION_MAKE_GRENADIER: formatex(buffer, charsmax(buffer), "\yMake Grenadier")
+		case ACTION_MAKE_TERMINATOR: formatex(buffer, charsmax(buffer), "\yMake Terminator")
+		case ACTION_MAKE_ZOMBIE: formatex(buffer, charsmax(buffer), "\yMake Zombie")
+		case ACTION_MAKE_ASSASIN: formatex(buffer, charsmax(buffer), "\yMake Assasin")
+		case ACTION_MAKE_NEMESIS: formatex(buffer, charsmax(buffer), "\yMake Nemesis")
+		case ACTION_MAKE_BOMBARDIER: formatex(buffer, charsmax(buffer), "\yMake Bombardier")
+		case ACTION_MAKE_REVENANT: formatex(buffer, charsmax(buffer), "\yMake Revenant")
+		case ACTION_RESPAWN_PLAYER: formatex(buffer, charsmax(buffer), "\yRespawn Players")
+	}
 
-    new menu = menu_create(buffer, "PlayersMenuHandler", 0)
-    
-    // Variables for storing infos
-    new players[32], pnum, tempid
-    new userid[32], szString[64]
+	new menu = menu_create(buffer, "PlayersMenuHandler", 0)
 
-    //Fill players with available players
-    get_players_ex(players, pnum)
+	// Variables for storing infos
+	new players[32], pnum, tempid
+	new userid[32], szString[64]
 
-    for (new i = 0; i < pnum; i++)
-    {
-        // Save a tempid so we do not re-index
-        tempid = players[i]
+	// Fill players with available players
+	get_players_ex(players, pnum)
 
-        // Get the players name and class
-        formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playerName[tempid], g_classString[tempid])
-        
-        // We will use the data parameter to send the userid, so we can identify which player was selected in the handler
-        formatex(userid, charsmax(userid), "%d", get_user_userid(tempid))
+	for (new i = 0; i < pnum; i++)
+	{
+		// Save a tempid so we do not re-index
+		tempid = players[i]
 
-        // Add the item for this player
-        menu_additem(menu, szString, userid, 0, g_playersMenuCallback)
-    }
+		// Get the players name and class
+		formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playerName[tempid], g_classString[tempid])
 
-    // We now have all players in the menu, lets display the menu
-    menu_display(id, menu, 0)
+		// We will use the data parameter to send the userid, so we can identify which player was selected in the handler
+		formatex(userid, charsmax(userid), "%d", get_user_userid(tempid))
+
+		// Add the item for this player
+		menu_additem(menu, szString, userid, 0, g_playersMenuCallback)
+	}
+
+	// We now have all players in the menu, lets display the menu
+	menu_display(id, menu, 0)
 }
 
 public ShowPointsShopWeaponsMenu(id)
@@ -9132,7 +9176,7 @@ public ShowPointsShopWeaponsMenu(id)
 	new menu = menu_create("\yPremium Wepons", "PointsShopWeaponsMenuHandler")
 
 	// Used to display item in the menu
-	new itemData[pointsShopDataStructure]
+	new ItemData[extraItemsDataStructure]
 	new item[64]
 
 	// Used for array index to menu
@@ -9142,10 +9186,36 @@ public ShowPointsShopWeaponsMenu(id)
 	for (new i = 0; i < g_pointsShopTotalWeapons; i++)
 	{
 		// Get item data from array
-		ArrayGetArray(g_pointsShopWeapons, i, itemData)
+		ArrayGetArray(g_pointsShopWeapons, i, ItemData)
+
+		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
+		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
+		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
+		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
+		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
+		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
+		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
+		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
+		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT)))) continue
+		
+		if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
+		|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
+		|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
+		|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
+		|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
+		|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
+		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
+		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
+		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
+		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
+		|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
+		|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE)))) continue
 
 		// Format item for menu
-		formatex(item, charsmax(item), "%s \r[ %s points ]", itemData[ItemName], AddCommas(itemData[ItemCost]))
+		formatex(item, charsmax(item), "%s \r[ %s points ]", ItemData[ItemName], AddCommas(ItemData[ItemCost]))
 
 		// Pass array index to menu to find information about it later
 		num_to_str(i, data, charsmax(data))
@@ -9949,61 +10019,58 @@ public PointsShopWeaponsMenuHandler(id, menu, item)
 	new itemIndex = str_to_num(data)
 
 	// Get item data from array
-	new itemData[pointsShopDataStructure]
-	ArrayGetArray(g_pointsShopWeapons, itemIndex, itemData)
+	new ItemData[extraItemsDataStructure]
+	ArrayGetArray(g_pointsShopWeapons, itemIndex, ItemData)
 
 	// Check if player's points is less then the item's cost // If not then set the item
-	if (g_points[id] < itemData[ItemCost])
+	if (g_points[id] < ItemData[ItemCost])
 	{
 		// notify player
 		client_print_color(id, print_team_grey, "%s You dont have enough ^3points ^1to buy this weapon...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
+	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
+	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
+	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
+	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
+	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
+	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
+	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
+	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
+	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
+	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
+	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
+	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT))))
+	{
+		// Notify player
+		client_print_color(id, print_team_grey, "%s This ^3item ^1is not for your ^4team^1...", CHAT_PREFIX)
+		return PLUGIN_HANDLED
+	}
+	else if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
+	|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
+	|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
+	|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
+	|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
+	|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
+	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
+	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
+	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
+	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
+	|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
+	|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE))))
+	{
+		// Notify player
+		client_print_color(id, print_team_grey, "%s This ^3item ^1is forbidden to buy in ^4current ^1round...", CHAT_PREFIX)
+		return PLUGIN_HANDLED
+	}
 	else
     {
 		// Get player's points and subtract the cost
-		g_points[id] -= itemData[ItemCost]
+		g_points[id] -= ItemData[ItemCost]
 		MySQL_UPDATE_DATABASE(id)
 
-		switch (itemIndex)
-		{
-			case 0:
-			{
-				g_goldenweapons[id] = true
-
-				if (!user_has_weapon(id, CSW_AK47)) set_weapon(id, CSW_AK47, 10000)
-				if (!user_has_weapon(id, CSW_M4A1)) set_weapon(id, CSW_M4A1, 10000)
-				if (!user_has_weapon(id, CSW_XM1014)) set_weapon(id, CSW_XM1014, 10000)
-				if (!user_has_weapon(id, CSW_DEAGLE)) set_weapon(id, CSW_DEAGLE, 10000)
-
-				switch (random_num(0, 2))
-				{		
-					case 0: { client_cmd(id, "weapon_ak47"); set_goldenak47(id); }
-					case 1: { client_cmd(id, "weapon_m4a1"); set_goldenm4a1(id); }
-					case 2: { client_cmd(id, "weapon_xm1014"); set_goldenxm1014(id); }
-				}
-				
-				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				ShowSyncHudMsg(0, g_MsgSync6, "%s now has Golden Weapons", g_playerName[id])
-			}
-			case 1:
-			{
-				if (user_has_weapon(id, CSW_SG550)) drop_prim(id)
-
-				g_has_crossbow[id] = true
-				new iWep2 = give_item(id,"weapon_sg550")
-				client_cmd(id, "spk ^"fvox/get_crossbow acquired^"")
-				cs_set_weapon_ammo(iWep2, CROSSBOW_CLIP)
-				cs_set_user_bpammo (id, CSW_SG550, 10000)
-				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-				ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playerName[id])
-			}
-			default:
-			{
-				// Notify plugins that the player bought this item
-				ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
-			}
-		}
+		// Notify plugins that the player bought this item
+		ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
 	}
 
 	return PLUGIN_CONTINUE
@@ -12933,7 +13000,7 @@ start_mode(mode, id)
 	static iPlayersnum; iPlayersnum = fnGetAlive()
 	
 	// Not enough players, come back later!
-	if (iPlayersnum < 1)
+	if (iPlayersnum < 2)
 	{
 		set_task(2.0, "make_zombie_task", TASK_MAKEZOMBIE)
 		return
@@ -12945,7 +13012,7 @@ start_mode(mode, id)
 	// Set up some common vars
 	static forward_id, iZombies, iMaxZombies, iRand, buffer[65]
 	
-	if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SurvivorChance) == SurvivorEnabled && iPlayersnum >= SurvivorMinPlayers) || mode == MODE_SURVIVOR)
+	if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, SurvivorChance) == SurvivorEnabled && iPlayersnum >= SurvivorMinPlayers) || mode == MODE_SURVIVOR)
 	{
 		// Survivor Mode
 		SetBit(g_currentmode, MODE_SURVIVOR)
@@ -13001,7 +13068,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR, forward_id)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SniperChance) == SniperEnabled && iPlayersnum >= SniperMinPlayers) || mode == MODE_SNIPER)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, SniperChance) == SniperEnabled && iPlayersnum >= SniperMinPlayers) || mode == MODE_SNIPER)
 	{
 		// Sniper Mode
 		SetBit(g_currentmode, MODE_SNIPER)
@@ -13057,7 +13124,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER, forward_id)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, SamuraiChance) == SamuraiEnabled && iPlayersnum >= SamuraiMinPlayers) || mode == MODE_SAMURAI)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, SamuraiChance) == SamuraiEnabled && iPlayersnum >= SamuraiMinPlayers) || mode == MODE_SAMURAI)
 	{
 		// Samurai Mode
 		SetBit(g_currentmode, MODE_SAMURAI)
@@ -13113,7 +13180,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SAMURAI, forward_id)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, GrenadierChance) == GrenadierEnabled && iPlayersnum >= GrenadierMinPlayers) || mode == MODE_GRENADIER)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, GrenadierChance) == GrenadierEnabled && iPlayersnum >= GrenadierMinPlayers) || mode == MODE_GRENADIER)
 	{
 		// Grenadier Mode
 		SetBit(g_currentmode, MODE_GRENADIER)
@@ -13168,7 +13235,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_GRENADIER, forward_id)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, TerminatorChance) == TerminatorEnabled && iPlayersnum >= TerminatorMinPlayers) || mode == MODE_TERMINATOR)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, TerminatorChance) == TerminatorEnabled && iPlayersnum >= TerminatorMinPlayers) || mode == MODE_TERMINATOR)
 	{
 		// Terminator Mode
 		SetBit(g_currentmode, MODE_TERMINATOR)
@@ -13223,7 +13290,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_TERMINATOR, forward_id)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, swarm_chance) == swarm_enable && iPlayersnum >= swarm_minplayers) || mode == MODE_SWARM)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, swarm_chance) == swarm_enable && iPlayersnum >= swarm_minplayers) || mode == MODE_SWARM)
 	{		
 		// Swarm Mode
 		SetBit(g_currentmode, MODE_SWARM)
@@ -13281,7 +13348,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SWARM, 0)
 	}
-	else if ((mode == MODE_NONE && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, multi_chance) == multi_enable && floatround(iPlayersnum * multi_ratio, floatround_ceil) >= 2 && floatround(iPlayersnum * multi_ratio, floatround_ceil) < iPlayersnum && iPlayersnum >= multi_minplayers) || mode == MODE_MULTI_INFECTION)
+	else if ((mode == MODE_NONE && g_lastmode == MODE_INFECTION && random_num(1, multi_chance) == multi_enable && floatround(iPlayersnum * multi_ratio, floatround_ceil) >= 2 && floatround(iPlayersnum * multi_ratio, floatround_ceil) < iPlayersnum && iPlayersnum >= multi_minplayers) || mode == MODE_MULTI_INFECTION)
 	{
 		// Multi Infection Mode
 		SetBit(g_currentmode, MODE_MULTI_INFECTION)
@@ -13341,7 +13408,7 @@ start_mode(mode, id)
 		ShowSyncHudMsg(0, g_MsgSync, "Multi-infection mode !!!")
 		
 		// Create Fog 
-		//CreateFog(0, 128, 128, 128, 0.0008)
+		// CreateFog(0, 128, 128, 128, 0.0008)
 		
 		// Mode fully started!
 		g_modestarted = true
@@ -13351,8 +13418,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_MULTI_INFECTION, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, plague_chance) == plague_enable && floatround((iPlayersnum - (plague_nemesis_count+plague_survivor_count)) * plague_ratio, floatround_ceil) >= 1
-	&& iPlayersnum - (plague_survivor_count + plague_nemesis_count + floatround((iPlayersnum - (plague_nemesis_count + plague_survivor_count)) * plague_ratio, floatround_ceil)) >= 1 && iPlayersnum >= plague_minplayers) || mode == MODE_PLAGUE)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, plague_chance) == plague_enable && iPlayersnum >= plague_minplayers) || mode == MODE_PLAGUE)
 	{
 		// Plague Mode
 		SetBit(g_currentmode, MODE_PLAGUE)
@@ -13460,8 +13526,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_PLAGUE, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 3) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, synapsis_chance) == synapsis_enable && floatround((iPlayersnum - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count)) * synapsis_ratio, floatround_ceil) >= 1
-	&& iPlayersnum - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count + floatround((iPlayersnum - (synapsis_nemesis_count + synapsis_survivor_count + synapsis_sniper_count)) * synapsis_ratio, floatround_ceil)) >= 1 && iPlayersnum >= synapsis_minplayers) || mode == MODE_SYNAPSIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 3) && g_lastmode == MODE_INFECTION && random_num(1, synapsis_chance) == synapsis_enable && iPlayersnum >= synapsis_minplayers) || mode == MODE_SYNAPSIS)
 	{
 		// Synapsis Mode
 		SetBit(g_currentmode, MODE_SYNAPSIS)
@@ -13559,7 +13624,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SYNAPSIS, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, svn_chance) == svn_enable && iPlayersnum >= svn_minplayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, svn_chance) == svn_enable && iPlayersnum >= svn_minplayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_NEMESIS)
 	{
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
@@ -13621,7 +13686,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, sva_chance) == sva_enable && iPlayersnum >= sva_minplayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_ASSASIN)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, sva_chance) == sva_enable && iPlayersnum >= sva_minplayers && iPlayersnum >= 2) || mode == MODE_SURVIVOR_VS_ASSASIN)
 	{
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
@@ -13683,7 +13748,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SURVIVOR_VS_ASSASIN, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, snva_chance) == snva_enable && iPlayersnum >= snva_minplayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, snva_chance) == snva_enable && iPlayersnum >= snva_minplayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_ASSASIN)
 	{
 		// Apocalypse Mode
 		SetBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
@@ -13745,7 +13810,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, bvg_chance) == bvg_enable && iPlayersnum >= bvg_minplayers && iPlayersnum >= 2) || mode == MODE_BOMBARDIER_VS_GRENADIER)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, bvg_chance) == bvg_enable && iPlayersnum >= bvg_minplayers && iPlayersnum >= 2) || mode == MODE_BOMBARDIER_VS_GRENADIER)
 	{
 		// Bombardier vs Grenadier Mode
 		SetBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)
@@ -13805,7 +13870,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_BOMBARDIER_VS_GRENADIER, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, nightmare_chance) == nightmare_enable && iPlayersnum >= nightmare_minplayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, nightmare_chance) == nightmare_enable && iPlayersnum >= nightmare_minplayers && iPlayersnum >= 4) || mode == MODE_NIGHTMARE)
 	{
 		// Nightmare mode
 		SetBit(g_currentmode, MODE_NIGHTMARE)
@@ -13891,7 +13956,7 @@ start_mode(mode, id)
 		// Execute out forward
 		ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_NIGHTMARE, 0)
 	}
-	else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, snvn_chance) == snvn_enable && iPlayersnum >= snvn_minplayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
+	else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, snvn_chance) == snvn_enable && iPlayersnum >= snvn_minplayers && iPlayersnum >= 2) || mode == MODE_SNIPER_VS_NEMESIS)
 	{
 		// Devil Mode ( Sniper vs Nemesis)
 		SetBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
@@ -13964,7 +14029,7 @@ start_mode(mode, id)
 		// Remember id for calling our forward later
 		forward_id = id
 		
-		if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, NemesisChance) == NemesisEnabled && iPlayersnum >= NemesisMinPlayers) || mode == MODE_NEMESIS)
+		if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, NemesisChance) == NemesisEnabled && iPlayersnum >= NemesisMinPlayers) || mode == MODE_NEMESIS)
 		{
 			// Nemesis Mode
 			SetBit(g_currentmode, MODE_NEMESIS)
@@ -13999,7 +14064,7 @@ start_mode(mode, id)
 			// Execute out forward
 			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_NEMESIS, forward_id)
 		}
-		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, AssassinChance) == AssassinEnabled && iPlayersnum >= AssassinMinPlayers) || mode == MODE_ASSASIN)
+		else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, AssassinChance) == AssassinEnabled && iPlayersnum >= AssassinMinPlayers) || mode == MODE_ASSASIN)
 		{
 			// Assassin Mode
 			SetBit(g_currentmode, MODE_ASSASIN)
@@ -14037,7 +14102,7 @@ start_mode(mode, id)
 			// Execute out forward
 			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_ASSASIN, forward_id)
 		}
-		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, BombardierChance) == BombardierEnabled && iPlayersnum >= BombardierMinPlayers) || mode == MODE_BOMBARDIER)
+		else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, BombardierChance) == BombardierEnabled && iPlayersnum >= BombardierMinPlayers) || mode == MODE_BOMBARDIER)
 		{
 			// Bombardier Mode
 			SetBit(g_currentmode, MODE_BOMBARDIER)
@@ -14072,7 +14137,7 @@ start_mode(mode, id)
 			// Execute out forward
 			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_BOMBARDIER, forward_id)
 		}
-		else if ((mode == MODE_NONE && (g_roundcount > 8) && (!PreventConsecutiveRounds || g_lastmode == MODE_INFECTION) && random_num(1, RevenantChance) == RevenantEnabled && iPlayersnum >= RevenantMinPlayers) || mode == MODE_REVENANT)
+		else if ((mode == MODE_NONE && (g_roundcount > 8) && g_lastmode == MODE_INFECTION && random_num(1, RevenantChance) == RevenantEnabled && iPlayersnum >= RevenantMinPlayers) || mode == MODE_REVENANT)
 		{
 			// Revenant Mode
 			SetBit(g_currentmode, MODE_REVENANT)
@@ -16814,7 +16879,6 @@ allowed_sniper(id)
 	return true
 }
 
-// Abhinash
 // Checks if a player is allowed to be samurai
 allowed_samurai(id)
 {
@@ -17248,36 +17312,36 @@ LogToFile(action, admin, target = 0)
 
 	switch (action)
 	{
-		case LOG_SLAY: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slayed %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_SLAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slapped %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_KICK:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] kicked %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_GAG:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] gagged %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_BAN:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] banned %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_FREEZE: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] froze %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_NICK: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed nickname of %s. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed map to . [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_ZOMBIE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_HUMAN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_NEMESIS:			 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_ASSASIN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_BOMBARDIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SNIPER: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SURVIVOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_SAMURAI: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_GRENADIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_TERMINATOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Terminator. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MAKE_REVENANT: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_MULTIPLE_INFECTION: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 		g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SWARM: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_PLAGUE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SYNAPSIS: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Synapsis mode. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SURVIVOR_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Survivor vs Assasin mode. [ Players: %d / %d ]", 	g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SURVIVOR_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 			g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_BOMBARDIER_VS_GRENADIER: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Bombardier vs Grenadier mode. [ Players: %d / %d ]", 			g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_NIGHTMARE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SNIPER_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 	g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_MODE_SNIPER_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 		g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_RESPAWN_PLAYER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAY: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slayed %s. [ Players: %d / %d ]", 								g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_SLAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] slapped %s. [ Players: %d / %d ]", 								g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_KICK:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] kicked %s. [ Players: %d / %d ]", 								g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_GAG:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] gagged %s. [ Players: %d / %d ]", 								g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_BAN:							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] banned %s. [ Players: %d / %d ]", 								g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_FREEZE: 						formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] froze %s. [ Players: %d / %d ]", 								g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_NICK: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed nickname of %s. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAP: 							formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] changed map to . [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ZOMBIE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Zombie. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_HUMAN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Human. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_NEMESIS:			 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Nemesis. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_ASSASIN: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Assassin. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_BOMBARDIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Bombardier. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SNIPER: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Sniper. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SURVIVOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Survivor. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_SAMURAI: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Samurai. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_GRENADIER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Grenadier. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_TERMINATOR: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Terminator. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MAKE_REVENANT: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] made %s a Revenant. [ Players: %d / %d ]", 				    	g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_MULTIPLE_INFECTION: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Multi-infection mode. [ Players: %d / %d ]", 			g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SWARM: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Swarm mode. [ Players: %d / %d ]", 						g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_PLAGUE: 					formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Plague mode. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SYNAPSIS: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Synapsis mode. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Survivor vs Assasin mode. [ Players: %d / %d ]", 		g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SURVIVOR_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Armageddon mode. [ Players: %d / %d ]", 				g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_BOMBARDIER_VS_GRENADIER: 	formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Bombardier vs Grenadier mode. [ Players: %d / %d ]",	g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_NIGHTMARE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 		g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_MODE_SNIPER_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 			g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
+		case LOG_RESPAWN_PLAYER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
 	}
 
 	log_to_file("ZombieQueen.log", logdata)
@@ -18156,13 +18220,25 @@ public native_start_bombardier_vs_grenadier_round()
 public native_register_points_shop_weapon(plugin, param)
 {
     // Create an array to hold our item data
-    new ItemData[pointsShopDataStructure]
+    new ItemData[extraItemsDataStructure]
     
     // Get item name from function
     get_string(1, ItemData[ItemName], charsmax(ItemData[ItemName]))
     
     // Get item cost from function
     ItemData[ItemCost] = get_param(2)
+
+	// Get item team from function
+	ItemData[ItemTeam] |= get_param(3)
+
+	// Get item availability mode from function
+	ItemData[ItemMode] |= get_param(4)
+
+	// Get item round limit from function
+	ItemData[ItemLimitRound] = get_param(5)
+
+	// Get item map limit from function
+	ItemData[ItemLimitMap] = get_param(6)
     
     // Add item to array and increase size
     ArrayPushArray(g_pointsShopWeapons, ItemData)
@@ -18174,16 +18250,28 @@ public native_register_points_shop_weapon(plugin, param)
 }
 
 // To be used internallly
-public register_points_shop_weapon(const name[], const price)
+public register_points_shop_weapon(const name[], const price, const team, const mode, const limit_round, const limit_map)
 {
 	// Create an array to hold our item data
-    new ItemData[pointsShopDataStructure]
+    new ItemData[extraItemsDataStructure]
     
     // Get item name from function
     formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
     
     // Get item cost from function
     ItemData[ItemCost] = price
+
+	// Get item team from function
+	ItemData[ItemTeam] |= team
+
+	// Get item availability mode from function
+	ItemData[ItemMode] |= mode
+
+	// Get item round limit from function
+	ItemData[ItemLimitRound] = limit_round
+
+	// Get item map limit from function
+	ItemData[ItemLimitMap] = limit_map
     
     // Add item to array and increase size
     ArrayPushArray(g_pointsShopWeapons, ItemData)
@@ -18195,7 +18283,7 @@ public register_points_shop_weapon(const name[], const price)
 }
 
 // To be used internally
-public register_extra_item(const name[], price, team)
+public register_extra_item(const name[], const price, const team, const mode, const limit_round, const limit_map)
 {
 	// Create an array to hold our item data
 	new ItemData[extraItemsDataStructure]
@@ -18207,7 +18295,16 @@ public register_extra_item(const name[], price, team)
 	ItemData[ItemCost] = price
 
 	// Get item team from function
-	ItemData[ItemTeam] = team
+	ItemData[ItemTeam] |= team
+
+	// Get item availability mode from function
+	ItemData[ItemMode] |= mode
+
+	// Get item round limit from function
+	ItemData[ItemLimitRound] = limit_round
+
+	// Get item map limit from function
+	ItemData[ItemLimitMap] = limit_map
 
 	// Add item to array and increase size
 	ArrayPushArray(g_extraitems, ItemData)
@@ -18611,7 +18708,7 @@ stock drop_weapons(id, dropwhat)
 		// Prevent re-indexing the array
 		weaponid = weapons[i]
 		
-		if ((dropwhat == 1 && ((1<<weaponid) & PRIMARY_WEAPONS_BIT_SUM)) || (dropwhat == 2 && ((1<<weaponid) & SECONDARY_WEAPONS_BIT_SUM)))
+		if ((dropwhat == 1 && ((1<<weaponid) & PRIMARY_WEAPONS_BITSUM)) || (dropwhat == 2 && ((1<<weaponid) & SECONDARY_WEAPONS_BITSUM)))
 		{
 			// Get weapon entity
 			static wname[32], weapon_ent
