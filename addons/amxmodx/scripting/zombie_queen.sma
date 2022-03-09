@@ -91,6 +91,18 @@ native is_hull_vacant(id)
 native get_target_and_attack(id)
 
 /*================================================================================
+ [Plugin Customization]
+=================================================================================*/
+new const ZP_EXTRA_ITEMS_FILE[] = "zombie_queen/extra_items.ini"
+new const ZP_CLASS_CONFIGS_FILE[] = "zombie_queen/class_configs.ini"
+new const ZP_ACCESS_FLAGS_FILE[] = "zombie_queen/access_flags.ini"
+new const ZP_MODEL_CONFIGS_FILE[] = "zombie_queen/model_configs.ini"
+new const ZP_MODE_CONFIGS_FILE[] = "zombie_queen/mode_configs.ini"
+new const ZP_SOUND_CONFIGS_FILE[] = "zombie_queen/sound_configs.ini"
+new const ZP_ESSENTIAL_CONFIGS_FILE[] = "zombie_queen/essential_configs.ini"
+new const ZP_GRENADE_CONFIGS_FILE[] = "zombie_queen/grenade_configs.ini"
+
+/*================================================================================
 	[Constants, Offsets, Macros]
 =================================================================================*/
 
@@ -423,6 +435,10 @@ enum _: classNames
 	CLASS_BOMBARDIER,
 	CLASS_REVENANT
 }
+
+#define GetTeamIndex(%1) (1<<ArrayGetCell(ZP_TEAM_INDEX, %1))
+#define IsTeam(%1,%2) (%1 & (1<<ArrayGetCell(ZP_TEAM_INDEX, %2)))
+new Array:ZP_TEAM_NAMES, Array:ZP_TEAM_INDEX
 
 // Mode names
 enum _: modNames 
@@ -849,31 +865,6 @@ enum _: structExtrasTeam (<<=1)
 	ZP_EXTRA_REVENANT
 }
 
-enum _: structShowConditions (<<=1)
-{
-	ZP_SHOW_NONE = 1,
-	ZP_SHOW_INFECTION,
-	ZP_SHOW_MULTI_INFECTION,
-	ZP_SHOW_SWARM,
-	ZP_SHOW_PLAGUE,
-	ZP_SHOW_SYNAPSIS,
-	ZP_SHOW_SURVIVOR_VS_NEMESIS,
-	ZP_SHOW_SURVIVOR_VS_ASSASIN,
-	ZP_SHOW_SNIPER_VS_NEMESIS,
-	ZP_SHOW_SNIPER_VS_ASSASIN,
-	ZP_SHOW_BOMBARDIER_VS_GRENADIER,
-	ZP_SHOW_NIGHTMARE,
-	ZP_SHOW_SURVIVOR,
-	ZP_SHOW_SNIPER,
-	ZP_SHOW_SAMURAI,
-	ZP_SHOW_GRENADIER,
-	ZP_SHOW_TERMINATOR,
-	ZP_SHOW_ASSASIN,
-	ZP_SHOW_NEMESIS,
-	ZP_SHOW_BOMBARDIER,
-	ZP_SHOW_REVENANT
-}
-
 enum _:Items
 {
 	KILL_NADE,
@@ -1181,7 +1172,7 @@ LoadCustomizationFromFile()
 
 	for (new i = 0; i < MAX_ACCESS_FLAGS; i++)
 	{
-		AmxLoadString("zombie_queen/AccessFlags.ini", "Access Flags", access_names[i], user_access, charsmax(user_access))
+		AmxLoadString(ZP_ACCESS_FLAGS_FILE, "Access Flags", access_names[i], user_access, charsmax(user_access))
 		g_accessFlag[i] = user_access[0]
 
 		log_amx("%s = %c", access_names[i], g_accessFlag[i])
@@ -1192,7 +1183,7 @@ LoadCustomizationFromFile()
 
 	for (i = 0; i < MAX_CLASS_MODELS; i++)
 	{
-		AmxLoadStringArray("zombie_queen/Models.ini", "Class Models", player_model_names[i], g_playerModel[i])
+		AmxLoadStringArray(ZP_MODEL_CONFIGS_FILE, "Class Models", player_model_names[i], g_playerModel[i])
 
 		log_amx("----- %s = %i -----", player_model_names[i], ArraySize(g_playerModel[i]))
 
@@ -1209,7 +1200,7 @@ LoadCustomizationFromFile()
 
 	for (i = 0; i < MAX_WEAPON_MODELS; i++)
 	{
-		AmxLoadStringArray("zombie_queen/Models.ini", "Weapon Models", weapon_model_names[i], g_weaponModels[i])
+		AmxLoadStringArray(ZP_MODEL_CONFIGS_FILE, "Weapon Models", weapon_model_names[i], g_weaponModels[i])
 
 		log_amx("----- %s = %i -----", weapon_model_names[i], ArraySize(g_weaponModels[i]))
 
@@ -1225,7 +1216,7 @@ LoadCustomizationFromFile()
 
 	for (i = 0; i < MAX_SPRITES; i++)
 	{
-		AmxLoadStringArray("zombie_queen/Grenades.ini", "Grenade Sprites", sprite_names[i], g_sprites[i])
+		AmxLoadStringArray(ZP_GRENADE_CONFIGS_FILE, "Grenade Sprites", sprite_names[i], g_sprites[i])
 
 		log_amx("----- %s = %i -----", sprite_names[i], ArraySize(g_sprites[i]))
 
@@ -1241,7 +1232,7 @@ LoadCustomizationFromFile()
 	
 	for (i = 0; i < MAX_NADE_TYPE; i++)
 	{
-		AmxLoadString("zombie_queen/Grenades.ini", "Grenade Trail & Glow Color", keyTrailNadeRGB[i], buffer, charsmax(buffer))
+		AmxLoadString(ZP_GRENADE_CONFIGS_FILE, "Grenade Trail & Glow Color", keyTrailNadeRGB[i], buffer, charsmax(buffer))
 
 		parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 		g_color[i][RED]   = str_to_num(rgb[0])
@@ -1258,7 +1249,7 @@ LoadCustomizationFromFile()
 
 	for (i = 0; i < MAX_AMBIENCE_SOUNDS; i++)
 	{
-		AmxLoadStringArray("zombie_queen/Sounds.ini", "Ambience Sounds", keyAmbience[i], g_ambience[i])
+		AmxLoadStringArray(ZP_SOUND_CONFIGS_FILE, "Ambience Sounds", keyAmbience[i], g_ambience[i])
 
 		log_amx("%s = %i", keyAmbience[i], ArraySize(g_ambience[i]))
 
@@ -1276,7 +1267,7 @@ LoadCustomizationFromFile()
 
 	for (i = 0; i < MAX_START_SOUNDS; i++)
 	{
-		AmxLoadStringArray("zombie_queen/Sounds.ini", "Round Start Sounds", keyStartSounds[i], g_startSound[i])
+		AmxLoadStringArray(ZP_SOUND_CONFIGS_FILE, "Round Start Sounds", keyStartSounds[i], g_startSound[i])
 
 		log_amx("%s = %i", keyStartSounds[i], ArraySize(g_startSound[i]))
 
@@ -1293,7 +1284,7 @@ LoadCustomizationFromFile()
 
 	for (i = 0; i < MAX_MISC_SOUNDS; i++)
 	{
-		AmxLoadStringArray("zombie_queen/Sounds.ini", "Misc Sounds", keyMiscSounds[i], g_miscSounds[i])
+		AmxLoadStringArray(ZP_SOUND_CONFIGS_FILE, "Misc Sounds", keyMiscSounds[i], g_miscSounds[i])
 		
 		log_amx("%s = %i", keyMiscSounds[i], ArraySize(g_miscSounds[i]))
 
@@ -1307,22 +1298,22 @@ LoadCustomizationFromFile()
 	// Custom class data
 
 	// Human
-	AmxLoadInt("zombie_queen/Class.ini", "Human", "Health", HumanHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Human", "Speed", HumanSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Human", "Gravity", HumanGravity)
-	AmxLoadInt("zombie_queen/Class.ini", "Human", "Armor Protect", HumanArmorProtect)
-	AmxLoadInt("zombie_queen/Class.ini", "Human", "Last Human Extra Health", LastHumanExtraHealth)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Human", "Health", HumanHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Human", "Speed", HumanSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Human", "Gravity", HumanGravity)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Human", "Armor Protect", HumanArmorProtect)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Human", "Last Human Extra Health", LastHumanExtraHealth)
 
 	// Survivor
-	AmxLoadInt("zombie_queen/Class.ini", "Survivor", "Enabled", SurvivorEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Survivor", "Chance", SurvivorChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Survivor", "Minimum Players", SurvivorMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Survivor", "Health", SurvivorHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Survivor", "Speed", SurvivorSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Survivor", "Gravity", SurvivorGravity)
-	AmxLoadInt("zombie_queen/Class.ini", "Survivor", "Glow", SurvivorGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Survivor", "Enabled", SurvivorEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Survivor", "Chance", SurvivorChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Survivor", "Minimum Players", SurvivorMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Survivor", "Health", SurvivorHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Survivor", "Speed", SurvivorSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Survivor", "Gravity", SurvivorGravity)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Survivor", "Glow", SurvivorGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Survivor", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Survivor", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[SURVIVOR][RED]   = str_to_num(rgb[0])
@@ -1332,16 +1323,16 @@ LoadCustomizationFromFile()
 	log_amx("Survivor Glow RGB = %i %i %i", g_glowColor[SURVIVOR][RED], g_glowColor[SURVIVOR][GREEN], g_glowColor[SURVIVOR][BLUE])
 
 	// Sniper
-	AmxLoadInt("zombie_queen/Class.ini", "Sniper", "Enabled", SniperEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Sniper", "Chance", SniperChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Sniper", "Minimum Players", SniperMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Sniper", "Health", SniperHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Sniper", "Speed", SniperSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Sniper", "Gravity", SniperGravity)
-	AmxLoadFloat("zombie_queen/Class.ini", "Sniper", "Damage", SniperDamage)
-	AmxLoadInt("zombie_queen/Class.ini", "Sniper", "Glow", SniperGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Sniper", "Enabled", SniperEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Sniper", "Chance", SniperChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Sniper", "Minimum Players", SniperMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Sniper", "Health", SniperHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Sniper", "Speed", SniperSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Sniper", "Gravity", SniperGravity)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Sniper", "Damage", SniperDamage)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Sniper", "Glow", SniperGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Sniper", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Sniper", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[SNIPER][RED]   = str_to_num(rgb[0])
@@ -1351,16 +1342,16 @@ LoadCustomizationFromFile()
 	log_amx("Sniper Glow RGB = %i %i %i", g_glowColor[SNIPER][RED], g_glowColor[SNIPER][GREEN], g_glowColor[SNIPER][BLUE])
 
 	// Samurai
-	AmxLoadInt("zombie_queen/Class.ini", "Samurai", "Enabled", SamuraiEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Samurai", "Chance", SamuraiChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Samurai", "Minimum Players", SamuraiMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Samurai", "Health", SamuraiHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Samurai", "Speed", SamuraiSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Samurai", "Gravity", SamuraiGravity)
-	AmxLoadFloat("zombie_queen/Class.ini", "Samurai", "Damage", SamuraiDamage)
-	AmxLoadInt("zombie_queen/Class.ini", "Samurai", "Glow", SamuraiGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Samurai", "Enabled", SamuraiEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Samurai", "Chance", SamuraiChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Samurai", "Minimum Players", SamuraiMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Samurai", "Health", SamuraiHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Samurai", "Speed", SamuraiSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Samurai", "Gravity", SamuraiGravity)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Samurai", "Damage", SamuraiDamage)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Samurai", "Glow", SamuraiGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Samurai", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Samurai", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[SAMURAI][RED]   = str_to_num(rgb[0])
@@ -1370,16 +1361,16 @@ LoadCustomizationFromFile()
 	log_amx("Samurai Glow RGB = %i %i %i", g_glowColor[SAMURAI][RED], g_glowColor[SAMURAI][GREEN], g_glowColor[SAMURAI][BLUE])
 
 	// Grenadier
-	AmxLoadInt("zombie_queen/Class.ini", "Grenadier", "Enabled", GrenadierEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Grenadier", "Chance", GrenadierChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Grenadier", "Minimum Players", GrenadierMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Grenadier", "Health", GrenadierHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Grenadier", "Speed", GrenadierSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Grenadier", "Gravity", GrenadierGravity)
-	AmxLoadFloat("zombie_queen/Class.ini", "Grenadier", "Damage", GrenadierDamage)
-	AmxLoadInt("zombie_queen/Class.ini", "Grenadier", "Glow", GrenadierGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Enabled", GrenadierEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Chance", GrenadierChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Minimum Players", GrenadierMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Health", GrenadierHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Speed", GrenadierSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Gravity", GrenadierGravity)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Damage", GrenadierDamage)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Glow", GrenadierGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Grenadier", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Grenadier", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[GRENADIER][RED]   = str_to_num(rgb[0])
@@ -1389,15 +1380,15 @@ LoadCustomizationFromFile()
 	log_amx("Grenadier Glow RGB = %i %i %i", g_glowColor[GRENADIER][RED], g_glowColor[GRENADIER][GREEN], g_glowColor[GRENADIER][BLUE])
 
 	// Terminator
-	AmxLoadInt("zombie_queen/Class.ini", "Terminator", "Enabled", TerminatorEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Terminator", "Chance", TerminatorChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Terminator", "Minimum Players", TerminatorMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Terminator", "Health", TerminatorHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Terminator", "Speed", TerminatorSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Terminator", "Gravity", TerminatorGravity)
-	AmxLoadInt("zombie_queen/Class.ini", "Terminator", "Glow", TerminatorGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Terminator", "Enabled", TerminatorEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Terminator", "Chance", TerminatorChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Terminator", "Minimum Players", TerminatorMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Terminator", "Health", TerminatorHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Terminator", "Speed", TerminatorSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Terminator", "Gravity", TerminatorGravity)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Terminator", "Glow", TerminatorGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Terminator", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Terminator", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[TERMINATOR][RED]   = str_to_num(rgb[0])
@@ -1407,22 +1398,22 @@ LoadCustomizationFromFile()
 	log_amx("Terminator Glow RGB = %i %i %i", g_glowColor[TERMINATOR][RED], g_glowColor[TERMINATOR][GREEN], g_glowColor[TERMINATOR][BLUE])
 
 	// Tryder
-	AmxLoadInt("zombie_queen/Class.ini", "Tryder", "Health", TryderHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Tryder", "Speed", TryderSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Tryder", "Gravity", TryderGravity)
-	AmxLoadInt("zombie_queen/Class.ini", "Tryder", "Glow", TryderGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Tryder", "Health", TryderHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Tryder", "Speed", TryderSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Tryder", "Gravity", TryderGravity)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Tryder", "Glow", TryderGlow)
 
 	// Assassin
-	AmxLoadInt("zombie_queen/Class.ini", "Assasin", "Enabled", AssassinEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Assasin", "Chance", AssassinChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Assasin", "Minimum Players", AssassinMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Assasin", "Health", AssassinHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Assasin", "Speed", AssassinSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Assasin", "Gravity", AssassinGravity)
-	AmxLoadFloat("zombie_queen/Class.ini", "Assasin", "Damage", AssassinDamage)
-	AmxLoadInt("zombie_queen/Class.ini", "Assasin", "Glow", AssassinGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Assasin", "Enabled", AssassinEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Assasin", "Chance", AssassinChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Assasin", "Minimum Players", AssassinMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Assasin", "Health", AssassinHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Assasin", "Speed", AssassinSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Assasin", "Gravity", AssassinGravity)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Assasin", "Damage", AssassinDamage)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Assasin", "Glow", AssassinGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Assasin", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Assasin", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[ASSASIN][RED]   = str_to_num(rgb[0])
@@ -1432,16 +1423,16 @@ LoadCustomizationFromFile()
 	log_amx("Assasin Glow RGB = %i %i %i", g_glowColor[ASSASIN][RED], g_glowColor[ASSASIN][GREEN], g_glowColor[ASSASIN][BLUE])
 
 	// Nemesis
-	AmxLoadInt("zombie_queen/Class.ini", "Nemesis", "Enabled", NemesisEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Nemesis", "Chance", NemesisChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Nemesis", "Minimum Players", NemesisMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Nemesis", "Health", NemesisHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Nemesis", "Speed", NemesisSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Nemesis", "Gravity", NemesisGravity)
-	AmxLoadFloat("zombie_queen/Class.ini", "Nemesis", "Damage", NemesisDamage)
-	AmxLoadInt("zombie_queen/Class.ini", "Nemesis", "Glow", NemesisGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Enabled", NemesisEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Chance", NemesisChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Minimum Players", NemesisMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Health", NemesisHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Speed", NemesisSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Gravity", NemesisGravity)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Damage", NemesisDamage)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Glow", NemesisGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Nemesis", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Nemesis", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[NEMESIS][RED]   = str_to_num(rgb[0])
@@ -1451,16 +1442,16 @@ LoadCustomizationFromFile()
 	log_amx("Nemesis Glow RGB = %i %i %i", g_glowColor[NEMESIS][RED], g_glowColor[NEMESIS][GREEN], g_glowColor[NEMESIS][BLUE])
 
 	// Bombardier
-	AmxLoadInt("zombie_queen/Class.ini", "Bombardier", "Enabled", BombardierEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Bombardier", "Chance", BombardierChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Bombardier", "Minimum Players", BombardierMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Bombardier", "Health", BombardierHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Bombardier", "Speed", BombardierSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Bombardier", "Gravity", BombardierGravity)
-	AmxLoadFloat("zombie_queen/Class.ini", "Bombardier", "Damage", BombardierDamage)
-	AmxLoadInt("zombie_queen/Class.ini", "Bombardier", "Glow", BombardierGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Enabled", BombardierEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Chance", BombardierChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Minimum Players", BombardierMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Health", BombardierHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Speed", BombardierSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Gravity", BombardierGravity)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Damage", BombardierDamage)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Glow", BombardierGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Bombardier", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Bombardier", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[BOMBARDIER][RED]   = str_to_num(rgb[0])
@@ -1470,16 +1461,16 @@ LoadCustomizationFromFile()
 	log_amx("Bombardier Glow RGB = %i %i %i", g_glowColor[BOMBARDIER][RED], g_glowColor[BOMBARDIER][GREEN], g_glowColor[BOMBARDIER][BLUE])
 
 	// Revenant
-	AmxLoadInt("zombie_queen/Class.ini", "Revenant", "Enabled", RevenantEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Revenant", "Chance", RevenantChance)
-	AmxLoadInt("zombie_queen/Class.ini", "Revenant", "Minimum Players", RevenantMinPlayers)
-	AmxLoadInt("zombie_queen/Class.ini", "Revenant", "Health", RevenantHealth)
-	AmxLoadFloat("zombie_queen/Class.ini", "Revenant", "Speed", RevenantSpeed)
-	AmxLoadFloat("zombie_queen/Class.ini", "Revenant", "Gravity", Revenantgravity)
-	AmxLoadFloat("zombie_queen/Class.ini", "Revenant", "Damage", RevenantDamage)
-	AmxLoadInt("zombie_queen/Class.ini", "Revenant", "Glow", RevenantGlow)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Revenant", "Enabled", RevenantEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Revenant", "Chance", RevenantChance)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Revenant", "Minimum Players", RevenantMinPlayers)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Revenant", "Health", RevenantHealth)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Revenant", "Speed", RevenantSpeed)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Revenant", "Gravity", Revenantgravity)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Revenant", "Damage", RevenantDamage)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Revenant", "Glow", RevenantGlow)
 
-	AmxLoadString("zombie_queen/Class.ini", "Revenant", "Glow RGB", buffer, charsmax(buffer))
+	AmxLoadString(ZP_CLASS_CONFIGS_FILE, "Revenant", "Glow RGB", buffer, charsmax(buffer))
 
 	parse(buffer, rgb[0], charsmax(rgb[]), rgb[1], charsmax(rgb[]), rgb[2], charsmax(rgb[]))
 	g_glowColor[REVENANT][RED]   = str_to_num(rgb[0])
@@ -1489,246 +1480,246 @@ LoadCustomizationFromFile()
 	log_amx("Revenant Glow RGB = %i %i %i", g_glowColor[REVENANT][RED], g_glowColor[REVENANT][GREEN], g_glowColor[REVENANT][BLUE])
 
 	// // Knockback
-	AmxLoadInt("zombie_queen/Class.ini", "Knockback", "Enabled", KnockbackEnabled)
-	AmxLoadInt("zombie_queen/Class.ini", "Knockback", "Distance", KnockbackDistance)
-	AmxLoadFloat("zombie_queen/Class.ini", "Knockback", "Ducking", KnockbackDucking)
-	AmxLoadFloat("zombie_queen/Class.ini", "Knockback", "Assasin", KnockbackAssassin)
-	AmxLoadFloat("zombie_queen/Class.ini", "Knockback", "Nemesis", KnockbackNemesis)
-	AmxLoadFloat("zombie_queen/Class.ini", "Knockback", "Bombardier", KnockbackBombardier)
-	AmxLoadFloat("zombie_queen/Class.ini", "Knockback", "Revenant", KnockbackRevenant)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Knockback", "Enabled", KnockbackEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Knockback", "Distance", KnockbackDistance)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Knockback", "Ducking", KnockbackDucking)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Knockback", "Assasin", KnockbackAssassin)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Knockback", "Nemesis", KnockbackNemesis)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Knockback", "Bombardier", KnockbackBombardier)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Knockback", "Revenant", KnockbackRevenant)
 
 	// Painfree
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Survivor", SurvivorPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Sniper", SniperPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Samurai", SamuraiPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Grenadier", GrenadierPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Terminator", TerminatorPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Assasin", AssassinPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Nemesis", NemesisPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Bombardier", BombardierPainfree)
-	AmxLoadInt("zombie_queen/Class.ini", "Painshock", "Revenant", RevenantPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Survivor", SurvivorPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Sniper", SniperPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Samurai", SamuraiPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Grenadier", GrenadierPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Terminator", TerminatorPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Assasin", AssassinPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Nemesis", NemesisPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Bombardier", BombardierPainfree)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Painshock", "Revenant", RevenantPainfree)
 
 	// Leap configs
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Zombie", LeapZombies)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Zombie Force", LeapZombiesForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Zombie Height", LeapZombiesHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Zombie Cooldown", LeapZombiesCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Zombie", LeapZombies)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Zombie Force", LeapZombiesForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Zombie Height", LeapZombiesHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Zombie Cooldown", LeapZombiesCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Nemesis", LeapNemesis)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Nemesis Force", LeapNemesisForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Nemesis Height", LeapNemesisHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Nemesis Cooldown", LeapNemesisCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Nemesis", LeapNemesis)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Nemesis Force", LeapNemesisForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Nemesis Height", LeapNemesisHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Nemesis Cooldown", LeapNemesisCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Assasin", LeapAssassin)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Assasin Force", LeapAssassinForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Assasin Height", LeapAssassinHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Assasin Cooldown", LeapAssassinCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Assasin", LeapAssassin)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Assasin Force", LeapAssassinForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Assasin Height", LeapAssassinHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Assasin Cooldown", LeapAssassinCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Revenant", LeapRevenant)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Revenant Force", LeapRevenantForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Revenant Height", LeapRevenantHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Revenant Cooldown", LeapRevenantCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Revenant", LeapRevenant)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Revenant Force", LeapRevenantForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Revenant Height", LeapRevenantHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Revenant Cooldown", LeapRevenantCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Bombardier", LeapBombardier)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Bombardier Force", LeapBombardierForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Bombardier Height", LeapBombardierHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Bombardier Cooldown", LeapBombardierCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Bombardier", LeapBombardier)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Bombardier Force", LeapBombardierForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Bombardier Height", LeapBombardierHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Bombardier Cooldown", LeapBombardierCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Survivor", LeapSurvivor)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Survivor Force", LeapSurvivorForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Survivor Height", LeapSurvivorHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Survivor Cooldown", LeapSurvivorCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Survivor", LeapSurvivor)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Survivor Force", LeapSurvivorForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Survivor Height", LeapSurvivorHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Survivor Cooldown", LeapSurvivorCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Sniper", LeapSniper)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Sniper Force", LeapSniperForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Sniper Height", LeapSniperHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Sniper Cooldown", LeapSniperCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Sniper", LeapSniper)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Sniper Force", LeapSniperForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Sniper Height", LeapSniperHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Sniper Cooldown", LeapSniperCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Samurai", LeapSamurai)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Samurai Force", LeapSamuraiForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Samurai Height", LeapSamuraiHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Samurai Cooldown", LeapSamuraiCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Samurai", LeapSamurai)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Samurai Force", LeapSamuraiForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Samurai Height", LeapSamuraiHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Samurai Cooldown", LeapSamuraiCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Grenadier", LeapGrenadier)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Grenadier Force", LeapGrenadierForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Grenadier Height", LeapGrenadierHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Grenadier Cooldown", LeapGrenadierCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Grenadier", LeapGrenadier)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Grenadier Force", LeapGrenadierForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Grenadier Height", LeapGrenadierHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Grenadier Cooldown", LeapGrenadierCooldown)
 
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Terminator", LeapTerminator)
-	AmxLoadInt("zombie_queen/Class.ini", "Leap", "Terminator Force", LeapTerminatorForce)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Terminator Height", LeapTerminatorHeight)
-	AmxLoadFloat("zombie_queen/Class.ini", "Leap", "Terminator Cooldown", LeapTerminatorCooldown)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Terminator", LeapTerminator)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Leap", "Terminator Force", LeapTerminatorForce)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Terminator Height", LeapTerminatorHeight)
+	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Leap", "Terminator Cooldown", LeapTerminatorCooldown)
 
 	// Custom rounds configs
 
 	// Multi Infection
-	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "ENABLE", multi_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Multi-Infection", "ENABLE", multi_enable)
 	log_amx("Multi Enable = %i", multi_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "CHANCE", multi_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Multi-Infection", "CHANCE", multi_chance)
 	log_amx("Multi Chance = %i", multi_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Multi-Infection", "MIN PLAYERS", multi_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Multi-Infection", "MIN PLAYERS", multi_minplayers)
 	log_amx("Multi Min Players = %i", multi_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Multi-Infection", "RATIO", multi_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Multi-Infection", "RATIO", multi_ratio)
 	log_amx("Multi Ratio = %f", multi_ratio)
 
 	// Swarm
-	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "ENABLE", swarm_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Swarm", "ENABLE", swarm_enable)
 	log_amx("Swarm Enable = %i", swarm_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "CHANCE", swarm_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Swarm", "CHANCE", swarm_chance)
 	log_amx("Swarm chance = %i", swarm_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Swarm", "MIN PLAYERS", swarm_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Swarm", "MIN PLAYERS", swarm_minplayers)
 	log_amx("Swarm Min Players = %i", swarm_minplayers)
 
 	// Plague
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "ENABLE", plague_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Plague", "ENABLE", plague_enable)
 	log_amx("Plague enable = %i", plague_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "CHANCE", plague_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Plague", "CHANCE", plague_chance)
 	log_amx("Plague chance = %i", plague_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "MIN PLAYERS", plague_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Plague", "MIN PLAYERS", plague_minplayers)
 	log_amx("Plague Min Players = %i", plague_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "RATIO", plague_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Plague", "RATIO", plague_ratio)
 	log_amx("Plague Ratio = %f", plague_ratio)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "NEMESIS COUNT", plague_nemesis_count)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Plague", "NEMESIS COUNT", plague_nemesis_count)
 	log_amx("Plague Nem Count = %i", plague_nemesis_count)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "NEMESIS HEALTH MULTIPLY", plague_nemesis_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Plague", "NEMESIS HEALTH MULTIPLY", plague_nemesis_hp_mul)
 	log_amx("Plague nem hp mul = %f", plague_nemesis_hp_mul)
-	AmxLoadInt("zombie_queen/Modes.ini", "Plague", "SURVIVOR COUNT", plague_survivor_count)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Plague", "SURVIVOR COUNT", plague_survivor_count)
 	log_amx("Plague surv count = %i", plague_survivor_count)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Plague", "SURVIVOR HEALTH MULTIPLY", plague_survivor_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Plague", "SURVIVOR HEALTH MULTIPLY", plague_survivor_hp_mul)
 	log_amx("Plague surv hp mul = %f", plague_survivor_hp_mul)
 
 	// Synapsis
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "ENABLE", synapsis_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Synapsis", "ENABLE", synapsis_enable)
 	log_amx("Synapsis enable = %i", synapsis_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "CHANCE", synapsis_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Synapsis", "CHANCE", synapsis_chance)
 	log_amx("Synapsis chance = %i", synapsis_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "MIN PLAYERS", synapsis_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Synapsis", "MIN PLAYERS", synapsis_minplayers)
 	log_amx("Synapsis min players = %i", synapsis_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "RATIO", synapsis_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Synapsis", "RATIO", synapsis_ratio)
 	log_amx("Synapsis ratio = %f", synapsis_ratio)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "NEMESIS COUNT", synapsis_nemesis_count)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Synapsis", "NEMESIS COUNT", synapsis_nemesis_count)
 	log_amx("Syanpsis nem count = %i", synapsis_nemesis_count)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "NEMESIS HEALTH MULTIPLY", synapsis_nemesis_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Synapsis", "NEMESIS HEALTH MULTIPLY", synapsis_nemesis_hp_mul)
 	log_amx("Synapsis nem hp mul = %f", synapsis_nemesis_hp_mul)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR COUNT", synapsis_survivor_count)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Synapsis", "SURVIVOR COUNT", synapsis_survivor_count)
 	log_amx("Synapsis surv count = %i", synapsis_survivor_count)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SURVIVOR HEALTH MULTIPLY", synapsis_survivor_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Synapsis", "SURVIVOR HEALTH MULTIPLY", synapsis_survivor_hp_mul)
 	log_amx("Synapsis surv hp mul = %f", synapsis_survivor_hp_mul)
-	AmxLoadInt("zombie_queen/Modes.ini", "Synapsis", "SNIPER COUNT", synapsis_sniper_count)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Synapsis", "SNIPER COUNT", synapsis_sniper_count)
 	log_amx("Synapsis sni count = %i", synapsis_sniper_count)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Synapsis", "SNIPER HEALTH MULTIPLY", synapsis_sniper_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Synapsis", "SNIPER HEALTH MULTIPLY", synapsis_sniper_hp_mul)
 	log_amx("Synapsis sni hp mul = %f", synapsis_sniper_hp_mul)
 
 	// Survior vs Assasin
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "ENABLE", sva_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Survivor vs Assasin", "ENABLE", sva_enable)
 	log_amx("SVA anable = %i", sva_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "CHANCE", sva_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Survivor vs Assasin", "CHANCE", sva_chance)
 	log_amx("SVA chance = %i", sva_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Assasin", "MIN PLAYERS", sva_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Survivor vs Assasin", "MIN PLAYERS", sva_minplayers)
 	log_amx("SVA min players = %i", sva_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "RATIO", sva_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Survivor vs Assasin", "RATIO", sva_ratio)
 	log_amx("SVA ratio = %f", sva_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "ASSASIN HEALTH MULTIPLY", sva_assasin_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Survivor vs Assasin", "ASSASIN HEALTH MULTIPLY", sva_assasin_hp_mul)
 	log_amx("SVA assa hp mul = %f", sva_assasin_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Assasin", "SURVIVOR HEALTH MULTIPLY", sva_survivor_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Survivor vs Assasin", "SURVIVOR HEALTH MULTIPLY", sva_survivor_hp_mul)
 	log_amx("SVA surv hp mul = %f", sva_survivor_hp_mul)
 
 	// Survivor vs Nemesis
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "ENABLE", svn_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Survivor vs Nemesis", "ENABLE", svn_enable)
 	log_amx("SNV enable = %i", svn_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "CHANCE", svn_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Survivor vs Nemesis", "CHANCE", svn_chance)
 	log_amx("SNV chance = %i", svn_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Survivor vs Nemesis", "MIN PLAYERS", svn_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Survivor vs Nemesis", "MIN PLAYERS", svn_minplayers)
 	log_amx("SNV min player = %i", svn_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "RATIO", svn_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Survivor vs Nemesis", "RATIO", svn_ratio)
 	log_amx("SNV ratio = %f", svn_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "NEMESIS HEALTH MULTIPLY", svn_nemesis_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Survivor vs Nemesis", "NEMESIS HEALTH MULTIPLY", svn_nemesis_hp_mul)
 	log_amx("SNV nem hp mul = %f", svn_nemesis_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Survivor vs Nemesis", "SURVIVOR HEALTH MULTIPLY", svn_survivor_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Survivor vs Nemesis", "SURVIVOR HEALTH MULTIPLY", svn_survivor_hp_mul)
 	log_amx("SNV surv hp mul = %f", svn_survivor_hp_mul)
 
 	// Sniper vs Assasin
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "ENABLE", snva_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Sniper vs Assasin", "ENABLE", snva_enable)
 	log_amx("SNVA enable = %i", snva_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "CHANCE", snva_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Sniper vs Assasin", "CHANCE", snva_chance)
 	log_amx("SNVA chance = %i", snva_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Assasin", "MIN PLAYERS", snva_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Sniper vs Assasin", "MIN PLAYERS", snva_minplayers)
 	log_amx("SNVA min players = %i", snva_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "RATIO", snva_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Sniper vs Assasin", "RATIO", snva_ratio)
 	log_amx("SNVA ratio = %f", snva_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "ASSASIN HEALTH MULTIPLY", snva_assasin_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Sniper vs Assasin", "ASSASIN HEALTH MULTIPLY", snva_assasin_hp_mul)
 	log_amx("SNVA assa hp mul = %f", snva_assasin_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Assasin", "SNIPER HEALTH MULTIPLY", snva_sniper_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Sniper vs Assasin", "SNIPER HEALTH MULTIPLY", snva_sniper_hp_mul)
 	log_amx("SNVA sni hp mul = %f", snva_sniper_hp_mul)
 
 	// Sniper vs Nemesis
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "ENABLE", snvn_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Sniper vs Nemesis", "ENABLE", snvn_enable)
 	log_amx("SNVN enable = %i", snvn_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "CHANCE", snvn_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Sniper vs Nemesis", "CHANCE", snvn_chance)
 	log_amx("SNVN chance = %i", snvn_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Sniper vs Nemesis", "MIN PLAYERS", snvn_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Sniper vs Nemesis", "MIN PLAYERS", snvn_minplayers)
 	log_amx("SNVN min players = %i", snvn_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "RATIO", snvn_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Sniper vs Nemesis", "RATIO", snvn_ratio)
 	log_amx("SNVN ratio = %f", snvn_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "SNIPER HEALTH MULTIPLY", snvn_sniper_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Sniper vs Nemesis", "SNIPER HEALTH MULTIPLY", snvn_sniper_hp_mul)
 	log_amx("SNVN sni hp mul = %f", snvn_sniper_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Sniper vs Nemesis", "NEMESIS HEALTH MULTIPLY", snvn_nemesis_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Sniper vs Nemesis", "NEMESIS HEALTH MULTIPLY", snvn_nemesis_hp_mul)
 	log_amx("SNVN nem hp mul = %f", snvn_nemesis_hp_mul)
 
 	// Bombardier vs Grenadier
-	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "ENABLE", bvg_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Bombardier vs Grenadier", "ENABLE", bvg_enable)
 	log_amx("BVG enable = %i", bvg_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "CHANCE", bvg_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Bombardier vs Grenadier", "CHANCE", bvg_chance)
 	log_amx("BVG chance = %i", bvg_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "MIN PLAYERS", bvg_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Bombardier vs Grenadier", "MIN PLAYERS", bvg_minplayers)
 	log_amx("BVG min players = %i", bvg_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "RATIO", bvg_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Bombardier vs Grenadier", "RATIO", bvg_ratio)
 	log_amx("BVG ratio = %f", bvg_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "BOMBARDIER HEALTH MULTIPLY", bvg_bombardier_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Bombardier vs Grenadier", "BOMBARDIER HEALTH MULTIPLY", bvg_bombardier_hp_mul)
 	log_amx("BVG bomb hp mul = %f", bvg_bombardier_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Bombardier vs Grenadier", "GRENADIER HEALTH MULTIPLY", bvg_grenadier_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Bombardier vs Grenadier", "GRENADIER HEALTH MULTIPLY", bvg_grenadier_hp_mul)
 	log_amx("BVG grenade hp mul = %f", bvg_grenadier_hp_mul)
 
 	// Nightmare
-	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "ENABLE", nightmare_enable)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Nightmare", "ENABLE", nightmare_enable)
 	log_amx("NIGHTMARE enable = %i", nightmare_enable)
-	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "CHANCE", nightmare_chance)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Nightmare", "CHANCE", nightmare_chance)
 	log_amx("NIGHTMARE chance = %i", nightmare_chance)
-	AmxLoadInt("zombie_queen/Modes.ini", "Nightmare", "MIN PLAYERS", nightmare_minplayers)
+	AmxLoadInt(ZP_MODE_CONFIGS_FILE, "Nightmare", "MIN PLAYERS", nightmare_minplayers)
 	log_amx("NIGHTMARE min players = %i", nightmare_minplayers)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "RATIO", nightmare_ratio)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Nightmare", "RATIO", nightmare_ratio)
 	log_amx("NIGHTMARE ratio = %f", nightmare_ratio)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "ASSASIN HEALTH MULTIPLY", nightmare_assasin_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Nightmare", "ASSASIN HEALTH MULTIPLY", nightmare_assasin_hp_mul)
 	log_amx("NIGHTMARE assa hp mul = %f", nightmare_assasin_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "NEMESIS HEALTH MULTIPLY", nightmare_nemesis_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Nightmare", "NEMESIS HEALTH MULTIPLY", nightmare_nemesis_hp_mul)
 	log_amx("NIGHTMARE nem hp mul = %f", nightmare_nemesis_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SNIPER HEALTH MULTIPLY", nightmare_sniper_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Nightmare", "SNIPER HEALTH MULTIPLY", nightmare_sniper_hp_mul)
 	log_amx("NIGHTMARE sni hp mul = %f", nightmare_sniper_hp_mul)
-	AmxLoadFloat("zombie_queen/Modes.ini", "Nightmare", "SURVIVOR HEALTH MULTIPLY", nightmare_survivor_hp_mul)
+	AmxLoadFloat(ZP_MODE_CONFIGS_FILE, "Nightmare", "SURVIVOR HEALTH MULTIPLY", nightmare_survivor_hp_mul)
 	log_amx("NIGHTMARE surv hp mul = %f", nightmare_survivor_hp_mul)
 
 	// Free VIP
-	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "START", freeVIP_Start)
-	AmxLoadInt("zombie_queen/Extras.ini", "FREE VIP", "END", freeVIP_End)
-	AmxLoadString("zombie_queen/Extras.ini", "FREE VIP", "FLAGS", freeVIP_Flags, charsmax(freeVIP_Flags))
+	AmxLoadInt(ZP_ESSENTIAL_CONFIGS_FILE, "FREE VIP", "START", freeVIP_Start)
+	AmxLoadInt(ZP_ESSENTIAL_CONFIGS_FILE, "FREE VIP", "END", freeVIP_End)
+	AmxLoadString(ZP_ESSENTIAL_CONFIGS_FILE, "FREE VIP", "FLAGS", freeVIP_Flags, charsmax(freeVIP_Flags))
 
 	// Happy Hour
-	AmxLoadInt("zombie_queen/Extras.ini", "HAPPY HOUR", "START", happyHour_Start)
-	AmxLoadInt("zombie_queen/Extras.ini", "HAPPY HOUR", "END", happyHour_End)
+	AmxLoadInt(ZP_ESSENTIAL_CONFIGS_FILE, "HAPPY HOUR", "START", happyHour_Start)
+	AmxLoadInt(ZP_ESSENTIAL_CONFIGS_FILE, "HAPPY HOUR", "END", happyHour_End)
 
 	// Chat Prefix
-	AmxLoadString("zombie_queen/Extras.ini", "MESSAGES", "CHAT PREFIX", CHAT_PREFIX, charsmax(CHAT_PREFIX))
+	AmxLoadString(ZP_ESSENTIAL_CONFIGS_FILE, "MESSAGES", "CHAT PREFIX", CHAT_PREFIX, charsmax(CHAT_PREFIX))
 	format(CHAT_PREFIX, charsmax(CHAT_PREFIX), "^4%s^1", CHAT_PREFIX)
 
 	// Round Welcome message
-	AmxLoadString("zombie_queen/Extras.ini", "MESSAGES", "ROUND WELCOME TEXT", ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT))
+	AmxLoadString(ZP_ESSENTIAL_CONFIGS_FILE, "MESSAGES", "ROUND WELCOME TEXT", ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT))
 	format(ROUND_WELCOME_TEXT, charsmax(ROUND_WELCOME_TEXT), "^1**** ^4%s ^1|| ^4Zombie Queen 11.5 ^1by ^3Eye NeO- ^1****", ROUND_WELCOME_TEXT)
 
 	// Primary and secondary weapon sections
 	new wpn_ids[32]
-	AmxLoadStringArray("zombie_queen/Extras.ini", "BUY MENU WEAPONS", "WEAPON NAMES", g_full_weapon_names)
+	AmxLoadStringArray(ZP_ESSENTIAL_CONFIGS_FILE, "BUY MENU WEAPONS", "WEAPON NAMES", g_full_weapon_names)
 
-	AmxLoadStringArray("zombie_queen/Extras.ini", "BUY MENU WEAPONS", "PRIMARY", g_weapon_name[0])
+	AmxLoadStringArray(ZP_ESSENTIAL_CONFIGS_FILE, "BUY MENU WEAPONS", "PRIMARY", g_weapon_name[0])
 	for (i = 0; i < ArraySize(g_weapon_name[0]); i++) 
 	{
 		ArrayGetString(g_weapon_name[0], i, wpn_ids, charsmax(wpn_ids))
@@ -1736,7 +1727,7 @@ LoadCustomizationFromFile()
 		log_amx("cs_weapon_name_to_id = %i", cs_weapon_name_to_id(wpn_ids))
 	}
 
-	AmxLoadStringArray("zombie_queen/Extras.ini", "BUY MENU WEAPONS", "SECONDARY", g_weapon_name[1])
+	AmxLoadStringArray(ZP_ESSENTIAL_CONFIGS_FILE, "BUY MENU WEAPONS", "SECONDARY", g_weapon_name[1])
 	for (i = 0; i < ArraySize(g_weapon_name[1]); i++) 
 	{
 		ArrayGetString(g_weapon_name[1], i, wpn_ids, charsmax(wpn_ids))
@@ -2234,6 +2225,21 @@ public plugin_precache()
 	// Plugin disabled?
 	if (!get_pcvar_num(cvar_toggle)) return
 	g_pluginenabled = true
+
+	// Expiremental ---------------------
+	ZP_TEAM_NAMES = ArrayCreate(32, 1)
+	ZP_TEAM_INDEX = ArrayCreate(1, 1)
+
+	new const team_names[][] = { "NONE", "HUMAN", "ZOMBIE", "TRYDER", "SURVIVOR", "SNIPER", "SAMURAI", "GRENADIER", "TERMINATOR", "ASSASIN",
+	"NEMESIS", "BOMBARDIER", "REVENANT" };
+
+	for (new i = 0; i < sizeof(team_names); i++) 
+	{
+		ArrayPushString(ZP_TEAM_NAMES, team_names[i])
+		ArrayPushCell(ZP_TEAM_INDEX, i)
+	}
+
+	// -----------------------------------
 
 	for (new i = 0; i < MAX_CLASS_MODELS; i++) g_playerModel[i] = ArrayCreate(32, 1)
 	for (new i = 0; i < MAX_WEAPON_MODELS; i++) g_weaponModels[i] = ArrayCreate(100, 1)
@@ -3299,29 +3305,29 @@ public plugin_init()
 	ReadHudAdvertisementsFromFile()
 	//TaskGetMaps()
 
-	register_extra_item("Nightvision Goggles", 2, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Forcefield Grenade", 20, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_SAMURAI, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Killing Grenade", 	  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Explosion Grenade",   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
-	register_extra_item("Napalm Grenade", 	   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Frost Grenade", 	   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Antidote Grenade",   40, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Multijump +1", 	   5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_GRENADIER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
-	register_extra_item("Jetpack + Bazooka",  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER|ZP_EXTRA_SURVIVOR|ZP_EXTRA_SNIPER|ZP_EXTRA_GRENADIER|ZP_EXTRA_TERMINATOR, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
-	register_extra_item("Tryder", 			  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Armor \y(100 AP)",    5, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Armor \y(200 AP)",   10, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Crossbow", 		  30, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
-	register_extra_item("Golden Weapons", 	 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE|ZP_SHOW_SYNAPSIS, 10, 10)
-	register_extra_item("Nemesis", 			 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Assasin", 			 150, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Sniper", 			 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Survivor", 		 180, ZP_EXTRA_HUMAN|ZP_EXTRA_TRYDER, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Antidote", 		  15, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Zombie Maddness", 	  17, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Infection Bomb", 	  25, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Concussion Bomb", 	  10, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
-	register_extra_item("Knife Blink", 		  10, ZP_EXTRA_ZOMBIE, ZP_SHOW_NONE|ZP_SHOW_INFECTION|ZP_SHOW_MULTI_INFECTION|ZP_SHOW_SWARM|ZP_SHOW_PLAGUE, 10, 10)
+	register_extra_item("Nightvision Goggles", 2, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Forcefield Grenade", 20, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Killing Grenade", 	  30, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Explosion Grenade",   5, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Napalm Grenade", 	   5, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Frost Grenade", 	   5, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Antidote Grenade",   40, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Multijump +1", 	   5, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Jetpack + Bazooka",  30, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Tryder", 			  30, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Armor \y(100 AP)",    5, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Armor \y(200 AP)",   10, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Crossbow", 		  30, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Golden Weapons", 	 150, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Nemesis", 			 150, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Assasin", 			 150, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Sniper", 			 180, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Survivor", 		 180, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
+	register_extra_item("Antidote", 		  15, GetTeamIndex(CLASS_ZOMBIE))
+	register_extra_item("Zombie Maddness", 	  17, GetTeamIndex(CLASS_ZOMBIE))
+	register_extra_item("Infection Bomb", 	  25, GetTeamIndex(CLASS_ZOMBIE))
+	register_extra_item("Concussion Bomb", 	  10, GetTeamIndex(CLASS_ZOMBIE))
+	register_extra_item("Knife Blink", 		  10, GetTeamIndex(CLASS_ZOMBIE))
 	
 	set_task(3.0, "CheckBots", .flags = "b")
 }
@@ -4076,31 +4082,18 @@ ShowMenuExtraItems(id)
 		// Get item data from array
 		ArrayGetArray(g_extraitems, i, ItemData)
 
-		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
-		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
-		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
-		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
-		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
-		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
-		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
-		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT)))) continue
-
-		if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
-		|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
-		|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
-		|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
-		|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
-		|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
-		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
-		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
-		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
-		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
-		|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
-		|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE)))) continue
+		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_HUMAN))))
+		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TRYDER))))
+		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SURVIVOR))))
+		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SNIPER))))
+		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SAMURAI))))
+		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_GRENADIER))))
+		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TERMINATOR))))
+		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ZOMBIE)))) 
+		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ASSASIN)))) 
+		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_NEMESIS))))
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_BOMBARDIER))))
+		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_REVENANT))))) continue
 		
 		formatex(line, charsmax(line), "%s \r[ %i packs ]", ItemData[ItemName], ItemData[ItemCost])
 		num_to_str(i, number, 3)
@@ -4137,38 +4130,21 @@ public _ExtraItems(id, menu, item)
 		client_print_color(id, print_team_grey, "%s You dont have enough ^3packs ^1to buy this item...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
-	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
-	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
-	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
-	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
-	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
-	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
-	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
-	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
-	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
-	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
-	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
-	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT))))
+	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_HUMAN))))
+	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TRYDER))))
+	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SURVIVOR))))
+	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SNIPER))))
+	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SAMURAI))))
+	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_GRENADIER))))
+	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TERMINATOR))))
+	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ZOMBIE)))) 
+	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ASSASIN)))) 
+	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_NEMESIS))))
+	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_BOMBARDIER))))
+	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_REVENANT)))))
 	{
 		// Notify player
 		client_print_color(id, print_team_grey, "%s This ^3item ^1is not for your ^4team^1...", CHAT_PREFIX)
-		return PLUGIN_HANDLED
-	}
-	else if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
-	|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
-	|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
-	|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
-	|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
-	|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
-	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
-	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
-	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
-	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
-	|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
-	|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE))))
-	{
-		// Notify player
-		client_print_color(id, print_team_grey, "%s This ^3item ^1is forbidden to buy in ^4current ^1round...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
 	else
@@ -9188,31 +9164,18 @@ public ShowPointsShopWeaponsMenu(id)
 		// Get item data from array
 		ArrayGetArray(g_pointsShopWeapons, i, ItemData)
 
-		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
-		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
-		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
-		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
-		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
-		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
-		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
-		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
-		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
-		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT)))) continue
-		
-		if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
-		|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
-		|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
-		|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
-		|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
-		|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
-		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
-		|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
-		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
-		|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
-		|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
-		|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE)))) continue
+		if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_HUMAN))))
+		|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TRYDER))))
+		|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SURVIVOR))))
+		|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SNIPER))))
+		|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SAMURAI))))
+		|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_GRENADIER))))
+		|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TERMINATOR))))
+		|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ZOMBIE)))) 
+		|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ASSASIN)))) 
+		|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_NEMESIS))))
+		|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_BOMBARDIER))))
+		|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_REVENANT))))) continue
 
 		// Format item for menu
 		formatex(item, charsmax(item), "%s \r[ %s points ]", ItemData[ItemName], AddCommas(ItemData[ItemCost]))
@@ -10029,38 +9992,21 @@ public PointsShopWeaponsMenuHandler(id, menu, item)
 		client_print_color(id, print_team_grey, "%s You dont have enough ^3points ^1to buy this weapon...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
-	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_HUMAN)))
-	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TRYDER)))
-	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SURVIVOR)))
-	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SNIPER)))
-	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_SAMURAI)))
-	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_GRENADIER)))
-	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_TERMINATOR)))
-	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ZOMBIE))) 
-	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_ASSASIN))) 
-	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_NEMESIS)))
-	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_BOMBARDIER)))
-	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], ZP_EXTRA_REVENANT))))
+	else if ((CheckBit(g_playerClass[id], CLASS_HUMAN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_HUMAN))))
+	|| (CheckBit(g_playerClass[id], CLASS_TRYDER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TRYDER))))
+	|| (CheckBit(g_playerClass[id], CLASS_SURVIVOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SURVIVOR))))
+	|| (CheckBit(g_playerClass[id], CLASS_SNIPER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SNIPER))))
+	|| (CheckBit(g_playerClass[id], CLASS_SAMURAI) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_SAMURAI))))
+	|| (CheckBit(g_playerClass[id], CLASS_GRENADIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_GRENADIER))))
+	|| (CheckBit(g_playerClass[id], CLASS_TERMINATOR) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_TERMINATOR))))
+	|| (CheckBit(g_playerClass[id], CLASS_ZOMBIE) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ZOMBIE)))) 
+	|| (CheckBit(g_playerClass[id], CLASS_ASSASIN) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_ASSASIN)))) 
+	|| (CheckBit(g_playerClass[id], CLASS_NEMESIS) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_NEMESIS))))
+	|| (CheckBit(g_playerClass[id], CLASS_BOMBARDIER) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_BOMBARDIER))))
+	|| (CheckBit(g_playerClass[id], CLASS_REVENANT) && !(CheckFlag(ItemData[ItemTeam], GetTeamIndex(CLASS_REVENANT)))))
 	{
 		// Notify player
 		client_print_color(id, print_team_grey, "%s This ^3item ^1is not for your ^4team^1...", CHAT_PREFIX)
-		return PLUGIN_HANDLED
-	}
-	else if ((CheckBit(g_currentmode, MODE_NONE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NONE)))
-	|| (CheckBit(g_currentmode, MODE_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_INFECTION)))
-	|| (CheckBit(g_currentmode, MODE_MULTI_INFECTION) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_MULTI_INFECTION)))
-	|| (CheckBit(g_currentmode, MODE_SWARM) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SWARM)))
-	|| (CheckBit(g_currentmode, MODE_PLAGUE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_PLAGUE)))
-	|| (CheckBit(g_currentmode, MODE_SYNAPSIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SYNAPSIS)))
-	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_NEMESIS)))
-	|| (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SURVIVOR_VS_ASSASIN)))
-	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_NEMESIS)))
-	|| (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_SNIPER_VS_ASSASIN)))
-	|| (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_BOMBARDIER_VS_GRENADIER)))
-	|| (CheckBit(g_currentmode, MODE_NIGHTMARE) && !(CheckFlag(ItemData[ItemMode], ZP_SHOW_NIGHTMARE))))
-	{
-		// Notify player
-		client_print_color(id, print_team_grey, "%s This ^3item ^1is forbidden to buy in ^4current ^1round...", CHAT_PREFIX)
 		return PLUGIN_HANDLED
 	}
 	else
@@ -18230,15 +18176,6 @@ public native_register_points_shop_weapon(plugin, param)
 
 	// Get item team from function
 	ItemData[ItemTeam] |= get_param(3)
-
-	// Get item availability mode from function
-	ItemData[ItemMode] |= get_param(4)
-
-	// Get item round limit from function
-	ItemData[ItemLimitRound] = get_param(5)
-
-	// Get item map limit from function
-	ItemData[ItemLimitMap] = get_param(6)
     
     // Add item to array and increase size
     ArrayPushArray(g_pointsShopWeapons, ItemData)
@@ -18250,7 +18187,7 @@ public native_register_points_shop_weapon(plugin, param)
 }
 
 // To be used internallly
-public register_points_shop_weapon(const name[], const price, const team, const mode, const limit_round, const limit_map)
+public register_points_shop_weapon(const name[], const price, const team)
 {
 	// Create an array to hold our item data
     new ItemData[extraItemsDataStructure]
@@ -18263,15 +18200,6 @@ public register_points_shop_weapon(const name[], const price, const team, const 
 
 	// Get item team from function
 	ItemData[ItemTeam] |= team
-
-	// Get item availability mode from function
-	ItemData[ItemMode] |= mode
-
-	// Get item round limit from function
-	ItemData[ItemLimitRound] = limit_round
-
-	// Get item map limit from function
-	ItemData[ItemLimitMap] = limit_map
     
     // Add item to array and increase size
     ArrayPushArray(g_pointsShopWeapons, ItemData)
@@ -18283,28 +18211,85 @@ public register_points_shop_weapon(const name[], const price, const team, const 
 }
 
 // To be used internally
-public register_extra_item(const name[], const price, const team, const mode, const limit_round, const limit_map)
+public register_extra_item(name[100], price, team)
 {
 	// Create an array to hold our item data
 	new ItemData[extraItemsDataStructure]
 
 	// Get item name from function
-	formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
+	static tempName[sizeof(name)]
+	if (AmxLoadString(ZP_EXTRA_ITEMS_FILE, name, "NAME", tempName, charsmax(tempName)))
+	{
+		if (!equali(name, tempName, charsmax(name)))
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName)
+		else formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
+	}
+	else 
+	{
+		AmxSaveString(ZP_EXTRA_ITEMS_FILE, name, "NAME", name)
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
+	}
 
 	// Get item cost from function
-	ItemData[ItemCost] = price
+	static tempPrice
+	if (AmxLoadInt(ZP_EXTRA_ITEMS_FILE, name, "PRICE", tempPrice))
+	{
+		if (price != tempPrice) ItemData[ItemCost] = tempPrice
+		else ItemData[ItemCost] = price
+	}
+	else
+	{
+		AmxSaveInt(ZP_EXTRA_ITEMS_FILE, name, "PRICE", price)
+		ItemData[ItemCost] = price
+	}
+
+	// Load Team from Function
+	static szTeam[32], Array:ArrTeam
+	ArrTeam = ArrayCreate(32, 1)
+
+	if (AmxLoadStringArray(ZP_EXTRA_ITEMS_FILE, name, "TEAMS", ArrTeam)) 
+	{
+		log_amx("EXTRA ITEAM %s TEAMS = ", name)
+		for (new i = 0; i < ArraySize(ArrTeam); i++)
+		{
+			static buffer[40]
+			ArrayGetString(ArrTeam, i, buffer, charsmax(buffer))
+			log_amx(" %s ", buffer)
+		}
+
+		static szTeamList[32];
+		team = 0
+
+		for (new t = 0; t < ArraySize(ZP_TEAM_NAMES); t++) 
+		{
+			for (new i = 0; i < ArraySize(ArrTeam); i++) 
+			{
+				ArrayGetString(ArrTeam, i, szTeam, charsmax(szTeam))
+				ArrayGetString(ZP_TEAM_NAMES, t, szTeamList, charsmax(szTeamList))
+
+				if (equal(szTeam, szTeamList)) team |= GetTeamIndex(t)
+			}
+		}
+	}
+	else 
+	{
+		log_amx("BRAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH")
+		for (new i = 0; i < ArraySize(ZP_TEAM_NAMES); i++) 
+		{
+			if (IsTeam(team, i)) 
+			{
+				ArrayGetString(ZP_TEAM_NAMES, i, szTeam, charsmax(szTeam))
+				ArrayPushString(ArrTeam, szTeam)
+			}
+		}
+		AmxSaveStringArray(ZP_EXTRA_ITEMS_FILE, name, "TEAMS", ArrTeam) // Add Team
+	}
 
 	// Get item team from function
 	ItemData[ItemTeam] |= team
 
-	// Get item availability mode from function
-	ItemData[ItemMode] |= mode
-
-	// Get item round limit from function
-	ItemData[ItemLimitRound] = limit_round
-
-	// Get item map limit from function
-	ItemData[ItemLimitMap] = limit_map
+	// Destroy the temporary Array
+	ArrayDestroy(ArrTeam)
 
 	// Add item to array and increase size
 	ArrayPushArray(g_extraitems, ItemData)
