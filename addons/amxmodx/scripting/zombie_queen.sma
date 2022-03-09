@@ -94,6 +94,7 @@ native get_target_and_attack(id)
  [Plugin Customization]
 =================================================================================*/
 new const ZP_EXTRA_ITEMS_FILE[] = "zombie_queen/extra_items.ini"
+new const ZP_PREMIUM_WEAPONS_FILE[] = "zombie_queen/premium_weapons.ini"
 new const ZP_CLASS_CONFIGS_FILE[] = "zombie_queen/class_configs.ini"
 new const ZP_ACCESS_FLAGS_FILE[] = "zombie_queen/access_flags.ini"
 new const ZP_MODEL_CONFIGS_FILE[] = "zombie_queen/model_configs.ini"
@@ -3862,7 +3863,8 @@ public Task_Rays(id)
 	{
 		if (is_user_alive(vip) && g_vip[vip] && VipHasFlag(vip, 'g'))
 		{
-			if (CheckBit(g_playerClass[vip], CLASS_HUMAN))
+			if (CheckBit(g_playerClass[vip], CLASS_HUMAN) || CheckBit(g_playerClass[vip], CLASS_TRYDER) || CheckBit(g_playerClass[vip], CLASS_SURVIVOR)
+			|| CheckBit(g_playerClass[vip], CLASS_SNIPER) || CheckBit(g_playerClass[vip], CLASS_GRENADIER) || CheckBit(g_playerClass[vip], CLASS_TERMINATOR))
 			{
 				for (new z = 1;z <= g_maxplayers; z++)
 				{
@@ -4629,7 +4631,7 @@ public _StatisticsMenu(id, menu, item)
 		{
 			case 0: ShowPlayerStatistics(id)
 			case 1: ShowGlobalTop15(id)
-			case 2:  { /* Comming soon */ }
+			case 2: client_cmd(id, "say /top")
 		}
 	}
 }
@@ -18167,15 +18169,85 @@ public native_register_points_shop_weapon(plugin, param)
 {
     // Create an array to hold our item data
     new ItemData[extraItemsDataStructure]
-    
-    // Get item name from function
-    get_string(1, ItemData[ItemName], charsmax(ItemData[ItemName]))
-    
-    // Get item cost from function
-    ItemData[ItemCost] = get_param(2)
+
+	// Get item name from function
+	static tempName[100], tempName2[100]
+    get_string(1, tempName, charsmax(tempName))
+
+	if (AmxLoadString(ZP_PREMIUM_WEAPONS_FILE, tempName, "NAME", tempName2, charsmax(tempName2)))
+	{
+		if (!equali(tempName, tempName2, charsmax(tempName)))
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName2)
+		else formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName)
+	}
+	else 
+	{
+		AmxSaveString(ZP_PREMIUM_WEAPONS_FILE, tempName, "NAME", tempName)
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName)
+	}
+
+	// Get item cost from function
+	static tempPrice, tempPrice2
+	tempPrice = get_param(2)
+
+	if (AmxLoadInt(ZP_PREMIUM_WEAPONS_FILE, tempName, "PRICE", tempPrice2))
+	{
+		if (tempPrice != tempPrice2) ItemData[ItemCost] = tempPrice2
+		else ItemData[ItemCost] = tempPrice
+	}
+	else
+	{
+		AmxSaveInt(ZP_PREMIUM_WEAPONS_FILE, tempName, "PRICE", tempPrice)
+		ItemData[ItemCost] = tempPrice
+	}
+
+	// Load Team from Function
+	static szTeam[32], Array:ArrTeam, team; team = get_param(3)
+	ArrTeam = ArrayCreate(32, 1)
+
+	if (AmxLoadStringArray(ZP_PREMIUM_WEAPONS_FILE, tempName, "TEAMS", ArrTeam)) 
+	{
+		log_amx("EXTRA ITEAM %s TEAMS = ", tempName)
+		for (new i = 0; i < ArraySize(ArrTeam); i++)
+		{
+			static buffer[40]
+			ArrayGetString(ArrTeam, i, buffer, charsmax(buffer))
+			log_amx(" %s ", buffer)
+		}
+
+		static szTeamList[32];
+		team = 0
+
+		for (new t = 0; t < ArraySize(ZP_TEAM_NAMES); t++) 
+		{
+			for (new i = 0; i < ArraySize(ArrTeam); i++) 
+			{
+				ArrayGetString(ArrTeam, i, szTeam, charsmax(szTeam))
+				ArrayGetString(ZP_TEAM_NAMES, t, szTeamList, charsmax(szTeamList))
+
+				if (equal(szTeam, szTeamList)) team |= GetTeamIndex(t)
+			}
+		}
+	}
+	else 
+	{
+		log_amx("Writing configs for first time...")
+		for (new i = 0; i < ArraySize(ZP_TEAM_NAMES); i++) 
+		{
+			if (IsTeam(team, i)) 
+			{
+				ArrayGetString(ZP_TEAM_NAMES, i, szTeam, charsmax(szTeam))
+				ArrayPushString(ArrTeam, szTeam)
+			}
+		}
+		AmxSaveStringArray(ZP_PREMIUM_WEAPONS_FILE, tempName, "TEAMS", ArrTeam) // Add Team
+	}
 
 	// Get item team from function
-	ItemData[ItemTeam] |= get_param(3)
+	ItemData[ItemTeam] |= team
+
+	// Destroy the temporary Array
+	ArrayDestroy(ArrTeam)
     
     // Add item to array and increase size
     ArrayPushArray(g_pointsShopWeapons, ItemData)
@@ -18187,19 +18259,85 @@ public native_register_points_shop_weapon(plugin, param)
 }
 
 // To be used internallly
-public register_points_shop_weapon(const name[], const price, const team)
+public register_points_shop_weapon(name[100], price, team)
 {
 	// Create an array to hold our item data
     new ItemData[extraItemsDataStructure]
     
     // Get item name from function
-    formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
-    
-    // Get item cost from function
-    ItemData[ItemCost] = price
+	static tempName[sizeof(name)]
+	if (AmxLoadString(ZP_PREMIUM_WEAPONS_FILE, name, "NAME", tempName, charsmax(tempName)))
+	{
+		if (!equali(name, tempName, charsmax(name)))
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName)
+		else formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
+	}
+	else 
+	{
+		AmxSaveString(ZP_PREMIUM_WEAPONS_FILE, name, "NAME", name)
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), name)
+	}
+
+	// Get item cost from function
+	static tempPrice
+	if (AmxLoadInt(ZP_PREMIUM_WEAPONS_FILE, name, "PRICE", tempPrice))
+	{
+		if (price != tempPrice) ItemData[ItemCost] = tempPrice
+		else ItemData[ItemCost] = price
+	}
+	else
+	{
+		AmxSaveInt(ZP_PREMIUM_WEAPONS_FILE, name, "PRICE", price)
+		ItemData[ItemCost] = price
+	}
+
+	// Load Team from Function
+	static szTeam[32], Array:ArrTeam
+	ArrTeam = ArrayCreate(32, 1)
+
+	if (AmxLoadStringArray(ZP_PREMIUM_WEAPONS_FILE, name, "TEAMS", ArrTeam)) 
+	{
+		log_amx("EXTRA ITEAM %s TEAMS = ", name)
+		for (new i = 0; i < ArraySize(ArrTeam); i++)
+		{
+			static buffer[40]
+			ArrayGetString(ArrTeam, i, buffer, charsmax(buffer))
+			log_amx(" %s ", buffer)
+		}
+
+		static szTeamList[32];
+		team = 0
+
+		for (new t = 0; t < ArraySize(ZP_TEAM_NAMES); t++) 
+		{
+			for (new i = 0; i < ArraySize(ArrTeam); i++) 
+			{
+				ArrayGetString(ArrTeam, i, szTeam, charsmax(szTeam))
+				ArrayGetString(ZP_TEAM_NAMES, t, szTeamList, charsmax(szTeamList))
+
+				if (equal(szTeam, szTeamList)) team |= GetTeamIndex(t)
+			}
+		}
+	}
+	else 
+	{
+		log_amx("Writing configs for first time...")
+		for (new i = 0; i < ArraySize(ZP_TEAM_NAMES); i++) 
+		{
+			if (IsTeam(team, i)) 
+			{
+				ArrayGetString(ZP_TEAM_NAMES, i, szTeam, charsmax(szTeam))
+				ArrayPushString(ArrTeam, szTeam)
+			}
+		}
+		AmxSaveStringArray(ZP_PREMIUM_WEAPONS_FILE, name, "TEAMS", ArrTeam) // Add Team
+	}
 
 	// Get item team from function
 	ItemData[ItemTeam] |= team
+
+	// Destroy the temporary Array
+	ArrayDestroy(ArrTeam)
     
     // Add item to array and increase size
     ArrayPushArray(g_pointsShopWeapons, ItemData)
@@ -18273,7 +18411,7 @@ public register_extra_item(name[100], price, team)
 	}
 	else 
 	{
-		log_amx("BRAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHH")
+		log_amx("Writing configs for first time...")
 		for (new i = 0; i < ArraySize(ZP_TEAM_NAMES); i++) 
 		{
 			if (IsTeam(team, i)) 
