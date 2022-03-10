@@ -3897,11 +3897,11 @@ public Task_Rays(id)
 
 public CheckBots()
 {
-	if (get_playersnum(1) < g_maxplayers - 1 && g_iBotsCount < 2)
+	if (get_playersnum(1) <= g_maxplayers - 2 && g_iBotsCount < 2)
 	{
-		for (new i; i < sizeof g_cBotNames; i++) CreateBot(g_cBotNames[i])
+		CreateBot(g_cBotNames[random_num(0, sizeof g_cBotNames - 1)])
 	}
-	else if (get_playersnum(1) > g_maxplayers - 1 && g_iBotsCount) RemoveBot()
+	else if (get_playersnum(1) >= g_maxplayers - 2 && g_iBotsCount) RemoveBot()
 
 	if (IsCurrentTimeBetween(freeVIP_Start, freeVIP_End))
 	{
