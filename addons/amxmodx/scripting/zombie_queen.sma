@@ -1008,6 +1008,9 @@ new Array:g_skyNames
 // --- Deleted Entities ---
 new Array:g_deletedEntities
 
+// --- Current Round Into ---
+new Array:g_roundslist
+
 // Weapon Knockback and Weapon Speed
 new Float:kb_weapon_power[31] = { -1.0, ... }
 new Float:weapon_spd_multi[31] = { 1.0, ... }
@@ -1138,12 +1141,12 @@ new Float:BubbleGrenadeMins[3] = { -100.0, -100.0, -100.0 }
 
 // Map related
 new MapCountdownTimer = 10
-// new bool:g_bVoting
+new bool:g_bVoting
 new bool:g_bSecondVoting
 new g_iVariable
-// new g_iVariables[3]
-// new g_iVotes[7]
-// new g_cMaps[7][32]
+new g_iVariables[3]
+new g_iVotes[7]
+new g_cMaps[7][32]
 new g_cSecondMaps[5][32]
 new g_iSecondVotes[5]
 new g_lastMaps[6][64]
@@ -1685,6 +1688,7 @@ public plugin_precache()
 	g_botNames = ArrayCreate(64, 1)
 	g_skyNames = ArrayCreate(32, 1)
 	g_deletedEntities = ArrayCreate(64, 1)
+	g_roundslist = ArrayCreate(1, 1)
 
 	for (new i = 0; i < 2; i++) 
 	{
@@ -3365,7 +3369,7 @@ public plugin_init()
 		menu_additem(g_iModesMenu, cLine, cNumber, 0, -1)
 	}
 
-	// register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
+	register_cvar("amx_nextmap", "", FCVAR_SERVER|FCVAR_EXTDLL|FCVAR_SPONLY)
 
 	g_adminsTrie = TrieCreate()
 	g_vipsTrie = TrieCreate()
@@ -3383,7 +3387,7 @@ public plugin_init()
 	ReadAutoRespondsFromFile()
 	ReadChatAdvertisementsFromFile()
 	ReadHudAdvertisementsFromFile()
-	//TaskGetMaps()
+	TaskGetMaps()
 
 	register_extra_item("Nightvision Goggles", 2, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
 	register_extra_item("Forcefield Grenade", 20, GetTeamIndex(CLASS_HUMAN)|GetTeamIndex(CLASS_TRYDER))
@@ -5367,6 +5371,13 @@ public plugin_cfg()
 	server_cmd("cl_forwardspeed 9999")
 	server_cmd("cl_backspeed 9999")
 	server_cmd("cl_sidespeed 9999")
+	server_cmd("sv_airmove 1")
+	server_cmd("sv_airaccelerate 9999")
+	server_cmd("sv_cheats 0")
+	server_cmd("mp_timelimit 40")
+	server_cmd("mp_roundtime 3.30")
+	server_cmd("mp_freezetime 0")
+	server_cmd("mapchangecfgfile %s", "server.cfg")
 	server_cmd("hostname %s", "PerfectZM.CsBlackDevil.com [Zombie Queen 12.0]")
 
 	// Set lighting
@@ -5570,15 +5581,19 @@ public event_round_start()
 
 	// Increase round count var
 	g_roundcount++
+	client_print_color(0, print_team_grey, "^1Round count^4: ^3%d", g_roundcount)
+
+	ArrayPushCell(g_roundslist, MODE_NONE)
+	client_print_color(0, print_team_grey, "^1ArrayRound ^4= ^3%d", ArrayGetCell(g_roundslist, g_roundcount - 1))
 
 	// Map changer
-	/*if (get_cvar_num("mp_timelimit") == 0)
+	if (get_cvar_num("mp_timelimit") == 0)
 	{
 		new map[64]
 		get_cvar_string("amx_nextmap", map, charsmax(map))
 		MessageIntermission()
 		set_task(5.0, "ChangeMap", 0, map, sizeof(map))
-	}*/
+	}
 
 	if (IsCurrentTimeBetween(happyHour_Start, happyHour_End))
 	{
@@ -7040,7 +7055,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	if (random_num(1, 4) == 1)
 	{
 		g_points[attacker] += 10
-		set_hudmessage(255, 180, 30, -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
+		set_hudmessage(random(256), random(256), random(256), -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
 		ShowSyncHudMsg(attacker, g_MsgSync6, "== ELIMINATION ==^n!!!Randomly got +10 point!!!^n[ 25%% chance ]")
 	} 
 	else g_points[attacker] += 2
@@ -7148,27 +7163,12 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 			SetHamParamFloat(4, CROSSBOW_DAMAGE)
 		}
 
-		if (VipHasFlag(attacker, 'f') && (IsHuman(attacker) || IsSurvivor(attacker) || IsTryder(attacker)) && (damage_type & DMG_BULLET))
+		if ((VipHasFlag(attacker, 'f') || g_doubledamage[attacker]) && (IsHuman(attacker) || IsSurvivor(attacker) || IsTryder(attacker) || IsTerminator(attacker)) && (damage_type & DMG_BULLET))
 		{
-			if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE)) damage *= 1.5
-			else damage *= 2.0
-
+			damage *= 2.0
 			SetHamParamFloat(4, damage)
 		}
-		else if (g_doubledamage[attacker] && (IsHuman(attacker) || IsSurvivor(attacker) || IsTryder(attacker)) && (damage_type & DMG_BULLET))
-		{
-			if (g_goldenweapons[attacker] && (g_currentweapon[attacker] == CSW_AK47 || CSW_M4A1 || CSW_XM1014 || CSW_DEAGLE)) damage *= 1.5
-			else damage *= 2.0
 
-			SetHamParamFloat(4, damage)
-		}
-		if (IsHuman(attacker) && g_currentweapon[attacker] == CSW_AWP && (damage_type & DMG_BULLET)) 
-		{
-			damage = 3000.0
-			SetHamParamFloat(4, 3000.0)
-		}
-
-		
 		g_damagedealt_human[attacker] += floatround(damage)
 		
 		if (IsHuman(attacker) || IsSurvivor(attacker) 
@@ -8900,7 +8900,7 @@ public Client_Say(id)
 		return PLUGIN_HANDLED
 	}
 
-	/*if (equali(cMessage, "/nextmap", 0) || equali(cMessage, "nextmap", 0))
+	if (equali(cMessage, "/nextmap", 0) || equali(cMessage, "nextmap", 0))
 	{
 		static cMap[32]
 		get_cvar_string("amx_nextmap", cMap, 32)
@@ -8913,7 +8913,7 @@ public Client_Say(id)
 		static iTimeleft
 		iTimeleft = get_timeleft()
 		client_print_color(id, print_team_grey, "^1Timeleft: ^4%d:%02d", iTimeleft / 60, iTimeleft % 60)
-	}*/
+	}
 	static buffer[100]
 
 	if (TrieGetString(g_autoRespondTrie, cMessage, buffer, charsmax(buffer)))
@@ -11177,7 +11177,7 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 	copy(ip,   ipsize,   g_IPs[target])
 }
 
-/*public TaskGetMaps()
+public TaskGetMaps()
 {
 	static cRight[32]
 	static cLeft[32]
@@ -11239,10 +11239,10 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 
 public CheckTimeleft(iDecimal)
 {
-	static Float:fTimeLeft, g_menu
+	static fTimeLeft, g_menu
 	fTimeLeft = get_timeleft()
 
-	if (get_cvar_num("mp_timelimit") && fTimeLeft < 200.0 && !g_bSecondVoting && !g_bVoting)
+	if (get_cvar_num("mp_timelimit") && fTimeLeft < 200 && !g_bSecondVoting && !g_bVoting)
 	{
 		remove_task(iDecimal)
 		g_bVoting = true
@@ -11309,7 +11309,7 @@ public CheckVotes()
 			g_iVotes[g_iVariable] = 0
 			g_iVariable += 1
 		}
-		set_task(30.0, "CheckTimeleft", .flags = "a")
+		set_task(5.0, "CheckTimeleft", .flags = "b")
 		set_cvar_num("mp_timelimit", get_cvar_num("mp_timelimit") + 10)
 	}
 	g_iVariable = 0;
@@ -11380,7 +11380,7 @@ public VotePanel(id, menu, item)
 		}
 	}
 	return PLUGIN_CONTINUE
-}*/
+}
 
 public cmd_votemap(id)
 {
@@ -13279,6 +13279,9 @@ start_mode(mode, id)
 		// Survivor Mode
 		SetBit(g_currentmode, MODE_SURVIVOR)
 		g_lastmode = MODE_SURVIVOR
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SURVIVOR)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13335,6 +13338,9 @@ start_mode(mode, id)
 		// Sniper Mode
 		SetBit(g_currentmode, MODE_SNIPER)
 		g_lastmode = MODE_SNIPER
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SNIPER)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13391,6 +13397,9 @@ start_mode(mode, id)
 		// Samurai Mode
 		SetBit(g_currentmode, MODE_SAMURAI)
 		g_lastmode = MODE_SAMURAI
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SAMURAI)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13447,6 +13456,9 @@ start_mode(mode, id)
 		// Grenadier Mode
 		SetBit(g_currentmode, MODE_GRENADIER)
 		g_lastmode = MODE_GRENADIER
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_GRENADIER)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13502,6 +13514,9 @@ start_mode(mode, id)
 		// Terminator Mode
 		SetBit(g_currentmode, MODE_TERMINATOR)
 		g_lastmode = MODE_TERMINATOR
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_TERMINATOR)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13557,6 +13572,9 @@ start_mode(mode, id)
 		// Swarm Mode
 		SetBit(g_currentmode, MODE_SWARM)
 		g_lastmode = MODE_SWARM
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SWARM)
 		
 		// Make sure there are alive players on both teams (BUGFIX)
 		if (!fnGetAliveTs())
@@ -13615,6 +13633,9 @@ start_mode(mode, id)
 		// Multi Infection Mode
 		SetBit(g_currentmode, MODE_MULTI_INFECTION)
 		g_lastmode = MODE_MULTI_INFECTION
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_MULTI_INFECTION)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround(iPlayersnum * multi_ratio, floatround_ceil)
@@ -13685,6 +13706,9 @@ start_mode(mode, id)
 		// Plague Mode
 		SetBit(g_currentmode, MODE_PLAGUE)
 		g_lastmode = MODE_PLAGUE
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_PLAGUE)
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
@@ -13794,6 +13818,9 @@ start_mode(mode, id)
 		SetBit(g_currentmode, MODE_SYNAPSIS)
 		g_lastmode = MODE_SYNAPSIS
 
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SYNAPSIS)
+
 		// Turn specified amount of players into Nemesis
 		static iNemesis, iMaxNemesis
 		iMaxNemesis = synapsis_nemesis_count
@@ -13891,6 +13918,9 @@ start_mode(mode, id)
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
 		g_lastmode = MODE_SURVIVOR_VS_NEMESIS
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SURVIVOR_VS_NEMESIS)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * svn_ratio), floatround_ceil)
@@ -13953,6 +13983,9 @@ start_mode(mode, id)
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 		g_lastmode = MODE_SURVIVOR_VS_ASSASIN
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SURVIVOR_VS_ASSASIN)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * sva_ratio), floatround_ceil)
@@ -14015,6 +14048,9 @@ start_mode(mode, id)
 		// Apocalypse Mode
 		SetBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
 		g_lastmode = MODE_SNIPER_VS_ASSASIN
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SNIPER_VS_ASSASIN)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * snva_ratio), floatround_ceil)
@@ -14077,6 +14113,9 @@ start_mode(mode, id)
 		// Bombardier vs Grenadier Mode
 		SetBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)
 		g_lastmode = MODE_BOMBARDIER_VS_GRENADIER
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_BOMBARDIER_VS_GRENADIER)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * bvg_ratio), floatround_ceil)
@@ -14137,6 +14176,9 @@ start_mode(mode, id)
 		// Nightmare mode
 		SetBit(g_currentmode, MODE_NIGHTMARE)
 		g_lastmode = MODE_NIGHTMARE
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_NIGHTMARE)
 		
 		iMaxZombies = floatround((iPlayersnum * 0.25), floatround_ceil)
 		iZombies = 0
@@ -14223,6 +14265,9 @@ start_mode(mode, id)
 		// Devil Mode ( Sniper vs Nemesis)
 		SetBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 		g_lastmode = MODE_SNIPER_VS_NEMESIS
+
+		// Push Current mode into Dynamic Array
+		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SNIPER_VS_NEMESIS)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * snvn_ratio), floatround_ceil)
@@ -14297,6 +14342,9 @@ start_mode(mode, id)
 			SetBit(g_currentmode, MODE_NEMESIS)
 			g_lastmode = MODE_NEMESIS
 
+			// Push Current mode into Dynamic Array
+			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_NEMESIS)
+
 			// Turn player into nemesis
 			MakeZombie(id, CLASS_NEMESIS)
 
@@ -14331,6 +14379,9 @@ start_mode(mode, id)
 			// Assassin Mode
 			SetBit(g_currentmode, MODE_ASSASIN)
 			g_lastmode = MODE_ASSASIN
+
+			// Push Current mode into Dynamic Array
+			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_ASSASIN)
 
 			// Set lighting for Assassin mode
 			engfunc(EngFunc_LightStyle, 0, "a") // Set lighting
@@ -14369,6 +14420,9 @@ start_mode(mode, id)
 			// Bombardier Mode
 			SetBit(g_currentmode, MODE_BOMBARDIER)
 			g_lastmode = MODE_BOMBARDIER
+
+			// Push Current mode into Dynamic Array
+			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_BOMBARDIER)
 			
 			// Turn player into bombardier
 			MakeZombie(id, CLASS_BOMBARDIER)
@@ -14404,6 +14458,9 @@ start_mode(mode, id)
 			// Revenant Mode
 			SetBit(g_currentmode, MODE_REVENANT)
 			g_lastmode = MODE_REVENANT
+
+			// Push Current mode into Dynamic Array
+			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_REVENANT)
 			
 			// Turn player into revenant
 			MakeZombie(id, CLASS_REVENANT)
@@ -14439,6 +14496,9 @@ start_mode(mode, id)
 			// Single Infection Mode
 			SetBit(g_currentmode, MODE_INFECTION)
 			g_lastmode = MODE_INFECTION
+
+			// Push Current mode into Dynamic Array
+			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_INFECTION)
 			
 			// Turn player into the first zombie
 			MakeZombie(id)
@@ -17391,16 +17451,25 @@ CanBuy(category, item, id)
 					}
 					else
 					{
-						if (g_roundcount >= 10)
+						if (g_roundcount >= 3)
 						{
 							if (LIMIT[id][MODES] == 1)
 							{
 								client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
 								return false
 							}
-							else if (g_lastmode != MODE_INFECTION)
+							static a, b
+							a = ArrayGetCell(g_roundslist, g_roundcount - 3)
+							b = ArrayGetCell(g_roundslist, g_roundcount - 2)
+
+							if (a != MODE_INFECTION)
 							{
-								client_print_color(id, print_team_grey, "%s You must wait ^4one ^1more round to buy a mode.", CHAT_PREFIX)
+								client_print_color(id, print_team_grey, "%s You must wait ^4 2^3normal infection ^1rounds to buy a mode.", CHAT_PREFIX)
+								return false
+							}
+							else if (b != MODE_INFECTION)
+							{
+								client_print_color(id, print_team_grey, "%s You must wait ^4 2^3normal infection ^1rounds to buy a mode.", CHAT_PREFIX)
 								return false
 							}
 
