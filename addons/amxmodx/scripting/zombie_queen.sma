@@ -1519,7 +1519,6 @@ new g_playerConcat[33][100] // Temp concat char array
 
 // Bots
 new g_bot[33]
-new g_specBot[33]
 new g_iBotsCount
 
 #define is_user_valid_connected(%1) (1 <= %1 <= g_maxplayers && g_isconnected[%1])
@@ -2933,7 +2932,7 @@ LoadCustomizationFromFile()
 	}
 
 	// Knockback Power for Weapons / Weapon Weight
-	static wpn_key
+	new wpn_key
 	for (i = 1; i < sizeof WEAPONENTNAMES; i++) 
 	{
 		if (!WEAPONENTNAMES[i][0]) continue
@@ -3044,7 +3043,7 @@ public plugin_init()
 	RegisterHam(Ham_Killed, "player", "OnPlayerKilled")
 	RegisterHam(Ham_Killed, "player", "OnPlayerKilledPost", 1)
 	RegisterHam(Ham_TakeDamage, "player", "OnTakeDamage")
-	RegisterHam(Ham_TakeDamage, "func_breakable", "OnTakeDamage")
+	RegisterHam(Ham_TakeDamage, "func_breakable", "OnTakeDamageEntity")
 	RegisterHam(Ham_TakeDamage, "player", "OnTakeDamagePost", 1)
 	RegisterHam(Ham_TraceAttack, "player", "OnTraceAttack")
 	RegisterHam(Ham_Player_Jump, "player", "OnPlayerJump")
@@ -3275,7 +3274,7 @@ public plugin_init()
 	set_cvar_string("zp_version", "1.0")
 	
 	// Set Sky
-	static buffer[32]
+	new buffer[32]
 	ArrayGetString(g_skyNames, random_num(0, ArraySize(g_skyNames) - 1), buffer, charsmax(buffer))
 	set_cvar_string("sv_skyname", buffer)
 	
@@ -3611,7 +3610,7 @@ public MySQL_WelcomeMessage(FailState, Handle:Query, Error[], Errcode, Data[], D
 
 public TopFunction(State, Handle:Query, Error[], ErrorCode, Data[], DataSize)
 {
-	static id, Buffer[2048], Place, Name[16], Score, Kills, Deaths, Infections, Points, Len
+	new id, Buffer[2048], Place, Name[16], Score, Kills, Deaths, Infections, Points, Len
 
 	Buffer[0] = '^0'
 
@@ -3696,19 +3695,19 @@ public ShowGlobalTop15(id)
 
 public ReadAdminsFromFile()
 {
-	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/Admin/Admins.ini", "r")
+	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/Admin/Admins.ini", "r")
 	new Data[adminInfoStruct]
 
 	if (iFile)
 	{
-		static cLine[161]
+		new line[161]
 		while (!feof(iFile))
 		{
-			fgets(iFile, cLine, charsmax(cLine))
-			trim(cLine)
-			if (cLine[0] != 59 && strlen(cLine) > 5)
+			fgets(iFile, line, charsmax(line))
+			trim(line)
+			if (line[0] != 59 && strlen(line) > 5)
 			{
-				parse(cLine, Data[_aName], charsmax(Data[_aName]), Data[_aPassword], charsmax(Data[_aPassword]), Data[_aFlags], charsmax(Data[_aFlags]), Data[_aRank], charsmax(Data[_aRank]))
+				parse(line, Data[_aName], charsmax(Data[_aName]), Data[_aPassword], charsmax(Data[_aPassword]), Data[_aFlags], charsmax(Data[_aFlags]), Data[_aRank], charsmax(Data[_aRank]))
 				TrieSetArray(g_adminsTrie, Data[_aName], Data, sizeof(Data))
 				g_adminCount++
 			}
@@ -3723,19 +3722,19 @@ public ReadAdminsFromFile()
 
 public ReadVipsFromFile()
 {
-	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/Vip/Vips.ini", "r")
+	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/Vip/Vips.ini", "r")
 	new Data[vipInfoStruct]
 
 	if (iFile)
 	{
-		static cLine[161]
+		new line[161]
 		while (!feof(iFile))
 		{
-			fgets(iFile, cLine, charsmax(cLine))
-			trim(cLine)
-			if (cLine[0] != 59 && strlen(cLine) > 5)
+			fgets(iFile, line, charsmax(line))
+			trim(line)
+			if (line[0] != 59 && strlen(line) > 5)
 			{
-				parse(cLine, Data[_vName], charsmax(Data[_vName]), Data[_vPassword], charsmax(Data[_vPassword]), Data[_vFlags], charsmax(Data[_vFlags]))
+				parse(line, Data[_vName], charsmax(Data[_vName]), Data[_vPassword], charsmax(Data[_vPassword]), Data[_vFlags], charsmax(Data[_vFlags]))
 				TrieSetArray(g_vipsTrie, Data[_vName], Data, sizeof(Data))
 				g_vipCount++
 			}	
@@ -3750,12 +3749,12 @@ public ReadVipsFromFile()
 
 public ReadAutoRespondsFromFile()
 {
-	static iFile; iFile = fopen("addons/amxmodx/configs/auto_responds.ini", "r")
+	new iFile; iFile = fopen("addons/amxmodx/configs/auto_responds.ini", "r")
 	new command[20], response[100]
 
 	if (iFile)
 	{
-		static line[161]
+		new line[161]
 
 		while (!feof(iFile))
 		{
@@ -3780,21 +3779,21 @@ public ReadAutoRespondsFromFile()
 
 public ReadPlayerTagsFromFile()
 {
-	static iFile; iFile = fopen("addons/amxmodx/configs/accounts/PlayerTag/PlayerTags.ini", "r")
+	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/PlayerTag/PlayerTags.ini", "r")
 	new Data[playerTagInfoStruct]
 
 	if (!iFile) log_amx("Tags file not found")
 
 	if (iFile)
 	{
-		static cLine[161]
+		new line[161]
 		while (!feof(iFile))
 		{
-			fgets(iFile, cLine, charsmax(cLine))
-			trim(cLine)
-			if (cLine[0] != 59 && strlen(cLine) > 5)
+			fgets(iFile, line, charsmax(line))
+			trim(line)
+			if (line[0] != 59 && strlen(line) > 5)
 			{
-				parse(cLine, Data[_tName], charsmax(Data[_tName]), Data[_tPassword], charsmax(Data[_tPassword]), Data[_tTag], charsmax(Data[_tTag]))
+				parse(line, Data[_tName], charsmax(Data[_tName]), Data[_tPassword], charsmax(Data[_tPassword]), Data[_tTag], charsmax(Data[_tTag]))
 				TrieSetArray(g_tagTrie, Data[_tName], Data, sizeof(Data))
 				g_tagCount++
 			}
@@ -3834,7 +3833,7 @@ public ReadHudAdvertisementsFromFile()
 
 public ReadChatAdvertisementsFromFile()
 {
-	static file; file = fopen("addons/amxmodx/configs/chat_advertisements.ini", "r")
+	new file; file = fopen("addons/amxmodx/configs/chat_advertisements.ini", "r")
 
 	if (file)
 	{
@@ -3976,13 +3975,19 @@ public CheckBots()
 {
 	if (get_playersnum(1) <= g_maxplayers - 3 && g_iBotsCount < 3)
 	{
-		static buffer[64], iRand; iRand = random_num(0, ArraySize(g_botNames) - 1)
+		new buffer[64], iRand; iRand = random_num(0, ArraySize(g_botNames) - 1)
 		ArrayGetString(g_botNames, iRand, buffer, charsmax(buffer))
 
 		if (find_player("a", buffer)) return
 		CreateBot(buffer)
 	}
-	else if (get_playersnum(1) >= g_maxplayers - 3 && g_iBotsCount) RemoveBot()
+	else if (get_playersnum(1) >= g_maxplayers - 3 && g_iBotsCount) 
+	{
+		new buffer[64], iRand; iRand = random_num(0, ArraySize(g_botNames) - 1)
+		ArrayGetString(g_botNames, iRand, buffer, charsmax(buffer))
+
+		if (find_player("a", buffer)) server_cmd("kick #%d", get_user_index(buffer))
+	}
 
 	if (IsCurrentTimeBetween(freeVIP_Start, freeVIP_End))
 	{
@@ -3997,7 +4002,7 @@ public CheckBots()
 
 public Advertise_HUD()
 {
-	static a, msg[256], players[32], pnum
+	new a, msg[256], players[32], pnum
 	get_players(players, pnum, "ch")
 
 	for (a = 1; a <= pnum; a++)
@@ -4013,7 +4018,7 @@ public Advertise_HUD()
 
 public Advertise_CHAT()
 {
-	static msg[256]
+	new msg[256]
 
 	ArrayGetString(g_chatAdvertisements, random_num(0, ArraySize(g_chatAdvertisements) - 1), msg, charsmax(msg))
 	client_print_color(0, print_team_grey, msg)
@@ -4021,7 +4026,7 @@ public Advertise_CHAT()
 
 public TaskReminder()
 {
-	static id; id = 1
+	new id; id = 1
 	while (g_maxplayers + 1 > id)
 	{
 		if (g_isalive[id] && g_specialclass[id]) client_print_color(0, print_team_grey, "%s A ^3Rapture^1 Reminder ^3@ ^4%s^1 still has %s ^4health points!", CHAT_PREFIX, g_classString[id], AddCommas(pev(id, pev_health)))
@@ -4041,12 +4046,12 @@ public message_saytext()
 {
 	if (get_msg_args() == 4)
 	{
-		static sender; sender = get_msg_arg_int(1)
+		new sender; sender = get_msg_arg_int(1)
 
 		if (0 < sender < g_maxplayers + 1 && g_tag[sender][0])
 		{
-			static cReplacement[189]
-			static cPhrase[47]
+			new cReplacement[189]
+			new cPhrase[47]
 			get_msg_arg_string(2, cPhrase, 46)
 
 			if (equal(cPhrase, "#Cstrike_Chat_CT", 0))
@@ -4098,8 +4103,8 @@ public _GameMenu(id, menu, item)
 {
 	if (item != -3 && g_isconnected[id])
 	{
-		static iChoice
-		static cBuffer[3]
+		new iChoice
+		new cBuffer[3]
 		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
@@ -4120,10 +4125,8 @@ public _GameMenu(id, menu, item)
 			{
 				if (g_isalive[id] && !is_hull_vacant(id))
 				{
-					static i; i = 0
-					static Float:fOrigin[3]
-					static Float:fVector[3]
-					static Float:fMins[3]
+					new i, Float:fOrigin[3], Float:fVector[3], Float:fMins[3]
+
 					pev(id, pev_mins, fMins)
 					pev(id, pev_origin, fOrigin)
 					
@@ -4162,7 +4165,7 @@ ShowMenuExtraItems(id)
 		return PLUGIN_HANDLED
     }
 
-	static g_menu, line[128], number[3], ItemData[extraItemsDataStructure]
+	new g_menu, line[128], number[3], ItemData[extraItemsDataStructure]
 
 	g_menu = menu_create(fmt("%s's Extra Items", g_classString[id]), "_ExtraItems", 0)	// Human Extra items menu
 
@@ -4631,7 +4634,7 @@ public _ExtraItems(id, menu, item)
 					MakeHuman(id)
 
 					// Antidote sound
-					static iRand, buffer[100]
+					new iRand, buffer[100]
 					iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ANTIDOTE]) - 1)
 					ArrayGetString(Array:g_miscSounds[SOUND_ANTIDOTE], iRand, buffer, charsmax(buffer))
 					emit_sound(id, CHAN_ITEM, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -4761,8 +4764,8 @@ public _ZombieClasses(id, menu, item)
 {
 	if (item != -3 && g_isconnected[id])
 	{
-		static iChoice
-		static cBuffer[15]
+		new iChoice
+		new cBuffer[15]
 
 		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
@@ -4778,8 +4781,8 @@ public _StatisticsMenu(id, menu, item)
 {
 	if (item != -3 && g_isconnected[id])
 	{
-		static iChoice
-		static cBuffer[15]
+		new iChoice
+		new cBuffer[15]
 
 		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
@@ -4797,8 +4800,8 @@ public _PointShop(id, menu, item)
 {
 	if (item != -3)
 	{
-		static iChoice
-		static cBuffer[15]
+		new iChoice
+		new cBuffer[15]
 		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
@@ -4817,8 +4820,8 @@ public _AmmoMenu(id, menu, item)
 {
 	if (item != -3)
 	{
-		static iChoice
-		static cBuffer[15]
+		new iChoice
+		new cBuffer[15]
 		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
@@ -4928,8 +4931,8 @@ public _Features(id, menu, item)
 {
 	if (item != -3)
 	{
-		static iChoice
-		static cBuffer[15]
+		new iChoice
+		new cBuffer[15]
 		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
@@ -5072,8 +5075,8 @@ public _Modes(id, menu, item)
 {
 	if (item != -3)
 	{
-		static iChoice
-		static cBuffer[15]
+		new iChoice
+		new cBuffer[15]
 		menu_item_getinfo(menu, item, _, cBuffer, charsmax(cBuffer), _, _, _)
 		iChoice = str_to_num(cBuffer)
 
@@ -5597,13 +5600,13 @@ public event_round_start()
 
 	if (IsCurrentTimeBetween(happyHour_Start, happyHour_End))
 	{
-		static x; x = random_num(1, fnGetPlaying())
-		static y; y = random_num(1, 60)
+		new x; x = random_num(1, fnGetPlaying())
+		new y; y = random_num(1, 60)
 		g_ammopacks[x] += y
 		client_print_color(0, print_team_grey, "^4[^3Happy Hour^4] ^1Player ^4%s ^1got ^3%i ^1ammo packs...", g_playerName[x], y)
 	}
 
-	static buffer[64]
+	new buffer[64]
 	ArrayGetString(Array:g_startSound[SOUND_ROUND_START], random_num(0, ArraySize(Array:g_startSound[SOUND_ROUND_START]) - 1), buffer, charsmax(buffer))
 	PlaySound(buffer)
 	buffer[0] = EOS
@@ -6378,15 +6381,8 @@ public logevent_round_end()
 		}
 	}
 
-	static iFrags
-	static iMaximumPacks
-	static iMaximumKills
-	static iPacksLeader
-	static iKillsLeader
-	iMaximumPacks = 0
-	iMaximumKills = 0
-	iPacksLeader = 0
-	iKillsLeader = 0
+	static iFrags, iMaximumPacks, iMaximumKills, iPacksLeader, iKillsLeader
+	
 	g_iVariable = 1
 
 	while (g_maxplayers + 1 > g_iVariable)
@@ -6400,7 +6396,7 @@ public logevent_round_end()
 				iKillsLeader = g_iVariable
 			}
 		}
-		g_iVariable += 1
+		g_iVariable++
 	}
 	g_iVariable = 1
 
@@ -6411,7 +6407,7 @@ public logevent_round_end()
 			iMaximumPacks = g_ammopacks[g_iVariable]
 			iPacksLeader = g_iVariable
 		}
-		g_iVariable += 1
+		g_iVariable++
 	}
 
 	if (g_isconnected[iKillsLeader])
@@ -7078,45 +7074,6 @@ public OnPlayerKilledPost(victim, attacker, shouldgib)
 // Ham Take Damage Forward
 public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 {
-	// Custom class configs
-	static classname[32]
-	pev(victim, pev_classname, classname, charsmax(classname))
-	
-	if (equal(classname, "func_breakable") && !g_modestarted) return HAM_SUPERCEDE
-
-	if (equal(classname, "zp_trip_mine"))
-	{
-		if (IsNemesis(attacker))
-		{
-			new button = pev(attacker, pev_button)
-			switch (button)
-			{
-				case IN_ATTACK: { SetHamParamFloat(4, damage); }
-				case IN_ATTACK2: { SetHamParamFloat(4, 150.0); }
-			}
-		}
-		
-		if (IsAssasin(attacker))
-		{
-			new button = pev(attacker, pev_button)
-			switch (button)
-			{
-				case IN_ATTACK: { SetHamParamFloat(4, damage); }
-				case IN_ATTACK2: { SetHamParamFloat(4, 150.0); }
-			}
-		}
-
-		if (IsRevenant(attacker))
-		{
-			new button = pev(attacker, pev_button)
-			switch (button)
-			{
-				case IN_ATTACK: { SetHamParamFloat(4, damage); }
-				case IN_ATTACK2: { SetHamParamFloat(4, 150.0); }
-			}
-		}
-	}
-
 	// Vip No Fall damage
 	if (damage_type & DMG_FALL && VipHasFlag(victim, 'e')) return HAM_SUPERCEDE
 
@@ -7327,6 +7284,47 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	MySQL_UPDATE_DATABASE(attacker)
 
 	return HAM_SUPERCEDE
+}
+
+// Ham Take Damage on Entity
+public OnTakeDamageEntity(victim, inflictor, attacker, Float:damage, damage_type, ptr)
+{
+	// Custom class configs
+	static classname[32]
+	pev(victim, pev_classname, classname, charsmax(classname))
+
+	if (equal(classname, "zp_trip_mine"))
+	{
+		if (IsNemesis(attacker))
+		{
+			new button = pev(attacker, pev_button)
+			switch (button)
+			{
+				case IN_ATTACK: { SetHamParamFloat(4, damage); }
+				case IN_ATTACK2: { SetHamParamFloat(4, 150.0); }
+			}
+		}
+		
+		if (IsAssasin(attacker))
+		{
+			new button = pev(attacker, pev_button)
+			switch (button)
+			{
+				case IN_ATTACK: { SetHamParamFloat(4, damage); }
+				case IN_ATTACK2: { SetHamParamFloat(4, 150.0); }
+			}
+		}
+
+		if (IsRevenant(attacker))
+		{
+			new button = pev(attacker, pev_button)
+			switch (button)
+			{
+				case IN_ATTACK: { SetHamParamFloat(4, damage); }
+				case IN_ATTACK2: { SetHamParamFloat(4, 150.0); }
+			}
+		}
+	}
 }
 
 // Ham Take Damage Post Forward
@@ -9435,14 +9433,8 @@ public ShowPlayersMenu(id)
 		else formatex(tempClassName, charsmax(tempClassName), g_classString[tempid])
 		strtoupper(tempClassName)
 
-		if (!g_isalive[tempid] && !g_specBot[tempid])
-		{
-			formatex(tempClassName, charsmax(tempClassName), "DEAD")
-		}
-		else if (g_specBot[tempid]) formatex(tempClassName, charsmax(tempClassName), "SPEC BOT")
-
 		// Get the players name and class
-		formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playerName[tempid], tempClassName)
+		formatex(szString, charsmax(szString), "%s \y[ \r%s \y]", g_playerName[tempid], g_isalive[tempid] ? tempClassName : "DEAD")
 
 		// We will use the data parameter to send the userid, so we can identify which player was selected in the handler
 		formatex(userid, charsmax(userid), "%d", get_user_userid(tempid))
@@ -19372,7 +19364,7 @@ public AddCommas(number)
 		}
 		else add(str2[i+count], 1, str[i], 1)
 	}
-	return str2;
+	return str2
 }
 
 public CreateBot(const iBotName[])
@@ -19403,21 +19395,10 @@ public CreateBot(const iBotName[])
 	message_end()
 	
 	g_bot[iBot] = true
-	g_specBot[iBot] = true
 	g_iBotsCount++
 
 	return FMRES_HANDLED
 }  
-
-public RemoveBot()
-{
-	static i
-	for(i = 1; i <= get_maxplayers(); i++) 
-	{
-		if (g_specBot[i]) server_cmd("kick #%d", get_user_userid(i))
-		break
-	}
-}
 
 // Set User Model
 public ChangeModels(taskid)

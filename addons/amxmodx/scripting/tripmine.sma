@@ -53,6 +53,7 @@ new tripmine_glow
 new gmsgScreenShake
 new g_MsgSync
 new g_MsgSync2
+new g_MsgSync3
 
 public plugin_init()
 {
@@ -80,10 +81,10 @@ public plugin_init()
 
 	g_MsgSync = CreateHudSyncObj()
 	g_MsgSync2 = CreateHudSyncObj()
-	
+	g_MsgSync3 = CreateHudSyncObj()
 }
 
-public plugin_precache( )
+public plugin_precache()
 {
 	engfunc(EngFunc_PrecacheModel, MINE_MODEL_VIEW)
 	
@@ -96,7 +97,12 @@ public plugin_precache( )
 	g_exploSpr = engfunc(EngFunc_PrecacheModel, MINE_MODEL_SPRITE)
 }
 
-public client_disconnected(id )
+public client_putinserver(id)
+{
+	set_task(1.0, "event_show_status", id + 500, _, _, "b")
+}
+
+public client_disconnected(id)
 {
 	g_iTripMines[id] = 0
 	g_iPlanting[id] = false
@@ -112,6 +118,25 @@ public client_disconnected(id )
 	remove_task(id + TASK_REMOVE)
 	remove_task(id + TASK_CREATE)
 }
+
+public event_show_status(taskid)
+{
+	static id; id = taskid - 500
+
+	static iEntity, iDummy, classname[32], id2, name[32]
+
+	get_user_aiming(id, iEntity, iDummy, 9999)
+	id2 = entity_get_owner(iEntity)
+	get_user_name(id2, name, charsmax(name))
+	pev(iEntity, pev_classname, classname, 31)
+
+	if (equal(classname, MINE_CLASSNAME))
+	{
+		set_hudmessage(255, 50, 0, -1.0, 0.60, 0, 6.0, 1.1, 0.0, 0.0, -1)
+		ShowSyncHudMsg(id, g_MsgSync3, "Health: %d^n[ Owner: %s ]", pev(iEntity, pev_health) - 1000, name)
+	}
+}
+
 
 public Command_Buy(id)
 {
