@@ -5378,7 +5378,7 @@ public plugin_cfg()
 	server_cmd("sv_airaccelerate 9999")
 	server_cmd("sv_cheats 0")
 	server_cmd("mp_timelimit 40")
-	server_cmd("mp_roundtime 3.30")
+	server_cmd("mp_roundtime 3.60")
 	server_cmd("mp_freezetime 0")
 	server_cmd("mapchangecfgfile %s", "server.cfg")
 	server_cmd("hostname %s", "PerfectZM.CsBlackDevil.com [Zombie Queen 12.0]")
@@ -8941,6 +8941,26 @@ public Client_Say(id)
 		}
 		client_print_color(0, print_team_grey, cLastMaps)
 	}
+	else if (equali(cMessage, "vips", 4) || equali(cMessage, "/vips", 5))
+	{
+		new buffer[492]
+		new VIPs[33], vipCtr
+
+		for (new i = 1; i < 33; i++)
+			if (VipHasFlag(i, 'i')) VIPs[vipCtr++] = i
+		
+		if (IsCurrentTimeBetween(freeVIP_Start, freeVIP_End)) client_print_color(0, print_team_grey, "%s ^3Everyone is VIP right now...", CHAT_PREFIX)
+		if (!vipCtr) client_print_color(0, print_team_grey, "%s ^3Currently no vips are online...", CHAT_PREFIX)
+		else
+		{
+			formatex(buffer, charsmax(buffer), "%s Online VIPs: ", CHAT_PREFIX)
+
+			for (new i = 0; i < ((vipCtr > 7) ? 7 : vipCtr); i++)
+				add(buffer, charsmax(buffer), fmt("%s^3%s^4", i == 0 ? "" : " | ", g_playerName[VIPs[i]]))
+
+			client_print_color(0, print_team_grey, buffer)
+		}
+	}
 	else if (equali(cMessage, "thetime", 7) || equali(cMessage, "/thetime", 8))
 	{
 		get_time("^3%m^4/^3%d^4/^3%Y - ^3%H^4:^3%M^4:^3%S", buffer, charsmax(buffer))
@@ -9020,6 +9040,21 @@ public Client_Say(id)
 		client_print_color(0, print_team_grey, "%s^3 %s^1 gave^4 %s packs^1 to^3 %s", CHAT_PREFIX, g_playerName[id], AddCommas(ammo), g_playerName[target])
 		return PLUGIN_CONTINUE
 	}
+	else if (equali(cMessage, "/info", 5) || equali(cMessage, "info", 4))
+	{
+		static target, cTarget[32], cDummy[15]
+		parse(cMessage, cDummy, charsmax(cDummy), cTarget, charsmax(cTarget))
+		target = cmd_target(id, cTarget, 0)
+
+		if (!target)
+		{
+			client_print_color(id, print_team_grey,  "%s Invalid player or matching multiple targets!", CHAT_PREFIX)
+			return PLUGIN_CONTINUE
+		}
+		
+		client_print_color(0, print_team_grey, "^4NAME: ^3%s ^1- ^4RANK: ^3%s^1/^3%s ^1- ^4KILLS: ^3%s ^1- ^4DEATHS: ^3%s ^1- ^4KPD: ^3%.2f", g_playerName[target], AddCommas(4000), AddCommas(g_totalplayers), AddCommas(g_kills[target]), AddCommas(g_deaths[target]), floatdiv(float(g_kills[target]), float(g_deaths[target])))
+		return PLUGIN_CONTINUE
+	}
 	else if (equali(cMessage, "/mode", 5) || equali(cMessage, "mode", 4))
 	{
 		new buffer[40]
@@ -9075,7 +9110,7 @@ public Client_Say(id)
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
 	else if (equali(cMessage, "/commands", 9) || equali(cMessage, "commands", 8))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/commands.html", "Commands")
-	else if (equali(cMessage, "/gold", 5) || equali(cMessage, "/vip", 4) || equali(cMessage, "/gold", 5))
+	else if (equali(cMessage, "/gold", 5) || equali(cMessage, "/vip", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/privileges.html", "Privileges")
 	else if (equali(cMessage, "/rules", 6) || equali(cMessage, "rules", 5))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
@@ -9254,7 +9289,7 @@ public Client_SayTeam(id)
 		show_motd(id, "http://perfectzm0.000webhostapp.com/main.html", "Welcome")
 	else if (equali(cMessage, "/commands", 9) || equali(cMessage, "commands", 8))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/commands.html", "Commands")
-	else if (equali(cMessage, "/gold", 5) || equali(cMessage, "/vip", 4) || equali(cMessage, "/gold", 5))
+	else if (equali(cMessage, "/gold", 5) || equali(cMessage, "/vip", 4))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/privileges.html", "Privileges")
 	else if (equali(cMessage, "/rules", 6) || equali(cMessage, "rules", 5))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
@@ -11187,6 +11222,10 @@ public TaskGetMaps()
 
 	get_mapname(cMap, 31)
 	get_localinfo("lastMap", cLastMap, 31)
+
+	if (IsCurrentTimeBetween(23, 10))
+	iFile = fopen("addons/amxmodx/configs/nightmaps.ini", "r")
+	else
 	iFile = fopen("addons/amxmodx/configs/maps.ini", "r")
 
 	while (!feof(iFile))
@@ -11210,22 +11249,19 @@ public TaskGetMaps()
 		g_iVariable = 0
 		while (g_iVariable < 4)
 		{
-			if (equal(cMaps[iRandom], g_cMaps[g_iVariable]))
-			{
-				bStop = true
-			}
-			g_iVariable += 1
+			if (equal(cMaps[iRandom], g_cMaps[g_iVariable])) bStop = true
+			g_iVariable++
 		}
 		if (!bStop)
 		{
 			if (is_map_valid(cMaps[iRandom]))
 			{
 				formatex(g_cMaps[iPreparedMaps], 32, cMaps[iRandom])
-				iPreparedMaps += 1
+				iPreparedMaps++
 			}
 		}
 	}
-	set_task(20.0, "CheckTimeleft", .flags = "b")
+	set_task(4.0, "CheckTimeleft", .flags = "b")
 	return PLUGIN_CONTINUE
 }
 
@@ -11283,7 +11319,7 @@ public CheckVotes()
 			iMaximumVotes = g_iVotes[g_iVariable]
 			iVoteOption = g_iVariable
 		}
-		g_iVariable += 1
+		g_iVariable++
 	}
 	if (iVoteOption)
 	{
@@ -11299,7 +11335,7 @@ public CheckVotes()
 		while (g_iVariable < 5)
 		{
 			g_iVotes[g_iVariable] = 0
-			g_iVariable += 1
+			g_iVariable++
 		}
 		set_task(5.0, "CheckTimeleft", .flags = "b")
 		set_cvar_num("mp_timelimit", get_cvar_num("mp_timelimit") + 10)
@@ -11308,7 +11344,7 @@ public CheckVotes()
 	while (g_iVariable < 5)
 	{
 		g_iVotes[g_iVariable] = 0
-		g_iVariable += 1
+		g_iVariable++
 	}
 	return PLUGIN_CONTINUE
 }
@@ -11319,49 +11355,49 @@ public VotePanel(id, menu, item)
 	{
 		if (g_bVoting)
 		{
-			static iKeyMinusDoi
-			static iKeyMinusUnu
+			static keyMinusTwo
+			static keyMinusOne
 			static iKey
 			static iDummy
 			static cData[32]
 			menu_item_getinfo(menu, item, iDummy, cData, charsmax(cData), _, _, iDummy)
 			iKey = str_to_num(cData)
 
-			iKeyMinusUnu = iKey - 1
-			iKeyMinusDoi = iKey - 2
+			keyMinusOne = iKey - 1
+			keyMinusTwo = iKey - 2
 
-			if (0 > iKeyMinusUnu)
+			if (0 > keyMinusOne)
 			{
-				iKeyMinusUnu = 0
+				keyMinusOne = 0
 			}
-			if (0 > iKeyMinusDoi)
+			if (0 > keyMinusTwo)
 			{
-				iKeyMinusDoi = 0
+				keyMinusTwo = 0
 			}
 			if (iKey == 1)
 			{
 				if (g_iVotes[0] + 1 == 1)	
 				{	
 				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 map extending^1 (^4%d^1 vote)", g_playerName[id], g_iVotes[0] + 1)
-					g_iVotes[iKeyMinusUnu]++
+					g_iVotes[keyMinusOne]++
 				}	
 				else
 				{
 				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 map extending^1 (^4%d^1 votes)", g_playerName[id], g_iVotes[0] + 1)
-					g_iVotes[iKeyMinusUnu]++
+					g_iVotes[keyMinusOne]++
 				}	
 			}
 			else
 			{
-				if (g_iVotes[iKeyMinusUnu] == 1)
+				if (g_iVotes[keyMinusOne] == 1)
 				{
-				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 vote)", g_playerName[id], g_cMaps[iKeyMinusDoi], g_iVotes[iKeyMinusUnu] + 1)
-				    g_iVotes[iKeyMinusUnu]++
+				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 vote)", g_playerName[id], g_cMaps[keyMinusTwo], g_iVotes[keyMinusOne] + 1)
+				    g_iVotes[keyMinusOne]++
 				}	
 				else
 				{
-				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playerName[id], g_cMaps[iKeyMinusDoi], g_iVotes[iKeyMinusUnu] + 1)
-				    g_iVotes[iKeyMinusUnu]++
+				    client_print_color(0, print_team_grey, "^1Player^4 %s^1 voted for^4 %s^1 (^4%d^1 votes)", g_playerName[id], g_cMaps[keyMinusTwo], g_iVotes[keyMinusOne] + 1)
+				    g_iVotes[keyMinusOne]++
 				}	
 			}
 		}
@@ -16717,8 +16753,8 @@ public ShowHUD(taskid)
 	if (id != ID_SHOWHUD)
 	{
 		set_hudmessage(red, green, blue, -1.0, 0.79, 0, 6.0, 1.1, 0.0, 0.0, -1)
-		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s%s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
-		g_vip[id] ? " (Gold Member ®)" : "", g_playerName[id], IsZombie(id) ? fmt("%s Zombie", g_classString[id]) : g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(clamp(g_points[id], 0, 99999)), g_playercountry[id], g_playercity[id])
+		ShowSyncHudMsg(ID_SHOWHUD, g_MsgSync2, "Spectating %s^n%s - Health: %s - Armor: %d - Packs: %s - Points: %s^nFrom: %s, %s", \
+		g_vip[id] ? fmt("(Gold Member ®) %s", g_playerName[id]) : g_playerName[id], IsZombie(id) ? fmt("%s Zombie", g_classString[id]) : g_classString[id], AddCommas(pev(id, pev_health)), pev(id, pev_armorvalue), AddCommas(g_ammopacks[id]), AddCommas(clamp(g_points[id], 0, 99999)), g_playercountry[id], g_playercity[id])
 	}
 	else
 	{
