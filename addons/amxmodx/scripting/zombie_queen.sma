@@ -3695,7 +3695,7 @@ public ShowGlobalTop15(id)
 
 public ReadAdminsFromFile()
 {
-	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/Admin/Admins.ini", "r")
+	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/admin/admins.ini", "r")
 	new Data[adminInfoStruct]
 
 	if (iFile)
@@ -3722,7 +3722,7 @@ public ReadAdminsFromFile()
 
 public ReadVipsFromFile()
 {
-	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/Vip/Vips.ini", "r")
+	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/vip/vips.ini", "r")
 	new Data[vipInfoStruct]
 
 	if (iFile)
@@ -3779,7 +3779,7 @@ public ReadAutoRespondsFromFile()
 
 public ReadPlayerTagsFromFile()
 {
-	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/PlayerTag/PlayerTags.ini", "r")
+	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/playertag/playertags.ini", "r")
 	new Data[playerTagInfoStruct]
 
 	if (!iFile) log_amx("Tags file not found")
@@ -7793,7 +7793,7 @@ public client_putinserver(id)
 	if (containi(g_playercountry[id], "err") != -1) g_playercountry[id] = "N/A"
 	if (!g_playercity[id][0]) g_playercity[id] = "N/A"
 
-	if (g_vip[id]) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected ^4[^3%s^4]^4[^3%s^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
+	if (VipHasFlag(id, 'i')) client_print_color(0, print_team_grey, "^3Gold member^4 %s^1 connected ^4[^3%s^4]^4[^3%s^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
 	else client_print_color(0, print_team_grey, "^1Player^4 %s^1 connected ^4[^3%s^4]^4[^3%s^4]", g_playerName[id], g_playercountry[id], g_playercity[id])
 }
 
