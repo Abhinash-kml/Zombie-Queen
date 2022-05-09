@@ -1083,6 +1083,9 @@ new happyHour_Start, happyHour_End
 // Auto responder Trie
 new Trie:g_autoRespondTrie
 
+// Grammer corrector Trie
+new Trie:g_grammerCorrectorTrie
+
 // Zombie Classes Variables
 
 // Frozen zombie
@@ -3374,16 +3377,18 @@ public plugin_init()
 	g_vipsTrie = TrieCreate()
 	g_tagTrie = TrieCreate()
 	g_autoRespondTrie = TrieCreate()
+	g_grammerCorrectorTrie = TrieCreate()
 
 	g_hudAdvertisements  = ArrayCreate(256)
 	g_chatAdvertisements = ArrayCreate(256)
 
-	MySql_Init()
+	MySql_Init()	
 	MySql_TotalPlayers()
 	ReadPlayerTagsFromFile()
 	ReadAdminsFromFile()
 	ReadVipsFromFile()
 	ReadAutoRespondsFromFile()
+	ReadGrammerCorrectsFromFile()
 	ReadChatAdvertisementsFromFile()
 	ReadHudAdvertisementsFromFile()
 	TaskGetMaps()
@@ -3769,6 +3774,32 @@ public ReadAutoRespondsFromFile()
 
 				parse(line, command, charsmax(command), response, charsmax(response))
 				TrieSetString(g_autoRespondTrie, command, response)
+			}	
+		}
+		fclose (iFile)	
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public ReadGrammerCorrectsFromFile()
+{
+	new iFile; iFile = fopen("addons/amxmodx/configs/grammer_corrects.ini", "r")
+	new command[20], response[100]
+
+	if (iFile)
+	{
+		new line[161]
+
+		while (!feof(iFile))
+		{
+			fgets(iFile, line, charsmax(line))
+			trim(line)
+
+			if (line[0] != 59 && strlen(line) > 5)
+			{
+				parse(line, command, charsmax(command), response, charsmax(response))
+				TrieSetString(g_grammerCorrectorTrie, command, response)
 			}	
 		}
 		fclose (iFile)	
@@ -8918,6 +8949,10 @@ public Client_Say(id)
 	{
 		client_print_color(id, print_team_grey, buffer)
 	}
+	else if (TrieGetString(g_grammerCorrectorTrie, cMessage, buffer, charsmax(buffer)))
+	{
+		client_print_color(0, print_team_grey, "^4[Grammer Corrector] ^1Its ^3^"^4%s^3^" ^1not ^3^"^4%s^3^".", buffer, cMessage)
+	}
 	else if (equali(cMessage, "lastmaps", 8) || equali(cMessage, "/lastmaps", 9))
 	{
 		new cLastMaps[492], iLen, i
@@ -11223,9 +11258,6 @@ public TaskGetMaps()
 	get_mapname(cMap, 31)
 	get_localinfo("lastMap", cLastMap, 31)
 
-	if (IsCurrentTimeBetween(23, 10))
-	iFile = fopen("addons/amxmodx/configs/nightmaps.ini", "r")
-	else
 	iFile = fopen("addons/amxmodx/configs/maps.ini", "r")
 
 	while (!feof(iFile))
