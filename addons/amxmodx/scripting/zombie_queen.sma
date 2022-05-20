@@ -16,6 +16,9 @@
 #include <		sqlx	  >
 #include <      rog       >
 
+native GetPaladin(id)
+native SetPaladinModels(id)
+
 // Jetapck
 native set_user_jetpack(id, jetpack)
 native get_user_jetpack(id)
@@ -449,6 +452,18 @@ enum _: classNames
 #define IsNemesis(%1) 	  (CheckBit(g_playerClass[%1], CLASS_NEMESIS))
 #define IsBombardier(%1)  (CheckBit(g_playerClass[%1], CLASS_BOMBARDIER))
 #define IsRevenant(%1) 	  (CheckBit(g_playerClass[%1], CLASS_REVENANT))
+
+#define IsNormalInfectionRound()		(CheckBit(g_currentmode, MODE_INFECTION))
+#define IsMultiInfectionRound()			(CheckBit(g_currentmode, MODE_MULTI_INFECTION))
+#define IsSwarmRound()					(CheckBit(g_currentmode, MODE_SWARM))
+#define IsPlagueRound()					(CheckBit(g_currentmode, MODE_PLAGUE))
+#define IsSynapsisRound()				(CheckBit(g_currentmode, MODE_SYNAPSIS))
+#define IsSurvivorVsNemesisRound()		(CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS))
+#define IsSurvivorVsAssasinRound()		(CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN))
+#define IsSniperVsNemesisRound()		(CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS))
+#define IsSniperVsAssasinRound()		(CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN))
+#define IsNightmareRound()				(CheckBit(g_currentmode, MODE_NIGHTMARE))
+#define IsBombardierVsGrenadierRound()	(CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER))
 
 
 #define GetTeamIndex(%1) (1<<ArrayGetCell(ZP_TEAM_INDEX, %1))
@@ -1008,9 +1023,6 @@ new Array:g_skyNames
 // --- Deleted Entities ---
 new Array:g_deletedEntities
 
-// --- Current Round Into ---
-new Array:g_roundslist
-
 // Weapon Knockback and Weapon Speed
 new Float:kb_weapon_power[31] = { -1.0, ... }
 new Float:weapon_spd_multi[31] = { 1.0, ... }
@@ -1120,7 +1132,7 @@ new Trie:g_tClassNames
 new const crossbow_V_MODEL[] = { "models/PerfectZM/v_crossbow.mdl" }
 new const crossbow_P_MODEL[] = { "models/PerfectZM/p_crossbow.mdl" }
 new const crossbow_W_MODEL[] = { "models/PerfectZM/w_crossbow.mdl" }
-new Float:CROSSBOW_DAMAGE = 1.50
+new Float:CROSSBOW_DAMAGE = 5.0
 new Float:CROSSBOW_RECOIL = 0.80
 new CROSSBOW_CLIP = 50
 
@@ -1183,13 +1195,13 @@ const ZP_PLUGIN_SUPERCEDE = 98
 
 new g_cZombieClasses[][ZMenuData] =
 {
-	{"Clasic", 			"\r[=Balanced=]", 	  	8000, 264.0, 1.00, 0.82, 	"PerfectZM_Classic", 		 	 "models/PerfectZM/PerfectZM_classic_claws.mdl"},
-	{"Raptor", 			"\r[Speed +++]", 	  	7350, 304.0, 1.00, 1.33, 	"PerfectZM_Raptor", 			 "models/PerfectZM/PerfectZM_raptor_claws.mdl"},
+	{"Clasic", 			"\r[=Balanced=]", 	  	8000,  264.0, 1.00, 0.82, 	"PerfectZM_Classic", 		 	 "models/PerfectZM/PerfectZM_classic_claws.mdl"},
+	{"Raptor", 			"\r[Speed +++]", 	  	7350,  304.0, 1.00, 1.33, 	"PerfectZM_Raptor", 			 "models/PerfectZM/PerfectZM_raptor_claws.mdl"},
 	{"Mutant", 			"\r[Health +++]", 	  	14000, 276.0, 0.74, 0.70, 	"PerfectZM_Mutant", 			 "models/PerfectZM/PerfectZM_mutant_claws.mdl"},
-	{"Frost", 			"\r[Freeze humans]", 	6550, 244.0, 1.00, 0.44, 	"PerfectZM_Frozen", 			 "models/PerfectZM/PerfectZM_frozen_claws.mdl"},
-	{"Regenerator", 	"\r[Regeneration]",   	7000, 269.0, 0.61, 0.80, 	"PerfectZM_Regenerator", 	 	 "models/PerfectZM/PerfectZM_regenerator_claws.mdl"},
+	{"Frost", 			"\r[Freeze humans]", 	6550,  244.0, 1.00, 0.44, 	"PerfectZM_Frozen", 			 "models/PerfectZM/PerfectZM_frozen_claws.mdl"},
+	{"Regenerator", 	"\r[Regeneration]",   	7000,  269.0, 0.61, 0.80, 	"PerfectZM_Regenerator", 	 	 "models/PerfectZM/PerfectZM_regenerator_claws.mdl"},
 	{"Predator Blue", 	"\r[Invisiblity]", 	  	10000, 249.0, 1.00, 0.90, 	"PerfectZM_Predator", 	 	 	 "models/PerfectZM/PerfectZM_predator_claws.mdl"},
-	{"Hunter", 			"\r[Stuns weapons]",    9000, 273.0, 0.61, 0.83, 	"PerfectZM_Hunter", 			 "models/PerfectZM/PerfectZM_hunter_claws.mdl"}
+	{"Hunter", 			"\r[Stuns weapons]",    9000,  273.0, 0.61, 0.83, 	"PerfectZM_Hunter", 			 "models/PerfectZM/PerfectZM_hunter_claws.mdl"}
 }
 
 new g_cPointsMenu[][PMenuData] =
@@ -1271,6 +1283,7 @@ new g_currentmode
 // Player class & Player team var
 new g_playerTeam[33]
 new g_playerClass[33]
+new bool:g_respawned[33]
 
 // Macros
 #define SetBit(%1,%2)			(%1 |= (1<<(%2-1)))
@@ -1690,7 +1703,6 @@ public plugin_precache()
 	g_botNames = ArrayCreate(64, 1)
 	g_skyNames = ArrayCreate(32, 1)
 	g_deletedEntities = ArrayCreate(64, 1)
-	g_roundslist = ArrayCreate(1, 1)
 
 	for (new i = 0; i < 2; i++) 
 	{
@@ -2328,7 +2340,7 @@ public plugin_precache()
 	if (pev_valid(ent))
 	{
 		fm_set_kvd(ent, "density", "0.00086", "env_fog")
-		fm_set_kvd(ent, "rendercolor", "128 128 128", "env_fog")
+		fm_set_kvd(ent, "rendercolor", "128 150 190", "env_fog")
 	}
 	// if (g_ambience_snow) engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_snow"))
 
@@ -3072,6 +3084,7 @@ public plugin_init()
 
 	// Knife Blink
 	RegisterHam(Ham_Weapon_PrimaryAttack, "weapon_knife", "OnKnifeBlinkAttack")
+	RegisterHam(Ham_Weapon_SecondaryAttack, "weapon_knife", "OnKnifeBlinkAttack")
 
 	// Crossbow
 	RegisterHam(Ham_Item_AddToPlayer, "weapon_sg550", "OnCrossbowAddToPlayer")
@@ -3160,6 +3173,8 @@ public plugin_init()
 	register_concmd("zp_showip", "cmd_showip", -1, _, -1)
 	register_concmd("zp_punish", "cmd_punish", -1, _, -1)
 	register_concmd("amx_punish", "cmd_punish", -1, _, -1)
+	register_concmd("zp_forgive", "cmd_forgive", -1, _, -1)
+	register_concmd("amx_forgive", "cmd_forgive", -1, _, -1)
 	register_concmd("amx_reloadadmins", "cmd_reloadadmins", -1, _, -1)
 	register_concmd("zp_reloadadmins", "cmd_reloadadmins", -1, _, -1)
 	register_concmd("amx_reloadvips", "cmd_reloadvips", -1, _, -1)
@@ -3178,6 +3193,8 @@ public plugin_init()
 	register_concmd("zp_jetpack", "cmd_jetpack", -1, _, -1)
 	register_concmd("amx_ammo", "cmd_ammo", -1, _, -1)
 	register_concmd("zp_ammo", "cmd_ammo", -1, _, -1)
+	register_concmd("amx_giveap", "cmd_ammo", -1, _, -1)
+	register_concmd("zp_giveap", "cmd_ammo", -1, _, -1)
 	register_concmd("zp_zombie", "cmd_zombie", -1, _, -1)
 	register_concmd("amx_zombie", "cmd_zombie", -1, _, -1)
 	register_concmd("zp_human", "cmd_human", -1, _, -1)
@@ -3264,7 +3281,7 @@ public plugin_init()
 	g_forwards[USER_LAST_ZOMBIE] = CreateMultiForward("OnLastZombie", ET_IGNORE, FP_CELL)
 	g_forwards[USER_LAST_HUMAN] = CreateMultiForward("OnLastHuman", ET_IGNORE, FP_CELL)
 	g_forwards[ADMIN_MODE_START] = CreateMultiForward("OnAdminModeStart", ET_IGNORE, FP_CELL, FP_CELL)
-	g_forwards[POINTS_SHOP_WEAPON_SELECTED] = CreateMultiForward("OnPointsShopWeaponSelected", ET_IGNORE, FP_CELL, FP_CELL)
+	g_forwards[POINTS_SHOP_WEAPON_SELECTED] = CreateMultiForward("OnPointsShopWeaponSelected", ET_IGNORE, FP_CELL, FP_CELL, FP_STRING)
 	g_forwards[EXTRA_ITEM_SELECTED] = CreateMultiForward("OnExtraItemSelected", ET_IGNORE, FP_CELL, FP_CELL)
 
 	// create our array with the size of the item structure
@@ -4087,41 +4104,66 @@ public message_saytext()
 
 			if (equal(cPhrase, "#Cstrike_Chat_CT", 0))
 			{
+				if (g_admin[sender])
+				formatex(cReplacement, 188, "^1(Counter-Terrorist) ^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^1(Counter-Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
+
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_T", 0))
 			{
+				if (g_admin[sender] || g_vip[sender])
+				formatex(cReplacement, 188, "^1(Terrorist) ^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^1(Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_CT_Dead", 0))
 			{
+				if (g_admin[sender] || g_vip[sender])
+				formatex(cReplacement, 188, "^1*DEAD*(Counter-Terrorist) ^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^1*DEAD*(Counter-Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_T_Dead", 0))
 			{
+				if (g_admin[sender] || g_vip[sender])
+				formatex(cReplacement, 188, "^1*DEAD*(Terrorist) ^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^1*DEAD*(Terrorist) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_Spec", 0))
 			{
+				if (g_admin[sender] || g_vip[sender])
+				formatex(cReplacement, 188, "^1(Spectator) ^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^1(Spectator) ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_All", 0))
 			{
+				if (g_admin[sender] || g_vip[sender])
+				formatex(cReplacement, 188, "^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_AllDead", 0))
 			{
+				if (g_admin[sender] || g_vip[sender])
+				formatex(cReplacement, 188, "^1*DEAD* ^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^1*DEAD* ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
 			if (equal(cPhrase, "#Cstrike_Chat_AllSpec", 0))
 			{
+				if (g_admin[sender] || g_vip[sender])
+				formatex(cReplacement, 188, "^1*SPEC* ^4%s ^3%s^1 :  ^4%s", g_tag[sender], "%s1", "%s2")
+				else
 				formatex(cReplacement, 188, "^1*SPEC* ^4%s ^3%s^1 :  %s", g_tag[sender], "%s1", "%s2")
 				set_msg_arg_string(2, cReplacement)
 			}
@@ -4281,7 +4323,7 @@ public _ExtraItems(id, menu, item)
 					g_nvision[id] = true
 					
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
-					ShowSyncHudMsg(id, g_MsgSync6, "You bought Nightvision Googles!", g_playerName[id])
+					ShowSyncHudMsg(id, g_MsgSync6, "You bought Nightvision Googles!")
 
 					// Check is the user is not bot
 					if (!g_isbot[id])
@@ -5615,10 +5657,6 @@ public event_round_start()
 
 	// Increase round count var
 	g_roundcount++
-	client_print_color(0, print_team_grey, "^1Round count^4: ^3%d", g_roundcount)
-
-	ArrayPushCell(g_roundslist, MODE_NONE)
-	client_print_color(0, print_team_grey, "^1ArrayRound ^4= ^3%d", ArrayGetCell(g_roundslist, g_roundcount - 1))
 
 	// Map changer
 	if (get_cvar_num("mp_timelimit") == 0)
@@ -5753,6 +5791,8 @@ public logevent_round_end()
 		LIMIT[id][TRYDER] = 0
 
 		if (g_allheadshots[id]) g_allheadshots[id] = false
+
+		if (g_respawned[id]) g_respawned[id] = false
 	}
 	
 	// Round ended
@@ -6862,9 +6902,9 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	if (!fnGetHumans() || !fnGetZombies()) return
 
 
-	if (CheckBit(g_currentmode, MODE_INFECTION) || CheckBit(g_currentmode, MODE_MULTI_INFECTION) 
+	if (IsNormalInfectionRound() || IsMultiInfectionRound() 
 	|| CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_SURVIVOR) 
-	|| CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_SWARM) 
+	|| CheckBit(g_currentmode, MODE_SAMURAI) || IsSwarmRound() 
 	|| CheckBit(g_currentmode, MODE_GRENADIER) || CheckBit(g_currentmode, MODE_TERMINATOR))
 	{
 		if (CheckBit(g_playerTeam[victim], TEAM_ZOMBIE))
@@ -6888,7 +6928,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_SWARM))
+	else if (IsSwarmRound())
 	{
 		if (CheckBit(g_playerTeam[victim], TEAM_HUMAN))
 		{
@@ -6908,7 +6948,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN))
+	else if (IsNightmareRound() || IsSynapsisRound() || IsSurvivorVsAssasinRound())
 	{
 		if (IsSurvivor(victim))
 		{
@@ -6946,7 +6986,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS))
+	else if (IsSurvivorVsNemesisRound())
 	{
 		if (IsSurvivor(victim))
 		{
@@ -6966,7 +7006,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS))
+	else if (IsSniperVsNemesisRound())
 	{
 		if (IsSniper(victim))
 		{
@@ -6987,7 +7027,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 		}
 		
 	}
-	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN))
+	else if (IsSniperVsAssasinRound())
 	{
 		if (IsSniper(victim))
 		{
@@ -7007,7 +7047,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			}
 		}
 	}
-	else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER))
+	else if (IsBombardierVsGrenadierRound())
 	{
 		if (IsBombardier(victim))
 		{
@@ -7100,6 +7140,10 @@ public OnPlayerKilledPost(victim, attacker, shouldgib)
 {
 	// Last Zombie Check
 	fnCheckLastZombie()
+
+	// Show menu for Respawn
+	if ((IsNormalInfectionRound() || IsMultiInfectionRound()) && !g_endround)
+	ShowRespawnMenu(victim)
 }
 
 // Ham Take Damage Forward
@@ -7264,14 +7308,14 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 	|| CheckBit(g_currentmode, MODE_GRENADIER)
 	|| CheckBit(g_currentmode, MODE_TERMINATOR)
 	|| CheckBit(g_currentmode, MODE_REVENANT)
-	|| CheckBit(g_currentmode, MODE_SWARM) 
-	|| CheckBit(g_currentmode, MODE_PLAGUE) 
-	|| CheckBit(g_currentmode, MODE_SYNAPSIS)
-	|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) 
-	|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) 
-	|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) 
-	|| CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)
-	|| CheckBit(g_currentmode, MODE_NIGHTMARE) 
+	|| IsSwarmRound() 
+	|| IsPlagueRound() 
+	|| IsSynapsisRound()
+	|| IsSurvivorVsNemesisRound() 
+	|| IsSurvivorVsAssasinRound() 
+	|| IsSniperVsAssasinRound() 
+	|| IsBombardierVsGrenadierRound()
+	|| IsNightmareRound() 
 	|| fnGetHumans() == 1) return HAM_IGNORED // human is killed
 	
 	// Does human armor need to be reduced before infecting?
@@ -8047,7 +8091,7 @@ public FwSetModel(entity, const model[])
 			{
 				if (IsBombardier(id))
 				{
-					if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) SetNadeType(entity, g_color[NADE_TYPE_EXPLOSION][RED], g_color[NADE_TYPE_EXPLOSION][GREEN], g_color[NADE_TYPE_EXPLOSION][BLUE], NADE_TYPE_EXPLOSION)
+					if (IsBombardierVsGrenadierRound()) SetNadeType(entity, g_color[NADE_TYPE_EXPLOSION][RED], g_color[NADE_TYPE_EXPLOSION][GREEN], g_color[NADE_TYPE_EXPLOSION][BLUE], NADE_TYPE_EXPLOSION)
 					else SetNadeType(entity, g_color[NADE_TYPE_KILLING][RED], g_color[NADE_TYPE_KILLING][GREEN], g_color[NADE_TYPE_KILLING][BLUE], NADE_TYPE_KILLING)
 				} 
 				else SetNadeType(entity, g_color[NADE_TYPE_INFECTION][RED], g_color[NADE_TYPE_INFECTION][GREEN], g_color[NADE_TYPE_INFECTION][BLUE], NADE_TYPE_INFECTION)
@@ -9090,22 +9134,59 @@ public Client_Say(id)
 		client_print_color(0, print_team_grey, "^4NAME: ^3%s ^1- ^4RANK: ^3%s^1/^3%s ^1- ^4KILLS: ^3%s ^1- ^4DEATHS: ^3%s ^1- ^4KPD: ^3%.2f", g_playerName[target], AddCommas(4000), AddCommas(g_totalplayers), AddCommas(g_kills[target]), AddCommas(g_deaths[target]), floatdiv(float(g_kills[target]), float(g_deaths[target])))
 		return PLUGIN_CONTINUE
 	}
+	else if (equali(cMessage, "menu", 4) || equali(cMessage, "/menu", 5) || equali(cMessage, "zpmenu", 6) || equali(cMessage, "/zpmenu", 7))
+		menu_display(id, g_iGameMenu, 0)
+	else if (equali(cMessage, "get", 3) || equali(cMessage, "/get", 4) || equali(cMessage, "lotto", 5) || equali(cMessage, "/lotto", 6))
+	{
+		static bool:recieved[33]
+
+		if (recieved[id])
+		{
+			client_print_color(id, print_team_grey, "%s ^1You have already claimed your ^3reward ^1this ^4map^1, try again on next ^4map^1!", CHAT_PREFIX)
+			return PLUGIN_HANDLED
+		}
+
+		new a = random_num(25, 50)
+		g_ammopacks[id] += a;
+		recieved[id] = true
+		client_print_color(id, print_team_grey, "%s You recieved %i ammo packs, try again on next map", CHAT_PREFIX, a)
+	}
+	else if (equali(cMessage, "/vm", 3) || equali(cMessage, "/vmenu", 6) || equali(cMessage, "/vipmenu", 8))
+		ShowPointsShopWeaponsMenu(id)
+	else if (equali(cMessage, "/respawn", 8) || equali(cMessage, "respawn", 7))
+	{
+		if (IsNormalInfectionRound() || IsMultiInfectionRound())
+		{
+			if (g_isalive[id])
+			{
+				client_print_color(id, print_team_grey, "%s ^1You are already ^3alive^1.", CHAT_PREFIX)
+				return PLUGIN_HANDLED
+			}
+
+			ShowRespawnMenu(id)
+		}
+		else 
+		{
+			client_print_color(id, print_team_grey, "%s ^1You can only respawn in ^4Infection ^1and ^4Multi-Infection ^1rounds.", CHAT_PREFIX)
+			return PLUGIN_HANDLED
+		}
+	}
 	else if (equali(cMessage, "/mode", 5) || equali(cMessage, "mode", 4))
 	{
 		new buffer[40]
 		if (g_newround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Not yet started...")
 		else if (g_endround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Just ended...")
-		else if (CheckBit(g_currentmode, MODE_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Infection")
-		else if (CheckBit(g_currentmode, MODE_MULTI_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Multi-infection")
-		else if (CheckBit(g_currentmode, MODE_SWARM)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Swarm")
-		else if (CheckBit(g_currentmode, MODE_PLAGUE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
-		else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Synapsis")
-		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
-		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor vs Assasin")
-		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
-		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
-		else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier vs Grenadier")
-		else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
+		else if (IsNormalInfectionRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Infection")
+		else if (IsMultiInfectionRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Multi-infection")
+		else if (IsSwarmRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Swarm")
+		else if (IsPlagueRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
+		else if (IsSynapsisRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Synapsis")
+		else if (IsSurvivorVsNemesisRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
+		else if (IsSurvivorVsAssasinRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor vs Assasin")
+		else if (IsSniperVsAssasinRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
+		else if (IsSniperVsNemesisRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
+		else if (IsBombardierVsGrenadierRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier vs Grenadier")
+		else if (IsNightmareRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
 		else if (CheckBit(g_currentmode, MODE_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Assasin")
 		else if (CheckBit(g_currentmode, MODE_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nemesis")
 		else if (CheckBit(g_currentmode, MODE_BOMBARDIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier")
@@ -9275,17 +9356,17 @@ public Client_SayTeam(id)
 		new buffer[40]
 		if (g_newround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Not yet started...")
 		else if (g_endround) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Just ended...")
-		else if (CheckBit(g_currentmode, MODE_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Infection")
-		else if (CheckBit(g_currentmode, MODE_MULTI_INFECTION)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Multi-infection")
-		else if (CheckBit(g_currentmode, MODE_SWARM)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Swarm")
-		else if (CheckBit(g_currentmode, MODE_PLAGUE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
-		else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Synapsis")
-		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
-		else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor vs Assasin")
-		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
-		else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
-		else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier vs Grenadier")
-		else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
+		else if (IsNormalInfectionRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Infection")
+		else if (IsMultiInfectionRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Multi-infection")
+		else if (IsSwarmRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Swarm")
+		else if (IsPlagueRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Plague")
+		else if (IsSynapsisRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Synapsis")
+		else if (IsSurvivorVsNemesisRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Armageddon")
+		else if (IsSurvivorVsAssasinRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Survivor vs Assasin")
+		else if (IsSniperVsAssasinRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Apocalypse")
+		else if (IsSniperVsNemesisRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Devil")
+		else if (IsBombardierVsGrenadierRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier vs Grenadier")
+		else if (IsNightmareRound()) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nightmare")
 		else if (CheckBit(g_currentmode, MODE_ASSASIN)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Assasin")
 		else if (CheckBit(g_currentmode, MODE_NEMESIS)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Nemesis")
 		else if (CheckBit(g_currentmode, MODE_BOMBARDIER)) formatex(buffer, charsmax(buffer), "^1Current mode^4: ^3Bombardier")
@@ -9566,6 +9647,19 @@ public ShowPointsShopWeaponsMenu(id)
 	}
 
 	// Display menu to player
+	menu_display(id, menu, 0)
+
+	return PLUGIN_CONTINUE
+}
+
+public ShowRespawnMenu(id)
+{
+	new menu = menu_create("\yDo you want to respawn ?", "RespawnMenuHandler")
+
+	menu_additem(menu, "Respawn as Zombie", "0", 0, menu_makecallback("RespawnMenuCallback"))
+	menu_additem(menu, "Respawn as Human \d(only once, choose wisely)", "1", 0, menu_makecallback("RespawnMenuCallback"))
+	menu_additem(menu, "No, I dont want to respawn", "2", 0, menu_makecallback("RespawnMenuCallback"))
+
 	menu_display(id, menu, 0)
 
 	return PLUGIN_CONTINUE
@@ -10013,8 +10107,8 @@ public PlayersMenuHandler(id, menu, item)
 					respawn_player_manually(target)
 
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1g_respawned himself^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1g_respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_RESPAWN_PLAYER, id, target)
@@ -10394,7 +10488,70 @@ public PointsShopWeaponsMenuHandler(id, menu, item)
 		MySQL_UPDATE_DATABASE(id)
 
 		// Notify plugins that the player bought this item
-		ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex)
+		ExecuteForward(g_forwards[POINTS_SHOP_WEAPON_SELECTED], g_forwardRetVal, id, itemIndex, g_playerName[id])
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public RespawnMenuHandler(id, menu, item)
+{
+	if (item == MENU_EXIT)
+	{
+		menu_destroy(menu)
+		return PLUGIN_HANDLED
+	}
+
+	new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+
+	switch (choice)
+	{
+		case 0: 
+		{
+			new iRand, buffer[248]
+
+			ExecuteHamB(Ham_CS_RoundRespawn, id) 
+			MakeZombie(id)
+
+			// Respawn sound
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_INFECT]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_INFECT], iRand, buffer, charsmax(buffer))
+			emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+			// Show Respawn HUD notice
+			set_hudmessage(0, 255, 0, -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
+			ShowSyncHudMsg(id, g_MsgSync4, "=========== RESPAWNED ===========")
+
+			// Show Respawn HUD notice
+			set_hudmessage(0, 255, 0, HUD_INFECT_X, HUD_INFECT_Y, 0, 0.0, 5.0, 1.0, 1.0, -1)
+			ShowSyncHudMsg(0, g_MsgSync, "%s respawned...", g_playerName[id])
+		}
+		case 1: 
+		{
+			new iRand, buffer[248]
+
+			ExecuteHamB(Ham_CS_RoundRespawn, id) 
+			MakeHuman(id)
+			g_respawned[id] = true
+			
+			// Respawn sound
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_ZOMBIE_INFECT]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_ZOMBIE_INFECT], iRand, buffer, charsmax(buffer))
+			emit_sound(id, CHAN_VOICE, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+
+			// Show Respawn HUD notice
+			set_hudmessage(0, 255, 0, -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
+			ShowSyncHudMsg(id, g_MsgSync4, "=========== RESPAWNED ===========")
+
+			// Show Respawn HUD notice
+			set_hudmessage(0, 255, 0, HUD_INFECT_X, HUD_INFECT_Y, 0, 0.0, 5.0, 1.0, 1.0, -1)
+			ShowSyncHudMsg(0, g_MsgSync, "%s respawned...", g_playerName[id])
+		}
+		case 2: { menu_destroy(menu); client_print_color(id, print_team_grey, "%s ^1If you ever change your mind, you can type ^4/respawn ^1in ^3chat ^1to respawn.", CHAT_PREFIX); }
+
 	}
 
 	return PLUGIN_CONTINUE
@@ -10539,6 +10696,24 @@ public PlayersMenuCallBack(id, menu, item)
     }
 
     return ITEM_IGNORE
+}
+
+public RespawnMenuCallback(id, menu, item)
+{
+	new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+
+	new choice = str_to_num(data)
+
+	switch (choice)
+	{
+		case 0: return ITEM_ENABLED
+		case 1: return g_respawned[id] ? ITEM_DISABLED : ITEM_ENABLED
+		case 3: return ITEM_ENABLED
+	}
+
+	return ITEM_IGNORE
 }
 
 /*================================================================================
@@ -11109,6 +11284,65 @@ public cmd_punish(id)
 	return PLUGIN_CONTINUE
 }
 
+public cmd_forgive(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_PUNISH]))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_forgive"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_forgive <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_forgive"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_forgive <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		// Initialize Target
+		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+		{
+			console_print(id, "[Zombie Queen] You cannot forgive an Admin with immunity!")
+			return PLUGIN_HANDLED
+		}
+
+		// Punish the target
+		if (!g_punished[target])
+		{
+			console_print(id, "[Zombie Queen] The target user is not punished!")
+			return PLUGIN_HANDLED
+		}
+
+		g_punished[target] = false
+		
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 forgive^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_KICK, id, target)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
 public cmd_reloadadmins(id)
 {
 	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RELOAD_ADMINS]))
@@ -11241,10 +11475,8 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 
 public TaskGetMaps()
 {
-	static cRight[32]
-	static cLeft[32]
 	static bool:bStop
-	static cMaps[128][32]
+	static cMaps[500][32]
 	static iRandom
 	static iPreparedMaps
 	static cLastMap[32]
@@ -11262,15 +11494,14 @@ public TaskGetMaps()
 
 	while (!feof(iFile))
 	{
-		fgets(iFile, cLine, 63)
-		strtok(cLine, cLeft, 31, cRight, 31, 32, 0)
-		trim(cLeft)
-		trim(cRight)
-		
-		if (is_map_valid(cLeft) && !equal(cLeft, cMap) && !equal(cLeft, cLastMap) && !equali(cRight, "*"))
-			copy(cMaps[iMaps], 31, cLeft)
+		fgets(iFile, cLine, charsmax(cLine))
+		trim(cLine)
 
-		iMaps++
+		if (cLine[0])
+		{
+			if (is_map_valid(cLine))
+			copy(cMaps[iMaps++], charsmax(cLine), cLine)
+		}
 	}
 	fclose(iFile)
 
@@ -11793,6 +12024,22 @@ public cmd_ammo(id)
 			if (read_argc() < 2)
 			{
 				console_print(id, "[Zombie Queen] Command usage is amx_ammo <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_giveap"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_giveap <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "zp_giveap"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_giveap <#userid or name>")
 				return PLUGIN_HANDLED
 			}
 		}
@@ -13292,7 +13539,7 @@ public message_teaminfo(msg_id, msg_dest)
 		}
 	case 'T': // Terrorist
 		{
-			if ((CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER)) && fnGetHumans()) // survivor alive or swarm round w/ humans --> spawn as zombie
+			if ((IsSwarmRound() || CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER)) && fnGetHumans()) // survivor alive or swarm round w/ humans --> spawn as zombie
 				g_respawn_as_zombie[id] = true
 			else if (fnGetZombies()) // zombies alive --> switch to CT
 			{
@@ -13339,9 +13586,6 @@ start_mode(mode, id)
 		// Survivor Mode
 		SetBit(g_currentmode, MODE_SURVIVOR)
 		g_lastmode = MODE_SURVIVOR
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SURVIVOR)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13398,9 +13642,6 @@ start_mode(mode, id)
 		// Sniper Mode
 		SetBit(g_currentmode, MODE_SNIPER)
 		g_lastmode = MODE_SNIPER
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SNIPER)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13457,9 +13698,6 @@ start_mode(mode, id)
 		// Samurai Mode
 		SetBit(g_currentmode, MODE_SAMURAI)
 		g_lastmode = MODE_SAMURAI
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SAMURAI)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13516,9 +13754,6 @@ start_mode(mode, id)
 		// Grenadier Mode
 		SetBit(g_currentmode, MODE_GRENADIER)
 		g_lastmode = MODE_GRENADIER
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_GRENADIER)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13574,9 +13809,6 @@ start_mode(mode, id)
 		// Terminator Mode
 		SetBit(g_currentmode, MODE_TERMINATOR)
 		g_lastmode = MODE_TERMINATOR
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_TERMINATOR)
 		
 		// Choose player randomly?
 		if (mode == MODE_NONE)
@@ -13632,9 +13864,6 @@ start_mode(mode, id)
 		// Swarm Mode
 		SetBit(g_currentmode, MODE_SWARM)
 		g_lastmode = MODE_SWARM
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SWARM)
 		
 		// Make sure there are alive players on both teams (BUGFIX)
 		if (!fnGetAliveTs())
@@ -13693,9 +13922,6 @@ start_mode(mode, id)
 		// Multi Infection Mode
 		SetBit(g_currentmode, MODE_MULTI_INFECTION)
 		g_lastmode = MODE_MULTI_INFECTION
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_MULTI_INFECTION)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround(iPlayersnum * multi_ratio, floatround_ceil)
@@ -13766,9 +13992,6 @@ start_mode(mode, id)
 		// Plague Mode
 		SetBit(g_currentmode, MODE_PLAGUE)
 		g_lastmode = MODE_PLAGUE
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_PLAGUE)
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
@@ -13878,9 +14101,6 @@ start_mode(mode, id)
 		SetBit(g_currentmode, MODE_SYNAPSIS)
 		g_lastmode = MODE_SYNAPSIS
 
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SYNAPSIS)
-
 		// Turn specified amount of players into Nemesis
 		static iNemesis, iMaxNemesis
 		iMaxNemesis = synapsis_nemesis_count
@@ -13978,9 +14198,6 @@ start_mode(mode, id)
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)
 		g_lastmode = MODE_SURVIVOR_VS_NEMESIS
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SURVIVOR_VS_NEMESIS)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * svn_ratio), floatround_ceil)
@@ -14043,9 +14260,6 @@ start_mode(mode, id)
 		// Armageddon Mode
 		SetBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
 		g_lastmode = MODE_SURVIVOR_VS_ASSASIN
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SURVIVOR_VS_ASSASIN)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * sva_ratio), floatround_ceil)
@@ -14108,9 +14322,6 @@ start_mode(mode, id)
 		// Apocalypse Mode
 		SetBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)
 		g_lastmode = MODE_SNIPER_VS_ASSASIN
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SNIPER_VS_ASSASIN)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * snva_ratio), floatround_ceil)
@@ -14173,9 +14384,6 @@ start_mode(mode, id)
 		// Bombardier vs Grenadier Mode
 		SetBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)
 		g_lastmode = MODE_BOMBARDIER_VS_GRENADIER
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_BOMBARDIER_VS_GRENADIER)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * bvg_ratio), floatround_ceil)
@@ -14236,9 +14444,6 @@ start_mode(mode, id)
 		// Nightmare mode
 		SetBit(g_currentmode, MODE_NIGHTMARE)
 		g_lastmode = MODE_NIGHTMARE
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_NIGHTMARE)
 		
 		iMaxZombies = floatround((iPlayersnum * 0.25), floatround_ceil)
 		iZombies = 0
@@ -14325,9 +14530,6 @@ start_mode(mode, id)
 		// Devil Mode ( Sniper vs Nemesis)
 		SetBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
 		g_lastmode = MODE_SNIPER_VS_NEMESIS
-
-		// Push Current mode into Dynamic Array
-		ArraySetCell(g_roundslist, g_roundcount - 1, MODE_SNIPER_VS_NEMESIS)
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * snvn_ratio), floatround_ceil)
@@ -14402,9 +14604,6 @@ start_mode(mode, id)
 			SetBit(g_currentmode, MODE_NEMESIS)
 			g_lastmode = MODE_NEMESIS
 
-			// Push Current mode into Dynamic Array
-			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_NEMESIS)
-
 			// Turn player into nemesis
 			MakeZombie(id, CLASS_NEMESIS)
 
@@ -14439,9 +14638,6 @@ start_mode(mode, id)
 			// Assassin Mode
 			SetBit(g_currentmode, MODE_ASSASIN)
 			g_lastmode = MODE_ASSASIN
-
-			// Push Current mode into Dynamic Array
-			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_ASSASIN)
 
 			// Set lighting for Assassin mode
 			engfunc(EngFunc_LightStyle, 0, "a") // Set lighting
@@ -14480,9 +14676,6 @@ start_mode(mode, id)
 			// Bombardier Mode
 			SetBit(g_currentmode, MODE_BOMBARDIER)
 			g_lastmode = MODE_BOMBARDIER
-
-			// Push Current mode into Dynamic Array
-			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_BOMBARDIER)
 			
 			// Turn player into bombardier
 			MakeZombie(id, CLASS_BOMBARDIER)
@@ -14518,9 +14711,6 @@ start_mode(mode, id)
 			// Revenant Mode
 			SetBit(g_currentmode, MODE_REVENANT)
 			g_lastmode = MODE_REVENANT
-
-			// Push Current mode into Dynamic Array
-			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_REVENANT)
 			
 			// Turn player into revenant
 			MakeZombie(id, CLASS_REVENANT)
@@ -14556,9 +14746,6 @@ start_mode(mode, id)
 			// Single Infection Mode
 			SetBit(g_currentmode, MODE_INFECTION)
 			g_lastmode = MODE_INFECTION
-
-			// Push Current mode into Dynamic Array
-			ArraySetCell(g_roundslist, g_roundcount - 1, MODE_INFECTION)
 			
 			// Turn player into the first zombie
 			MakeZombie(id)
@@ -14781,7 +14968,7 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 			// Give all zombies multijump
 			g_jumpnum[victim] = 1
 			
-			if (fnGetZombies() == 1 && CheckBit(g_currentmode, MODE_INFECTION))
+			if (fnGetZombies() == 1 && IsNormalInfectionRound())
 			{
 				g_firstzombie[victim] = true
 
@@ -14813,9 +15000,11 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 				set_glow(infector, 0, 255, 0, 25)
 				set_task(3.0, "TaskRemoveRender", infector)
 
+				g_ammopacks[infector] += 5;
+
 				// Show Infection HUD notice
 				set_hudmessage(0, 255, 0, -1.00, 0.10, 1, 0.00, 1.75, 1.00, 1.00, -1)
-				ShowSyncHudMsg(infector, g_MsgSync4, "== INFECTION ==^n!!!!Regeneration: +250 HP Gained!!!")
+				ShowSyncHudMsg(infector, g_MsgSync4, "== INFECTION ==^n!!!!Regeneration: +250 HP Gained!!!^n+5 ammo")
 
 				// Show Infection HUD notice
 				set_hudmessage(255, 0, 0, HUD_INFECT_X, HUD_INFECT_Y, 0, 0.0, 5.0, 1.0, 1.0, -1)
@@ -14869,8 +15058,8 @@ MakeZombie(victim, class = CLASS_ZOMBIE, infector = 0)
 	if (IsBombardier(victim)) { fm_give_item(victim, "weapon_hegrenade"); client_cmd(victim, "weapon_hegrenade"); }
 
 	if (g_firstzombie[victim])
-		if (!CheckBit(g_currentmode, MODE_SWARM) && 
-		!CheckBit(g_currentmode, MODE_PLAGUE) && 
+		if (!IsSwarmRound() && 
+		!IsPlagueRound() && 
 		!CheckBit(g_currentmode, MODE_SNIPER) && 
 		!CheckBit(g_currentmode, MODE_SURVIVOR) && 
 		!CheckBit(g_currentmode, MODE_SAMURAI) &&
@@ -15516,8 +15705,8 @@ check_round(leaving_player)
 		// Turn into a Nemesis or just a zombie?
 		if (IsNemesis(leaving_player)) MakeZombie(id, CLASS_NEMESIS)
 		else if (IsAssasin(leaving_player)) MakeZombie(id, CLASS_ASSASIN)
-		else if (CheckBit(g_playerClass[leaving_player], CLASS_BOMBARDIER)) MakeZombie(id, CLASS_BOMBARDIER)
-		else if (CheckBit(g_playerClass[leaving_player], CLASS_REVENANT)) MakeZombie(id, CLASS_REVENANT)
+		else if (IsBombardier(leaving_player)) MakeZombie(id, CLASS_BOMBARDIER)
+		else if (IsRevenant(leaving_player)) MakeZombie(id, CLASS_REVENANT)
 		else MakeZombie(id)
 
 		// Remove player leaving flag
@@ -15619,13 +15808,13 @@ public OnRegeneratorSkill()
 public StartAmbienceSounds(taskid)
 {
 	static iRand, buffer[100]
-	if (CheckBit(g_currentmode, MODE_INFECTION)) 
+	if (IsNormalInfectionRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_INFECTION]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_INFECTION], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_MULTI_INFECTION))
+	else if (IsMultiInfectionRound())
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_MULTI_INFECTION]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_MULTI_INFECTION], iRand, buffer, charsmax(buffer))
@@ -15685,55 +15874,55 @@ public StartAmbienceSounds(taskid)
 		ArrayGetString(Array:g_ambience[AMBIENCE_REVENANT], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_SWARM)) 
+	else if (IsSwarmRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SWARM]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_SWARM], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_PLAGUE)) 
+	else if (IsPlagueRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_PLAGUE]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_PLAGUE], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_SYNAPSIS)) 
+	else if (IsSynapsisRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SYNAPSIS]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_SYNAPSIS], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS)) 
+	else if (IsSurvivorVsNemesisRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR_VS_NEMESIS]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR_VS_NEMESIS], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)) 
+	else if (IsSurvivorVsAssasinRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SURVIVOR_VS_ASSASIN]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_SURVIVOR_VS_ASSASIN], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN)) 
+	else if (IsSniperVsAssasinRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SNIPER_VS_ASSASIN]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER_VS_ASSASIN], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)) 
+	else if (IsSniperVsNemesisRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_SNIPER_VS_NEMESIS]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_SNIPER_VS_NEMESIS], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) 
+	else if (IsBombardierVsGrenadierRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_BOMBARDIER_VS_GRENADIER]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_BOMBARDIER_VS_GRENADIER], iRand, buffer, charsmax(buffer))
 		PlaySound(buffer)
 	}
-	else if (CheckBit(g_currentmode, MODE_NIGHTMARE)) 
+	else if (IsNightmareRound()) 
 	{
 		iRand = random_num(0, ArraySize(Array:g_ambience[AMBIENCE_NIGHTMARE]) - 1)
 		ArrayGetString(Array:g_ambience[AMBIENCE_NIGHTMARE], iRand, buffer, charsmax(buffer))
@@ -16090,7 +16279,7 @@ public OnForceFieldExplode(ent)
 	}
 
 	// Set task to remove the entity
-	set_task(300.0, "DeleteEntityGrenade", TASK_REMOVE_FORECEFIELD + iEntity)
+	set_task(20.0, "DeleteEntityGrenade", TASK_REMOVE_FORECEFIELD + iEntity)
 	
 	// Get rid of the grenade
 	engfunc(EngFunc_RemoveEntity, ent)
@@ -16206,7 +16395,7 @@ public OnExplosionExplode(ent)
 	// Send TE_BEAMCYLINDER
 	SendGrenadeBeamCylinder(ent, 255, 0, 0, 200)
 
-	if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER))
+	if (IsBombardierVsGrenadierRound())
 	{
 		for (victim = 1 ; victim <= g_maxplayers; victim++)
 		{
@@ -16301,7 +16490,7 @@ public OnExplosionExplode(ent)
 	// Get rid of the grenade
 	engfunc(EngFunc_RemoveEntity, ent)
 
-	if (CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER)) if (IsBombardier(attacker)) fm_give_item(attacker, "weapon_hegrenade")
+	if (IsBombardierVsGrenadierRound()) if (IsBombardier(attacker)) fm_give_item(attacker, "weapon_hegrenade")
 
 	// Give Grenadier his grenade
 	if (IsGrenadier(attacker)) fm_give_item(attacker, "weapon_hegrenade")
@@ -16645,7 +16834,11 @@ replace_weapon_models(id, weaponid)
 				set_pdata_float(id, 83, 1.0, OFFSET_LINUX)
 			}
 		}
-	case CSW_AK47: if (g_goldenweapons[id]) set_goldenak47(id)   
+	case CSW_AK47:
+	{
+		//if (GetPaladin(id)) SetPaladinModels(id)
+		if (g_goldenweapons[id]) set_goldenak47(id)
+	}    
 	case CSW_M4A1: if (g_goldenweapons[id]) set_goldenm4a1(id) 
 	case CSW_XM1014: if (g_goldenweapons[id]) set_goldenxm1014(id) 
 	case CSW_DEAGLE: if (g_goldenweapons[id]) set_goldendeagle(id)    
@@ -17441,14 +17634,14 @@ CanBuy(category, item, id)
 				case EXTRA_FORCEFIELD_NADE: return true 
 				case EXTRA_KILL_NADE:
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
+					if (g_endround || IsSwarmRound() 
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
 					|| CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_GRENADIER)
-					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
-					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
-					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
-					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| IsSwarmRound() || IsPlagueRound()
+					|| IsSurvivorVsNemesisRound() || IsSurvivorVsAssasinRound()
+					|| IsSniperVsAssasinRound() || IsSniperVsNemesisRound()
+					|| IsNightmareRound() || IsSynapsisRound()
 					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR)) return false
 					else
 					{
@@ -17466,14 +17659,14 @@ CanBuy(category, item, id)
 				case EXTRA_FROST_NADE: return true 
 				case EXTRA_ANTIDOTE_NADE:
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
+					if (g_endround || IsSwarmRound() 
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
 					|| CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_GRENADIER)
-					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
-					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
-					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
-					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| IsSwarmRound() || IsPlagueRound()
+					|| IsSurvivorVsNemesisRound() || IsSurvivorVsAssasinRound()
+					|| IsSniperVsAssasinRound() || IsSniperVsNemesisRound()
+					|| IsNightmareRound() || IsSynapsisRound()
 					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR)) return false
 					else
 					{
@@ -17518,20 +17711,6 @@ CanBuy(category, item, id)
 								client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next map", CHAT_PREFIX)
 								return false
 							}
-							static a, b
-							a = ArrayGetCell(g_roundslist, g_roundcount - 3)
-							b = ArrayGetCell(g_roundslist, g_roundcount - 2)
-
-							if (a != MODE_INFECTION)
-							{
-								client_print_color(id, print_team_grey, "%s You must wait ^4 2^3normal infection ^1rounds to buy a mode.", CHAT_PREFIX)
-								return false
-							}
-							else if (b != MODE_INFECTION)
-							{
-								client_print_color(id, print_team_grey, "%s You must wait ^4 2^3normal infection ^1rounds to buy a mode.", CHAT_PREFIX)
-								return false
-							}
 
 							return true 
 						}
@@ -17550,41 +17729,41 @@ CanBuy(category, item, id)
 			{
 				case EXTRA_INFECTION_NADE:
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
+					if (g_endround || IsSwarmRound() 
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
 					|| CheckBit(g_currentmode, MODE_SAMURAI) || CheckBit(g_currentmode, MODE_GRENADIER)
-					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
-					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
-					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
-					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| IsSwarmRound() || IsPlagueRound()
+					|| IsSurvivorVsNemesisRound() || IsSurvivorVsAssasinRound()
+					|| IsSniperVsAssasinRound() || IsSniperVsNemesisRound()
+					|| IsNightmareRound() || IsSynapsisRound()
 					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR)) return false
 
 					return true
 				}
 				case EXTRA_CONCUSSION_NADE: 
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
+					if (g_endround || IsSwarmRound() 
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
 					|| CheckBit(g_currentmode, MODE_SAMURAI)
-					|| CheckBit(g_currentmode, MODE_SWARM) || CheckBit(g_currentmode, MODE_PLAGUE)
-					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN)
-					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS)
-					|| CheckBit(g_currentmode, MODE_NIGHTMARE) || CheckBit(g_currentmode, MODE_SYNAPSIS)
+					|| IsSwarmRound() || IsPlagueRound()
+					|| IsSurvivorVsNemesisRound() || IsSurvivorVsAssasinRound()
+					|| IsSniperVsAssasinRound() || IsSniperVsNemesisRound()
+					|| IsNightmareRound() || IsSynapsisRound()
 					|| CheckBit(g_currentmode, MODE_REVENANT)) return false
 
 					return true
 				}
 				case EXTRA_ANTIDOTE:
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
+					if (g_endround || IsSwarmRound() 
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SAMURAI) 
-					|| CheckBit(g_currentmode, MODE_SNIPER) || CheckBit(g_currentmode, MODE_PLAGUE) 
-					|| CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS) || CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN) 
-					|| CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN) || CheckBit(g_currentmode, MODE_NIGHTMARE) 
-					|| CheckBit(g_currentmode, MODE_SYNAPSIS) || CheckBit(g_currentmode, MODE_GRENADIER) 
+					|| CheckBit(g_currentmode, MODE_SNIPER) || IsPlagueRound() 
+					|| IsSurvivorVsNemesisRound() || IsSurvivorVsAssasinRound() 
+					|| IsSniperVsAssasinRound() || IsNightmareRound() 
+					|| IsSynapsisRound() || CheckBit(g_currentmode, MODE_GRENADIER) 
 					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR) || fnGetZombies() <= 1) return false
 
 					return true 
@@ -17620,10 +17799,10 @@ CanBuy(category, item, id)
 			{
 				case PSHOP_FEATURE_GOD_MODE:
 				{
-					if (g_endround || CheckBit(g_currentmode, MODE_SWARM) 
+					if (g_endround || IsSwarmRound() 
 					|| CheckBit(g_currentmode, MODE_NEMESIS) || CheckBit(g_currentmode, MODE_ASSASIN) 
 					|| CheckBit(g_currentmode, MODE_SURVIVOR) || CheckBit(g_currentmode, MODE_SNIPER) 
-					|| CheckBit(g_currentmode, MODE_PLAGUE) || CheckBit(g_currentmode, MODE_GRENADIER)
+					|| IsPlagueRound() || CheckBit(g_currentmode, MODE_GRENADIER)
 					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR))
 					{
 						client_print_color(id, print_team_grey, "%s This item is not available in current round", CHAT_PREFIX)
@@ -17732,7 +17911,7 @@ LogToFile(action, admin, target = 0)
 		case LOG_MODE_NIGHTMARE: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Nightmare mode. [ Players: %d / %d ]", 					g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SNIPER_VS_ASSASIN: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Assassin mode. [ Players: %d / %d ]", 		g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
 		case LOG_MODE_SNIPER_VS_NEMESIS: 		formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] started Sniper vs Nemesis mode. [ Players: %d / %d ]", 			g_playerName[admin], authid, ip, fnGetPlaying(), g_maxplayers)
-		case LOG_RESPAWN_PLAYER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] respawned %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
+		case LOG_RESPAWN_PLAYER: 				formatex(logdata, charsmax(logdata), "Admin %s [ %s ][ %s ] g_respawned %s. [ Players: %d / %d ]", 							g_playerName[admin], authid, ip, g_playerName[target], fnGetPlaying(), g_maxplayers)
 	}
 
 	log_to_file("ZombieQueen.log", logdata)
@@ -18454,7 +18633,7 @@ public native_get_class_string(plugin, params)
 }
 
 // Native: IsInfectionRound
-public native_is_infection_round(){ return CheckBit(g_currentmode, MODE_INFECTION); }
+public native_is_infection_round(){ return IsNormalInfectionRound(); }
 
 // Native: StartInfectionRound
 public native_start_infection_round()
@@ -18468,7 +18647,7 @@ public native_start_infection_round()
 }
 
 // Native: IsMultiInfectionRound
-public native_is_multi_infection_round(){ return CheckBit(g_currentmode, MODE_MULTI_INFECTION); }
+public native_is_multi_infection_round(){ return IsMultiInfectionRound(); }
 
 //Native: StartMultiInfectionRound
 public native_start_multi_infection_round()
@@ -18482,7 +18661,7 @@ public native_start_multi_infection_round()
 }
 
 // Native: IsSwarmRound
-public native_is_swarm_round(){ return CheckBit(g_currentmode, MODE_SWARM); }
+public native_is_swarm_round(){ return IsSwarmRound(); }
 
 // Native: StartSwarmRound
 public native_start_swarm_round()
@@ -18496,7 +18675,7 @@ public native_start_swarm_round()
 }
 
 // Native: IsPlagueRound
-public native_is_plague_round(){ return CheckBit(g_currentmode, MODE_PLAGUE); }
+public native_is_plague_round(){ return IsPlagueRound(); }
 
 // Native: StartPlagueRound
 public native_start_plague_round()
@@ -18510,7 +18689,7 @@ public native_start_plague_round()
 }
 
 // Native: IsArmageddonRound
-public native_is_armageddon_round(){ return CheckBit(g_currentmode, MODE_SURVIVOR_VS_NEMESIS); }
+public native_is_armageddon_round(){ return IsSurvivorVsNemesisRound(); }
 
 // Native: StartArmageddonRound
 public native_start_armageddon_round()
@@ -18524,7 +18703,7 @@ public native_start_armageddon_round()
 }
 
 // Native: IsApocalypseRound
-public native_is_apocalypse_round(){ return CheckBit(g_currentmode, MODE_SNIPER_VS_ASSASIN); }
+public native_is_apocalypse_round(){ return IsSniperVsAssasinRound(); }
 
 // Native: StartApocalypseRound
 public native_start_apocalypse_round()
@@ -18538,7 +18717,7 @@ public native_start_apocalypse_round()
 }
 
 // Native: IsDevilRound
-public native_is_devil_round(){ return CheckBit(g_currentmode, MODE_SNIPER_VS_NEMESIS); }
+public native_is_devil_round(){ return IsSniperVsNemesisRound(); }
 
 // Native: StartDevilRound
 public native_start_devil_round()
@@ -18552,7 +18731,7 @@ public native_start_devil_round()
 }
 
 // Native: IsNightmareRound
-public native_is_nightmare_round(){ return CheckBit(g_currentmode, MODE_NIGHTMARE); }
+public native_is_nightmare_round(){ return IsNightmareRound(); }
 
 // Native: StartNightmareRound
 public native_start_nightmare_round()
@@ -18566,7 +18745,7 @@ public native_start_nightmare_round()
 }
 
 // Native: IsSynapsisRound
-public native_is_synapsis_round(){ return CheckBit(g_currentmode, MODE_SYNAPSIS); }
+public native_is_synapsis_round(){ return IsSynapsisRound(); }
 
 // Native: StartSynapsisRound
 public native_start_synapsis_round()
@@ -18580,7 +18759,7 @@ public native_start_synapsis_round()
 }
 
 // Native: IsSurvivorVsAssasinRound
-public native_is_survivor_vs_assasin_round(){ return CheckBit(g_currentmode, MODE_SURVIVOR_VS_ASSASIN); }
+public native_is_survivor_vs_assasin_round(){ return IsSurvivorVsAssasinRound(); }
 
 // Native: StartSurvivorVsAssasinRound
 public native_start_survivor_vs_assasin_round()
@@ -18594,7 +18773,7 @@ public native_start_survivor_vs_assasin_round()
 }
 
 // Native: IsBombardierVsGrenadierRound
-public native_is_bombardier_vs_grenadier_round(){ return CheckBit(g_currentmode, MODE_BOMBARDIER_VS_GRENADIER); }
+public native_is_bombardier_vs_grenadier_round(){ return IsBombardierVsGrenadierRound(); }
 
 // Native: StartBombardierVsGrenadierRound
 public native_start_bombardier_vs_grenadier_round()
