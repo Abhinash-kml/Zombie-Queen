@@ -218,7 +218,7 @@ new TerminatorEnabled, TerminatorChance, TerminatorMinPlayers, TerminatorHealth,
 new TryderHealth, Float:TryderSpeed, Float:TryderGravity
 
 // --- Knockback ---
-new KnockbackEnabled, KnockbackDistance, Float:KnockbackDucking, Float:KnockbackAssassin, Float:KnockbackNemesis, Float:KnockbackBombardier, Float:KnockbackRevenant
+new KnockbackEnabled, KnockbackWeaponMultiplier, KnockbackDistance, Float:KnockbackDucking, Float:KnockbackAssassin, Float:KnockbackNemesis, Float:KnockbackBombardier, Float:KnockbackRevenant
 
 // --- Pain Shock free ----
 new AssassinPainfree, RevenantPainfree, NemesisPainfree, BombardierPainfree, SniperPainfree, SurvivorPainfree, SamuraiPainfree, GrenadierPainfree, TerminatorPainfree
@@ -1195,13 +1195,13 @@ const ZP_PLUGIN_SUPERCEDE = 98
 
 new g_cZombieClasses[][ZMenuData] =
 {
-	{"Clasic", 			"\r[=Balanced=]", 	  	8000,  264.0, 1.00, 0.82, 	"PerfectZM_Classic", 		 	 "models/PerfectZM/PerfectZM_classic_claws.mdl"},
-	{"Raptor", 			"\r[Speed +++]", 	  	7350,  304.0, 1.00, 1.33, 	"PerfectZM_Raptor", 			 "models/PerfectZM/PerfectZM_raptor_claws.mdl"},
-	{"Mutant", 			"\r[Health +++]", 	  	14000, 276.0, 0.74, 0.70, 	"PerfectZM_Mutant", 			 "models/PerfectZM/PerfectZM_mutant_claws.mdl"},
-	{"Frost", 			"\r[Freeze humans]", 	6550,  244.0, 1.00, 0.44, 	"PerfectZM_Frozen", 			 "models/PerfectZM/PerfectZM_frozen_claws.mdl"},
-	{"Regenerator", 	"\r[Regeneration]",   	7000,  269.0, 0.61, 0.80, 	"PerfectZM_Regenerator", 	 	 "models/PerfectZM/PerfectZM_regenerator_claws.mdl"},
-	{"Predator Blue", 	"\r[Invisiblity]", 	  	10000, 249.0, 1.00, 0.90, 	"PerfectZM_Predator", 	 	 	 "models/PerfectZM/PerfectZM_predator_claws.mdl"},
-	{"Hunter", 			"\r[Stuns weapons]",    9000,  273.0, 0.61, 0.83, 	"PerfectZM_Hunter", 			 "models/PerfectZM/PerfectZM_hunter_claws.mdl"}
+	{"Clasic", 			"\r[=Balanced=]", 	  	8000,  264.0, 1.00, 4.0, 	"PerfectZM_Classic", 		 	 "models/PerfectZM/PerfectZM_classic_claws.mdl"},
+	{"Raptor", 			"\r[Speed +++]", 	  	7350,  304.0, 1.00, 4.0, 	"PerfectZM_Raptor", 			 "models/PerfectZM/PerfectZM_raptor_claws.mdl"},
+	{"Mutant", 			"\r[Health +++]", 	  	14000, 276.0, 0.60, 4.0, 	"PerfectZM_Mutant", 			 "models/PerfectZM/PerfectZM_mutant_claws.mdl"},
+	{"Frost", 			"\r[Freeze humans]", 	6550,  244.0, 0.50, 4.0, 	"PerfectZM_Frozen", 			 "models/PerfectZM/PerfectZM_frozen_claws.mdl"},
+	{"Regenerator", 	"\r[Regeneration]",   	7000,  269.0, 0.61, 4.0, 	"PerfectZM_Regenerator", 	 	 "models/PerfectZM/PerfectZM_regenerator_claws.mdl"},
+	{"Predator Blue", 	"\r[Invisiblity]", 	  	10000, 249.0, 1.00, 4.0, 	"PerfectZM_Predator", 	 	 	 "models/PerfectZM/PerfectZM_predator_claws.mdl"},
+	{"Hunter", 			"\r[Stuns weapons]",    9000,  273.0, 0.61, 4.0, 	"PerfectZM_Hunter", 			 "models/PerfectZM/PerfectZM_hunter_claws.mdl"}
 }
 
 new g_cPointsMenu[][PMenuData] =
@@ -1487,6 +1487,9 @@ new bullets[33]
 
 // Countdown
 new countdown_timer
+
+// Infection
+new g_infectSpr, g_skullSpr
 
 // --- Nvault ---
 new g_vault = INVALID_HANDLE
@@ -2287,6 +2290,10 @@ public plugin_precache()
 
 	//register_forward(FM_AddToFullPack, "OnAddToFullpack", 1)
 
+	// For infection effect
+	g_infectSpr = precache_model("sprites/infection.spr")
+	g_skullSpr = precache_model("sprites/skull.spr")
+
 	// For 3rd person death
 	precache_model("models/rpgrocket.mdl")
 
@@ -2682,6 +2689,7 @@ LoadCustomizationFromFile()
 
 	// // Knockback
 	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Knockback", "Enabled", KnockbackEnabled)
+	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Knockback", "Weapon Multiply", KnockbackWeaponMultiplier)
 	AmxLoadInt(ZP_CLASS_CONFIGS_FILE, "Knockback", "Distance", KnockbackDistance)
 	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Knockback", "Ducking", KnockbackDucking)
 	AmxLoadFloat(ZP_CLASS_CONFIGS_FILE, "Knockback", "Assasin", KnockbackAssassin)
@@ -6591,6 +6599,21 @@ public event_show_status(id)
 // Remove the aim-info message
 public event_hide_status(id){ ClearSyncHud(id, g_MsgSync3); }
 
+new colors[11][3] =
+{
+	{255, 0, 0},
+	{255, 0, 0},
+	{255, 0, 0},
+	{255, 255, 0},
+	{255, 255, 0},
+	{255, 255, 0},
+	{255, 255, 0},
+	{0, 255, 0},
+	{0, 255, 0},
+	{0, 255, 0},
+	{0, 255, 0}
+}
+
 // Countdown function
 public Countdown()
 {
@@ -6598,7 +6621,7 @@ public Countdown()
 	{ 
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
 		
-		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
+		set_hudmessage(colors[countdown_timer][0], colors[countdown_timer][1], colors[countdown_timer][2], -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
 		ShowSyncHudMsg(0, g_MsgSync4, "Infection in %i", countdown_timer)
 
 		countdown_timer--
@@ -6804,6 +6827,20 @@ public OnPlayerSpawn(id)
 // Ham Player Killed Forward
 public OnPlayerKilled(victim, attacker, shouldgib)
 {
+	// Get his origin
+	new origin[3]
+	get_user_origin(victim, origin)
+
+	message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
+	write_byte(TE_SPRITE)
+	write_coord(origin[0])
+	write_coord(origin[1])
+	write_coord(origin[2])
+	write_short(g_skullSpr)
+	write_byte(10)
+	write_byte(255)
+	message_end()
+
 	// Player killed
 	g_isalive[victim] = false
 	
@@ -6823,7 +6860,6 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 
 	// --------------- 3rd Person Death ------------------
 
-	
 	// Enable dead players nightvision
 	spec_nvision(victim)
 	
@@ -7482,9 +7518,12 @@ public OnTraceAttack(victim, attacker, Float:damage, Float:direction[3], traceha
 	xs_vec_mul_scalar(direction, damage, direction)
 
 	// Use weapon power on knockback calculation
-	if (kb_weapon_power[g_currentweapon[attacker]] > 0.0) 
-	xs_vec_mul_scalar(direction, kb_weapon_power[g_currentweapon[attacker]], direction)
-
+	if (KnockbackWeaponMultiplier)
+	{
+		if (kb_weapon_power[g_currentweapon[attacker]] > 0.0) 
+		xs_vec_mul_scalar(direction, kb_weapon_power[g_currentweapon[attacker]], direction)
+	}
+	
 	// Knockback on air
 	if ((!(pev(victim, pev_flags) & FL_ONGROUND)) && IsZombie(victim))
 	xs_vec_mul_scalar(direction, random_float(3.0, knockback_air), direction)
@@ -8544,7 +8583,7 @@ public FwCmdStart(id, handle)
 	if (IsZombie(id) && (button & IN_USE) && g_zombieclass[id] == 1)
 	OnRaptorSkill(id)
 	
-	if (IsZombie(id) && (button & IN_USE) && g_zombieclass[id] == 3)
+	if (IsZombie(id) && (button & IN_ATTACK2) && g_zombieclass[id] == 3)
 	OnFrozenSkill(id)
 
 	// Predator zombie skill
@@ -19176,6 +19215,16 @@ infection_effects(id)
 	// Get player's origin
 	static origin[3]
 	get_user_origin(id, origin)
+
+	message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
+	write_byte(TE_SPRITE)
+	write_coord(origin[0])
+	write_coord(origin[1])
+	write_coord(origin[2])
+	write_short(g_infectSpr)
+	write_byte(8)
+	write_byte(255)
+	message_end()
 	
 	// Tracers?
 	if (InfectionTracers) SendImplosion(id) 
