@@ -46,7 +46,7 @@ new const WeaponSounds[6][] =
 
 // Weapon Config
 #define DAMAGE_A 70 // 60 for Zombie
-#define DAMAGE_B 500 // 200 for Zombie
+#define DAMAGE_B 500.0 // 200 for Zombie
 #define ACCURACY 100 // 0 - 100 ; -1 Default
 #define CLIP 50
 #define BPAMMO 250
@@ -576,7 +576,7 @@ public OnTraceAttackWorld(Victim, Attacker, Float:Damage, Float:Direction[3], Pt
 
 	if (cs_get_user_zoom(Attacker) != CS_SET_AUGSG552_ZOOM) SetHamParamFloat(3, float(DAMAGE_A))
 	else {
-		SetHamParamFloat(3, float(DAMAGE_B))
+		SetHamParamFloat(3, random_float(200.0, DAMAGE_B))
 		Create_Tracer(Attacker, flEnd)
 	}
 	
@@ -596,7 +596,7 @@ public OnTraceAttackPlayer(Victim, Attacker, Float:Damage, Float:Direction[3], P
 	if (cs_get_user_zoom(Attacker) != CS_SET_AUGSG552_ZOOM) { SetHamParamFloat(3, float(DAMAGE_A)); }
 	else 
 	{
-		SetHamParamFloat(3, float(DAMAGE_B))
+		SetHamParamFloat(3, random_float(200.0, DAMAGE_B))
 		Create_Tracer(Attacker, flEnd)
 	}
 	
@@ -927,6 +927,7 @@ stock Get_Position(id,Float:forw, Float:right, Float:up, Float:vStart[])
 	vStart[1] = vOrigin[1] + vForward[1] * forw + vRight[1] * right + vUp[1] * up
 	vStart[2] = vOrigin[2] + vForward[2] * forw + vRight[2] * right + vUp[2] * up
 }
+
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ deff0{\\ fonttbl{\\ f0\\ fnil Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang1042\\ f0\\ fs16 \n\\ par }
 */

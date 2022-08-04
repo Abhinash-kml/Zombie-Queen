@@ -35,9 +35,9 @@ public lightning()
 	write_byte(10) // life 
 	write_byte(200) // width 
 	write_byte(100) // noise 
-	write_byte(255) // r, g, b 
-	write_byte(0) // r, g, b 
-	write_byte(0) // r, g, b 
+	write_byte(random(256)) // r, g, b 
+	write_byte(random(256)) // r, g, b 
+	write_byte(random(256)) // r, g, b 
 	write_byte(255) // brightness 
 	write_byte(200) //  
 	message_end() 

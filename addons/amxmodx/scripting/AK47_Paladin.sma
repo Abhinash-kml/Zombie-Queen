@@ -45,7 +45,7 @@ new const WeaponSounds[5][] =
 
 // Weapon Config
 #define DAMAGE_A 70 // 66 for Zombie
-#define DAMAGE_B 500 // 360 for Zombie
+#define DAMAGE_B 500.0 // 360 for Zombie
 #define ACCURACY 70 // 0 - 100 ; -1 Default
 #define CLIP 50
 #define BPAMMO 250
@@ -589,7 +589,7 @@ public OnTraceAttackWorld(Victim, Attacker, Float:Damage, Float:Direction[3], Pt
 	Make_BulletSmoke(Attacker, Ptr)
 
 	if (cs_get_user_zoom(Attacker) != CS_SET_AUGSG552_ZOOM) SetHamParamFloat(3, float(DAMAGE_A))
-	else SetHamParamFloat(3, float(DAMAGE_B))
+	else SetHamParamFloat(3, random_float(200.0, DAMAGE_B))
 	
 	return HAM_HANDLED
 }
@@ -602,7 +602,7 @@ public OnTraceAttackPlayer(Victim, Attacker, Float:Damage, Float:Direction[3], P
 		return HAM_IGNORED
 
 	if (cs_get_user_zoom(Attacker) != CS_SET_AUGSG552_ZOOM) SetHamParamFloat(4, float(DAMAGE_A))
-	else SetHamParamFloat(4, float(DAMAGE_B))
+	else SetHamParamFloat(4, random_float(200.0, DAMAGE_B))
 	
 	return HAM_HANDLED
 }
@@ -677,7 +677,7 @@ public Shock_Damage(id)
 		if (get_distance_f(Origin, Origin2) > RANGE_SHOCK)
 			continue
 		
-		ExecuteHamB(Ham_TakeDamage, i, Ent, id, float(DAMAGE_B), DMG_BULLET)
+		ExecuteHamB(Ham_TakeDamage, i, Ent, id, random_float(200.0, DAMAGE_B), DMG_BULLET)
 	}
 }
 

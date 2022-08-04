@@ -6,6 +6,7 @@ native AddPacks(id, amount)
 
 #define MAX_QUESTIONS 200
 #define MAX_NUM_OF_CHAR 190
+#define CHAT_PREFIX "[ThunderZM]"
 
 new Questions[MAX_QUESTIONS][MAX_NUM_OF_CHAR]
 new Answers[MAX_QUESTIONS][MAX_NUM_OF_CHAR]
@@ -85,11 +86,11 @@ public LoadQuizFromFile()
 	
 	if (num_of_questions < 1)
 	{
-		server_print("[PerfectZM] ERROR! You need more questions, you have %d, you need more then 2", num_of_questions)
+		server_print("%s ERROR! You need more questions, you have %d, you need more then 2", CHAT_PREFIX, num_of_questions)
 		pause("ad")
 	}
 	
-	server_print("[PerfectZM] Successfully loaded %d questions", num_of_questions)
+	server_print("%s Successfully loaded %d questions", CHAT_PREFIX, num_of_questions)
 	
 	return PLUGIN_HANDLED
 }
@@ -109,7 +110,7 @@ public SelectQuestion()
 public ShowQuestion()
 {
 	answered = false
-	client_print_color(0, print_team_grey, "^4[PerfectZM] ^1Question: ^3%s", used_question[0])
+	client_print_color(0, print_team_grey, "^4%s ^1Question: ^3%s", CHAT_PREFIX, used_question[0])
 	
 	set_hudmessage(random(255), random(255), random(255), -1.0, 0.37, 0, 6.0, 7.0, 0.1, 0.2)
 	ShowSyncHudMsg(0, g_MyMsgSync, "Question: %s", used_question[0])
@@ -119,7 +120,7 @@ public ShowQuestion()
 
 public ShowTimeUp()
 {
-	client_print_color(0, print_team_grey, "^4[PerfectZM] ^1Time up, selecting new question...")
+	client_print_color(0, print_team_grey, "^4%s ^1Time up, selecting new question...", CHAT_PREFIX)
 	
 	// set_hudmessage(random(255), random(255), random(255), -1.0, 0.37, 0, 6.0, 7.0, 0.1, 0.2)
 	//ShowSyncHudMsg(0, g_MyMsgSync, "Time up, selecting new question...")
@@ -130,7 +131,7 @@ public GiveReward(id)
 	static r; r = random_num(10, 30)
 	static name[32]; get_user_name(id, name, charsmax(name))
 	AddPacks(id, r)
-	client_print_color(0, print_team_grey, "^4[PerfectZM] ^3%s ^1got ^4%i ^1packs for solving the question...", name, r)
+	client_print_color(0, print_team_grey, "^4%s ^3%s ^1got ^4%i ^1packs for solving the question...", CHAT_PREFIX, name, r)
 	//set_hudmessage(random(255), random(255), random(255), -1.0, 0.37, 0, 6.0, 7.0, 0.1, 0.2)
 	//ShowSyncHudMsg(0, g_MyMsgSync, "%s got %i packs for solving the question...", name, r)
 	
@@ -154,7 +155,7 @@ public OnSay(id)
 		
 	}
 	
-	if (contain(arg, "/question") != -1) client_print_color(id, print_team_grey, "^4[PerfectZM] ^1Question: ^3%s", used_question[0])
+	if (contain(arg, "/question") != -1) client_print_color(id, print_team_grey, "^4%s ^1Question: ^3%s", CHAT_PREFIX, used_question[0])
 	  	
 	return PLUGIN_CONTINUE
 }

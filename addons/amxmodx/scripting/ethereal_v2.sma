@@ -6,7 +6,7 @@
 #include <xs>
 #include <cstrike>
 
-forward OnRoundStart(gamemode, id)
+forward OnHumanizedPost(id, class)
 native IsTerminator(id)
 
 #define ENG_NULLENT			-1
@@ -209,9 +209,9 @@ public plugin_precache()
 	m_iBlood[0] = precache_model("sprites/blood.spr")
 	m_iBlood[1] = precache_model("sprites/bloodspray.spr")
 	
-	precache_generic("sprites/weapon_ethereal_sh.txt")
-	precache_generic("sprites/sh/640hud74.spr")
-	precache_generic("sprites/sh/640hud7x.spr")
+	precache_generic("sprites/weapon_ethereal.txt")
+	precache_generic("sprites/sh/640hud74_2.spr")
+	precache_generic("sprites/sh/640hud7_2.spr")
 	precache_model("sprites/muzzleflash7.spr")
 	
 	g_SmokePuff_SprId = engfunc(EngFunc_PrecacheModel, "sprites/wall_puff1.spr")
@@ -227,33 +227,23 @@ public plugin_precache()
 	register_clcmd("wpn_ethereal3", "weapon_hook")	
 }
 
-public OnRoundStart()
+public OnHumanizedPost(id, class)
 {
-    for (new id = 1; id <= get_maxplayers(); id++)
-    {
-        if (IsTerminator(id))
-        set_task(1.0, "task_give", id+45634)
-    }
-}
-
-public task_give(id)
-{
-    id -= 45634
-    if (IsTerminator(id) && is_user_alive(id))
-    {
+	if (IsTerminator(id) && is_user_alive(id))
+	{
 		give_ethereal(id)
-		ethereal_changemode[id]=0
-		ethereal_reloaded[id]=0
+		ethereal_changemode[id] = 0
+		ethereal_reloaded[id] = 0
 		client_print(id, print_center, "*** You got an Ethereal, enjoy killing the zombies ***")
-    }
-}  
+	}
+} 
 
 public fw_PlayerKilled(victim)
 {
 	g_has_ethereal[victim] = false
 }
 
-public client_disconnect(id)
+public client_disconnected(id)
 {
 	g_has_ethereal[id] = false
 }
@@ -496,7 +486,7 @@ public give_ethereal(id)
 		set_pdata_float(id, m_flNextAttack, 1.0, PLAYER_LINUX_XTRA_OFF)
 		
 		message_begin(MSG_ONE, gmsgWeaponList, {0,0,0}, id)
-		write_string("weapon_ethereal_sh")
+		write_string("weapon_ethereal")
 		write_byte(4)
 		write_byte(90)
 		write_byte(-1)
@@ -532,7 +522,7 @@ public fw_ethereal_AddToPlayer(ethereal, id)
 		entity_set_int(ethereal, EV_INT_WEAPONKEY, 0)
 
 		message_begin(MSG_ONE, gmsgWeaponList, {0,0,0}, id)
-		write_string("weapon_ethereal_sh")
+		write_string("weapon_ethereal")
 		write_byte(4)
 		write_byte(90)
 		write_byte(-1)
@@ -632,7 +622,7 @@ replace_weapon_models(id, weaponid)
 						ethereal_debugicon(id)
 					#endif
 					message_begin(MSG_ONE, gmsgWeaponList, {0,0,0}, id)
-					write_string("weapon_ethereal_sh")
+					write_string("weapon_ethereal")
 					write_byte(4)
 					write_byte(90)
 					write_byte(-1)
@@ -877,7 +867,7 @@ public fw_CmdStart(id, uc_handle, seed)
 			{
 				eth_mode[id]=0
 				ethereal_changemode[id]=1
-				client_print(id,print_center,"Electric mode selected")
+				client_print(id,print_center,"%s", "Electric mode selected")
 				set_pdata_float(id, m_flNextAttack, ethereal_RELOAD_TIME, PLAYER_LINUX_XTRA_OFF)
 				UTIL_PlayWeaponAnimation(id, ethereal_RELOAD)
 				set_task(3.0,"clockdown",id)
@@ -889,7 +879,7 @@ public fw_CmdStart(id, uc_handle, seed)
 			{
 				eth_mode[id]=1
 				ethereal_changemode[id]=1
-				client_print(id,print_center,"Laser mode selected")
+				client_print(id,print_center,"%s", "Laser mode selected")
 				set_pdata_float(id, m_flNextAttack, ethereal_RELOAD_TIME, PLAYER_LINUX_XTRA_OFF)
 				UTIL_PlayWeaponAnimation(id, ethereal_RELOAD)
 				set_task(3.0,"clockdown",id)
