@@ -622,9 +622,9 @@ public Create_Tracer(id, Float:Target[3])
 	write_byte(5) // life
 	write_byte(2)  // width
 	write_byte(0)   // noise
-	write_byte(255)   // r, g, b
-	write_byte(255)   // r, g, b
-	write_byte(255)   // r, g, b
+	write_byte(random(256))   // r, g, b
+	write_byte(random(256))   // r, g, b
+	write_byte(random(256))   // r, g, b
 	write_byte(175)	// brightness
 	write_byte(1)		// speed
 	message_end()

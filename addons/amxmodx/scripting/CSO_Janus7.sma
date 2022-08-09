@@ -10,11 +10,11 @@ forward OnPointsShopWeaponSelected(id, itemid, playername[])
 forward OnInfectedPost(victim, infector, class)
 new g_item, g_hudsync
 
-#define DAMAGE_A 40 // Damage in Non-Charged Mode
-#define DAMAGE_B 80 // Damage in Charged Mode
-#define CHARGE_AMMO 57 // After shoot X bullets, you can active Janus Transform System
+#define DAMAGE_A 100 // Damage in Non-Charged Mode
+#define DAMAGE_B 500 // Damage in Charged Mode
+#define CHARGE_AMMO 100 // After shoot X bullets, you can active Janus Transform System
 #define CHARGE_LIMITTIME 7 // After X Second(s), Janus Transform System will be turned off if not using
-#define CHARGE_TIME 15 // Time Use for Janus Transform System
+#define CHARGE_TIME 7 // Time Use for Janus Transform System
 
 #define CLIP 100
 #define CHANGE_TIME 2.0

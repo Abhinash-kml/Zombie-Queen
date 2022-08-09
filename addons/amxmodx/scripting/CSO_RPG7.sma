@@ -9,7 +9,7 @@ native RegisterPointsShopWeapon(const name[], price, team)
 native IsZombie(id)
 forward OnPointsShopWeaponSelected(id, itemid, playername[])
 forward OnInfectedPost(victim, infector, class)
-new g_item, g_hudsync
+new g_item, g_hudsync, g_trail, g_shockwave
 
 #define CustomItem(%0) (entity_get_int(%0, EV_INT_impulse) == WEAPON_SPECIAL_KEY)
 #define get_bit(%1,%2) ((%1 & (1 << (%2 & 31))) ? true : false)
@@ -39,7 +39,6 @@ new g_item, g_hudsync
 #define WEAPON_ROCKET_CLASS "rpg7_rocket"
 
 #define WEAPON_SHOOT_DELAY 1.0
-#define WEAPON_RECOIL 9.5
 #define WEAPON_CLIP 1
 #define WEAPON_AMMO 90
 #define WEAPON_RELOAD_TIME 2.1
@@ -135,6 +134,11 @@ public plugin_precache() {
 	sMuzzleFlash = engfunc(EngFunc_PrecacheModel, WEAPON_SPRITE_MUZZLEFLASH);
 	g_smoke_id = engfunc(EngFunc_PrecacheModel, ROCKET_PUFF)
 	g_fw_index = register_forward(FM_PrecacheEvent, "fw_PrecacheEvent_Post", 1);
+
+	g_trail = precache_model("sprites/smoke.spr");
+	g_shockwave = precache_model("sprites/shockwave.spr")
+
+	precache_model("sprites/flare6.spr")
 }
 public client_putinserver(id) {
 	set_bit(g_connect, id);
@@ -239,9 +243,6 @@ public fw_Weapon_PrimaryAttack(ent) {
 	emit_sound(id, CHAN_WEAPON, WEAPON_SOUND_SHOOT, VOL_NORM, ATTN_NORM, 0, PITCH_NORM);
 	UTIL_PlayWeaponAnimation(id, g_mode[id] ? 5 : 4);
 	set_pdata_float(ent, m_flNextPrimaryAttack, WEAPON_SHOOT_DELAY, 4);
-	static Float:Punchangle[3]; entity_get_vector(id, EV_VEC_punchangle, Punchangle);
-	xs_vec_mul_scalar(Punchangle, WEAPON_RECOIL, Punchangle);
-	entity_set_vector(id, EV_VEC_punchangle, Punchangle);
 	UTIL_MakeMuzzle(id)
 	fw_Weapon_MakeRocket(id)
 	g_mode[id] = 0;
@@ -249,15 +250,17 @@ public fw_Weapon_PrimaryAttack(ent) {
 }
 public fw_Weapon_MakeRocket(id) {
 	static Float:StartOrigin[3], Float:TargetOrigin[3], Float:angles[3], Float:angles_fix[3];
+
 	if(!g_mode[id]) get_position(id, 30.0, 8.0, -8.0, StartOrigin);
 	else get_position(id, 30.0, 1.0, -15.0, StartOrigin);
+
 	pev(id,pev_v_angle,angles);
-	static Ent; Ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
-	if(!pev_valid(Ent)) return;
-	angles_fix[0] = 360.0 - angles[0];
-	angles_fix[1] = angles[1];
-	angles_fix[2] = angles[2];
-	set_pev(Ent, pev_movetype, MOVETYPE_TOSS);
+
+	//static Ent; Ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
+
+	//if(!pev_valid(Ent)) return;
+
+	/*set_pev(Ent, pev_movetype, MOVETYPE_TOSS);
 	set_pev(Ent, pev_owner, id);
 	entity_set_string(Ent, EV_SZ_classname, WEAPON_ROCKET_CLASS);
 	engfunc(EngFunc_SetModel, Ent, WEAPON_MODEL_ROCKET);
@@ -267,12 +270,60 @@ public fw_Weapon_MakeRocket(id) {
 	set_pev(Ent, pev_angles, angles_fix);
 	set_pev(Ent, pev_gravity, g_mode[id] ? 0.01 : -0.4);
 	set_pev(Ent, pev_solid, SOLID_BBOX);
+	set_pev(Ent, pev_effects, EF_LIGHT | EF_BRIGHTLIGHT);
 	set_pev(Ent, pev_frame, 0.0);
-	set_pev(Ent, pev_nextthink, get_gametime() + 0.2)
+	set_pev(Ent, pev_nextthink, get_gametime() + 0.2)*/
+
+	new iEnt = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_sprite"));
+
+	angles_fix[0] = 360.0 - angles[0];
+	angles_fix[1] = angles[1];
+	angles_fix[2] = angles[2];
+
+    set_pev(iEnt, pev_movetype, MOVETYPE_TOSS);
+	set_pev(iEnt, pev_owner, id);
+	entity_set_string(iEnt, EV_SZ_classname, WEAPON_ROCKET_CLASS);
+    engfunc(EngFunc_SetModel, iEnt, "sprites/flare6.spr");
+	set_pev(iEnt, pev_mins,{ -0.1, -0.1, -0.1 });
+	set_pev(iEnt, pev_maxs,{ 0.1, 0.1, 0.1 });
+	set_pev(iEnt, pev_origin, StartOrigin);
+	set_pev(iEnt, pev_angles, angles_fix);
+	set_pev(iEnt, pev_gravity, g_mode[id] ? 0.01 : -0.4);
+    set_pev(iEnt, pev_solid, SOLID_BBOX);
+    set_pev(iEnt, pev_scale, 0.7);
+   // set_pev(iEnt, pev_spawnflags, SF_SPRITE_STARTON);
+
+    //set_pev(iEnt, pev_movetype, MOVETYPE_FOLLOW);
+    //set_pev(iEnt, pev_aiment, iAttachTo);
+    
+    set_pev(iEnt, pev_rendercolor, Float:{0.0, 255.0, 0.0});
+    set_pev(iEnt, pev_renderamt, 255.0);
+    set_pev(iEnt, pev_rendermode, kRenderTransAdd);
+    set_pev(iEnt, pev_renderfx, kRenderFxNone);
+	set_pev(iEnt, pev_frame, 0.0);
+    
+    //set_kvd(0, KV_KeyName, "framerate");
+    //set_kvd(0, KV_Value, "18.0");
+    //dllfunc(DLLFunc_KeyValue, iEnt, 0);
+    //dllfunc(DLLFunc_Spawn, iEnt);
+	set_pev(iEnt, pev_nextthink, get_gametime() + 0.2)
+
+	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
+	write_byte(TE_BEAMFOLLOW);
+	write_short(iEnt);
+	write_short(g_trail);
+	write_byte(25);
+	write_byte(3);
+	write_byte(0);
+	write_byte(150);
+	write_byte(0);
+	write_byte(120);
+	message_end();
+
 	static Float:Velocity[3];
 	fm_get_aim_origin(id, TargetOrigin);
 	get_speed_vector(StartOrigin, TargetOrigin, 1500.0, Velocity);
-	set_pev(Ent, pev_velocity, Velocity);
+	set_pev(iEnt, pev_velocity, Velocity);
 }
 public fw_RocketThink(ent) {
 	if(!pev_valid(ent)) return;
@@ -286,7 +337,7 @@ public fw_RocketThink(ent) {
 	write_short(g_smoke_id);
 	write_byte(2);
 	write_byte(40);
-	write_byte(TE_EXPLFLAG_NOPARTICLES | TE_EXPLFLAG_NOSOUND | TE_EXPLFLAG_NODLIGHTS);
+	write_byte(TE_EXPLFLAG_NOSOUND | TE_EXPLFLAG_NODLIGHTS);
 	message_end();
 	set_pev(ent, pev_nextthink, get_gametime() + 0.07)
 }
@@ -297,13 +348,31 @@ public fw_RocketTouch(Ent, Id) {
 	new Float:originZ[3], Float:originX[3];
 	pev(Ent, pev_origin, originX);
 	entity_get_vector(Ent, EV_VEC_origin, originZ);
-	engfunc(EngFunc_MessageBegin, MSG_PAS, SVC_TEMPENTITY, originX, 0);
-	write_byte(TE_WORLDDECAL);
-	engfunc(EngFunc_WriteCoord, originZ[0]);
-	engfunc(EngFunc_WriteCoord, originZ[1]);
-	engfunc(EngFunc_WriteCoord, originZ[2]);
-	write_byte(engfunc(EngFunc_DecalIndex,"{scorch3"));
-	message_end();
+
+	for (new i = 0; i < 4; i++)
+	{
+		message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
+		write_byte(TE_BEAMCYLINDER);
+		write_coord_f(originX[0]);
+		write_coord_f(originX[1]);
+		write_coord_f(originX[2]);
+		write_coord_f(originX[0]);
+		write_coord_f(originX[1]);
+		write_coord_f(originX[2] + (450.0 + (i * 100.0)));
+		write_short(g_shockwave);
+		write_byte(0);
+		write_byte(0);
+		write_byte(4);
+		write_byte(i * 40);
+		write_byte(0);
+		write_byte(170);
+		write_byte(170);
+		write_byte(170);
+		write_byte(200);
+		write_byte(0);
+		message_end();
+	}
+	
 	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
 	write_byte(TE_EXPLOSION);
 	engfunc(EngFunc_WriteCoord, originZ[0]);
@@ -314,16 +383,7 @@ public fw_RocketTouch(Ent, Id) {
 	write_byte(30);
 	write_byte(0);
 	message_end();
-	message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
-	write_byte(TE_EXPLOSION);
-	engfunc(EngFunc_WriteCoord, originX[0]);
-	engfunc(EngFunc_WriteCoord, originX[1] + 50);
-	engfunc(EngFunc_WriteCoord, originX[2] + 80);
-	write_short(sExploSmall);
-	write_byte(25);
-	write_byte(30);
-	write_byte(TE_EXPLFLAG_NOPARTICLES | TE_EXPLFLAG_NOSOUND);
-	message_end();
+
 	fw_DamageRocket(Ent);
 	remove_entity(Ent);
 }
@@ -341,7 +401,7 @@ public fw_DamageRocket(Ent) {
 		if(!is_user_alive(i)) continue;
 		if(entity_range(i, Ent) > EXPLODE_RADIUS) continue;
 		if(!IsZombie(i)) continue; 
-		ExecuteHamB(Ham_TakeDamage, i, 0, Attacker, EXPLODE_DAMAGE, DMG_BULLET);
+		ExecuteHamB(Ham_TakeDamage, i, 0, Attacker, random_float(250.0, EXPLODE_DAMAGE), DMG_BULLET);
 	}
 }
 public fw_Item_AddToPlayer_Post(ent, id) {

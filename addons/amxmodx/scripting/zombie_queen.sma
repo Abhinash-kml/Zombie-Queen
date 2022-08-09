@@ -224,7 +224,8 @@ enum (+= 100)
 	TASK_MAKEZOMBIE,
 	TASK_WELCOMEMSG,
 	TASK_AMBIENCESOUNDS,
-	TASK_VOTERESULTS
+	TASK_VOTERESULTS,
+	TASK_FOG
 }
 
 // IDs inside tasks
@@ -2454,12 +2455,12 @@ public plugin_precache()
 	}
 	
 	// Fog
-	ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_fog"))
+	/* ent = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_fog"))
 	if (pev_valid(ent))
 	{
 		fm_set_kvd(ent, "density", "0.00086", "env_fog")
 		fm_set_kvd(ent, "rendercolor", "128 150 190", "env_fog")
-	}
+	}*/
 	// if (g_ambience_snow) engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_snow"))
 
 	// Custom buyzone for all players
@@ -5589,6 +5590,7 @@ public plugin_cfg()
 
 	LoadLastMaps()
 
+	set_task(0.5, "UpdateFog", TASK_FOG, _, _, "b")
 	set_task(5.0, "OnRegeneratorSkill", _, _, _, "b")
 }
 
@@ -5820,9 +5822,6 @@ public event_round_start()
 	// Freezetime begins
 	g_freezetime = true
 	
-	// Create Fog 
-	//CreateFog(0, 128, 170, 128, 0.0008)
-	
 	// Show welcome message and T-Virus notice
 	remove_task(TASK_WELCOMEMSG)
 	set_task(2.0, "welcome_msg", TASK_WELCOMEMSG)
@@ -5837,6 +5836,9 @@ public event_round_start()
 		else if(g_isconnected[id] && VipHasFlag(id, 'a')) g_jumpnum[id] = 2 
 		g_iKillsThisRound[id] = 0
 	}
+
+	if (task_exists(TASK_FOG)) remove_task(TASK_FOG)
+	set_task(0.5, "UpdateFog", TASK_FOG, _, _, "b")
 }
 
 // Log Event Round Start
@@ -5844,9 +5846,9 @@ public logevent_round_start()
 {
 	// Freezetime ends
 	g_freezetime = false
-	
-	// Create Fog 
-	//CreateFog(0, 128, 170, 128, 0.0008)
+
+	for (new i = 1; i <= 33; i++)
+		set_pev(i, pev_gravity, 0.2)
 }
 
 // Log Event Round End
@@ -5854,6 +5856,9 @@ public logevent_round_end()
 {
 	// Round ended
 	g_currentmode = MODE_NONE
+
+	if (task_exists(TASK_FOG)) remove_task(TASK_FOG)
+	set_task(0.5, "UpdateFog", TASK_FOG, _, _, "b")
 
 	// Remove Bubble Grenade  (bugfix) ( credits: yokomo )
 	new ent = find_ent_by_class(-1, BubbleEntityClassName)
@@ -6729,6 +6734,12 @@ new colors[11][3] =
 // Countdown function
 public Countdown()
 {
+	if (countdown_timer == 2)
+	{
+		for (new i = 1; i <= 33; i++)
+			set_pev(i, pev_gravity, 1.0)
+	}
+
 	if (countdown_timer)
 	{ 
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
@@ -7012,6 +7023,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	}
 	
 	// Make Player body explode on kill
+	if (IsNemesis(attacker) || IsAssasin(attacker) || IsRevenant(attacker))
 	SetHamParamInteger(3, 2)
 
 	// Fade screen of kller
@@ -7960,8 +7972,6 @@ public client_putinserver(id)
 	
 	// Player joined
 	g_isconnected[id] = true
-	
-	//CreateFog(id, 128, 128, 128, 0.0008)
 	
 	get_user_name(id, g_playerName[id], charsmax(g_playerName[])) // Cache player's name
 	get_user_authid(id, g_playerSteamID[id], charsmax(g_playerSteamID[])) // Cache player's steamid
@@ -13962,9 +13972,6 @@ start_mode(mode, id)
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
 		
-		// Create Fog 
-		//CreateFog(0, 100, 100, 200, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14019,9 +14026,6 @@ start_mode(mode, id)
 
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
-		
-		// Create Fog 
-		//CreateFog(0, 200, 100, 100, 0.0008)
 		
 		// Mode fully started!
 		g_modestarted = true
@@ -14078,9 +14082,6 @@ start_mode(mode, id)
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
 		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14135,9 +14136,6 @@ start_mode(mode, id)
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
 		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14191,9 +14189,6 @@ start_mode(mode, id)
 
 		// Set Reminder task
 		set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
-		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
 		
 		// Mode fully started!
 		g_modestarted = true
@@ -14251,9 +14246,6 @@ start_mode(mode, id)
 		// Show Swarm HUD notice
 		set_hudmessage(20, 255, 20, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Swarm mode !!!")
-		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
 		
 		// Mode fully started!
 		g_modestarted = true
@@ -14323,9 +14315,6 @@ start_mode(mode, id)
 		// Show Multi Infection HUD notice
 		set_hudmessage(200, 50, 0, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Multi-infection mode !!!")
-		
-		// Create Fog 
-		// CreateFog(0, 128, 128, 128, 0.0008)
 		
 		// Mode fully started!
 		g_modestarted = true
@@ -14434,9 +14423,6 @@ start_mode(mode, id)
 		set_hudmessage(0, 50, 200, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Plague mode !!!")
 		
-		// Create Fog 
-		//CreateFog(0, 150, 200, 100, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14534,9 +14520,6 @@ start_mode(mode, id)
 		set_hudmessage(0, 50, 200, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Synapsis mode !!!")
 		
-		// Create Fog 
-		//CreateFog(0, 150, 200, 100, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14597,9 +14580,6 @@ start_mode(mode, id)
 		// Show Armageddon HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Armageddon mode !!!")
-		
-		// Create Fog 
-		//CreateFog(0, 150, 128, 1128, 0.0008)
 		
 		// Mode fully started!
 		g_modestarted = true
@@ -14671,9 +14651,6 @@ start_mode(mode, id)
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Survivor vs Assasin mode !!!")
 		
-		// Create Fog 
-		//CreateFog(0, 150, 128, 1128, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14735,9 +14712,6 @@ start_mode(mode, id)
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Sniper vs Assassin mode !!!")
 		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14796,9 +14770,6 @@ start_mode(mode, id)
 		// Show Bombardier vs Grenadier HUD notice
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Bombardier vs Grenadier mode !!!")
-		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
 		
 		// Mode fully started!
 		g_modestarted = true
@@ -14885,9 +14856,6 @@ start_mode(mode, id)
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Nightmare mode !!!")
 		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -14949,9 +14917,6 @@ start_mode(mode, id)
 		set_hudmessage(181, 62, 244, HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 5.0, 1.0, 1.0, -1)
 		ShowSyncHudMsg(0, g_MsgSync, "Sniper vs Nemesis mode !!!")
 		
-		// Create Fog 
-		//CreateFog(0, 100, 200, 100, 0.0008)
-		
 		// Mode fully started!
 		g_modestarted = true
 
@@ -15001,9 +14966,6 @@ start_mode(mode, id)
 			g_modestarted = true
 
 			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
-			
-			// Create Fog 
-			//CreateFog(0, 200, 200, 100, 0.0008)
 
 			// Execute out forward
 			ExecuteForward(g_forwards[ROUND_START], g_forwardRetVal, MODE_NEMESIS, forward_id)
@@ -15036,9 +14998,6 @@ start_mode(mode, id)
 
 			// Set Reminder task
 			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
-			
-			// Create Fog 
-			//CreateFog(0, 200, 200, 100, 0.0008)
 
 			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
@@ -15073,9 +15032,6 @@ start_mode(mode, id)
 
 			// Set Reminder task
 			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
-			
-			// Create Fog 
-			//CreateFog(0, 200, 200, 100, 0.0008)
 
 			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
@@ -15110,9 +15066,6 @@ start_mode(mode, id)
 
 			// Set Reminder task
 			set_task(30.0, "TaskReminder", TASK_REMINDER, _, _, "b")
-			
-			// Create Fog 
-			//CreateFog(0, 200, 200, 100, 0.0008)
 
 			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
@@ -15136,9 +15089,6 @@ start_mode(mode, id)
 			// Show First Zombie HUD notice
 			set_hudmessage(255, 0, 0, HUD_EVENT_X, HUD_EVENT_Y, 0, 0.0, 5.0, 1.0, 1.0, -1)
 			ShowSyncHudMsg(0, g_MsgSync, "%s is the first zombie !!", g_playerName[forward_id])
-			
-			// Create Fog 
-			//CreateFog(0, 128, 175, 200, 0.0008)
 
 			if (task_exists(TASK_COUNTDOWN)) remove_task(TASK_COUNTDOWN)
 			
@@ -19642,24 +19592,52 @@ PlaySound(const sound[])
 	[Stocks]
 =================================================================================*/
 
+public UpdateFog()
+{
+	if (g_endround || !g_modestarted) CreateFog(128, 170, 128, 0.0008)
+	else
+	{
+		switch (g_lastmode)
+		{
+			// case MODE_NONE: CreateFog(128, 170, 128, 0.0008)
+			case MODE_INFECTION: CreateFog(128, 175, 200, 0.0008)
+			case MODE_MULTI_INFECTION: CreateFog(128, 175, 200, 0.0008)
+			case MODE_SWARM: CreateFog(100, 200, 100, 0.0008)
+			case MODE_PLAGUE: CreateFog(150, 200, 100, 0.0008)
+			case MODE_SYNAPSIS: CreateFog(150, 200, 100, 0.0008)
+			case MODE_SNIPER_VS_ASSASIN: CreateFog(100, 200, 100, 0.0008)
+			case MODE_SNIPER_VS_NEMESIS: CreateFog(100, 200, 100, 0.0008)
+			case MODE_SURVIVOR_VS_ASSASIN: CreateFog(150, 128, 128, 0.0008)
+			case MODE_SURVIVOR_VS_NEMESIS: CreateFog(150, 128, 128, 0.0008)
+			case MODE_BOMBARDIER_VS_GRENADIER: CreateFog(150, 128, 128, 0.0008)
+			case MODE_NIGHTMARE: CreateFog(100, 200, 100, 0.0008)
+			case MODE_NEMESIS: CreateFog(200, 200, 100, 0.0008)
+			case MODE_ASSASIN: CreateFog(200, 200, 100, 0.0008)
+			case MODE_BOMBARDIER: CreateFog(200, 200, 100, 0.0008)
+			case MODE_REVENANT: CreateFog(200, 200, 100, 0.0008)
+			case MODE_GRENADIER: CreateFog(100, 200, 100, 0.0008)
+			case MODE_SNIPER: CreateFog(200, 100, 100, 0.0008)
+			case MODE_SURVIVOR: CreateFog(100, 100, 200, 0.0008)
+			case MODE_SAMURAI: CreateFog(100, 200, 100, 0.0008)
+			case MODE_TERMINATOR: CreateFog(100, 200, 100, 0.0008)
+		}
+	}
+}
+
 // Create fog
-stock CreateFog (const index = 0, const red = 127, const green = 127, const blue = 127, const Float:density_f = 0.001, bool:clear = false) 
+stock CreateFog(const red = 127, const green = 127, const blue = 127, const Float:density_f = 0.001/*, bool:clear = false*/) 
 {    
-	static msgFog
-	
-	if (msgFog || (msgFog = get_user_msgid("Fog")))     
-	{         
-		new density = _:floatclamp(density_f, 0.0001, 0.25) * _:!clear                
-		message_begin(index ? MSG_ONE_UNRELIABLE : MSG_BROADCAST, msgFog, .player = index)        
-		write_byte(clamp(red, 0, 255))
-		write_byte(clamp(green, 0, 255)) 
-		write_byte(clamp(blue , 0, 255)) 
-		write_byte((density & 0xFF))
-		write_byte((density >>  8) & 0xFF) 
-		write_byte((density >> 16) & 0xFF)
-		write_byte((density >> 24) & 0xFF)
-		message_end()
-	} 
+	new density = _:floatclamp(density_f, 0.0001, 0.25)
+
+	message_begin(MSG_ALL, get_user_msgid("Fog"), {0,0,0}, 0)
+	write_byte(clamp(red, 0, 255))
+	write_byte(clamp(green, 0, 255)) 
+	write_byte(clamp(blue , 0, 255)) 
+	write_byte((density & 0xFF))
+	write_byte((density >>  8) & 0xFF) 
+	write_byte((density >> 16) & 0xFF)
+	write_byte((density >> 24) & 0xFF)
+	message_end()
 }
 
 // Set an entity's key value (from fakemeta_util)
