@@ -3378,7 +3378,7 @@ public plugin_init()
 	register_concmd("amx_sva", "cmd_sva", -1, _, -1)
 	register_concmd("zp_bvg", "cmd_bvg", -1, _, -1)
 	register_concmd("amx_bvg", "cmd_bvg", -1, _, -1)
-	
+
 	register_concmd("zp_points", "cmd_points", -1, _, -1)
 	register_concmd("amx_points", "cmd_points", -1, _, -1)
 	register_concmd("zp_resetpoints", "cmd_resetpoints", -1, _, -1)
@@ -5599,7 +5599,7 @@ public plugin_cfg()
 	server_cmd("hostname %s", "PerfectZM.CsBlackDevil.com [Zombie Queen 12.0]")
 
 	// Set lighting
-	engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
+	engfunc(EngFunc_LightStyle, 0, "e") // Set lighting
 	
 	// Cache CVARs after configs are loaded / call roundstart manually
 	set_task(0.5, "cache_cvars")
@@ -5892,7 +5892,7 @@ public logevent_round_end()
     }
 
 	// Reset lighting if last round was Assassin round
-	if (g_lastmode == MODE_ASSASIN) engfunc(EngFunc_LightStyle, 0, "d") // Set lighting
+	if (g_lastmode == MODE_ASSASIN) engfunc(EngFunc_LightStyle, 0, "e") // Set lighting
 
 	// Prevent this from getting called twice when restarting (bugfix)
 	static Float:lastendtime, Float:current_time, iRand, buffer[65]
@@ -6749,6 +6749,8 @@ new colors[11][3] =
 	{0, 255, 0}
 }
 
+new g_lightLevels[][] = {"a", "b", "c", "d", "e"}
+
 // Countdown function
 public Countdown()
 {
@@ -6759,6 +6761,9 @@ public Countdown()
 		set_hudmessage(colors[countdown_timer][0], colors[countdown_timer][1], colors[countdown_timer][2], -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
 		ShowSyncHudMsg(0, g_MsgSync4, "Infection in %i", countdown_timer)
 
+		if (countdown_timer <= 4)
+			engfunc(EngFunc_LightStyle, 0, g_lightLevels[countdown_timer])
+
 		countdown_timer--
 
 		set_task(1.0, "Countdown", TASK_COUNTDOWN)
@@ -6767,6 +6772,8 @@ public Countdown()
 	{	
 		for (new i = 1; i <= 33; i++)
 			set_pev(i, pev_gravity, 1.0)
+
+		engfunc(EngFunc_LightStyle, 0, g_lightLevels[countdown_timer])
 
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
 		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 2.0, 0.01, 0.1, 10)
@@ -14175,6 +14182,9 @@ start_mode(mode, id)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -14230,6 +14240,9 @@ start_mode(mode, id)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -14285,6 +14298,9 @@ start_mode(mode, id)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -14340,6 +14356,9 @@ start_mode(mode, id)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -14394,6 +14413,9 @@ start_mode(mode, id)
 
 		// Save his index for future use
 		g_lastSpecialHumanIndex = id
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// Turn the remaining players into zombies
 		for (id = 1; id <= g_maxplayers; id++)
@@ -14435,6 +14457,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_SWARM
 
 		g_rounds[g_roundcount] = MODE_SWARM
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// Make sure there are alive players on both teams (BUGFIX)
 		if (!fnGetAliveTs())
@@ -14492,6 +14517,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_MULTI_INFECTION
 
 		g_rounds[g_roundcount] = MODE_MULTI_INFECTION
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround(iPlayersnum * multi_ratio, floatround_ceil)
@@ -14561,6 +14589,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_PLAGUE
 
 		g_rounds[g_roundcount] = MODE_PLAGUE
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// Turn specified amount of players into Survivors
 		static iSurvivors, iMaxSurvivors
@@ -14669,6 +14700,9 @@ start_mode(mode, id)
 
 		g_rounds[g_roundcount] = MODE_SYNAPSIS
 
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
+
 		// Turn specified amount of players into Nemesis
 		static iNemesis, iMaxNemesis
 		iMaxNemesis = synapsis_nemesis_count
@@ -14765,6 +14799,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_SURVIVOR_VS_NEMESIS
 
 		g_rounds[g_roundcount] = MODE_SURVIVOR_VS_NEMESIS
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * svn_ratio), floatround_ceil)
@@ -14826,6 +14863,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_SURVIVOR_VS_ASSASIN
 
 		g_rounds[g_roundcount] = MODE_SURVIVOR_VS_ASSASIN
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * sva_ratio), floatround_ceil)
@@ -14896,6 +14936,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_SNIPER_VS_ASSASIN
 
 		g_rounds[g_roundcount] = MODE_SNIPER_VS_ASSASIN
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * snva_ratio), floatround_ceil)
@@ -14957,6 +15000,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_BOMBARDIER_VS_GRENADIER
 
 		g_rounds[g_roundcount] = MODE_BOMBARDIER_VS_GRENADIER
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * bvg_ratio), floatround_ceil)
@@ -15016,6 +15062,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_NIGHTMARE
 
 		g_rounds[g_roundcount] = MODE_NIGHTMARE
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		iMaxZombies = floatround((iPlayersnum * 0.25), floatround_ceil)
 		iZombies = 0
@@ -15101,6 +15150,9 @@ start_mode(mode, id)
 		g_lastmode = MODE_SNIPER_VS_NEMESIS
 
 		g_rounds[g_roundcount] = MODE_SNIPER_VS_NEMESIS
+
+		// Set lighting 
+		engfunc(EngFunc_LightStyle, 0, "e")
 		
 		// iMaxZombies is rounded up, in case there aren't enough players
 		iMaxZombies = floatround((iPlayersnum * snvn_ratio), floatround_ceil)
@@ -15180,6 +15232,9 @@ start_mode(mode, id)
 			// Save his index for future use
 			g_lastSpecialZombieIndex = id
 
+			// Set lighting 
+			engfunc(EngFunc_LightStyle, 0, "e")
+
 			// Play Nemesis sound
 			iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_NEMESIS]) - 1)
 			ArrayGetString(Array:g_startSound[SOUND_NEMESIS], iRand, buffer, charsmax(buffer))
@@ -15251,6 +15306,9 @@ start_mode(mode, id)
 			// Save his index for future use
 			g_lastSpecialZombieIndex = id
 
+			// Set lighting 
+			engfunc(EngFunc_LightStyle, 0, "e")
+
 			// Play Bombardier sound
 			iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_BOMBARDIER]) - 1)
 			ArrayGetString(Array:g_startSound[SOUND_BOMBARDIER], iRand, buffer, charsmax(buffer))
@@ -15285,6 +15343,9 @@ start_mode(mode, id)
 			// Save his index for future use
 			g_lastSpecialZombieIndex = id
 
+			// Set lighting 
+			engfunc(EngFunc_LightStyle, 0, "e")
+
 			// Play Revenant sound
 			iRand = random_num(0, ArraySize(Array:g_startSound[SOUND_REVENANT]) - 1)
 			ArrayGetString(Array:g_startSound[SOUND_REVENANT], iRand, buffer, charsmax(buffer))
@@ -15312,6 +15373,9 @@ start_mode(mode, id)
 			g_lastmode = MODE_INFECTION
 
 			g_rounds[g_roundcount] = MODE_INFECTION
+
+			// Set lighting 
+			engfunc(EngFunc_LightStyle, 0, "e")
 			
 			// Turn player into the first zombie
 			MakeZombie(id)
