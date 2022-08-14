@@ -92,7 +92,7 @@ public plugin_init() {
 	register_forward(FM_SetModel, "fw_SetModel");
 	register_forward(FM_PlaybackEvent, "fw_PlaybackEvent");
 	register_touch(WEAPON_ROCKET_CLASS, "*", "fw_RocketTouch");
-	register_think(WEAPON_ROCKET_CLASS, "fw_RocketThink" )
+	//register_think(WEAPON_ROCKET_CLASS, "fw_RocketThink" )
 	g_MaxPlayers = get_maxplayers();
 	state WeaponBox_Disabled;
 	register_clcmd(WEAPON_SPRITE_NAME, "hook_weapon");
@@ -248,6 +248,9 @@ public fw_Weapon_PrimaryAttack(ent) {
 	g_mode[id] = 0;
 	return HAM_SUPERCEDE;
 }
+
+new COLORS[3]
+
 public fw_Weapon_MakeRocket(id) {
 	static Float:StartOrigin[3], Float:TargetOrigin[3], Float:angles[3], Float:angles_fix[3];
 
@@ -280,6 +283,10 @@ public fw_Weapon_MakeRocket(id) {
 	angles_fix[1] = angles[1];
 	angles_fix[2] = angles[2];
 
+	COLORS[0] = random(256)
+	COLORS[1] = random(256)
+	COLORS[2] = random(256)
+
     set_pev(iEnt, pev_movetype, MOVETYPE_TOSS);
 	set_pev(iEnt, pev_owner, id);
 	entity_set_string(iEnt, EV_SZ_classname, WEAPON_ROCKET_CLASS);
@@ -295,11 +302,13 @@ public fw_Weapon_MakeRocket(id) {
 
     //set_pev(iEnt, pev_movetype, MOVETYPE_FOLLOW);
     //set_pev(iEnt, pev_aiment, iAttachTo);
+
+	fm_set_rendering(iEnt, kRenderFxNone, COLORS[0], COLORS[1], COLORS[2], kRenderTransAdd, 255)
     
-    set_pev(iEnt, pev_rendercolor, Float:{0.0, 255.0, 0.0});
-    set_pev(iEnt, pev_renderamt, 255.0);
-    set_pev(iEnt, pev_rendermode, kRenderTransAdd);
-    set_pev(iEnt, pev_renderfx, kRenderFxNone);
+    // set_pev(iEnt, pev_rendercolor, COLORS);
+    // set_pev(iEnt, pev_renderamt, 255.0);
+    // set_pev(iEnt, pev_rendermode, kRenderTransAdd);
+    // set_pev(iEnt, pev_renderfx, kRenderFxNone);
 	set_pev(iEnt, pev_frame, 0.0);
     
     //set_kvd(0, KV_KeyName, "framerate");
@@ -314,9 +323,9 @@ public fw_Weapon_MakeRocket(id) {
 	write_short(g_trail);
 	write_byte(25);
 	write_byte(3);
-	write_byte(0);
-	write_byte(150);
-	write_byte(0);
+	write_byte(COLORS[0]);
+	write_byte(COLORS[1]);
+	write_byte(COLORS[2]);
 	write_byte(120);
 	message_end();
 
@@ -365,9 +374,9 @@ public fw_RocketTouch(Ent, Id) {
 		write_byte(4);
 		write_byte(i * 40);
 		write_byte(0);
-		write_byte(170);
-		write_byte(170);
-		write_byte(170);
+		write_byte(COLORS[0]);
+		write_byte(COLORS[1]);
+		write_byte(COLORS[2]);
 		write_byte(200);
 		write_byte(0);
 		message_end();

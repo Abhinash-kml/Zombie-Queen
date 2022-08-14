@@ -3275,14 +3275,25 @@ public plugin_init()
 	register_concmd("amx_help", "cmd_help", -1, _, -1)
 	register_concmd("amx_who", "cmd_who", -1, _, -1)
 	register_concmd("amx_nick", "cmd_nick", -1, _, -1)
+
 	register_concmd("amx_slap", "cmd_slap", -1, _, -1)
 	register_concmd("zp_slap", "cmd_slap", -1, _, -1)
+	register_concmd("amx_mslap", "cmd_mslap", -1, _, -1)
+	register_concmd("zp_mslap", "cmd_mslap", -1, _, -1)
+
 	register_concmd("amx_slay", "cmd_slay", -1, _, -1)
 	register_concmd("zp_slay", "cmd_slay", -1, _, -1)
+	register_concmd("amx_mslay", "cmd_mslay", -1, _, -1)
+	register_concmd("zp_mslay", "cmd_mslay", -1, _, -1)
+
 	register_concmd("amx_kick", "cmd_kick", -1, _, -1)
 	register_concmd("zp_kick", "cmd_kick", -1, _, -1)
+
 	register_concmd("amx_freeze", "cmd_freeze", -1, _, -1)
 	register_concmd("zp_freeze", "cmd_freeze", -1, _, -1)
+	register_concmd("amx_mfreeze", "cmd_mfreeze", -1, _, -1)
+	register_concmd("zp_mfreeze", "cmd_mfreeze", -1, _, -1)
+
 	register_concmd("amx_unfreeze", "cmd_unfreeze", -1, _, -1)
 	register_concmd("zp_unfreeze", "cmd_unfreeze", -1, _, -1)
 	register_concmd("amx_map", "cmd_map", -1, _, -1)
@@ -3297,10 +3308,8 @@ public plugin_init()
 	register_concmd("amx_punish", "cmd_punish", -1, _, -1)
 	register_concmd("zp_forgive", "cmd_forgive", -1, _, -1)
 	register_concmd("amx_forgive", "cmd_forgive", -1, _, -1)
-	register_concmd("amx_reloadadmins", "cmd_reloadadmins", -1, _, -1)
-	register_concmd("zp_reloadadmins", "cmd_reloadadmins", -1, _, -1)
-	register_concmd("amx_reloadvips", "cmd_reloadvips", -1, _, -1)
-	register_concmd("zp_reloadvips", "cmd_reloadvips", -1, _, -1)
+	register_concmd("amx_reloadaccounts", "cmd_reloadaccounts", -1, _, -1)
+	register_concmd("zp_reloadaccounts", "cmd_reloadaccounts", -1, _, -1)
 
 	register_concmd("amx_votemap", "cmd_votemap", -1, _, -1)
 	register_concmd("zp_votemap", "cmd_votemap", -1, _, -1)
@@ -3313,18 +3322,20 @@ public plugin_init()
 	register_concmd("zp_ungag", "cmd_ungag", -1, _, -1)
 	register_concmd("amx_jetpack", "cmd_jetpack", -1, _, -1)
 	register_concmd("zp_jetpack", "cmd_jetpack", -1, _, -1)
+
 	register_concmd("amx_ammo", "cmd_ammo", -1, _, -1)
 	register_concmd("zp_ammo", "cmd_ammo", -1, _, -1)
 	register_concmd("amx_giveap", "cmd_ammo", -1, _, -1)
 	register_concmd("zp_giveap", "cmd_ammo", -1, _, -1)
+
 	register_concmd("zp_zombie", "cmd_zombie", -1, _, -1)
 	register_concmd("amx_zombie", "cmd_zombie", -1, _, -1)
 	register_concmd("zp_human", "cmd_human", -1, _, -1)
 	register_concmd("amx_human", "cmd_human", -1, _, -1)
 	register_concmd("zp_nemesis", "cmd_nemesis", -1, _, -1)
 	register_concmd("amx_nemesis", "cmd_nemesis", -1, _, -1)
-	register_concmd("zp_assassin", "cmd_assassin", -1, _, -1)
-	register_concmd("amx_assassin", "cmd_assassin", -1, _, -1)
+	register_concmd("zp_assasin", "cmd_assasin", -1, _, -1)
+	register_concmd("amx_assasin", "cmd_assasin", -1, _, -1)
 	register_concmd("zp_bombardier", "cmd_bombardier", -1, _, -1)
 	register_concmd("amx_bombardier", "cmd_bombardier", -1, _, -1)
 	register_concmd("zp_survivor", "cmd_survivor", -1, _, -1)
@@ -3347,20 +3358,27 @@ public plugin_init()
 	register_concmd("amx_multi", "cmd_multi", -1, _, -1)
 	register_concmd("zp_plague", "cmd_plague", -1, _, -1)
 	register_concmd("amx_plague", "cmd_plague", -1, _, -1)
+
 	register_concmd("zp_armageddon", "cmd_armageddon", -1, _, -1)
 	register_concmd("amx_armageddon", "cmd_armageddon", -1, _, -1)
-	register_concmd("zp_apocalypse", "cmd_apocalypse", -1, _, -1)
-	register_concmd("amx_apocalypse", "cmd_apocalypse", -1, _, -1)
+	register_concmd("zp_lnj", "cmd_armageddon", -1, _, -1)
+	register_concmd("amx_lnj", "cmd_armageddon", -1, _, -1)
+	register_concmd("zp_svn", "cmd_armageddon", -1, _, -1)
+	register_concmd("amx_svn", "cmd_armageddon", -1, _, -1)
+
+	register_concmd("zp_snva", "cmd_apocalypse", -1, _, -1)
+	register_concmd("amx_snva", "cmd_apocalypse", -1, _, -1)
 	register_concmd("zp_nightmare", "cmd_nightmare", -1, _, -1)
 	register_concmd("amx_nightmare", "cmd_nightmare", -1, _, -1)
 	register_concmd("zp_synapsis", "cmd_synapsis", -1, _, -1)
 	register_concmd("amx_synapsis", "cmd_synapsis", -1, _, -1)
-	register_concmd("zp_devil", "cmd_devil", -1, _, -1)
-	register_concmd("amx_devil", "cmd_devil", -1, _, -1)
-	register_concmd("zp_survivor_vs_assasin", "cmd_survivor_vs_assasin", -1, _, -1)
-	register_concmd("amx_survivor_vs_assasin", "cmd_survivor_vs_assasin", -1, _, -1)
-	register_concmd("zp_bombardier_vs_grenadier", "cmd_bombardier_vs_grenadier", -1, _, -1)
-	register_concmd("amx_bombardier_vs_grenadier", "cmd_bombardier_vs_grenadier", -1, _, -1)
+	register_concmd("zp_snvn", "cmd_snvn", -1, _, -1)
+	register_concmd("amx_snvn", "cmd_snvn", -1, _, -1)
+	register_concmd("zp_sva", "cmd_sva", -1, _, -1)
+	register_concmd("amx_sva", "cmd_sva", -1, _, -1)
+	register_concmd("zp_bvg", "cmd_bvg", -1, _, -1)
+	register_concmd("amx_bvg", "cmd_bvg", -1, _, -1)
+	
 	register_concmd("zp_points", "cmd_points", -1, _, -1)
 	register_concmd("amx_points", "cmd_points", -1, _, -1)
 	register_concmd("zp_resetpoints", "cmd_resetpoints", -1, _, -1)
@@ -6734,12 +6752,6 @@ new colors[11][3] =
 // Countdown function
 public Countdown()
 {
-	if (countdown_timer == 2)
-	{
-		for (new i = 1; i <= 33; i++)
-			set_pev(i, pev_gravity, 1.0)
-	}
-
 	if (countdown_timer)
 	{ 
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
@@ -6752,7 +6764,10 @@ public Countdown()
 		set_task(1.0, "Countdown", TASK_COUNTDOWN)
 	}
 	else
-	{
+	{	
+		for (new i = 1; i <= 33; i++)
+			set_pev(i, pev_gravity, 1.0)
+
 		client_cmd(0, "spk %s", CountdownSounds[countdown_timer])
 		set_hudmessage(179, 0, 0, -1.0, 0.28, 2, 0.02, 2.0, 0.01, 0.1, 10)
 		ShowSyncHudMsg(0, g_MsgSync4, "Warning: Biohazard detected")
@@ -7352,7 +7367,7 @@ public OnTakeDamage(victim, inflictor, attacker, Float:damage, damage_type, ptr)
 		if (g_currentweapon[attacker] == CSW_SG550 && g_has_crossbow[attacker])
 		{
 			damage *= CROSSBOW_DAMAGE
-			SetHamParamFloat(4, CROSSBOW_DAMAGE)
+			SetHamParamFloat(4, damage)
 		}
 
 		if ((VipHasFlag(attacker, 'f') || g_doubledamage[attacker]) && (IsHuman(attacker) || IsSurvivor(attacker) || IsTryder(attacker) || IsTerminator(attacker)) && (damage_type & DMG_BULLET))
@@ -11121,6 +11136,51 @@ public cmd_slap(id)
 	return PLUGIN_CONTINUE
 }
 
+public cmd_mslap(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_mslap"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_mslap <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_mslap"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_mslap <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		// Initialize Target
+		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		user_slap(target, 0, 1)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_SLAP, id, target)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
 // zp_slay [target]
 public cmd_slay(id)
 {
@@ -11161,6 +11221,51 @@ public cmd_slay(id)
 			console_print(id, "[Zombie Queen] You cannot slay an Admin with immunity!")
 			return PLUGIN_HANDLED
 		}
+		
+		user_kill(target)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_SLAY, id, target)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
+public cmd_mslay(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAY]))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_mslay"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_mslay <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_mslay"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_mslay <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		// Initialize Target
+		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
 		
 		user_kill(target)
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
@@ -11350,6 +11455,122 @@ public cmd_freeze(id)
 	return PLUGIN_CONTINUE
 }
 
+public cmd_mfreeze(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_FREEZE]))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_mfreeze"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_mfreeze <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		else if (equal(command, "amx_mfreeze"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_mfreeze <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+
+		if (equali(arg, "@all", 4))
+		{
+			for (new i = 1; i <= 33; i++)
+			{
+				if (g_frozen[i]) continue
+
+				if (!IsZombie(i)) continue
+
+				// Light blue glow while frozen
+				set_glow(i, 0, 206, 209, 25)
+				
+				// Freeze sound
+				static iRand, buffer[100]
+				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+				ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+				emit_sound(i, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+				
+				// Add a blue tint to their screen
+				UTIL_ScreenFade(i, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+				
+				// Set the frozen flag
+				g_frozen[i] = true
+				
+				// Save player's old gravity (bugfix)
+				pev(i, pev_gravity, g_frozen_gravity[i])
+				
+				// Prevent from jumping
+				if (pev(i, pev_flags) & FL_ONGROUND)
+					set_pev(i, pev_gravity, 999999.9) // set really high
+				else
+					set_pev(i, pev_gravity, 0.000001) // no gravity
+				
+				// Prevent from moving
+				ExecuteHamB(Ham_Player_ResetMaxSpeed, i)
+
+				// Log to Zombie Plague log file?
+				LogToFile(LOG_FREEZE, id, i)
+			}
+
+			// Print in chat
+			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1freeze ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
+		}
+		else
+		{
+			// Initialize Target
+			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY)
+
+			// Invalid target
+			if (!target) return PLUGIN_HANDLED
+			
+			// Light blue glow while frozen
+			set_glow(target, 0, 206, 209, 25)
+			
+			// Freeze sound
+			static iRand, buffer[100]
+			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+			ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+			emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+			
+			// Add a blue tint to their screen
+			UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+			
+			// Set the frozen flag
+			g_frozen[target] = true
+			
+			// Save player's old gravity (bugfix)
+			pev(target, pev_gravity, g_frozen_gravity[target])
+			
+			// Prevent from jumping
+			if (pev(target, pev_flags) & FL_ONGROUND)
+				set_pev(target, pev_gravity, 999999.9) // set really high
+			else
+				set_pev(target, pev_gravity, 0.000001) // no gravity
+			
+			// Prevent from moving
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
+
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+			
+			// Log to Zombie Plague log file?
+			LogToFile(LOG_FREEZE, id, target)
+		}
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
 public cmd_unfreeze(id)
 {
 	// Check for access flag depending on the resulting action
@@ -11406,12 +11627,6 @@ public cmd_unfreeze(id)
 			// Invalid target
 			if (!target) return PLUGIN_HANDLED
 			
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-			{
-				console_print(id, "[Zombie Queen] You cannot unfreeze an Admin with immunity!")
-				return PLUGIN_HANDLED
-			}
-			
 			static iParams[2]
 			iParams[0] = target
 			iParams[1] = 1
@@ -11443,11 +11658,13 @@ public cmd_map(id)
 			return PLUGIN_HANDLED
 		}
 
-		set_task(1.0, "MapChangeCountdown", _, _, _, "a", MapCountdownTimer)
+		client_print_color(0, print_team_grey, "%s ^1Admin ^3%s ^1is changing map to ^4%s", CHAT_PREFIX, g_playerName[id], arg)
+
+		set_task(1.0, "MapChangeCountdown", _, arg, arglen + 1, "a", MapCountdownTimer)
 		set_task(1.0, "InformEveryone")
 		set_task(5.0, "ShutDownSQL")
 		set_task(11.0, "MessageIntermission")
-		set_task(16.0, "ChangeMap", 0, arg, arglen + 1)
+		set_task(16.0, "ChangeMap", _, arg, arglen + 1)
 
 		// Log to file
 		//LogToFile(LOG_MAP, id)
@@ -11456,12 +11673,12 @@ public cmd_map(id)
 	return PLUGIN_HANDLED
 }
 
-public MapChangeCountdown()
+public MapChangeCountdown(map[])
 {
 	client_cmd(0, "spk %s", CountdownSounds[MapCountdownTimer])
 	
 	set_hudmessage(0, 255, 0, -1.0, 0.28, 2, 0.02, 1.0, 0.01, 0.1, 10)
-	ShowSyncHudMsg(0, g_MsgSync4, "Changing map in %i", MapCountdownTimer)
+	ShowSyncHudMsg(0, g_MsgSync4, "Changing map to %s in %i", map, MapCountdownTimer)
 
 	MapCountdownTimer--
 }
@@ -11666,12 +11883,18 @@ public cmd_forgive(id)
 	return PLUGIN_CONTINUE
 }
 
-public cmd_reloadadmins(id)
+public cmd_reloadaccounts(id)
 {
 	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RELOAD_ADMINS]))
 	{
 		g_adminCount = 0
+		g_vipCount = 0
+		g_tagCount = 0
+		
 		ReadAdminsFromFile()
+		ReadVipsFromFile()
+		ReadPlayerTagsFromFile()
+
 		new i = 1
 
 		while (i < g_maxplayers + 1)
@@ -11680,33 +11903,20 @@ public cmd_reloadadmins(id)
 			{
 				if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[i]))
 				MakeUserAdmin(i)
-			}
-			i++
-		}
-		console_print(id, "[PerfectZM] Successfully loaded %d admins from file", g_adminCount)
-	}
 
-	return PLUGIN_HANDLED
-}
-
-public cmd_reloadvips(id)
-{
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RELOAD_ADMINS]))
-	{
-		g_vipCount = 0
-		ReadVipsFromFile()
-		new i = 1
-
-		while (i < g_maxplayers + 1)
-		{
-			if (g_isconnected[i] && !g_bot[i]) 
-			{
 				if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[i]))
 				MakeUserVip(i)
+
+				if (g_tagCount && TrieKeyExists(g_tagTrie, g_playerName[i]))
+				GiveUserTag(id)
 			}
 			i++
 		}
-		console_print(id, "[PerfectZM] Successfully loaded %d vips from file", g_vipCount)
+
+		console_print(id, "[PerfectZM] Successfully loaded %d admins from database", g_adminCount)
+		console_print(id, "[PerfectZM] Successfully loaded %d vips from database", g_vipCount)
+		console_print(id, "[PerfectZM] Successfully loaded %d tags from database", g_tagCount)
+
 	}
 
 	return PLUGIN_HANDLED
@@ -12178,7 +12388,7 @@ public cmd_gag(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = cmd_target(id, arg, CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -12231,7 +12441,7 @@ public cmd_ungag(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = cmd_target(id, arg, CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -12971,7 +13181,7 @@ public cmd_nemesis(id)
 }
 
 // zp_assassin [target]
-public cmd_assassin(id)
+public cmd_assasin(id)
 {
 	// Check for access flag depending on the resulting action
 	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ASSASIN]))
@@ -12982,19 +13192,19 @@ public cmd_assassin(id)
 		read_argv(0, command, charsmax(command))
 		read_argv(1, arg, charsmax(arg))
 		
-		if (equal(command, "zp_assassin"))
+		if (equal(command, "zp_assasin"))
 		{
 			if (read_argc() < 2)
 			{
-				console_print(id, "[Zombie Queen] Command usage is zp_assassin <#userid or name>")
+				console_print(id, "[Zombie Queen] Command usage is zp_assasin <#userid or name>")
 				return PLUGIN_HANDLED
 			}
 		}
-		else if (equal(command, "amx_assassin"))
+		else if (equal(command, "amx_assasin"))
 		{
 			if (read_argc() < 2)
 			{
-				console_print(id, "[Zombie Queen] Command usage is amx_assassin <#userid or name>")
+				console_print(id, "[Zombie Queen] Command usage is amx_assasin <#userid or name>")
 				return PLUGIN_HANDLED
 			}
 		}
@@ -13365,7 +13575,7 @@ public cmd_nightmare(id)
 }
 
 // zp_devil
-public cmd_devil(id) // ( Sniper vs Nemesis) // Abhinash
+public cmd_snvn(id) // ( Sniper vs Nemesis) // Abhinash
 {
 	// Check for access flag - Mode Apocalypse
 	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_NEMESIS]))
@@ -13427,7 +13637,7 @@ public cmd_synapsis(id) // Synapsis round
 }
 
 // zp_survivor_vs_assasin
-public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
+public cmd_sva(id) // Survivor vs Assasin round
 {
 	// Check for access flag - Mode Apocalypse
 	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_ASSASIN]))
@@ -13458,7 +13668,7 @@ public cmd_survivor_vs_assasin(id) // Survivor vs Assasin round
 }
 
 // zp_bombardier_vs_grenadier
-public cmd_bombardier_vs_grenadier(id) // Bombardier vs Grenadier mode
+public cmd_bvg(id) // Bombardier vs Grenadier mode
 {
 	// Check for access flag - Mode Bombardier vs Grenadier
 	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_BOMBARDIER_VS_GRENADIER]))
@@ -13539,7 +13749,7 @@ public cmd_points(id)
 			}
 		}
 		
-		target = cmd_target(id, arg, (CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF))
+		target = cmd_target(id, arg, CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13552,6 +13762,16 @@ public cmd_points(id)
 			
 			g_points[target] += points
 			MySQL_UPDATE_DATABASE(target)
+
+			static logdata[200], authid[32], ip[16], mapName[32]
+			get_user_authid(id, authid, charsmax(authid))
+			get_user_ip(id, ip, charsmax(ip), 1)
+			get_mapname(mapName, charsmax(mapName))
+
+			formatex(logdata, charsmax(logdata), "Admin %s [ %s | %s ] added %i points to %s. [ Map: %s | Players: %i/32 ]", \
+			g_playerName[id], authid, ip, points, g_playerName[target], mapName, get_playersnum())
+
+			log_to_file("PointsLog.log", logdata)
 			
 			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playerName[id], AddCommas(points), g_playerName[target])
 			return PLUGIN_HANDLED
@@ -13611,6 +13831,16 @@ public cmd_resetpoints(id)
 		{
 			g_points[target] = 0
 			MySQL_UPDATE_DATABASE(target)
+
+			static logdata[200], authid[32], ip[16], mapName[32]
+			get_user_authid(id, authid, charsmax(authid))
+			get_user_ip(id, ip, charsmax(ip), 1)
+			get_mapname(mapName, charsmax(mapName))
+
+			formatex(logdata, charsmax(logdata), "Admin %s [ %s | %s ] reset points of %s. [ Map: %s | Players: %i/32 ]", \
+			g_playerName[id], authid, ip, g_playerName[target], mapName, get_playersnum())
+
+			log_to_file("PointsLog.log", logdata)
 			
 			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1reset ^4%s ^1points to^3 0.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			return PLUGIN_HANDLED
@@ -19997,7 +20227,7 @@ public ChangeModels(taskid)
 					iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_FOUNDER]) - 1)
 					ArrayGetString(Array:g_playerModel[MODEL_FOUNDER], iRand, tempmodel, charsmax(tempmodel))
 					set_user_model(id, tempmodel)
-					log_amx("Founder %s model changed to = %s", g_playerName[id], tempmodel)
+					// log_amx("Founder %s model changed to = %s", g_playerName[id], tempmodel)
 				}
 			}
 			else if (equali(g_adminInfo[id][_aRank], "RANK_OWNER"))
@@ -20015,7 +20245,7 @@ public ChangeModels(taskid)
 						iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_VIP]) - 1)
 						ArrayGetString(Array:g_playerModel[MODEL_VIP], iRand, tempmodel, charsmax(tempmodel))
 						set_user_model(id, tempmodel)
-						log_amx("Owner + VIP %s model changed to = %s", g_playerName[id], tempmodel)
+						// log_amx("Owner + VIP %s model changed to = %s", g_playerName[id], tempmodel)
 					}
 				}
 				else
@@ -20031,7 +20261,7 @@ public ChangeModels(taskid)
 						iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_OWNER]) - 1)
 						ArrayGetString(Array:g_playerModel[MODEL_OWNER], iRand, tempmodel, charsmax(tempmodel))
 						set_user_model(id, tempmodel)
-						log_amx("Owner %s model changed to = %s", g_playerName[id], tempmodel)
+						// log_amx("Owner %s model changed to = %s", g_playerName[id], tempmodel)
 					}
 				}
 			}
@@ -20050,7 +20280,7 @@ public ChangeModels(taskid)
 						iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_VIP]) - 1)
 						ArrayGetString(Array:g_playerModel[MODEL_VIP], iRand, tempmodel, charsmax(tempmodel))
 						set_user_model(id, tempmodel)
-						log_amx("Admin + VIP %s model changed to = %s", g_playerName[id], tempmodel)
+						// log_amx("Admin + VIP %s model changed to = %s", g_playerName[id], tempmodel)
 					}
 				}
 				else
@@ -20066,7 +20296,7 @@ public ChangeModels(taskid)
 						iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_ADMIN]) - 1)
 						ArrayGetString(Array:g_playerModel[MODEL_ADMIN], iRand, tempmodel, charsmax(tempmodel))
 						set_user_model(id, tempmodel)
-						log_amx("Admin %s model changed to = %s", g_playerName[id], tempmodel)
+						// log_amx("Admin %s model changed to = %s", g_playerName[id], tempmodel)
 					}
 				}
 			}
@@ -20084,7 +20314,7 @@ public ChangeModels(taskid)
 				iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_VIP]) - 1)
 				ArrayGetString(Array:g_playerModel[MODEL_VIP], iRand, tempmodel, charsmax(tempmodel))
 				set_user_model(id, tempmodel)
-				log_amx("VIP %s model changed to = %s", g_playerName[id], tempmodel)
+				// log_amx("VIP %s model changed to = %s", g_playerName[id], tempmodel)
 			}
 		}
 		else
@@ -20100,7 +20330,7 @@ public ChangeModels(taskid)
 				iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_HUMAN]) - 1)
 				ArrayGetString(Array:g_playerModel[MODEL_HUMAN], iRand, tempmodel, charsmax(tempmodel))
 				set_user_model(id, tempmodel)
-				log_amx("Human %s model changed to = %s", g_playerName[id], tempmodel)
+				// log_amx("Human %s model changed to = %s", g_playerName[id], tempmodel)
 			}
 		}
 	}
@@ -20117,7 +20347,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_SURVIVOR]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_SURVIVOR], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Survivor %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Survivor %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsSniper(id))
@@ -20133,7 +20363,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_SNIPER]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_SNIPER], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Sniper %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Sniper %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsSamurai(id))
@@ -20149,7 +20379,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_SAMURAI]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_SAMURAI], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Samurai %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Samurai %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsTerminator(id))
@@ -20165,7 +20395,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_TERMINATOR]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_TERMINATOR], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Terminator %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Terminator %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsGrenadier(id))
@@ -20181,7 +20411,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_GRENADIER]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_GRENADIER], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Grenadier %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Grenadier %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsNemesis(id))
@@ -20197,7 +20427,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_NEMESIS]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_NEMESIS], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Nemesis %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Nemesis %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsAssasin(id))
@@ -20213,7 +20443,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_ASSASIN]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_ASSASIN], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Assasin %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Assasin %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsBombardier(id))
@@ -20229,7 +20459,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_BOMBARDIER]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_BOMBARDIER], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Bombardier %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Bombardier %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsRevenant(id))
@@ -20245,7 +20475,7 @@ public ChangeModels(taskid)
 			iRand = random_num(0, ArraySize(Array:g_playerModel[MODEL_REVENANT]) - 1)
 			ArrayGetString(Array:g_playerModel[MODEL_REVENANT], iRand, tempmodel, charsmax(tempmodel))
 			set_user_model(id, tempmodel)
-			log_amx("Revenant %s model changed to = %s", g_playerName[id], tempmodel)
+			// log_amx("Revenant %s model changed to = %s", g_playerName[id], tempmodel)
 		}
 	}
 	else if (IsZombie(id))
@@ -20255,7 +20485,7 @@ public ChangeModels(taskid)
 		if (!already_has_model)
 		{
 			set_user_model(id, g_cZombieClasses[g_zombieclass[id]][Model])
-			log_amx("Zombie %s model changed to %s", g_playerName[id], g_cZombieClasses[g_zombieclass[id]][Model])
+			// log_amx("Zombie %s model changed to %s", g_playerName[id], g_cZombieClasses[g_zombieclass[id]][Model])
 		}	
 	}
 
