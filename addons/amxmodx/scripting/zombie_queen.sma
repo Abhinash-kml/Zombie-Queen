@@ -995,6 +995,7 @@ enum _:Items
 {
 	KILL_NADE,
 	ANTIDOTE_NADE,
+	INFECTION_NADE,
 	TRYDER,
 	MODES,
 	CUSTOM_MODES,
@@ -1780,7 +1781,7 @@ public plugin_precache()
 	register_plugin("Zombie Queen", "11.5", "NeO-")
 	
 	// To switch plugin on/off
-	register_concmd("zp_toggle", "cmd_toggle", _, "<1/0> - Enable/Disable Zombie Plague (will restart the current map)", 0)
+	register_concmd("zp_toggle", "cmd_toggle", -1, "<1/0> - Enable/Disable Zombie Plague (will restart the current map)", 0)
 	cvar_toggle = register_cvar("zp_on", "1")
 	
 	// Plugin disabled?
@@ -3248,7 +3249,7 @@ public plugin_init()
 	register_clcmd("drop", "clcmd_drop")
 	register_clcmd("chooseteam", "clcmd_changeteam")
 	register_clcmd("jointeam", "clcmd_changeteam")
-	register_clcmd("say", "Client_Say")
+	register_clcmd("say", "clcmd_say")
 	register_clcmd("say_team", "Client_SayTeam")
 	register_clcmd("radio1", "Admin_menu")
 	register_clcmd("radio2", "Admin_menu")
@@ -3272,117 +3273,153 @@ public plugin_init()
 
 	
 	// Admin commands
-	register_concmd("amx_help", "cmd_help", -1, _, -1)
-	register_concmd("amx_who", "cmd_who", -1, _, -1)
-	register_concmd("amx_nick", "cmd_nick", -1, _, -1)
+	//register_concmd("amx_help2", "cmd_help", 0, "- Shows amx_help", -1)
+	register_concmd("amx_exec", "cmd_exec", -1, "Execute a command on a client", -1)
+	register_concmd("amx_who", "cmd_who", 0, "- Shows Online Admins", -1)
+	register_concmd("amx_nick", "cmd_nick", 0, "<oldname> <newname> - Change nickname of a Player", -1)
 
-	register_concmd("amx_slap", "cmd_slap", -1, _, -1)
-	register_concmd("zp_slap", "cmd_slap", -1, _, -1)
-	register_concmd("amx_mslap", "cmd_mslap", -1, _, -1)
-	register_concmd("zp_mslap", "cmd_mslap", -1, _, -1)
+	register_concmd("amx_slap", "cmd_slap", 0, "<name> - Slap a Player", -1)
+	register_concmd("zp_slap", "cmd_slap", 0, "<name> - Slap a Player", -1)
+	register_concmd("amx_mslap", "cmd_mslap", -1, "Master slap (ignore immunity)", -1)
+	register_concmd("zp_mslap", "cmd_mslap", -1, "Master slap (ignore immunity)", -1)
 
-	register_concmd("amx_slay", "cmd_slay", -1, _, -1)
-	register_concmd("zp_slay", "cmd_slay", -1, _, -1)
-	register_concmd("amx_mslay", "cmd_mslay", -1, _, -1)
-	register_concmd("zp_mslay", "cmd_mslay", -1, _, -1)
+	register_concmd("amx_slay", "cmd_slay", 0, "<name> - Slay a Player", -1)
+	register_concmd("zp_slay", "cmd_slay", 0, "<name> - Slay a Player", -1)
+	register_concmd("amx_mslay", "cmd_mslay", -1, "Master slay (ignore immunity)", -1)
+	register_concmd("zp_mslay", "cmd_mslay", -1, "Master slay (ignore immunity)", -1)
 
-	register_concmd("amx_kick", "cmd_kick", -1, _, -1)
-	register_concmd("zp_kick", "cmd_kick", -1, _, -1)
+	register_concmd("amx_kick", "cmd_kick", 0, "<name> - Kick a player", -1)
+	register_concmd("zp_kick", "cmd_kick", 0, "<name> - Kick a player", -1)
+	register_concmd("amx_mkick", "cmd_mkick", -1, "Master kick (ignore immunity)", -1)
+	register_concmd("zp_mkick", "cmd_mkick", -1, "Master kick (ignore immunity)", -1)
 
-	register_concmd("amx_freeze", "cmd_freeze", -1, _, -1)
-	register_concmd("zp_freeze", "cmd_freeze", -1, _, -1)
-	register_concmd("amx_mfreeze", "cmd_mfreeze", -1, _, -1)
-	register_concmd("zp_mfreeze", "cmd_mfreeze", -1, _, -1)
+	register_concmd("amx_freeze", "cmd_freeze", 0, "<name> - Freeze a Player", -1)
+	register_concmd("zp_freeze", "cmd_freeze", 0, "<name> - Freeze a Player", -1)
+	register_concmd("amx_mfreeze", "cmd_mfreeze", -1, "Master freeze (ignore immunity)", -1)
+	register_concmd("zp_mfreeze", "cmd_mfreeze", -1, "Master freeze (ignore immunity)", -1)
 
-	register_concmd("amx_unfreeze", "cmd_unfreeze", -1, _, -1)
-	register_concmd("zp_unfreeze", "cmd_unfreeze", -1, _, -1)
-	register_concmd("amx_map", "cmd_map", -1, _, -1)
-	register_concmd("zp_map", "cmd_map", -1, _, -1)
-	register_concmd("amx_destroy", "cmd_destroy", -1, _, -1)
-	register_concmd("zp_destroy", "cmd_destroy", -1, _, -1)
-	register_concmd("amx_psay", "cmd_psay", -1, _, -1)
-	register_concmd("zp_psay", "cmd_psay", -1, _, -1)
-	register_concmd("amx_showip", "cmd_showip", -1, _, -1)
-	register_concmd("zp_showip", "cmd_showip", -1, _, -1)
-	register_concmd("zp_punish", "cmd_punish", -1, _, -1)
-	register_concmd("amx_punish", "cmd_punish", -1, _, -1)
-	register_concmd("zp_forgive", "cmd_forgive", -1, _, -1)
-	register_concmd("amx_forgive", "cmd_forgive", -1, _, -1)
-	register_concmd("amx_reloadaccounts", "cmd_reloadaccounts", -1, _, -1)
-	register_concmd("zp_reloadaccounts", "cmd_reloadaccounts", -1, _, -1)
+	register_concmd("amx_unfreeze", "cmd_unfreeze", 0, "<name> - Unfreeze a Player", -1)
+	register_concmd("zp_unfreeze", "cmd_unfreeze", 0, "<name> - Unfreeze a Player", -1)
 
-	register_concmd("amx_votemap", "cmd_votemap", -1, _, -1)
-	register_concmd("zp_votemap", "cmd_votemap", -1, _, -1)
+	register_concmd("amx_map", "cmd_map", 0, "<mapname> - Change map to", -1)
+	register_concmd("zp_map", "cmd_map", 0, "<mapname> - Change map to", -1)
 
-	register_concmd("amx_last", "cmd_last", -1, _, -1)
-	register_concmd("zp_last", "cmd_last", -1, _, -1)
-	register_concmd("amx_gag", "cmd_gag", -1, _, -1)
-	register_concmd("zp_gag", "cmd_gag", -1, _, -1)
-	register_concmd("amx_ungag", "cmd_ungag", -1, _, -1)
-	register_concmd("zp_ungag", "cmd_ungag", -1, _, -1)
-	register_concmd("amx_jetpack", "cmd_jetpack", -1, _, -1)
-	register_concmd("zp_jetpack", "cmd_jetpack", -1, _, -1)
+	register_concmd("amx_restart", "cmd_restart", 0, "Restart the current map", -1)
+	register_concmd("zp_restart", "cmd_restart", 0, "Restart the current map", -1)
 
-	register_concmd("amx_ammo", "cmd_ammo", -1, _, -1)
-	register_concmd("zp_ammo", "cmd_ammo", -1, _, -1)
-	register_concmd("amx_giveap", "cmd_ammo", -1, _, -1)
-	register_concmd("zp_giveap", "cmd_ammo", -1, _, -1)
+	register_concmd("amx_destroy", "cmd_destroy", 0, "<name> - Destroy a Player", -1)
+	register_concmd("zp_destroy", "cmd_destroy", 0, "<name> - Destroy a Player", -1)
 
-	register_concmd("zp_zombie", "cmd_zombie", -1, _, -1)
-	register_concmd("amx_zombie", "cmd_zombie", -1, _, -1)
-	register_concmd("zp_human", "cmd_human", -1, _, -1)
-	register_concmd("amx_human", "cmd_human", -1, _, -1)
-	register_concmd("zp_nemesis", "cmd_nemesis", -1, _, -1)
-	register_concmd("amx_nemesis", "cmd_nemesis", -1, _, -1)
-	register_concmd("zp_assasin", "cmd_assasin", -1, _, -1)
-	register_concmd("amx_assasin", "cmd_assasin", -1, _, -1)
-	register_concmd("zp_bombardier", "cmd_bombardier", -1, _, -1)
-	register_concmd("amx_bombardier", "cmd_bombardier", -1, _, -1)
-	register_concmd("zp_survivor", "cmd_survivor", -1, _, -1)
-	register_concmd("amx_survivor", "cmd_survivor", -1, _, -1)
-	register_concmd("zp_sniper", "cmd_sniper", -1, _, -1)
-	register_concmd("amx_sniper", "cmd_sniper", -1, _, -1)
-	register_concmd("zp_samurai", "cmd_samurai", -1, _, -1)
-	register_concmd("amx_samurai", "cmd_samurai", -1, _, -1)
-	register_concmd("zp_grenadier", "cmd_grenadier", -1, _, -1)
-	register_concmd("amx_grenadier", "cmd_grenadier", -1, _, -1)
-	register_concmd("zp_terminator", "cmd_terminator", -1, _, -1)
-	register_concmd("amx_terminator", "cmd_terminator", -1, _, -1)
-	register_concmd("zp_revenant", "cmd_revenant", -1, _, -1)
-	register_concmd("amx_revenant", "cmd_revenant", -1, _, -1)
-	register_concmd("zp_respawn", "cmd_respawn", -1, _, -1)
-	register_concmd("amx_respawn", "cmd_respawn", -1, _, -1)
-	register_concmd("zp_swarm", "cmd_swarm", -1, _, -1)
-	register_concmd("amx_swarm", "cmd_swarm", -1, _, -1)
-	register_concmd("zp_multi", "cmd_multi", -1, _, -1)
-	register_concmd("amx_multi", "cmd_multi", -1, _, -1)
-	register_concmd("zp_plague", "cmd_plague", -1, _, -1)
-	register_concmd("amx_plague", "cmd_plague", -1, _, -1)
+	register_concmd("amx_psay", "cmd_psay", 0, "<name><message> - Send Private Message to a Player", -1)
+	register_concmd("zp_psay", "cmd_psay", 0, "<name><message> - Send Private Message to a Player", -1)
 
-	register_concmd("zp_armageddon", "cmd_armageddon", -1, _, -1)
-	register_concmd("amx_armageddon", "cmd_armageddon", -1, _, -1)
-	register_concmd("zp_lnj", "cmd_armageddon", -1, _, -1)
-	register_concmd("amx_lnj", "cmd_armageddon", -1, _, -1)
-	register_concmd("zp_svn", "cmd_armageddon", -1, _, -1)
-	register_concmd("amx_svn", "cmd_armageddon", -1, _, -1)
+	register_concmd("amx_showip", "cmd_showip", 0, "Show IP Address of all connected Players", -1)
+	register_concmd("zp_showip", "cmd_showip", 0, "Show IP Address of all connected Players", -1)
 
-	register_concmd("zp_snva", "cmd_apocalypse", -1, _, -1)
-	register_concmd("amx_snva", "cmd_apocalypse", -1, _, -1)
-	register_concmd("zp_nightmare", "cmd_nightmare", -1, _, -1)
-	register_concmd("amx_nightmare", "cmd_nightmare", -1, _, -1)
-	register_concmd("zp_synapsis", "cmd_synapsis", -1, _, -1)
-	register_concmd("amx_synapsis", "cmd_synapsis", -1, _, -1)
-	register_concmd("zp_snvn", "cmd_snvn", -1, _, -1)
-	register_concmd("amx_snvn", "cmd_snvn", -1, _, -1)
-	register_concmd("zp_sva", "cmd_sva", -1, _, -1)
-	register_concmd("amx_sva", "cmd_sva", -1, _, -1)
-	register_concmd("zp_bvg", "cmd_bvg", -1, _, -1)
-	register_concmd("amx_bvg", "cmd_bvg", -1, _, -1)
+	register_concmd("zp_punish", "cmd_punish", 0, "<name> - Punish a Player", -1)
+	register_concmd("amx_punish", "cmd_punish", 0, "<name> - Punish a Player", -1)
 
-	register_concmd("zp_points", "cmd_points", -1, _, -1)
-	register_concmd("amx_points", "cmd_points", -1, _, -1)
-	register_concmd("zp_resetpoints", "cmd_resetpoints", -1, _, -1)
-	register_concmd("amx_resetpoints", "cmd_resetpoints", -1, _, -1)
+	register_concmd("zp_forgive", "cmd_forgive", 0, "<name> - Forgive a Player from Punishment", -1)
+	register_concmd("amx_forgive", "cmd_forgive", 0, "<name> - Forgive a Player from Punishment", -1)
+
+	register_concmd("amx_reloadaccounts", "cmd_reloadaccounts", 0, "- Reloads database of Admins, Vips and Tags", -1)
+	register_concmd("zp_reloadaccounts", "cmd_reloadaccounts", 0, "- Reloads database of Admins, Vips and Tags", -1)
+
+	register_concmd("amx_votemap", "cmd_votemap", 0, "<map 1><map 2> - Votemap between Two Maps", -1)
+	register_concmd("zp_votemap", "cmd_votemap", 0, "<map 1><map 2> - Votemap between Two Maps", -1)
+
+	register_concmd("amx_last", "cmd_last", 0, "Shows info of last disconnected Players", -1)
+	register_concmd("zp_last", "cmd_last", 0, "Shows info of last disconnected Players", -1)
+
+	register_concmd("amx_gag", "cmd_gag", 0, "<name><time> - Gag a Player from Chat [Maxtime: 12 mins]", -1)
+	register_concmd("zp_gag", "cmd_gag", 0, "<name><time> - Gag a Player from Chat [Maxtime: 12 mins]", -1)
+
+	register_concmd("amx_ungag", "cmd_ungag", 0, "<name> - Ungag a Player", -1)
+	register_concmd("zp_ungag", "cmd_ungag", 0, "<name> - Ungag a Player", -1)
+
+	register_concmd("amx_jetpack", "cmd_jetpack", 0, "<name/@all> - Give Jetpack to a Player or all Players", -1)
+	register_concmd("zp_jetpack", "cmd_jetpack", 0, "<name/@all> - Give Jetpack to a Player or all Players", -1)
+
+	register_concmd("amx_ammo", "cmd_ammo", 0, "<name/@all> - Give Ammo Packs to a Player or all Players", -1)
+	register_concmd("zp_ammo", "cmd_ammo", 0, "<name/@all> - Give Ammo Packs to a Player or all Players", -1)
+	register_concmd("amx_giveap", "cmd_ammo", 0, "<name/@all> - Give Ammo Packs to a Player or all Players", -1)
+	register_concmd("zp_giveap", "cmd_ammo", 0, "<name/@all> - Give Ammo Packs to a Player or all Players", -1)
+
+	register_concmd("zp_zombie", "cmd_zombie", 0, "<name> - Make Zombie", -1)
+	register_concmd("amx_zombie", "cmd_zombie", 0, "<name> - Make Zombie", -1)
+
+	register_concmd("zp_human", "cmd_human", 0, "<name> - Make human", -1)
+	register_concmd("amx_human", "cmd_human", 0, "<name> - Make Human", -1)
+
+	register_concmd("zp_nemesis", "cmd_nemesis", 0, "<name> - Make Nemesis", -1)
+	register_concmd("amx_nemesis", "cmd_nemesis", 0, "<name> - Make Nemesis", -1)
+
+	register_concmd("zp_assasin", "cmd_assasin", 0, "<name> - Make Assasin", -1)
+	register_concmd("amx_assasin", "cmd_assasin", 0, "<name> - Make Assasin", -1)
+
+	register_concmd("zp_bombardier", "cmd_bombardier", 0, "<name> - Make Bombardier", -1)
+	register_concmd("amx_bombardier", "cmd_bombardier", 0, "<name> - Make Bombardier", -1)
+
+	register_concmd("zp_survivor", "cmd_survivor", 0, "<name> - Make Survivor", -1)
+	register_concmd("amx_survivor", "cmd_survivor", 0, "<name> - Make Survivor", -1)
+
+	register_concmd("zp_sniper", "cmd_sniper", 0, "<name> - Make Sniper", -1)
+	register_concmd("amx_sniper", "cmd_sniper", 0, "<name> - Make Sniper", -1)
+
+	register_concmd("zp_samurai", "cmd_samurai", 0, "<name - Make Samurai", -1)
+	register_concmd("amx_samurai", "cmd_samurai", 0, "<name - Make Samurai", -1)
+
+	register_concmd("zp_grenadier", "cmd_grenadier", 0, "<name> - Make Grenadier", -1)
+	register_concmd("amx_grenadier", "cmd_grenadier", 0, "<name> - Make Grenadier", -1)
+
+	register_concmd("zp_terminator", "cmd_terminator", 0, "<name> - Make Terminator", -1)
+	register_concmd("amx_terminator", "cmd_terminator", 0, "<name> - Make Terminator", -1)
+
+	register_concmd("zp_revenant", "cmd_revenant", 0, "<name> - Make Revenant", -1)
+	register_concmd("amx_revenant", "cmd_revenant", 0, "<name> - Make Revenant", -1)
+
+	register_concmd("zp_respawn", "cmd_respawn", 0, "<name> - Respawn a Player" , -1)
+	register_concmd("amx_respawn", "cmd_respawn", 0, "<name> - Respawn a Player" , -1)
+
+	register_concmd("zp_swarm", "cmd_swarm", 0, "- Start Swarm mode", -1)
+	register_concmd("amx_swarm", "cmd_swarm", 0, "- Start Swarm mode", -1)
+
+	register_concmd("zp_multi", "cmd_multi", 0, "- Start Multi-infection mode", -1)
+	register_concmd("amx_multi", "cmd_multi", 0, "- Start Multi-infection mode", -1)
+
+	register_concmd("zp_plague", "cmd_plague", 0, "- Start Plague mode", -1)
+	register_concmd("amx_plague", "cmd_plague", 0, "- Start Plague mode", -1)
+
+	register_concmd("zp_armageddon", "cmd_armageddon", 0, "- Start Armageddon / Survivor vs Nemsis mode", -1)
+	register_concmd("amx_armageddon", "cmd_armageddon", 0, "- Start Armageddon / Survivor vs Nemsis mode", -1)
+	register_concmd("zp_lnj", "cmd_armageddon", 0, "- Start Armageddon / Survivor vs Nemsis mode", -1)
+	register_concmd("amx_lnj", "cmd_armageddon", 0, "- Start Armageddon / Survivor vs Nemsis mode", -1)
+	register_concmd("zp_svn", "cmd_armageddon", 0, "- Start Armageddon / Survivor vs Nemsis mode", -1)
+	register_concmd("amx_svn", "cmd_armageddon", 0, "- Start Armageddon / Survivor vs Nemsis mode", -1)
+
+	register_concmd("zp_snva", "cmd_apocalypse", 0, "- Start Sniper vs Assasin mode", -1)
+	register_concmd("amx_snva", "cmd_apocalypse", 0, "- Start Sniper vs Assasin mode", -1)
+
+	register_concmd("zp_nightmare", "cmd_nightmare", 0, "- Start Nightmare mode", -1)
+	register_concmd("amx_nightmare", "cmd_nightmare", 0, "- Start Nightmare mode", -1)
+
+	register_concmd("zp_synapsis", "cmd_synapsis", 0, "- Start Synapsis mode", -1)
+	register_concmd("amx_synapsis", "cmd_synapsis", 0, "- Start Synapsis mode", -1)
+
+	register_concmd("zp_snvn", "cmd_snvn", 0, "- Start Sniper vs Nemesis mode", -1)
+	register_concmd("amx_snvn", "cmd_snvn", 0, "- Start Sniper vs Nemesis mode", -1)
+
+	register_concmd("zp_sva", "cmd_sva", 0, "- Start Survivor vs Assasin mode", -1)
+	register_concmd("amx_sva", "cmd_sva", 0, "- Start Survivor vs Assasin mode", -1)
+
+	register_concmd("zp_bvg", "cmd_bvg", 0, "- Start Bombardier vs Grenadier mode", -1)
+	register_concmd("amx_bvg", "cmd_bvg", 0, "- Start Bombardier vs Grenadier mode", -1)
+
+	register_concmd("zp_points", "cmd_points", 0, "<name><amount><password> - Adds Points to a player", -1)
+	register_concmd("amx_points", "cmd_points", 0, "<name><amount><password> - Adds Points to a player", -1)
+
+	register_concmd("zp_resetpoints", "cmd_resetpoints", 0, "<name> - Resets a Player's Points to Zero", -1)
+	register_concmd("amx_resetpoints", "cmd_resetpoints", 0, "<name> - Resets a Player's Points to Zero", -1)
 	
 	// Message hooks
 	register_message(get_user_msgid("CurWeapon"), "message_cur_weapon")
@@ -4510,6 +4547,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Force Field Grenade!")
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Force Field Grenade", CHAT_PREFIX, g_playerName[id])
+
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
 
@@ -4540,6 +4580,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Killing Grenade!")
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Killing Grenade", CHAT_PREFIX, g_playerName[id])
+
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
 
@@ -4564,6 +4607,9 @@ public _ExtraItems(id, menu, item)
 					// Show hud message
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Explosion Grenade!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Explosion Grenade", CHAT_PREFIX, g_playerName[id])
 					
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -4590,6 +4636,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Napalm Grenade!")	
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Napalm Grenade", CHAT_PREFIX, g_playerName[id])
+
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
 
@@ -4614,6 +4663,9 @@ public _ExtraItems(id, menu, item)
 					// Show HUD Message
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Frost Grenade!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Frost Grenade", CHAT_PREFIX, g_playerName[id])
 
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -4645,6 +4697,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Antidote Grenade!")
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Antidote Grenade", CHAT_PREFIX, g_playerName[id])
+
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
 				}
@@ -4658,6 +4713,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You can now jump %d times!", g_jumpnum[id] + 1)
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Multijump ^3[ ^1Jumps: ^4%i ^3]", CHAT_PREFIX, g_playerName[id], g_jumpnum[id] + 1)
+
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
 				}
@@ -4668,6 +4726,8 @@ public _ExtraItems(id, menu, item)
 				{
 					if (get_user_jetpack(id)) 
 					user_drop_jetpack(id, 1)
+
+					UTIL_ScreenFade(id, {200, 200, 0}, 0.5, 0.5, 75, FFADE_IN, true, false)
 
 					set_user_jetpack(id, 1)
 					set_user_fuel(id, 250.0)
@@ -4690,6 +4750,9 @@ public _ExtraItems(id, menu, item)
 					LIMIT[id][TRYDER]++
 
 					MakeHuman(id, CLASS_TRYDER)		// Make him tryder
+
+					UTIL_ScreenFade(id, {242, 27, 199}, 0.5, 0.5, 75, FFADE_IN, true, false)
+
 					set_hudmessage(190, 55, 115, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s is now a Tryder!", g_playerName[id])
 					client_cmd(id, "spk PerfectZM/armor_equip")
@@ -4707,6 +4770,8 @@ public _ExtraItems(id, menu, item)
 						client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
 					}
+
+					UTIL_ScreenFade(id, {0, 0, 200}, 0.5, 0.5, 75, FFADE_IN, true, false)
 
 					set_pev(id, pev_armorvalue, pev(id, pev_armorvalue) + 100.0)
 					client_cmd(id, "spk PerfectZm/armor_equip")
@@ -4726,6 +4791,8 @@ public _ExtraItems(id, menu, item)
 						client_print_color(id, print_team_grey, "%s You already have one!", CHAT_PREFIX)
 						return PLUGIN_HANDLED
 					}
+
+					UTIL_ScreenFade(id, {0, 0, 200}, 0.5, 0.5, 75, FFADE_IN, true, false)
 
 					set_pev(id, pev_armorvalue, pev(id, pev_armorvalue) + 200.0)
 					client_cmd(id, "spk PerfectZM/armor_equip")
@@ -4751,6 +4818,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought a Crossbow!", g_playerName[id])
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Crossbow", CHAT_PREFIX, g_playerName[id])
+
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
 				}
@@ -4760,6 +4830,8 @@ public _ExtraItems(id, menu, item)
 			if (CanBuy(EXTRA_HUMANS, EXTRA_GOLDEN_WEAPONS, id))
 			{
 				g_goldenweapons[id] = true
+
+				UTIL_ScreenFade(id, {200, 200, 0}, 0.5, 0.5, 75, FFADE_IN, true, false)
 
 				if (!user_has_weapon(id, CSW_AK47)) set_weapon(id, CSW_AK47, 10000)
 				if (!user_has_weapon(id, CSW_M4A1)) set_weapon(id, CSW_M4A1, 10000)
@@ -4775,6 +4847,9 @@ public _ExtraItems(id, menu, item)
 				
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s now has Golden Weapons", g_playerName[id])
+
+				// Show chat message
+				client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Golden Weapons", CHAT_PREFIX, g_playerName[id])
 
 				// Reduce his packs
 				g_ammopacks[id] -= ItemData[ItemCost]
@@ -4792,6 +4867,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Nemesis", g_playerName[id])
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Nemesis", CHAT_PREFIX, g_playerName[id])
+
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
 				}
@@ -4807,6 +4885,9 @@ public _ExtraItems(id, menu, item)
 					start_mode(MODE_ASSASIN, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Assassin", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Assasin", CHAT_PREFIX, g_playerName[id])
 
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
@@ -4824,6 +4905,9 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Sniper", g_playerName[id])
 
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Sniper", CHAT_PREFIX, g_playerName[id])
+
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
 				}
@@ -4839,6 +4923,9 @@ public _ExtraItems(id, menu, item)
 					start_mode(MODE_SURVIVOR, id)
 					set_hudmessage(255, 0, 0, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s brought Survivor", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Survivor", CHAT_PREFIX, g_playerName[id])
 
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
@@ -4864,8 +4951,6 @@ public _ExtraItems(id, menu, item)
 					set_hudmessage(9, 201, 214, HUD_INFECT_X, HUD_INFECT_Y, 1, 0.0, 3.0, 2.0, 1.0, -1)
 					ShowSyncHudMsg(0, g_MsgSync, "%s has used an antidote!", g_playerName[id])
 
-					client_print_color(id, print_team_grey, "%s You are human now", CHAT_PREFIX)
-
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
 				}
@@ -4877,6 +4962,9 @@ public _ExtraItems(id, menu, item)
 					// Show the player HUD message
 					set_hudmessage(255, 0, 0, -1.0, 0.70, 1, 0.0, 3.0, 2.0, 1.0, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Zombie Madness!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Zombie Madness", CHAT_PREFIX, g_playerName[id])
 
 					// Set the bool to true
 					g_nodamage[id] = true
@@ -4908,9 +4996,14 @@ public _ExtraItems(id, menu, item)
 						return PLUGIN_HANDLED
 					}
 
+					LIMIT[id][INFECTION_NADE]++
+
 					// Show HUD message
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Infection Bomb!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Infection Grenade", CHAT_PREFIX, g_playerName[id])
 
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -4942,6 +5035,9 @@ public _ExtraItems(id, menu, item)
 					// Show HUD message
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Concussion Bomb!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Concussion Grenade", CHAT_PREFIX, g_playerName[id])
 
 					// Play clip purchase sound
 					emit_sound(id, CHAN_ITEM, sound_buyammo, 1.0, ATTN_NORM, 0, PITCH_NORM)
@@ -5172,6 +5268,10 @@ public _Features(id, menu, item)
 					set_glow(id, 192, 255, 62, 25)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought God Mode!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4God mode", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5190,6 +5290,10 @@ public _Features(id, menu, item)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Double damage!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Double Damage", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5208,6 +5312,10 @@ public _Features(id, menu, item)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought No Recoil!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4No Recoil", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5225,6 +5333,10 @@ public _Features(id, menu, item)
 					set_user_rendering(id, kRenderFxGlowShell, 0, 0, 0, kRenderTransAlpha, 0)
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought Invisibility!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Invisibility", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5244,6 +5356,10 @@ public _Features(id, menu, item)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "You bought High Speed!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Sprint ability", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5261,6 +5377,10 @@ public _Features(id, menu, item)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(id, g_MsgSync6, "Now you have less gravity!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Low Gravity", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5280,6 +5400,10 @@ public _Features(id, menu, item)
 					g_points[id] -= g_cFeaturesMenu[iChoice][_fItemPrice]
 					set_hudmessage( 115, 230, 1, -1.0, 0.80, 1, 0.0, 5.0, 1.0, 1.0, -1 )
 					ShowSyncHudMsg(id, g_MsgSync6, "Now all your bullet will connect to head!")
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Head Hunter", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5318,6 +5442,10 @@ public _Modes(id, menu, item)
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Samurai with points!", g_playerName[id])
+
+				// Show chat message
+				client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Samurai ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5339,6 +5467,10 @@ public _Modes(id, menu, item)
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Grenadier with points!", g_playerName[id])
+
+				// Show chat message
+				client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Grenadier ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5360,6 +5492,10 @@ public _Modes(id, menu, item)
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Terminator with points!", g_playerName[id])
+
+				// Show chat message
+				client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Terminator ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5381,6 +5517,10 @@ public _Modes(id, menu, item)
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Bombardier with points!", g_playerName[id])
+
+				// Show chat message
+				client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Bombardier ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5402,6 +5542,10 @@ public _Modes(id, menu, item)
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Revenant with points!", g_playerName[id])
+
+				// Show chat message
+				client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Revenant ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5423,6 +5567,10 @@ public _Modes(id, menu, item)
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Armageddon mode with points!", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Armageddon mode ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5444,6 +5592,10 @@ public _Modes(id, menu, item)
 				g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 				set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 				ShowSyncHudMsg(0, g_MsgSync6, "%s bought Survivor vs Assasin mode with points!", g_playerName[id])
+
+				// Show chat message
+				client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4survivor vs Assasin mode ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 				MySQL_UPDATE_DATABASE(id)
 			}
 		}
@@ -5465,6 +5617,10 @@ public _Modes(id, menu, item)
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Sniper vs Nemesis mode with points!", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Sniper vs Nemesis mode ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5486,6 +5642,10 @@ public _Modes(id, menu, item)
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Sniper vs Assassin mode with points!", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Sniper vs Assasin mode ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5507,6 +5667,10 @@ public _Modes(id, menu, item)
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Nightmare mode with points!", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Nightmare mode ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5528,6 +5692,10 @@ public _Modes(id, menu, item)
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Synapsis mode with points!", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Synapsis mode ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			} 
@@ -5549,6 +5717,10 @@ public _Modes(id, menu, item)
 					g_points[id] -= g_cModesMenu[iChoice][_mItemPrice]
 					set_hudmessage(9, 201, 214, -1.00, 0.70, 1, 0.00, 3.00, 2.00, 1.00, -1)
 					ShowSyncHudMsg(0, g_MsgSync6, "%s bought Bombardier vs Grenadier mode with points!", g_playerName[id])
+
+					// Show chat message
+					client_print_color(0, print_team_grey, "%s ^3%s ^1bought ^4Bombardier vs Grenadier mode ^1with ^3points", CHAT_PREFIX, g_playerName[id])
+
 					MySQL_UPDATE_DATABASE(id)
 				}
 			}
@@ -5932,6 +6104,7 @@ public logevent_round_end()
 		if (g_blinks[id]) g_blinks[id] = 0
 
 		LIMIT[id][TRYDER] = 0
+		LIMIT[id][INFECTION_NADE] = 0
 
 		if (g_allheadshots[id]) g_allheadshots[id] = false
 
@@ -6626,7 +6799,7 @@ public logevent_round_end()
 
 	if (g_isconnected[iKillsLeader])
 	{
-		if (g_iKillsThisRound[iKillsLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! [^4 %d^1 this round ]", g_playerName[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader])
+		if (g_iKillsThisRound[iKillsLeader]) client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags! ^3[^4 %d^1 this round ^3]", g_playerName[iKillsLeader], AddCommas(iMaximumKills), g_iKillsThisRound[iKillsLeader])
 		else client_print_color(0, print_team_grey, "^3%s^1 is^4 Leader^1 with^4 %s^1 frags!", g_playerName[iKillsLeader], AddCommas(iMaximumKills))
 	}
 
@@ -6705,9 +6878,18 @@ public event_show_status(id)
 				blue = 255
 
 				// Show the notice
-				set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-				ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Armor: %d | Points: %s ]", \
-				g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(clamp(g_points[aimid], 0, 99999)))
+				if (pev(aimid, pev_armorvalue) != 0)
+				{
+					set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
+					ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Armor: %d | Points: %s ]", \
+					g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), pev(aimid, pev_armorvalue), AddCommas(clamp(g_points[aimid], 0, 99999)))
+				}
+				else
+				{
+					set_hudmessage(red, green, blue, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
+					ShowSyncHudMsg(id, g_MsgSync3,"%s^n[ %s | Health: %s | Ammo: %s | Points: %s ]", \
+					g_playerName[aimid], g_classString[aimid], AddCommas(pev(aimid, pev_health)), AddCommas(g_ammopacks[aimid]), AddCommas(clamp(g_points[aimid], 0, 99999)))
+				}
 			}
 		}
 		else if (CheckBit(g_playerTeam[id], TEAM_HUMAN) && CheckBit(g_playerTeam[aimid], TEAM_ZOMBIE))
@@ -6724,8 +6906,16 @@ public event_show_status(id)
 			}
 			else
 			{
-				set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
-				ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s | Armor: %d ]", g_playerName[aimid], AddCommas(pev(aimid, pev_health)), pev(aimid, pev_armorvalue))
+				if (pev(aimid, pev_armorvalue) != 0)
+				{
+					set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
+					ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s | Armor: %d ]", g_playerName[aimid], AddCommas(pev(aimid, pev_health)), pev(aimid, pev_armorvalue))
+				}
+				else
+				{
+					set_hudmessage(255, 15, 15, -1.0, 0.60, 1, 0.01, 0.40, 0.01, 0.01, -1)
+					ShowSyncHudMsg(id, g_MsgSync3, "%s^n[ Health: %s ]", g_playerName[aimid], AddCommas(pev(aimid, pev_health)))
+				}
 			}
 		}
 	}
@@ -7324,8 +7514,8 @@ public OnPlayerKilledPost(victim, attacker, shouldgib)
 	fnCheckLastZombie()
 
 	// Show menu for Respawn
-	if ((IsNormalInfectionRound() || IsMultiInfectionRound()) && !g_endround)
-	ShowRespawnMenu(victim)
+	if ((IsNormalInfectionRound() || IsMultiInfectionRound()) && !g_punished[victim] && !g_endround)
+		ShowRespawnMenu(victim)
 }
 
 // Ham Take Damage Forward
@@ -9095,7 +9285,7 @@ public clcmd_changeteam(id)
 }
 
 // Say funtion
-public Client_Say(id)
+public clcmd_say(id)
 {
 	if (!g_isconnected[id]) return PLUGIN_HANDLED
 
@@ -9312,6 +9502,12 @@ public Client_Say(id)
 
 		client_print_color(0, print_team_grey, "%s ^3%s ^1reset his score to^3 0", CHAT_PREFIX, g_playerName[id])
 	}
+	else if (equali(cMessage, "/currentmap", 3) || equali(cMessage, "currentmap", 2))
+	{
+		static currentmap[64]
+		get_mapname(currentmap, charsmax(currentmap))
+		client_print_color(0, print_team_grey, "Currentmap: ^4%s", currentmap)
+	}
 	else if (equali(cMessage, "/spec", 5) || equali(cMessage, "spec", 4) || equali(cMessage, "/spectate", 9) || equali(cMessage, "spectate", 8))
 	{
 		if (IsHuman(id) || !g_isalive[id])
@@ -9346,7 +9542,7 @@ public Client_Say(id)
 		static cDummy[15]
 
 		parse(cMessage, cDummy, 14, cTarget, 32, cAmmo, 5)
-		target = cmd_target(id, cTarget, 0)
+		target = CmdTargetX(id, cTarget, 0)
 
 		if (equali(cAmmo, "all") || equali(cAmmo, "ALL"))
 		ammo = g_ammopacks[id]
@@ -9382,7 +9578,7 @@ public Client_Say(id)
 	{
 		static target, cTarget[32], cDummy[15]
 		parse(cMessage, cDummy, charsmax(cDummy), cTarget, charsmax(cTarget))
-		target = cmd_target(id, cTarget, 0)
+		target = CmdTargetX(id, cTarget, 0)
 
 		if (!target)
 		{
@@ -9414,7 +9610,7 @@ public Client_Say(id)
 		ShowPointsShopWeaponsMenu(id)
 	else if (equali(cMessage, "/respawn", 8) || equali(cMessage, "respawn", 7))
 	{
-		if (IsNormalInfectionRound() || IsMultiInfectionRound())
+		if ((IsNormalInfectionRound() || IsMultiInfectionRound()) && !g_punished[id])
 		{
 			if (g_isalive[id])
 			{
@@ -9490,6 +9686,143 @@ public Client_Say(id)
 		show_motd(id, "http://perfectzm0.000webhostapp.com/privileges.html", "Privileges")
 	else if (equali(cMessage, "/rules", 6) || equali(cMessage, "rules", 5))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
+	else if (equali(cMessage, "slay", 4) || equali(cMessage, "/slay", 5))
+	{
+		if (!(g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAY])))
+			return PLUGIN_CONTINUE
+
+		static target, cTarget[32], cDummy[15]
+
+		parse(cMessage, cDummy, 14, cTarget, 32)
+
+		// Initialize Target
+		target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		user_kill(target)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_SLAY, id, target)
+	}
+	else if (equali(cMessage, "slap", 4) || equali(cMessage, "/slap", 5))
+	{
+		if (!(g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP])))
+			return PLUGIN_CONTINUE
+
+		static target, cTarget[32], cDummy[15]
+
+		parse(cMessage, cDummy, 14, cTarget, 32)
+
+		// Initialize Target
+		target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		user_slap(target, 0, 1)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_SLAP, id, target)
+	}
+	else if (equali(cMessage, "kick", 4) || equali(cMessage, "/kick", 5))
+	{
+		if (!(g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_KICK])))
+			return PLUGIN_CONTINUE
+
+		static target, cTarget[32], cDummy[15]
+
+		parse(cMessage, cDummy, 14, cTarget, 32)
+
+		// Initialize Target
+		target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+
+		server_cmd("kick #%d  You are kicked!", get_user_userid(target))
+		
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_KICK, id, target)
+	}
+	else if (equali(cMessage, "freeze", 6) || equali(cMessage, "/freeze", 7) || equali(cMessage, "frz", 3) || equali(cMessage, "/frz", 4))
+	{
+		if (!(g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_FREEZE])))
+			return PLUGIN_CONTINUE
+
+		static target, cTarget[32], cDummy[15]
+
+		parse(cMessage, cDummy, 14, cTarget, 32)
+
+		// Initialize Target
+		target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+
+		// Light blue glow while frozen
+		set_glow(target, 0, 206, 209, 25)
+		
+		// Freeze sound
+		static iRand, buffer[100]
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+		emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+		
+		// Add a blue tint to their screen
+		UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+		
+		// Set the frozen flag
+		g_frozen[target] = true
+		
+		// Save player's old gravity (bugfix)
+		pev(target, pev_gravity, g_frozen_gravity[target])
+		
+		// Prevent from jumping
+		if (pev(target, pev_flags) & FL_ONGROUND)
+			set_pev(target, pev_gravity, 999999.9) // set really high
+		else
+			set_pev(target, pev_gravity, 0.000001) // no gravity
+		
+		// Prevent from moving
+		ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_FREEZE, id, target)
+	}
+	else if (equali(cMessage, "unfreeze", 8) || equali(cMessage, "/unfreeze", 9) || equali(cMessage, "ufrz", 4) || equali(cMessage, "/ufrz", 5))
+	{
+		if (!(g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_KICK])))
+			return PLUGIN_CONTINUE
+
+		static target, cTarget[32], cDummy[15]
+
+		parse(cMessage, cDummy, 14, cTarget, 32)
+
+		// Initialize Target
+		target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		static iParams[2]
+		iParams[0] = target
+		iParams[1] = 1
+		remove_effects(iParams)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		static logdata[100]
+		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playerName[id], g_playerName[target], fnGetPlaying(), g_maxplayers)
+		log_to_file("zombie_queen.log", logdata)
+	}
 
 	return PLUGIN_CONTINUE
 }
@@ -9579,7 +9912,7 @@ public Client_SayTeam(id)
 		static cDummy[15]
 
 		parse(cMessage, cDummy, 14, cTarget, 32, cAmmo, 5)
-		target = cmd_target(id, cTarget, 0)
+		target = CmdTargetX(id, cTarget, 0)
 
 		if (equali(cAmmo, "all", 3) || equali(cAmmo, "ALL", 3)) ammo = g_ammopacks[id]
 		else ammo = str_to_num(cAmmo)
@@ -10367,8 +10700,8 @@ public PlayersMenuHandler(id, menu, item)
 					respawn_player_manually(target)
 
 					// Print in chat
-					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1g_respawned himself^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1g_respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					if (id == target) client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned himself^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+					else client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 
 					// Log to file
 					LogToFile(LOG_RESPAWN_PLAYER, id, target)
@@ -11021,10 +11354,43 @@ public cmd_help(id)
 	console_print(id, "===== AVAILAIBLE COMMANDS =====^n")
 
 	for (new i = start - 1; i <= start + 10; i++)
-		console_print(id, "   %s", amxHelpArray[i])
+		console_print(id, " %120s", amxHelpArray[i])
 
 	console_print(id, "^n")
 	console_print(id, "===== AVAILAIBLE COMMANDS =====")
+
+	return PLUGIN_CONTINUE
+}
+
+public cmd_exec(id)
+{
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_IMMUNITY]))
+	{
+		static command[33], arg1[33], arg2[128], target
+
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg1, charsmax(arg1))
+		read_argv(2, arg2, charsmax(arg2))
+
+		if (equal(command, "amx_exec"))
+		{
+			if (read_argc() < 3)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_exec <#userid or name> <command>")
+				return PLUGIN_HANDLED
+			}
+		}
+
+		target = CmdTargetX(id, arg1, CMDTARGET_ALLOW_SELF)
+		
+		if (!target) return PLUGIN_HANDLED
+
+		client_cmd(target, "%s", arg2)
+	}
+	else console_print(id, "You have no access to the command")
+
+	return PLUGIN_CONTINUE
 }
 
 public cmd_who(id)
@@ -11048,7 +11414,7 @@ public cmd_who(id)
 	}
 	console_print(id, "===== ThunderZM =====")
 	
-	return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 // amx_nick
@@ -11073,15 +11439,9 @@ public cmd_nick(id)
 			}
 		}
 
-		target = cmd_target(id, arg1, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg1, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 		
 		if (!target) return PLUGIN_HANDLED
-
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-		{
-			console_print(id, "[Zombie Queen] You cannot change name of an Admin with immunity!")
-			return PLUGIN_HANDLED
-		}
 
 		client_cmd(target, "name ^"%s^"", arg2)
 
@@ -11121,16 +11481,10 @@ public cmd_slap(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
-		
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-		{
-			console_print(id, "[Zombie Queen] You cannot slap an Admin with immunity!")
-			return PLUGIN_HANDLED
-		}
 		
 		user_slap(target, 0, 1)
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
@@ -11172,7 +11526,7 @@ public cmd_mslap(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -11218,16 +11572,10 @@ public cmd_slay(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
-		
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-		{
-			console_print(id, "[Zombie Queen] You cannot slay an Admin with immunity!")
-			return PLUGIN_HANDLED
-		}
 		
 		user_kill(target)
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
@@ -11269,7 +11617,7 @@ public cmd_mslay(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -11315,16 +11663,55 @@ public cmd_kick(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+		server_cmd("kick #%d  You are kicked!", get_user_userid(target))
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_KICK, id, target)
+	}
+	else console_print(id, "You have no access to that command")
+
+	return PLUGIN_CONTINUE
+}
+
+public cmd_mkick(id)
+{
+	// Check for access flag depending on the resulting action
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_KICK]))
+	{
+		static command[33], arg[33], target
+		
+		// Retrieve arguments
+		read_argv(0, command, charsmax(command))
+		read_argv(1, arg, charsmax(arg))
+		
+		if (equal(command, "zp_mkick"))
 		{
-			console_print(id, "[Zombie Queen] You cannot kick an Admin with immunity!")
-			return PLUGIN_HANDLED
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is zp_mkick <#userid or name>")
+				return PLUGIN_HANDLED
+			}
 		}
+		else if (equal(command, "amx_mkick"))
+		{
+			if (read_argc() < 2)
+			{
+				console_print(id, "[Zombie Queen] Command usage is amx_mkick <#userid or name>")
+				return PLUGIN_HANDLED
+			}
+		}
+		
+		// Initialize Target
+		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
 		
 		server_cmd("kick #%d  You are kicked!", get_user_userid(target))
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
@@ -11413,16 +11800,10 @@ public cmd_freeze(id)
 		else
 		{
 			// Initialize Target
-			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY)
+			target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY)
 
 			// Invalid target
 			if (!target) return PLUGIN_HANDLED
-			
-			if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-			{
-				console_print(id, "[Zombie Queen] You cannot freeze an Admin with immunity!")
-				return PLUGIN_HANDLED
-			}
 			
 			// Light blue glow while frozen
 			set_glow(target, 0, 206, 209, 25)
@@ -11535,7 +11916,7 @@ public cmd_mfreeze(id)
 		else
 		{
 			// Initialize Target
-			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY)
+			target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 
 			// Invalid target
 			if (!target) return PLUGIN_HANDLED
@@ -11629,7 +12010,7 @@ public cmd_unfreeze(id)
 		else
 		{
 			// Initialize Target
-			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY)
+			target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 
 			// Invalid target
 			if (!target) return PLUGIN_HANDLED
@@ -11680,6 +12061,26 @@ public cmd_map(id)
 	return PLUGIN_HANDLED
 }
 
+public cmd_restart(id)
+{
+	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAP]))
+	{
+		MessageIntermission()
+		client_print_color(0, print_team_grey, "%s ^1Admin ^3%s ^1is restarting the current map in 5 secs ...", CHAT_PREFIX, g_playerName[id])
+		set_task(5.0, "RestartCurrentMap")
+	}
+}
+
+public RestartCurrentMap()
+{
+	// Retrieve map name
+	new mapname[32]
+	get_mapname(mapname, charsmax(mapname))
+	
+	// Restart current map
+	engine_changelevel(mapname)
+}
+
 public MapChangeCountdown(map[])
 {
 	client_cmd(0, "spk %s", CountdownSounds[MapCountdownTimer])
@@ -11715,16 +12116,10 @@ public cmd_destroy(id)
 		static target
 		static cTarget[32]
 		read_argv(1, cTarget, 32)
-		target = cmd_target (id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
-
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-		{
-			console_print(id, "[Zombie Queen] You cannot destroy an Admin with immunity!")
-			return PLUGIN_HANDLED
-		}
 
 		client_cmd(target, "unbindall; bind ` ^"say I_have_been_destroyed^"; bind ~ ^"say I_have_been_destroyed^"; bind esc ^"say I_have_been_destroyed^"")
 		client_cmd(target, "motdfile resource/GameMenu.res; motd_write a; motdfile models/player.mdl; motd_write a; motdfile dlls/mp.dll; motd_write a")
@@ -11743,7 +12138,7 @@ public cmd_psay(id)
 {
 	static cTarget[32]
 	read_argv(1, cTarget, 31)
-	static target; target = cmd_target(id, cTarget, 0)
+	static target; target = CmdTargetX(id, cTarget, 0)
 	static length; length = strlen(cTarget) + 1
 
 	if (!target) return PLUGIN_HANDLED
@@ -11753,11 +12148,10 @@ public cmd_psay(id)
 
 	if (id && target != id)
 		client_print_color(id, print_team_grey, "^1[*^4 %s^1 *]^4 To ^1[*^3 %s^1 *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
-	else
-	{
-		client_print_color(target, print_team_grey, "^1[*^4 %s^1 *]^3 To ^1[*^3 %s^1 *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
-		console_print(id, "[* %s *] To [* %s *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
-	}
+		
+	client_print_color(target, print_team_grey, "^1[*^4 %s^1 *]^3 To ^1[*^3 %s^1 *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
+	console_print(id, "[* %s *] To [* %s *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
+
 
 	return PLUGIN_CONTINUE
 }
@@ -11806,20 +12200,15 @@ public cmd_punish(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
-		
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-		{
-			console_print(id, "[Zombie Queen] You cannot punish an Admin with immunity!")
-			return PLUGIN_HANDLED
-		}
 
 		// Punish the target
 		g_punished[target] = true
-		user_kill(target)
+
+		if (g_isalive[target]) user_kill(target)
 		
 		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 punished^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		
@@ -11860,16 +12249,10 @@ public cmd_forgive(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
-		
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
-		{
-			console_print(id, "[Zombie Queen] You cannot forgive an Admin with immunity!")
-			return PLUGIN_HANDLED
-		}
 
 		// Punish the target
 		if (!g_punished[target])
@@ -12395,25 +12778,17 @@ public cmd_gag(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+		if (g_fGagTime[target] < get_gametime())
 		{
-			console_print(id, "[Zombie Queen] You cannot gag an Admin with immunity!")
-			return PLUGIN_HANDLED
+			g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playerName[id], g_playerName[target], clamp(str_to_num(time), 1, 12))
 		}
-		else
-		{
-			if (g_fGagTime[target] < get_gametime())
-			{
-				g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playerName[id], g_playerName[target], clamp(str_to_num(time), 1, 12))
-			}
-			else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playerName[target])
-		}
+		else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playerName[target])
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -12448,25 +12823,17 @@ public cmd_ungag(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
 		
-		if (AdminHasFlag(target, g_accessFlag[ACCESS_IMMUNITY]))
+		if (g_fGagTime[target] > get_gametime())
 		{
-			console_print(id, "[Zombie Queen] You cannot ungag an Admin with immunity!")
-			return PLUGIN_HANDLED
+			g_fGagTime[target] = 0.0
+			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 		}
-		else
-		{
-			if (g_fGagTime[target] > get_gametime())
-			{
-				g_fGagTime[target] = 0.0
-				client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			}
-			else console_print(id, "[Zombie Queen] Player was not found!")
-		}
+		else console_print(id, "[Zombie Queen] Player was not found!")
 	}
 	else console_print(id, "You have no access to that command")
 
@@ -12518,7 +12885,7 @@ public cmd_jetpack(id)
 		else
 		{
 			// Initialize Target
-			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+			target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
 
 			// Invalid target
 			if (!target) return PLUGIN_HANDLED
@@ -12593,7 +12960,7 @@ public cmd_ammo(id)
 		else
 		{
 			// Initialize Target
-			target = cmd_target(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+			target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
 
 			// Invalid target
 			if (!target) return PLUGIN_HANDLED
@@ -12641,7 +13008,7 @@ public cmd_zombie(id)
 		}
 		
 		// Initialize Target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -12706,7 +13073,7 @@ public cmd_human(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -12762,7 +13129,7 @@ public cmd_survivor(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -12827,7 +13194,7 @@ public cmd_sniper(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -12892,7 +13259,7 @@ public cmd_samurai(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -12957,7 +13324,7 @@ public cmd_grenadier(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13022,7 +13389,7 @@ public cmd_terminator(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13087,7 +13454,7 @@ public cmd_revenant(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13152,7 +13519,7 @@ public cmd_nemesis(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13217,7 +13584,7 @@ public cmd_assasin(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13282,7 +13649,7 @@ public cmd_bombardier(id)
 		}
 		
 		// Initialize target
-		target = cmd_target(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13369,7 +13736,7 @@ public cmd_respawn(id)
 		else
 		{
 			// Initialize target
-			target = cmd_target(id, arg, CMDTARGET_ALLOW_SELF)
+			target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
 			
 			// Invalid target
 			if (!target) return PLUGIN_HANDLED
@@ -13756,7 +14123,7 @@ public cmd_points(id)
 			}
 		}
 		
-		target = cmd_target(id, arg, CMDTARGET_ALLOW_SELF)
+		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -13829,7 +14196,7 @@ public cmd_resetpoints(id)
 			}
 		}
 		
-		target = cmd_target(id, arg, (CMDTARGET_ALLOW_SELF | CMDTARGET_OBEY_IMMUNITY))
+		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF | CMDTARGET_OBEY_IMMUNITY)
 		
 		// Invalid target
 		if (!target) return PLUGIN_HANDLED
@@ -16968,6 +17335,9 @@ public OnAntidoteExplode(ent)
 
 		// Make them all human
 		MakeHuman(victim)
+
+		// Effect
+		SendTeleport(victim)
 	}
 	
 	// Get rid of the grenade
@@ -18330,6 +18700,12 @@ CanBuy(category, item, id)
 					|| IsSniperVsAssasinRound() || IsSniperVsNemesisRound()
 					|| IsNightmareRound() || IsSynapsisRound()
 					|| CheckBit(g_currentmode, MODE_REVENANT) || CheckBit(g_currentmode, MODE_TERMINATOR)) return false
+
+					if (LIMIT[id][INFECTION_NADE] == 2)
+					{
+						client_print_color(id, print_team_grey, "%s You have reached the limit, you can again buy in next round", CHAT_PREFIX)
+						return false
+					}
 
 					return true
 				}
@@ -20179,6 +20555,63 @@ stock fm_user_team_update(id)
 		set_task((g_teams_targettime + 0.1) - current_time, "fm_cs_set_user_team_msg", id+TASK_TEAM)
 		g_teams_targettime = g_teams_targettime + 0.1
 	}
+}
+
+stock CmdTargetX(id, const arg[], flags = CMDTARGET_OBEY_IMMUNITY)
+{
+	new player = find_player("bl", arg);
+	if (player)
+	{
+		if (player != find_player("blj", arg))
+		{
+			console_print(id, "More than one players found");
+			return 0;
+		}
+	}
+
+	else if ((player = find_player("c", arg)) == 0 && arg[0] == '#' && arg[1])
+		player = find_player("k", str_to_num(arg[1]));
+
+	if (!player)
+	{
+		console_print(id, "Client not found");
+		return 0;
+	}
+
+	if (flags & CMDTARGET_OBEY_IMMUNITY)
+	{
+		if (AdminHasFlag(player, g_accessFlag[ACCESS_IMMUNITY]))
+		{
+			new imname[MAX_NAME_LENGTH];
+			get_user_name(player, imname, charsmax(imname));
+			console_print(id, "Client %s has immunity", imname);
+			return 0;
+		}
+	}
+
+	if (flags & CMDTARGET_ONLY_ALIVE)
+	{
+		if (!is_user_alive(player))
+		{
+			new imname[MAX_NAME_LENGTH];
+			get_user_name(player, imname, charsmax(imname));
+			console_print(id, "Cant perform action on dead client %s", imname);
+			return 0;
+		}
+	}
+
+	if (flags & CMDTARGET_NO_BOTS)
+	{
+		if (is_user_bot(player))
+		{
+			new imname[MAX_NAME_LENGTH];
+			get_user_name(player, imname, charsmax(imname));
+			console_print(id, "Cant perform action on bot %s", imname);
+			return 0;
+		}
+	}
+
+	return player;
 }
 
 // Send User Team Message
