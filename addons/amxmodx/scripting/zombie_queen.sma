@@ -16,9 +16,6 @@
 #include <		sqlx	  >
 #include <      rog       >
 
-native GetPaladin(id)
-native SetPaladinModels(id)
-
 // Jetapck
 native set_user_jetpack(id, jetpack)
 native get_user_jetpack(id)
@@ -110,100 +107,6 @@ new const ZP_GRENADE_CONFIGS_FILE[] = "zombie_queen/grenade_configs.ini"
 	[Constants, Offsets, Macros]
 =================================================================================*/
 
-new const amxHelpArray[][] =
-{
-	"amx_who - Displays connected admins",
-	"amx_nick <name><new name> - Change player name",
-	"amx_slap <name> - Slap a player in the ass",
-	"zp_slap <name> - Slap a player in the ass",
-	"amx_slay <name> - Slay a player",
-	"zp_slay <name> - Slay a player",
-	"amx_kick <name> - Kick a player",
-	"zp_kick <name> - Kick a player",
-	"amx_freeze <name> - Freezee a player",
-	"zp_freeze <name> - Freezee a player",
-	"amx_unfreeze <name> - Unfreezee a player",
-	"zp_unfreeze <name> - Unfreezee a player",
-	"amx_map <map name> - Change map",
-	"zp_map <map name> - Change map",
-	"amx_destroy <name> - Destroy a player",
-	"zp_destroy <name> - Destroy a player",
-	"amx_psay <name><message> - Send personal message",
-	"zp_psay <name><message> - Send personal message",
-	"amx_showip - Show all connected players ip address",
-	"zp_showip - Show all connected players ip address",
-	"amx_punish <name> - Punish a player",
-	"zp_punish <name> - Punish a player",
-	"amx_forgive <name> - Forgive a player",
-	"zp_forgive <name> - Forgive a player",
-	"amx_reloadadmins - Reload admins",
-	"zp_reloadadmins - Reload admins",
-	"amx_reloadvips - Reload vips",
-	"zp_reloadvips - Reload vips",
-	"amx_votemap <map1><map2><map3> - Start votemap",
-	"zp_votemap <map1><map2><map3> - Start votemap",
-	"amx_last - Shows last connected players info",
-	"zp_last - Shows last connected players info",
-	"amx_gag <name><time> - Gag a player from chat",
-	"zp_gag <name><time> - Gag a player from chat",
-	"amx_ungag <name> - Ungag a player",
-	"zp_ungag <name> - Ungag a player",
-	"amx_jetpack <name | @all> - Give jetpack to player [ name - specific player | @all - to all ]",
-	"zp_jetpack <name | @all> - Give jetpack to player [ name - specific player | @all - to all ]",
-	"amx_ammo <name | @all><amount> - Give ammo to player [ name - specific player | @all - to all ]",
-	"zp_ammo <name | @all><amount> - Give ammo to player [ name - specific player | @all - to all ]",
-	"amx_giveap <name | @all><amount> - Give ammo to player [ name - specific player | @all - to all ]",
-	"zp_giveap <name | @all><amount> - Give ammo to player [ name - specific player | @all - to all ]",
-	"zp_zombie <name> - Turn player into a zombie",
-	"amx_zombie <name> - Turn player into a zombie",
-	"zp_human <name> - Turn player into human",
-	"amx_human <name> - Turn player into human",
-	"zp_nemesis <name> - Turn player into nemesis",
-	"amx_nemesis <name> - Turn player into nemesis",
-	"zp_assassin <name> - Turn player into assasin",
-	"amx_assassin <name> - Turn player into assasin",
-	"zp_bombardier <name> - Turn player into bombardier",
-	"amx_bombardier <name> - Turn player into bombardier",
-	"zp_survivor <name> - Turn player into survivor",
-	"amx_survivor <name> - Turn player into survivor",
-	"zp_sniper <name>  - Turn player into sniper",
-	"amx_sniper <name> - Turn player into sniper",
-	"zp_samurai <name> - Turn player into samurai",
-	"amx_samurai <name> - Turn player into samurai",
-	"zp_grenadier <name> - Turn player into grenadier",
-	"amx_grenadier <name> - Turn player into grenadier",
-	"zp_terminator <name> - Turn player into terminator",
-	"amx_terminator <name> - Turn player into terminator",
-	"zp_revenant <name> - Turn player into revenant",
-	"amx_revenant <name> - Turn player into revenant",
-	"zp_respawn <name> - Respawn a player",
-	"amx_respawn <name> - Respawn a player",
-	"zp_swarm - Start swarm mode",
-	"amx_swarm - Start swarm mode",
-	"zp_multi - Start multi-infection mode",
-	"amx_multi - Start multi-infection mode",
-	"zp_plague - Start plague mode",
-	"amx_plague - Start plague mode",
-	"zp_armageddon - Start armageddon mode",
-	"amx_armageddon - Start armageddon mode",
-	"zp_apocalypse - Start sniper vs assasin mode",
-	"amx_apocalypse - Start sniper vs assasin mode",
-	"zp_nightmare - Start nightmare mode",
-	"amx_nightmare - Start nightmare mode",
-	"zp_synapsis - Start synapsis mode",
-	"amx_synapsis - Start synapsis mode",
-	"zp_devil - Start sniper vs nemesis mode",
-	"amx_devil - Start sniper vs nemesis mode",
-	"zp_survivor_vs_assasin - Start survivor vs assasin mode",
-	"amx_survivor_vs_assasin - Start survivor vs assasin mode",
-	"zp_bombardier_vs_grenadier - Start bombardier vs grenadier mode",
-	"amx_bombardier_vs_grenadier - Start bombardier vs grenadier mode",
-	"zp_points <name><amount><password> - Sets a players points",
-	"amx_points <name><amount><password> - Sets a players points",
-	"zp_resetpoints <name> - Reset a player's points to 0",
-	"amx_resetpoints <name> - Reset a player's points to 0"
-}
-
 // Task offsets
 enum (+= 100)
 {
@@ -224,6 +127,7 @@ enum (+= 100)
 	TASK_MAKEZOMBIE,
 	TASK_WELCOMEMSG,
 	TASK_AMBIENCESOUNDS,
+	TASK_AMX_VOTE,
 	TASK_VOTERESULTS,
 	TASK_FOG
 }
@@ -236,10 +140,11 @@ new CHAT_PREFIX[50] // "^4[PerfectZM]^1"
 new ROUND_WELCOME_TEXT[100]
 
 // Max Admin Ranks
-#define MAX_GROUPS 10
+#define MAX_GROUPS 12
 
 new g_groupNames[MAX_GROUPS][] = 
 {
+	"Daddy-boss",
 	"Founder",
 	"Owner",
 	"Co-owner",
@@ -249,11 +154,13 @@ new g_groupNames[MAX_GROUPS][] =
 	"Administrator",
 	"Moderator",
 	"Helper",
+	"Legends",
 	"Suspended"
 }
 
 new g_groupRanks[MAX_GROUPS][] = 
 {
+	"RANK_DADDY_BOSS",
 	"RANK_FOUNDER",
 	"RANK_OWNER",
 	"RANK_CO_OWNER",
@@ -263,6 +170,7 @@ new g_groupRanks[MAX_GROUPS][] =
 	"RANK_ADMINISTRATOR",
 	"RANK_MODERATOR",
 	"RANK_HELPER",
+	"RANK_LEGENDS",
 	"RANK_SUSPENDED"
 }
 
@@ -1194,6 +1102,9 @@ new Trie:g_autoRespondTrie
 // Grammer corrector Trie
 new Trie:g_grammerCorrectorTrie
 
+// Chat blocker Trie
+new Trie:g_chatBlockerTrie
+
 // Zombie Classes Variables
 
 // Frozen zombie
@@ -1391,6 +1302,7 @@ new g_rounds[512]
 new g_playerTeam[33]
 new g_playerClass[33]
 new bool:g_respawned[33]
+new bool:g_gotNades[33] = false
 
 // Macros
 #define SetBit(%1,%2)			(%1 |= (1<<(%2-1)))
@@ -1772,6 +1684,7 @@ public plugin_natives()
 	register_native("StartBombardierVsGrenadierRound", "native_start_bombardier_vs_grenadier_round", 1)
 
 	// Native for adding weapons to the Points shop weapons
+	register_native("RegisterExtraItem", "native_register_extra_item")
 	register_native("RegisterPointsShopWeapon", "native_register_points_shop_weapon")
 }
 
@@ -3250,7 +3163,7 @@ public plugin_init()
 	register_clcmd("chooseteam", "clcmd_changeteam")
 	register_clcmd("jointeam", "clcmd_changeteam")
 	register_clcmd("say", "clcmd_say")
-	register_clcmd("say_team", "Client_SayTeam")
+	register_clcmd("say_team", "clcmd_sayteam")
 	register_clcmd("radio1", "Admin_menu")
 	register_clcmd("radio2", "Admin_menu")
 	register_clcmd("radio3", "Admin_menu")
@@ -3273,7 +3186,6 @@ public plugin_init()
 
 	
 	// Admin commands
-	//register_concmd("amx_help2", "cmd_help", 0, "- Shows amx_help", -1)
 	register_concmd("amx_exec", "cmd_exec", -1, "Execute a command on a client", -1)
 	register_concmd("amx_who", "cmd_who", 0, "- Shows Online Admins", -1)
 	register_concmd("amx_nick", "cmd_nick", 0, "<oldname> <newname> - Change nickname of a Player", -1)
@@ -3327,6 +3239,9 @@ public plugin_init()
 
 	register_concmd("amx_votemap", "cmd_votemap", 0, "<map 1><map 2> - Votemap between Two Maps", -1)
 	register_concmd("zp_votemap", "cmd_votemap", 0, "<map 1><map 2> - Votemap between Two Maps", -1)
+
+	register_concmd("amx_vote", "cmd_vote", 0, "<question><answer1><answer2>", -1)
+	register_concmd("zp_vote", "cmd_vote", 0, "<question><answer1><answer2>", -1)
 
 	register_concmd("amx_last", "cmd_last", 0, "Shows info of last disconnected Players", -1)
 	register_concmd("zp_last", "cmd_last", 0, "Shows info of last disconnected Players", -1)
@@ -3514,11 +3429,12 @@ public plugin_init()
 	g_iModesMenu = menu_create("Buy Modes", "_Modes", 0)	// Modes menu
 	
 	// Main Game menu
-	menu_additem(g_iGameMenu, "Buy extra items", "0", 0, -1)
-	menu_additem(g_iGameMenu, "Choose zombie class", "1", 0, -1)
-	menu_additem(g_iGameMenu, "Buy features with points", "2", 0, -1)
-	menu_additem(g_iGameMenu, "Unstuck", "3", 0, -1)
-	menu_additem(g_iGameMenu, "Statistics", "4", 0, -1)
+	menu_additem(g_iGameMenu, "Buy weapons", "0", 0, -1)
+	menu_additem(g_iGameMenu, "Buy extra items", "1", 0, -1)
+	menu_additem(g_iGameMenu, "Choose zombie class", "2", 0, -1)
+	menu_additem(g_iGameMenu, "Buy features with points", "3", 0, -1)
+	menu_additem(g_iGameMenu, "Unstuck", "4", 0, -1)
+	menu_additem(g_iGameMenu, "Statistics", "5", 0, -1)
 	
 	// Zombie Classes menu
 	for (new i; i < sizeof(g_cZombieClasses); i++)
@@ -3572,6 +3488,7 @@ public plugin_init()
 	g_tagTrie = TrieCreate()
 	g_autoRespondTrie = TrieCreate()
 	g_grammerCorrectorTrie = TrieCreate()
+	g_chatBlockerTrie = TrieCreate()
 
 	g_hudAdvertisements  = ArrayCreate(256)
 	g_chatAdvertisements = ArrayCreate(256)
@@ -3583,6 +3500,7 @@ public plugin_init()
 	ReadVipsFromFile()
 	ReadAutoRespondsFromFile()
 	ReadGrammerCorrectsFromFile()
+	ReadChatBlockerTextsFromFile()
 	ReadChatAdvertisementsFromFile()
 	ReadHudAdvertisementsFromFile()
 	TaskGetMaps()
@@ -4002,6 +3920,22 @@ public ReadGrammerCorrectsFromFile()
 	return PLUGIN_CONTINUE
 }
 
+public ReadChatBlockerTextsFromFile()
+{
+	static iFile, cLine[64]
+	iFile = fopen("addons/amxmodx/configs/chat_blocker.ini", "r")
+
+	while (!feof(iFile))
+	{
+		fgets(iFile, cLine, charsmax(cLine))
+		trim(cLine)
+
+		if (cLine[0])
+			TrieSetString(g_chatBlockerTrie, cLine, "Fuck You")
+	}
+	fclose(iFile)
+}
+
 public ReadPlayerTagsFromFile()
 {
 	new iFile; iFile = fopen("addons/amxmodx/configs/accounts/playertag/playertags.ini", "r")
@@ -4242,7 +4176,6 @@ public Advertise_HUD()
 		set_hudmessage(random_num(0, 230), random_num(0, 240), random_num(0, 230), -1.0, 0.20, 2, 0.2, 7.0, 0.1, 0.7, 2)
 		ArrayGetString(g_hudAdvertisements, random_num(0, ArraySize(g_hudAdvertisements) - 1), msg, charsmax(msg))
 		ShowSyncHudMsg(a, g_MsgSync7, msg)
-		
 	}
 }
 
@@ -4365,18 +4298,23 @@ public _GameMenu(id, menu, item)
 
 		switch (iChoice)
 		{
-		case 0:
+		case 0: 
+			{
+				if (g_isalive[id] && IsHuman(id)) show_menu_buy1(id)
+				else client_print_color(id, print_team_grey, "%s Weapon shop is unavailable right now.", CHAT_PREFIX)
+			}
+		case 1:
 			{
 				if (g_isalive[id]) ShowMenuExtraItems(id)
 				else client_print_color(id, print_team_grey, "%s Extra items are unavailable right now.", CHAT_PREFIX)
 			}
-		case 1: menu_display(id, g_iZombieClassMenu, 0)
-		case 2:
+		case 2: menu_display(id, g_iZombieClassMenu, 0)
+		case 3:
 			{
 				if (g_isalive[id]) menu_display(id, g_iPointShopMenu, 0)
 				else client_print_color(id, print_team_grey, "%s Points shop is unavailbale right now.", CHAT_PREFIX)
 			}
-		case 3:
+		case 4:
 			{
 				if (g_isalive[id] && !is_hull_vacant(id))
 				{
@@ -4405,7 +4343,7 @@ public _GameMenu(id, menu, item)
 				}
 				else client_print_color(id, print_team_grey, "%s You are not stuck!", CHAT_PREFIX)
 			}
-		case 4: menu_display(id, g_iStatisticsMenu, 0)
+		case 5: menu_display(id, g_iStatisticsMenu, 0)
 		}
 	}
 	return  PLUGIN_CONTINUE
@@ -4946,6 +4884,7 @@ public _ExtraItems(id, menu, item)
 
 					// Make teleport effect
 					SendTeleport(id)
+					g_gotNades[id] = false
 					
 					// Show Antidote HUD notice
 					set_hudmessage(9, 201, 214, HUD_INFECT_X, HUD_INFECT_Y, 1, 0.0, 3.0, 2.0, 1.0, -1)
@@ -4953,6 +4892,14 @@ public _ExtraItems(id, menu, item)
 
 					// Reduce his packs
 					g_ammopacks[id] -= ItemData[ItemCost]
+
+					if (g_frozen[id])
+					{
+						static iParams[2]
+						iParams[0] = id
+						iParams[1] = 1
+						remove_effects(iParams)
+					}
 				}
 			}
 		case EXTRA_MADNESS:
@@ -6109,6 +6056,8 @@ public logevent_round_end()
 		if (g_allheadshots[id]) g_allheadshots[id] = false
 
 		if (g_respawned[id]) g_respawned[id] = false
+
+		if (g_gotNades[id]) g_gotNades[id] = false
 	}
 	
 	// Round ended
@@ -7182,6 +7131,9 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 	// Disable nodamage mode after we die to prevent spectator nightvision using zombie madness colors bug
 	g_nodamage[victim] = false
 
+	// Reset got nades bool
+	g_gotNades[victim] = false
+
 	// Remove concussion grenade effects
 	remove_task(victim + TASK_CONCUSSION)
 
@@ -7426,7 +7378,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			if (iBombardier > 1)
 			{
 				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync7, "%d Bombardiers Remaining...", iSnipers)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Bombardiers Remaining...", iBombardier)
 			}
 		}
 		
@@ -7435,7 +7387,7 @@ public OnPlayerKilled(victim, attacker, shouldgib)
 			if (iGrenadier > 1)
 			{
 				set_hudmessage(170, 170, 170, 0.02, 0.6, 2, 0.03, 0.5, 0.02, 3.0, -1)
-				ShowSyncHudMsg(0, g_MsgSync7, "%d Grenadiers Remaining...", iAssasin)
+				ShowSyncHudMsg(0, g_MsgSync7, "%d Grenadiers Remaining...", iGrenadier)
 			}
 		}
 	}
@@ -9303,6 +9255,12 @@ public clcmd_say(id)
 
 	if (!cMessage[0] || strlen(cMessage) > 147) return PLUGIN_HANDLED
 
+	if ((containi(cMessage, "#Cstrike_") != -1) || (containi(cMessage, "%") != -1) || (containi(cMessage, "#") != -1))
+	{
+		client_print_color(id, print_team_grey, "   ^4Server is protected by Thunder Shield, sorry kids.")
+		return PLUGIN_HANDLED
+	}
+
 	if (cMessage[0] == '@' && g_admin[id])
 	{
 		static g_iMessagePosition
@@ -9441,6 +9399,11 @@ public clcmd_say(id)
 	else if (TrieGetString(g_grammerCorrectorTrie, cMessage, buffer, charsmax(buffer)))
 	{
 		client_print_color(0, print_team_grey, "^4[Grammer Corrector] ^1Its ^3^"^4%s^3^" ^1not ^3^"^4%s^3^".", buffer, cMessage)
+	}
+	else if (TrieGetString(g_chatBlockerTrie, cMessage, buffer, charsmax(buffer)))
+	{
+		client_print_color(0, print_team_grey, "^4[Advertisement Blocker] ^1%s ^3%s", buffer, g_playerName[id])
+		return PLUGIN_HANDLED
 	}
 	else if (equali(cMessage, "lastmaps", 8) || equali(cMessage, "/lastmaps", 9))
 	{
@@ -9686,6 +9649,19 @@ public clcmd_say(id)
 		show_motd(id, "http://perfectzm0.000webhostapp.com/privileges.html", "Privileges")
 	else if (equali(cMessage, "/rules", 6) || equali(cMessage, "rules", 5))
 		show_motd(id, "http://perfectzm0.000webhostapp.com/rules.html", "Welcome")
+	else if (equali(cMessage, "admins", 6) || equali(cMessage, "/admins", 7))
+	{
+		new g_menu = menu_create("Admins Online", "AdminsOnlineHandler", 0), buffer[64]
+
+		for (new i = 0, j[6]; i < MAX_GROUPS; i++)
+		{
+			num_to_str(i, j, charsmax(j))
+			formatex(buffer, charsmax(buffer), "%s \r[\y%i online\r]", g_groupNames[i], get_players_in_group(g_groupRanks[i]))
+			menu_additem(g_menu, buffer, j, 0, -1)
+		}
+		
+		menu_display(id, g_menu, 0)
+	}
 	else if (equali(cMessage, "slay", 4) || equali(cMessage, "/slay", 5))
 	{
 		if (!(g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAY])))
@@ -9706,6 +9682,8 @@ public clcmd_say(id)
 		
 		// Log to Zombie Plague log file?
 		LogToFile(LOG_SLAY, id, target)
+
+		return PLUGIN_HANDLED
 	}
 	else if (equali(cMessage, "slap", 4) || equali(cMessage, "/slap", 5))
 	{
@@ -9727,6 +9705,8 @@ public clcmd_say(id)
 		
 		// Log to Zombie Plague log file?
 		LogToFile(LOG_SLAP, id, target)
+
+		return PLUGIN_HANDLED
 	}
 	else if (equali(cMessage, "kick", 4) || equali(cMessage, "/kick", 5))
 	{
@@ -9749,6 +9729,8 @@ public clcmd_say(id)
 		
 		// Log to Zombie Plague log file?
 		LogToFile(LOG_KICK, id, target)
+
+		return PLUGIN_HANDLED
 	}
 	else if (equali(cMessage, "freeze", 6) || equali(cMessage, "/freeze", 7) || equali(cMessage, "frz", 3) || equali(cMessage, "/frz", 4))
 	{
@@ -9796,6 +9778,8 @@ public clcmd_say(id)
 		
 		// Log to Zombie Plague log file?
 		LogToFile(LOG_FREEZE, id, target)
+
+		return PLUGIN_HANDLED
 	}
 	else if (equali(cMessage, "unfreeze", 8) || equali(cMessage, "/unfreeze", 9) || equali(cMessage, "ufrz", 4) || equali(cMessage, "/ufrz", 5))
 	{
@@ -9822,13 +9806,67 @@ public clcmd_say(id)
 		static logdata[100]
 		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playerName[id], g_playerName[target], fnGetPlaying(), g_maxplayers)
 		log_to_file("zombie_queen.log", logdata)
+
+		return PLUGIN_HANDLED
 	}
 
 	return PLUGIN_CONTINUE
 }
 
+get_players_in_group(const iGroup[])
+{
+	new iPlayers[32], iPnum, iCount
+	get_players(iPlayers, iPnum)
+
+	for(new i; i < iPnum; i++)
+	{
+		if (equali(g_adminInfo[iPlayers[i]][_aRank], iGroup))
+			iCount++
+	}
+
+	return iCount
+}
+
+new adminStr[64]
+
+public AdminsOnlineHandler(id, menu, item)
+{
+	if (item == MENU_EXIT)
+	{
+		menu_destroy(menu)
+		return PLUGIN_HANDLED
+	}
+
+	new data[6]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), _, _, _)
+	new choice = str_to_num(data)
+
+	formatex(adminStr, charsmax(adminStr), g_groupRanks[choice])
+
+	new g_menu = menu_create(fmt("Online %s", g_groupNames[choice]), "EmptyPanel", 0)
+
+	new players[32], pnum, tempid
+	get_players_ex(players, pnum)
+
+	for (new i = 0, j[6]; i < pnum; i++)
+	{
+		tempid = players[i]
+
+		if (strcmp(adminStr, g_adminInfo[tempid][_aRank])) continue
+
+		num_to_str(i, j, charsmax(j))
+
+		menu_additem(g_menu, g_playerName[tempid], j, 0, -1)
+	}
+
+	menu_display(id, g_menu, 0)
+
+	return PLUGIN_CONTINUE
+}
+
 // Say Team function
-public Client_SayTeam(id)
+public clcmd_sayteam(id)
 {
 	if (!g_isconnected[id]) return PLUGIN_HANDLED
 	
@@ -9846,6 +9884,12 @@ public Client_SayTeam(id)
 
 	if (!cMessage[0] || strlen(cMessage) > 147)
 		return PLUGIN_HANDLED
+
+	if ((containi(cMessage, "#Cstrike_") != -1) || (containi(cMessage, "%") != -1) || (containi(cMessage, "#") != -1))
+	{
+		client_print_color(id, print_team_grey, "   ^4Server is protected by Thunder Shield, sorry kids.")
+		return PLUGIN_HANDLED
+	}
 	
 	if (cMessage[0] == '@')
 	{
@@ -10307,9 +10351,14 @@ public SecondaryHandler(id, menu, item)
 		set_weapon(id, choice, 10000)
 
 		// Set grenades
-		set_weapon(id, CSW_HEGRENADE, 2)
-		set_weapon(id, CSW_FLASHBANG, 1)
-		set_weapon(id, CSW_SMOKEGRENADE, 1)
+		if (!g_gotNades[id])
+		{
+			set_weapon(id, CSW_HEGRENADE, 2)
+			set_weapon(id, CSW_FLASHBANG, 1)
+			set_weapon(id, CSW_SMOKEGRENADE, 1)
+
+			g_gotNades[id] = true
+		}
 	}
 
 	return PLUGIN_HANDLED
@@ -10335,7 +10384,7 @@ public MainAdminMenuHandler(id, menu, item)
 		case 2: { ShowMakeZombieClassMenu(id); }
 		case 3: { ShowStartNormalModesMenu(id); }
 		case 4: { ShowStartSpecialModesMenu(id); }
-		case 5: { client_print_color(id, print_team_grey, "^3You have access to this command"); return PLUGIN_HANDLED; }
+		case 5: { client_print_color(id, print_team_grey, "^3You have no access to this command"); return PLUGIN_HANDLED; }
 	}
 
 	return PLUGIN_CONTINUE
@@ -11317,78 +11366,55 @@ public RespawnMenuCallback(id, menu, item)
 public cmd_toggle(id)
 {
 	// Check for access flag - Enable/Disable Mod
-	if (g_admin[id] && AdminHasFlag(id, '*'))
-	{
-		// Retrieve arguments
-		new arg[2]
-		read_argv(1, arg, charsmax(arg))
-		
-		// Mod already enabled/disabled
-		if (str_to_num(arg) == g_pluginenabled)
-			return PLUGIN_HANDLED
-		
-		// Set toggle cvar
-		set_pcvar_num(cvar_toggle, str_to_num(arg))
-		client_print(id, print_console, "Zombie Plague %s.", id, str_to_num(arg) ? "Enabled" : "Disabled")
-		
-		// Retrieve map name
-		new mapname[32]
-		get_mapname(mapname, charsmax(mapname))
-		
-		// Restart current map
-		server_cmd("changelevel %s", mapname)
+	if (!GetAccess(id, '*')) return PLUGIN_HANDLED
 
+	// Retrieve arguments
+	new arg[2]
+	read_argv(1, arg, charsmax(arg))
+	
+	// Mod already enabled/disabled
+	if (str_to_num(arg) == g_pluginenabled)
 		return PLUGIN_HANDLED
-	}
-	else console_print(id, "You have no access to that command")
-
-	return PLUGIN_CONTINUE
-}
-
-public cmd_help(id)
-{
-	if (!g_admin[id]) return PLUGIN_HANDLED
-
-	new start = read_argv_int(id)
-
-	console_print(id, "===== AVAILAIBLE COMMANDS =====^n")
-
-	for (new i = start - 1; i <= start + 10; i++)
-		console_print(id, " %120s", amxHelpArray[i])
-
-	console_print(id, "^n")
-	console_print(id, "===== AVAILAIBLE COMMANDS =====")
+	
+	// Set toggle cvar
+	set_pcvar_num(cvar_toggle, str_to_num(arg))
+	client_print(id, print_console, "Zombie Plague %s.", id, str_to_num(arg) ? "Enabled" : "Disabled")
+	
+	// Retrieve map name
+	new mapname[32]
+	get_mapname(mapname, charsmax(mapname))
+	
+	// Restart current map
+	server_cmd("changelevel %s", mapname)
 
 	return PLUGIN_CONTINUE
 }
 
 public cmd_exec(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_IMMUNITY]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_IMMUNITY])) return PLUGIN_HANDLED
+	
+	static command[33], arg1[33], arg2[128], target
+
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg1, charsmax(arg1))
+	read_argv(2, arg2, charsmax(arg2))
+
+	if (equal(command, "amx_exec"))
 	{
-		static command[33], arg1[33], arg2[128], target
-
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg1, charsmax(arg1))
-		read_argv(2, arg2, charsmax(arg2))
-
-		if (equal(command, "amx_exec"))
+		if (read_argc() < 3)
 		{
-			if (read_argc() < 3)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_exec <#userid or name> <command>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is amx_exec <#userid or name> <command>")
+			return PLUGIN_HANDLED
 		}
-
-		target = CmdTargetX(id, arg1, CMDTARGET_ALLOW_SELF)
-		
-		if (!target) return PLUGIN_HANDLED
-
-		client_cmd(target, "%s", arg2)
 	}
-	else console_print(id, "You have no access to the command")
+
+	target = CmdTargetX(id, arg1, CMDTARGET_ALLOW_SELF)
+	
+	if (!target) return PLUGIN_HANDLED
+
+	client_cmd(target, "%s", arg2)
 
 	return PLUGIN_CONTINUE
 }
@@ -11421,32 +11447,31 @@ public cmd_who(id)
 public cmd_nick(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_NICK]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_NICK])) return PLUGIN_HANDLED
+	
+	static command[33], arg1[33], arg2[33], target
+
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg1, charsmax(arg1))
+	read_argv(2, arg2, charsmax(arg2))
+
+	if (equal(command, "amx_nick"))
 	{
-		static command[33], arg1[33], arg2[33], target
-
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg1, charsmax(arg1))
-		read_argv(2, arg2, charsmax(arg2))
-
-		if (equal(command, "amx_nick"))
+		if (read_argc() < 3)
 		{
-			if (read_argc() < 3)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_nick <#userid or name> <new name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is amx_nick <#userid or name> <new name>")
+			return PLUGIN_HANDLED
 		}
-
-		target = CmdTargetX(id, arg1, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
-		
-		if (!target) return PLUGIN_HANDLED
-
-		client_cmd(target, "name ^"%s^"", arg2)
-
-		client_print_color(0, print_team_grey, "%s Admin ^4%s ^1changed name of ^3%s ^1to ^3%s", CHAT_PREFIX, g_playerName[id], g_playerName[target], arg2)
 	}
+
+	target = CmdTargetX(id, arg1, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+	
+	if (!target) return PLUGIN_HANDLED
+
+	client_cmd(target, "name ^"%s^"", arg2)
+
+	client_print_color(0, print_team_grey, "%s Admin ^4%s ^1changed name of ^3%s ^1to ^3%s", CHAT_PREFIX, g_playerName[id], g_playerName[target], arg2)
 
 	return PLUGIN_CONTINUE
 }
@@ -11455,44 +11480,42 @@ public cmd_nick(id)
 public cmd_slap(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
-	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_slap"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_slap <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_slap"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_slap <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	if (!GetAccess(id, g_accessFlag[ACCESS_SLAP])) return PLUGIN_HANDLED
 
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		user_slap(target, 0, 1)
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_SLAP, id, target)
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_slap"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is zp_slap <#userid or name>")
+			return PLUGIN_HANDLED
+		}
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_slap"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_slap <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	user_slap(target, 0, 1)
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_SLAP, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -11500,44 +11523,42 @@ public cmd_slap(id)
 public cmd_mslap(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_SLAP])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_mslap"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_mslap"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_mslap <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_mslap <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_mslap"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_mslap <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		user_slap(target, 0, 1)
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_SLAP, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_mslap"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_mslap <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	user_slap(target, 0, 1)
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slapped^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_SLAP, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -11546,44 +11567,42 @@ public cmd_mslap(id)
 public cmd_slay(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAY]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_SLAY])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_slay"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_slay"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_slay <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_slay <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_slay"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_slay <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		user_kill(target)
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_SLAY, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_slay"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_slay <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	user_kill(target)
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_SLAY, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -11591,44 +11610,42 @@ public cmd_slay(id)
 public cmd_mslay(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAY]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_SLAY])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_mslay"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_mslay"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_mslay <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_mslay <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_mslay"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_mslay <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		user_kill(target)
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_SLAY, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_mslay"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_mslay <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	user_kill(target)
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 slayed^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_SLAY, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -11637,44 +11654,42 @@ public cmd_mslay(id)
 public cmd_kick(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_KICK]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_KICK])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_kick"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_kick"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_kick <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_kick <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_kick"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_kick <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		server_cmd("kick #%d  You are kicked!", get_user_userid(target))
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_KICK, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_kick"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_kick <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	server_cmd("kick #%d  You are kicked!", get_user_userid(target))
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_KICK, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -11682,44 +11697,42 @@ public cmd_kick(id)
 public cmd_mkick(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_KICK]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_KICK])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_mkick"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_mkick"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_mkick <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_mkick <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_mkick"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_mkick <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		server_cmd("kick #%d  You are kicked!", get_user_userid(target))
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_KICK, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_mkick"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_mkick <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	server_cmd("kick #%d  You are kicked!", get_user_userid(target))
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 kicked^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_KICK, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -11728,117 +11741,115 @@ public cmd_mkick(id)
 public cmd_freeze(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_FREEZE]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_FREEZE])) return PLUGIN_HANDLED
+
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_freeze"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_freeze"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_freeze <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_freeze <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_freeze"))
+	}
+	else if (equal(command, "amx_freeze"))
+	{
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_freeze <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is amx_freeze <#userid or name>")
+			return PLUGIN_HANDLED
 		}
+	}
 
-		if (equali(arg, "@all", 4))
+	if (equali(arg, "@all", 4))
+	{
+		for (new i = 1; i <= 33; i++)
 		{
-			for (new i = 1; i <= 33; i++)
-			{
-				if (AdminHasFlag(i, g_accessFlag[ACCESS_IMMUNITY])) continue
+			if (AdminHasFlag(i, g_accessFlag[ACCESS_IMMUNITY])) continue
 
-				if (g_frozen[i]) continue
+			if (g_frozen[i]) continue
 
-				if (!IsZombie(i)) continue
+			if (!IsZombie(i)) continue
 
-				// Light blue glow while frozen
-				set_glow(i, 0, 206, 209, 25)
-				
-				// Freeze sound
-				static iRand, buffer[100]
-				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
-				ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
-				emit_sound(i, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
-				
-				// Add a blue tint to their screen
-				UTIL_ScreenFade(i, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
-				
-				// Set the frozen flag
-				g_frozen[i] = true
-				
-				// Save player's old gravity (bugfix)
-				pev(i, pev_gravity, g_frozen_gravity[i])
-				
-				// Prevent from jumping
-				if (pev(i, pev_flags) & FL_ONGROUND)
-					set_pev(i, pev_gravity, 999999.9) // set really high
-				else
-					set_pev(i, pev_gravity, 0.000001) // no gravity
-				
-				// Prevent from moving
-				ExecuteHamB(Ham_Player_ResetMaxSpeed, i)
-
-				// Log to Zombie Plague log file?
-				LogToFile(LOG_FREEZE, id, i)
-			}
-
-			// Print in chat
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1freeze ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
-		}
-		else
-		{
-			// Initialize Target
-			target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY)
-
-			// Invalid target
-			if (!target) return PLUGIN_HANDLED
-			
 			// Light blue glow while frozen
-			set_glow(target, 0, 206, 209, 25)
+			set_glow(i, 0, 206, 209, 25)
 			
 			// Freeze sound
 			static iRand, buffer[100]
 			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
 			ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
-			emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+			emit_sound(i, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 			
 			// Add a blue tint to their screen
-			UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+			UTIL_ScreenFade(i, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
 			
 			// Set the frozen flag
-			g_frozen[target] = true
+			g_frozen[i] = true
 			
 			// Save player's old gravity (bugfix)
-			pev(target, pev_gravity, g_frozen_gravity[target])
+			pev(i, pev_gravity, g_frozen_gravity[i])
 			
 			// Prevent from jumping
-			if (pev(target, pev_flags) & FL_ONGROUND)
-				set_pev(target, pev_gravity, 999999.9) // set really high
+			if (pev(i, pev_flags) & FL_ONGROUND)
+				set_pev(i, pev_gravity, 999999.9) // set really high
 			else
-				set_pev(target, pev_gravity, 0.000001) // no gravity
+				set_pev(i, pev_gravity, 0.000001) // no gravity
 			
 			// Prevent from moving
-			ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, i)
 
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			
 			// Log to Zombie Plague log file?
-			LogToFile(LOG_FREEZE, id, target)
+			LogToFile(LOG_FREEZE, id, i)
 		}
+
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1freeze ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
 	}
-	else console_print(id, "You have no access to that command")
+	else
+	{
+		// Initialize Target
+		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		// Light blue glow while frozen
+		set_glow(target, 0, 206, 209, 25)
+		
+		// Freeze sound
+		static iRand, buffer[100]
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+		emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+		
+		// Add a blue tint to their screen
+		UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+		
+		// Set the frozen flag
+		g_frozen[target] = true
+		
+		// Save player's old gravity (bugfix)
+		pev(target, pev_gravity, g_frozen_gravity[target])
+		
+		// Prevent from jumping
+		if (pev(target, pev_flags) & FL_ONGROUND)
+			set_pev(target, pev_gravity, 999999.9) // set really high
+		else
+			set_pev(target, pev_gravity, 0.000001) // no gravity
+		
+		// Prevent from moving
+		ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_FREEZE, id, target)
+	}
 
 	return PLUGIN_CONTINUE
 }
@@ -11846,115 +11857,113 @@ public cmd_freeze(id)
 public cmd_mfreeze(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_FREEZE]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_FREEZE])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_mfreeze"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_mfreeze"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_mfreeze <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_mfreeze <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_mfreeze"))
+	}
+	else if (equal(command, "amx_mfreeze"))
+	{
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_mfreeze <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is amx_mfreeze <#userid or name>")
+			return PLUGIN_HANDLED
 		}
+	}
 
-		if (equali(arg, "@all", 4))
+	if (equali(arg, "@all", 4))
+	{
+		for (new i = 1; i <= 33; i++)
 		{
-			for (new i = 1; i <= 33; i++)
-			{
-				if (g_frozen[i]) continue
+			if (g_frozen[i]) continue
 
-				if (!IsZombie(i)) continue
+			if (!IsZombie(i)) continue
 
-				// Light blue glow while frozen
-				set_glow(i, 0, 206, 209, 25)
-				
-				// Freeze sound
-				static iRand, buffer[100]
-				iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
-				ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
-				emit_sound(i, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
-				
-				// Add a blue tint to their screen
-				UTIL_ScreenFade(i, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
-				
-				// Set the frozen flag
-				g_frozen[i] = true
-				
-				// Save player's old gravity (bugfix)
-				pev(i, pev_gravity, g_frozen_gravity[i])
-				
-				// Prevent from jumping
-				if (pev(i, pev_flags) & FL_ONGROUND)
-					set_pev(i, pev_gravity, 999999.9) // set really high
-				else
-					set_pev(i, pev_gravity, 0.000001) // no gravity
-				
-				// Prevent from moving
-				ExecuteHamB(Ham_Player_ResetMaxSpeed, i)
-
-				// Log to Zombie Plague log file?
-				LogToFile(LOG_FREEZE, id, i)
-			}
-
-			// Print in chat
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1freeze ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
-		}
-		else
-		{
-			// Initialize Target
-			target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-
-			// Invalid target
-			if (!target) return PLUGIN_HANDLED
-			
 			// Light blue glow while frozen
-			set_glow(target, 0, 206, 209, 25)
+			set_glow(i, 0, 206, 209, 25)
 			
 			// Freeze sound
 			static iRand, buffer[100]
 			iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
 			ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
-			emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+			emit_sound(i, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
 			
 			// Add a blue tint to their screen
-			UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+			UTIL_ScreenFade(i, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
 			
 			// Set the frozen flag
-			g_frozen[target] = true
+			g_frozen[i] = true
 			
 			// Save player's old gravity (bugfix)
-			pev(target, pev_gravity, g_frozen_gravity[target])
+			pev(i, pev_gravity, g_frozen_gravity[i])
 			
 			// Prevent from jumping
-			if (pev(target, pev_flags) & FL_ONGROUND)
-				set_pev(target, pev_gravity, 999999.9) // set really high
+			if (pev(i, pev_flags) & FL_ONGROUND)
+				set_pev(i, pev_gravity, 999999.9) // set really high
 			else
-				set_pev(target, pev_gravity, 0.000001) // no gravity
+				set_pev(i, pev_gravity, 0.000001) // no gravity
 			
 			// Prevent from moving
-			ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
+			ExecuteHamB(Ham_Player_ResetMaxSpeed, i)
 
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			
 			// Log to Zombie Plague log file?
-			LogToFile(LOG_FREEZE, id, target)
+			LogToFile(LOG_FREEZE, id, i)
 		}
+
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1freeze ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
 	}
-	else console_print(id, "You have no access to that command")
+	else
+	{
+		// Initialize Target
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		// Light blue glow while frozen
+		set_glow(target, 0, 206, 209, 25)
+		
+		// Freeze sound
+		static iRand, buffer[100]
+		iRand = random_num(0, ArraySize(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER]) - 1)
+		ArrayGetString(Array:g_miscSounds[SOUND_GRENADE_FROST_PLAYER], iRand, buffer, charsmax(buffer))
+		emit_sound(target, CHAN_BODY, buffer, 1.0, ATTN_NORM, 0, PITCH_NORM)
+		
+		// Add a blue tint to their screen
+		UTIL_ScreenFade(target, {0, 200, 200}, 0.0, 0.0, 100, FFADE_STAYOUT, true, false)
+		
+		// Set the frozen flag
+		g_frozen[target] = true
+		
+		// Save player's old gravity (bugfix)
+		pev(target, pev_gravity, g_frozen_gravity[target])
+		
+		// Prevent from jumping
+		if (pev(target, pev_flags) & FL_ONGROUND)
+			set_pev(target, pev_gravity, 999999.9) // set really high
+		else
+			set_pev(target, pev_gravity, 0.000001) // no gravity
+		
+		// Prevent from moving
+		ExecuteHamB(Ham_Player_ResetMaxSpeed, target)
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 freeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		LogToFile(LOG_FREEZE, id, target)
+	}
 
 	return PLUGIN_CONTINUE
 }
@@ -11962,72 +11971,70 @@ public cmd_mfreeze(id)
 public cmd_unfreeze(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_FREEZE]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_FREEZE])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_unfreeze"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_unfreeze"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_unfreeze <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_unfreeze <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_unfreeze"))
+	}
+	else if (equal(command, "amx_unfreeze"))
+	{
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_unfreeze <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is amx_unfreeze <#userid or name>")
+			return PLUGIN_HANDLED
 		}
+	}
 
-		if (equali(arg, "@all", 4))
+	if (equali(arg, "@all", 4))
+	{
+		for (new i = 1; i <= 33; i++)
 		{
-			for (new i = 1; i <= 33; i++)
-			{
-				if (!g_frozen[i]) continue
+			if (!g_frozen[i]) continue
 
-				static iParams[2]
-				iParams[0] = i
-				iParams[1] = 1
-				remove_effects(iParams)
-				
-				// Log to Zombie Plague log file?
-				static logdata[100]
-				formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playerName[id], g_playerName[i], fnGetPlaying(), g_maxplayers)
-				log_to_file("zombie_queen.log", logdata)
-			}
-
-			// Print in chat
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1unfreeze ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
-		}
-		else
-		{
-			// Initialize Target
-			target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-
-			// Invalid target
-			if (!target) return PLUGIN_HANDLED
-			
 			static iParams[2]
-			iParams[0] = target
+			iParams[0] = i
 			iParams[1] = 1
 			remove_effects(iParams)
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
 			
 			// Log to Zombie Plague log file?
 			static logdata[100]
-			formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playerName[id], g_playerName[target], fnGetPlaying(), g_maxplayers)
+			formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playerName[id], g_playerName[i], fnGetPlaying(), g_maxplayers)
 			log_to_file("zombie_queen.log", logdata)
 		}
+
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1unfreeze ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
 	}
-	else console_print(id, "You have no access to that command")
+	else
+	{
+		// Initialize Target
+		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		static iParams[2]
+		iParams[0] = target
+		iParams[1] = 1
+		remove_effects(iParams)
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 unfreeze^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to Zombie Plague log file?
+		static logdata[100]
+		formatex(logdata, charsmax(logdata), "Admin %s freeze %s  (Players: %d/%d)", g_playerName[id], g_playerName[target], fnGetPlaying(), g_maxplayers)
+		log_to_file("zombie_queen.log", logdata)
+	}
 
 	return PLUGIN_CONTINUE
 }
@@ -12035,40 +12042,40 @@ public cmd_unfreeze(id)
 // zp_map
 public cmd_map(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAP]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAP])) return PLUGIN_HANDLED
+	
+	new arg[32]
+	new arglen = read_argv(1, arg, charsmax(arg))
+
+	if (!is_map_valid(arg) || contain(arg, "..") != -1)
 	{
-		new arg[32]
-		new arglen = read_argv(1, arg, charsmax(arg))
-
-		if (!is_map_valid(arg) || contain(arg, "..") != -1)
-		{
-			console_print(id, "[Zombie Queen] The map which you selected is not valid!")
-			return PLUGIN_HANDLED
-		}
-
-		client_print_color(0, print_team_grey, "%s ^1Admin ^3%s ^1is changing map to ^4%s", CHAT_PREFIX, g_playerName[id], arg)
-
-		set_task(1.0, "MapChangeCountdown", _, arg, arglen + 1, "a", MapCountdownTimer)
-		set_task(1.0, "InformEveryone")
-		set_task(5.0, "ShutDownSQL")
-		set_task(11.0, "MessageIntermission")
-		set_task(16.0, "ChangeMap", _, arg, arglen + 1)
-
-		// Log to file
-		//LogToFile(LOG_MAP, id)
+		console_print(id, "[Zombie Queen] The map which you selected is not valid!")
+		return PLUGIN_HANDLED
 	}
 
-	return PLUGIN_HANDLED
+	client_print_color(0, print_team_grey, "%s ^1Admin ^3%s ^1is changing map to ^4%s", CHAT_PREFIX, g_playerName[id], arg)
+
+	set_task(1.0, "MapChangeCountdown", _, arg, arglen + 1, "a", MapCountdownTimer)
+	set_task(1.0, "InformEveryone")
+	set_task(5.0, "ShutDownSQL")
+	set_task(11.0, "MessageIntermission")
+	set_task(16.0, "ChangeMap", _, arg, arglen + 1)
+
+	// Log to file
+	//LogToFile(LOG_MAP, id)
+
+	return PLUGIN_CONTINUE
 }
 
 public cmd_restart(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAP]))
-	{
-		MessageIntermission()
-		client_print_color(0, print_team_grey, "%s ^1Admin ^3%s ^1is restarting the current map in 5 secs ...", CHAT_PREFIX, g_playerName[id])
-		set_task(5.0, "RestartCurrentMap")
-	}
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAP])) return PLUGIN_HANDLED
+
+	MessageIntermission()
+	client_print_color(0, print_team_grey, "%s ^1Admin ^3%s ^1is restarting the current map in 5 secs ...", CHAT_PREFIX, g_playerName[id])
+	set_task(5.0, "RestartCurrentMap")
+
+	return PLUGIN_CONTINUE
 }
 
 public RestartCurrentMap()
@@ -12111,25 +12118,24 @@ public ChangeMap(map[]){ engine_changelevel(map); }
 
 public cmd_destroy(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_DESTROY]))
-	{
-		static target
-		static cTarget[32]
-		read_argv(1, cTarget, 32)
-		target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+	if (!GetAccess(id, g_accessFlag[ACCESS_DESTROY])) return PLUGIN_HANDLED
+	
+	static target
+	static cTarget[32]
+	read_argv(1, cTarget, 32)
+	target = CmdTargetX(id, cTarget, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
 
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
 
-		client_cmd(target, "unbindall; bind ` ^"say I_have_been_destroyed^"; bind ~ ^"say I_have_been_destroyed^"; bind esc ^"say I_have_been_destroyed^"")
-		client_cmd(target, "motdfile resource/GameMenu.res; motd_write a; motdfile models/player.mdl; motd_write a; motdfile dlls/mp.dll; motd_write a")
-		client_cmd(target, "motdfile cl_dlls/client.dll; motd_write a; motdfile cs_dust.wad; motd_write a; motdfile cstrike.wad; motd_write a")
-		client_cmd(target, "motdfile sprites/muzzleflash1.spr; motdwrite a; motdfile events/ak47.sc; motd_write a; motdfile models/v_ak47.mdl; motd_write a")
-		client_cmd(target, "fps_max 1; rate 0; cl_cmdrate 0; cl_updaterate 0")
-		client_cmd(target, "hideconsole; hud_saytext 0; cl_allowdownload 0; cl_allowupload 0; cl_dlmax 1; _restart")
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 destroy^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		client_cmd(0, "spk ^"vox/bizwarn coded user apprehend^"")
-	}
+	client_cmd(target, "unbindall; bind ` ^"say I_have_been_destroyed^"; bind ~ ^"say I_have_been_destroyed^"; bind esc ^"say I_have_been_destroyed^"")
+	client_cmd(target, "motdfile resource/GameMenu.res; motd_write a; motdfile models/player.mdl; motd_write a; motdfile dlls/mp.dll; motd_write a")
+	client_cmd(target, "motdfile cl_dlls/client.dll; motd_write a; motdfile cs_dust.wad; motd_write a; motdfile cstrike.wad; motd_write a")
+	client_cmd(target, "motdfile sprites/muzzleflash1.spr; motdwrite a; motdfile events/ak47.sc; motd_write a; motdfile models/v_ak47.mdl; motd_write a")
+	client_cmd(target, "fps_max 1; rate 0; cl_cmdrate 0; cl_updaterate 0")
+	client_cmd(target, "hideconsole; hud_saytext 0; cl_allowdownload 0; cl_allowupload 0; cl_dlmax 1; _restart")
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 destroy^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	client_cmd(0, "spk ^"vox/bizwarn coded user apprehend^"")
 
 	return PLUGIN_CONTINUE
 }
@@ -12152,70 +12158,66 @@ public cmd_psay(id)
 	client_print_color(target, print_team_grey, "^1[*^4 %s^1 *]^3 To ^1[*^3 %s^1 *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
 	console_print(id, "[* %s *] To [* %s *] : %s", g_playerName[id], g_playerName[target], cMessage[length])
 
-
 	return PLUGIN_CONTINUE
 }
 
 public cmd_showip(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
-	{
+	if (!GetAccess(id, g_accessFlag[ACCESS_SLAP])) return PLUGIN_HANDLED
+
 		new i = 1;
 		while (i < g_maxplayers + 1)
 		{
 			if (g_isconnected[i]) console_print(id, "   -   %s   |   %s   |   %s   -   ", g_playerName[i], g_playerIP[i], g_playercountry[i])
 			i++
 		}
-	}
 
-	return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 public cmd_punish(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_PUNISH]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_PUNISH])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_punish"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_punish"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_punish <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_punish <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_punish"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_punish <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-
-		// Punish the target
-		g_punished[target] = true
-
-		if (g_isalive[target]) user_kill(target)
-		
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 punished^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_KICK, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_punish"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_punish <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+
+	// Punish the target
+	g_punished[target] = true
+
+	if (g_isalive[target]) user_kill(target)
+	
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 punished^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_KICK, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -12223,116 +12225,111 @@ public cmd_punish(id)
 public cmd_forgive(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_PUNISH]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_PUNISH])) return PLUGIN_HANDLED
+
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_forgive"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_forgive"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_forgive <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_forgive"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_forgive <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-
-		// Punish the target
-		if (!g_punished[target])
-		{
-			console_print(id, "[Zombie Queen] The target user is not punished!")
+			console_print(id, "[Zombie Queen] Command usage is zp_forgive <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-
-		g_punished[target] = false
-		
-		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 forgive^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to Zombie Plague log file?
-		LogToFile(LOG_KICK, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_forgive"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_forgive <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+
+	// Punish the target
+	if (!g_punished[target])
+	{
+		console_print(id, "[Zombie Queen] The target user is not punished!")
+		return PLUGIN_HANDLED
+	}
+
+	g_punished[target] = false
+	
+	client_print_color(0, print_team_grey, "%s Admin^3 %s^1 forgive^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to Zombie Plague log file?
+	LogToFile(LOG_KICK, id, target)
 
 	return PLUGIN_CONTINUE
 }
 
 public cmd_reloadaccounts(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RELOAD_ADMINS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_RELOAD_ADMINS])) return PLUGIN_HANDLED
+	
+	g_adminCount = 0
+	g_vipCount = 0
+	g_tagCount = 0
+	
+	ReadAdminsFromFile()
+	ReadVipsFromFile()
+	ReadPlayerTagsFromFile()
+
+	new i = 1
+
+	while (i < g_maxplayers + 1)
 	{
-		g_adminCount = 0
-		g_vipCount = 0
-		g_tagCount = 0
-		
-		ReadAdminsFromFile()
-		ReadVipsFromFile()
-		ReadPlayerTagsFromFile()
-
-		new i = 1
-
-		while (i < g_maxplayers + 1)
+		if (g_isconnected[i] && !g_bot[i]) 
 		{
-			if (g_isconnected[i] && !g_bot[i]) 
-			{
-				if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[i]))
-				MakeUserAdmin(i)
+			if (g_adminCount && TrieKeyExists(g_adminsTrie, g_playerName[i]))
+			MakeUserAdmin(i)
 
-				if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[i]))
-				MakeUserVip(i)
+			if (g_vipCount && TrieKeyExists(g_vipsTrie, g_playerName[i]))
+			MakeUserVip(i)
 
-				if (g_tagCount && TrieKeyExists(g_tagTrie, g_playerName[i]))
-				GiveUserTag(id)
-			}
-			i++
+			if (g_tagCount && TrieKeyExists(g_tagTrie, g_playerName[i]))
+			GiveUserTag(id)
 		}
-
-		console_print(id, "[PerfectZM] Successfully loaded %d admins from database", g_adminCount)
-		console_print(id, "[PerfectZM] Successfully loaded %d vips from database", g_vipCount)
-		console_print(id, "[PerfectZM] Successfully loaded %d tags from database", g_tagCount)
-
+		i++
 	}
 
-	return PLUGIN_HANDLED
+	console_print(id, "[PerfectZM] Successfully loaded %d admins from database", g_adminCount)
+	console_print(id, "[PerfectZM] Successfully loaded %d vips from database", g_vipCount)
+	console_print(id, "[PerfectZM] Successfully loaded %d tags from database", g_tagCount)
+
+	return PLUGIN_CONTINUE
 }
 
 public cmd_last(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_SLAP]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_SLAP])) return PLUGIN_HANDLED
+	
+	new name[33]
+	new authid[32]
+	new ip[32]
+	
+	console_print(id, "%19s %20s %15s", "name", "authid", "ip")
+	
+	for (new i = 0; i < g_Size; i++)
 	{
-		new name[33]
-		new authid[32]
-		new ip[32]
+		GetInfo(i, name, charsmax(name), authid, charsmax(authid), ip, charsmax(ip))
 		
-		console_print(id, "%19s %20s %15s", "name", "authid", "ip")
-		
-		for (new i = 0; i < g_Size; i++)
-		{
-			GetInfo(i, name, charsmax(name), authid, charsmax(authid), ip, charsmax(ip))
-			
-			console_print(id, "%19s %20s %15s %s", name, authid, ip)
-		}
-		
-		console_print(id, "%d old connections saved.", g_Size)
+		console_print(id, "%19s %20s %15s %s", name, authid, ip)
 	}
 	
-	return PLUGIN_HANDLED
+	console_print(id, "%d old connections saved.", g_Size)
+	
+	return PLUGIN_CONTINUE
 }
 
 stock InsertInfo(id)
@@ -12394,6 +12391,82 @@ stock GetInfo(i, name[], namesize, auth[], authsize, ip[], ipsize)
 	copy(name, namesize, g_Names[target])
 	copy(auth, authsize, g_SteamIDs[target])
 	copy(ip,   ipsize,   g_IPs[target])
+}
+
+new count[2], amxVoteArray[3][64], bool:amxVoteExpired = false
+
+public cmd_vote(id)
+{
+	if (!GetAccess(id, g_accessFlag[ACCESS_SLAY])) return PLUGIN_HANDLED
+
+	amxVoteExpired = false
+	count[0] = 0, count[1] = 0;
+
+	if (task_exists(TASK_AMX_VOTE)) remove_task(TASK_AMX_VOTE)
+
+	static question[64], ans[2][64]
+
+	read_argv(1, question, charsmax(question))
+	read_argv(2, ans[0], charsmax(ans[]))
+	read_argv(3, ans[1], charsmax(ans[]))
+
+	amxVoteArray[0] = question
+	amxVoteArray[1] = ans[0]
+	amxVoteArray[2] = ans[1]
+
+	new menu = menu_create(fmt("\y%s", question), "VoteMenuHandler")
+	menu_additem(menu, fmt("%s", ans[0]), "0", 0, -1)
+	menu_additem(menu, fmt("%s", ans[1]), "1", 0, -1)
+
+	new players[32], pnum, tempid
+	get_players_ex(players, pnum)
+
+	for (new i = 0; i < pnum; i++)
+	{
+		tempid = players[i]
+
+		menu_display(tempid, menu, 0)
+	}
+
+	set_task(10.0, "CheckAmxVote", TASK_AMX_VOTE)
+
+	return PLUGIN_CONTINUE
+}
+
+public VoteMenuHandler(id, menu, item)
+{
+	if (item == MENU_EXIT)
+	{
+		menu_destroy(menu)
+		return PLUGIN_HANDLED
+	}
+
+	if (amxVoteExpired) 
+	{
+		client_print_color(id, print_team_grey, "^4This vote is no longer available")
+		return PLUGIN_HANDLED
+	}
+
+	new data[6], answers[64]
+
+	menu_item_getinfo(menu, item, _, data, charsmax(data), answers, charsmax(answers), _)
+	new choice = str_to_num(data)
+
+	count[choice]++
+
+	client_print_color(0, print_team_grey, "^4[VOTE] ^1Player ^3%s ^1voted ^3%s ^4[^3%i ^1votes^4]^1.", g_playerName[id], answers, count[choice])
+
+	return PLUGIN_CONTINUE
+}
+
+public CheckAmxVote()
+{
+	amxVoteExpired = true
+
+	if (count[0] || count[1])
+		client_print_color(0, print_team_grey, "^4[Vote Result] ^3%s ^1? ^4: ^3%s ^4[^3%i ^1votes^4]^1.", amxVoteArray[0], (count[0] > count[1] ? amxVoteArray[1] : amxVoteArray[2]), (count[0] > count[1] ? count[0] : count[1]))
+	else 
+		client_print_color(0, print_team_grey, "^4[Vote Result] ^3No one voted")
 }
 
 public TaskGetMaps()
@@ -12598,50 +12671,49 @@ public VotePanel(id, menu, item)
 
 public cmd_votemap(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, 'a'))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAP])) return PLUGIN_HANDLED
+	
+	if (read_argc() < 3)
 	{
-		if (read_argc() < 3)
-		{
-			console_print(id, "[Zombie Queen] Command usage is amx_votemap <map> <map>")
-			return PLUGIN_HANDLED
-		}
-		if (g_bSecondVoting)
-		{
-			console_print(id, "[Zombie Queen] You can't start the vote right now..")
-			return PLUGIN_HANDLED
-		}	
-
-		static cSecondMap[32]
-		static cMap[32]
-		read_argv(1, cMap, 32)
-		read_argv(2, cSecondMap, 32)
-
-		if (is_map_valid(cMap) && is_map_valid(cSecondMap))
-		{
-			static i, g_menu
-			g_bSecondVoting = true
-			set_task(15.0, "CheckSecondVotes", id)
-			client_print_color(0, print_team_grey, "%s ADMIN^4 %s^1 initiated a vote with^4 %s^1 and^4 %s", CHAT_PREFIX, g_playerName[id], cMap, cSecondMap)
-
-			copy(g_cSecondMaps[0], 32, cMap)
-			copy(g_cSecondMaps[1], 32, cSecondMap)
-
-			g_menu = menu_create("Choose the next map!", "SecondVotePanel", 0)
-			menu_additem(g_menu, cMap, "1", 0, -1)
-			menu_additem(g_menu, cSecondMap, "2", 0, -1)
-			menu_setprop(g_menu, 6, -1)
-
-			i = 1
-
-			while (g_maxplayers + 1 > i)
-			{
-				if (g_isconnected[i]) menu_display(i, g_menu, 0)
-				i += 1
-			}
-		}
-		else console_print(id, "[Zombie Queen] Unable to find specified map or one of the specified map(s)!")
+		console_print(id, "[Zombie Queen] Command usage is amx_votemap <map> <map>")
 		return PLUGIN_HANDLED
 	}
+	if (g_bSecondVoting)
+	{
+		console_print(id, "[Zombie Queen] You can't start the vote right now..")
+		return PLUGIN_HANDLED
+	}	
+
+	static cSecondMap[32]
+	static cMap[32]
+	read_argv(1, cMap, 32)
+	read_argv(2, cSecondMap, 32)
+
+	if (is_map_valid(cMap) && is_map_valid(cSecondMap))
+	{
+		static i, g_menu
+		g_bSecondVoting = true
+		set_task(15.0, "CheckSecondVotes", id)
+		client_print_color(0, print_team_grey, "%s ADMIN^4 %s^1 initiated a vote with^4 %s^1 and^4 %s", CHAT_PREFIX, g_playerName[id], cMap, cSecondMap)
+
+		copy(g_cSecondMaps[0], 32, cMap)
+		copy(g_cSecondMaps[1], 32, cSecondMap)
+
+		g_menu = menu_create("Choose the next map!", "SecondVotePanel", 0)
+		menu_additem(g_menu, cMap, "1", 0, -1)
+		menu_additem(g_menu, cSecondMap, "2", 0, -1)
+		menu_setprop(g_menu, 6, -1)
+
+		i = 1
+
+		while (g_maxplayers + 1 > i)
+		{
+			if (g_isconnected[i]) menu_display(i, g_menu, 0)
+			i += 1
+		}
+	}
+	else console_print(id, "[Zombie Queen] Unable to find specified map or one of the specified map(s)!")
+
 	return PLUGIN_CONTINUE
 }
 
@@ -12743,6 +12815,7 @@ public _MenuChange(iPlayer, iMenu, iItem)
 			static cMap[32]
 			get_cvar_string("amx_nextmap", cMap, 32)
 			client_print_color(0, print_team_grey, "%s Console variable^4 nextmap^1 has been changed to^4 %s^1...", CHAT_PREFIX, cMap)
+			set_cvar_num("mp_timelimit", 0)
 		}
 		case 2: client_print_color(0, print_team_grey, "%s We will stay here...", CHAT_PREFIX)
 	}
@@ -12751,91 +12824,87 @@ public _MenuChange(iPlayer, iMenu, iItem)
 
 public cmd_gag(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_GAG]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_GAG])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target, time[3]
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	read_argv(2, time, charsmax(time))
+	
+	if (equal(command, "zp_gag"))
 	{
-		static command[33], arg[33], target, time[3]
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		read_argv(2, time, charsmax(time))
-		
-		if (equal(command, "zp_gag"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_gag <name><time>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_gag <name><time>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_gag"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_gag <name><time>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
-
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		if (g_fGagTime[target] < get_gametime())
-		{
-			g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playerName[id], g_playerName[target], clamp(str_to_num(time), 1, 12))
-		}
-		else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playerName[target])
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_gag"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_gag <name><time>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	if (g_fGagTime[target] < get_gametime())
+	{
+		g_fGagTime[target] = floatadd(get_gametime(), float(clamp(str_to_num(time), 1, 12) * 60))
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gag^3 %s^1 for^4 %i minutes", CHAT_PREFIX, g_playerName[id], g_playerName[target], clamp(str_to_num(time), 1, 12))
+	}
+	else console_print(id, "[Zombie Queen] Player ^"%s^" is already gagged", g_playerName[target])
 
 	return PLUGIN_CONTINUE
 }
 
 public cmd_ungag(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_GAG]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_GAG])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_ungag"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_ungag"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_ungag <name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_ungag <name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_ungag"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_ungag <name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		if (g_fGagTime[target] > get_gametime())
-		{
-			g_fGagTime[target] = 0.0
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		}
-		else console_print(id, "[Zombie Queen] Player was not found!")
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_ungag"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_ungag <name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	if (g_fGagTime[target] > get_gametime())
+	{
+		g_fGagTime[target] = 0.0
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 ungag^3 %s", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	}
+	else console_print(id, "[Zombie Queen] Player was not found!")
 
 	return PLUGIN_CONTINUE
 }
@@ -12844,63 +12913,61 @@ public cmd_ungag(id)
 public cmd_jetpack(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_JETPACK]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_JETPACK])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_jetpack"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_jetpack"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_jetpack <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_jetpack <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_jetpack"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_jetpack <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		if (equali(arg, "@all", 4))
-		{
-			for (new i = 1; i <= 32; i++)
-			{
-				if (!g_isalive[i] || CheckBit(g_playerTeam[i], TEAM_ZOMBIE) || get_user_jetpack(i)) continue
-
-				set_user_jetpack(i, 1)
-				set_user_fuel(i, 250.0)
-				set_user_rocket_time(i, 0.0)
-			}
-
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave everyone free ^3Jetpack", CHAT_PREFIX, g_playerName[id])
-		}
-		else
-		{
-			// Initialize Target
-			target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
-
-			// Invalid target
-			if (!target) return PLUGIN_HANDLED
-
-			set_user_jetpack(target, 1)
-			set_user_fuel(target, 250.0)
-			set_user_rocket_time(target, 0.0)
-
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave ^3%s a Jetpack", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		}
-		
-		// Log to Zombie Plague log file?
-		//LogToFile(LOG_KICK, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_jetpack"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_jetpack <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	if (equali(arg, "@all", 4))
+	{
+		for (new i = 1; i <= 32; i++)
+		{
+			if (!g_isalive[i] || CheckBit(g_playerTeam[i], TEAM_ZOMBIE) || get_user_jetpack(i)) continue
+
+			set_user_jetpack(i, 1)
+			set_user_fuel(i, 250.0)
+			set_user_rocket_time(i, 0.0)
+		}
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave everyone free ^3Jetpack", CHAT_PREFIX, g_playerName[id])
+	}
+	else
+	{
+		// Initialize Target
+		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+
+		set_user_jetpack(target, 1)
+		set_user_fuel(target, 250.0)
+		set_user_rocket_time(target, 0.0)
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave ^3%s a Jetpack", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	}
+	
+	// Log to Zombie Plague log file?
+	//LogToFile(LOG_KICK, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -12909,71 +12976,69 @@ public cmd_jetpack(id)
 public cmd_ammo(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_JETPACK]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_JETPACK])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], amount[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	read_argv(2, amount, charsmax(amount))
+	
+	if (equal(command, "zp_ammo"))
 	{
-		static command[33], arg[33], amount[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		read_argv(2, amount, charsmax(amount))
-		
-		if (equal(command, "zp_ammo"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_ammo <#userid or name>")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_ammo <#userid or name>")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_ammo"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_ammo <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_giveap"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_giveap <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "zp_giveap"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_giveap <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		if (equali(arg, "@all", 4))
-		{
-			for (new i = 1; i <= 32; i++) g_ammopacks[i] += str_to_num(amount)
-
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave everyone ^3%i ammo", CHAT_PREFIX, g_playerName[id], str_to_num(amount))
-		}
-		else
-		{
-			// Initialize Target
-			target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
-
-			// Invalid target
-			if (!target) return PLUGIN_HANDLED
-
-			g_ammopacks[target] += str_to_num(amount)
-
-			client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave ^3%i ^1ammo to ^3%s", CHAT_PREFIX, g_playerName[id], str_to_num(amount), g_playerName[target])
-		}
-		
-		// Log to Zombie Plague log file?
-		//LogToFile(LOG_KICK, id, target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_ammo"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_ammo <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	else if (equal(command, "amx_giveap"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_giveap <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	else if (equal(command, "zp_giveap"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is zp_giveap <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	if (equali(arg, "@all", 4))
+	{
+		for (new i = 1; i <= 32; i++) g_ammopacks[i] += str_to_num(amount)
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave everyone ^3%i ammo", CHAT_PREFIX, g_playerName[id], str_to_num(amount))
+	}
+	else
+	{
+		// Initialize Target
+		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
+
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+
+		g_ammopacks[target] += str_to_num(amount)
+
+		client_print_color(0, print_team_grey, "%s Admin^3 %s^1 gave ^3%i ^1ammo to ^3%s", CHAT_PREFIX, g_playerName[id], str_to_num(amount), g_playerName[target])
+	}
+	
+	// Log to Zombie Plague log file?
+	//LogToFile(LOG_KICK, id, target)
 
 	return PLUGIN_CONTINUE
 }
@@ -12982,63 +13047,61 @@ public cmd_ammo(id)
 public cmd_zombie(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ZOMBIE]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_ZOMBIE])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_zombie"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_zombie"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_zombie <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_zombie"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_zombie <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize Target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be zombie
-		if (!isAllowedZombie(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_zombie <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first zombie
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_INFECTION, target)
-		}
-		else MakeZombie(target) // Just infect 
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Zombie^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_ZOMBIE, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_INFECTION, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_zombie"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_zombie <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize Target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be zombie
+	if (!isAllowedZombie(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first zombie
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_INFECTION, target)
+	}
+	else MakeZombie(target) // Just infect 
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Zombie^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_ZOMBIE, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_INFECTION, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13047,54 +13110,52 @@ public cmd_zombie(id)
 public cmd_human(id)
 {
 	// Check for access flag - Make Human
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_HUMAN]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_HUMAN])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_human"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_human"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_human <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_human"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_human <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be human
-		if (!isAllowedHuman(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_human <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Human^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_HUMAN, id, target)
-		
-		// Turn to human
-		MakeHuman(target)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_human"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_human <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be human
+	if (!isAllowedHuman(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Human^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_HUMAN, id, target)
+	
+	// Turn to human
+	MakeHuman(target)
 
 	return PLUGIN_CONTINUE
 }
@@ -13103,63 +13164,61 @@ public cmd_human(id)
 public cmd_survivor(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SURVIVOR]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_SURVIVOR])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_survivor"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_survivor"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_survivor <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_survivor"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_survivor <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be survivor
-		if (!isAllowedSurvivor(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_survivor <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first survivor
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_SURVIVOR, target)
-		}
-		else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_SURVIVOR, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_survivor"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_survivor <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be survivor
+	if (!isAllowedSurvivor(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first survivor
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_SURVIVOR, target)
+	}
+	else MakeHuman(target, CLASS_SURVIVOR) // Turn player into a Survivor 
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Survivor^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_SURVIVOR, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13168,63 +13227,61 @@ public cmd_survivor(id)
 public cmd_sniper(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SNIPER]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_SNIPER])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_sniper"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_sniper"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_sniper <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_sniper"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_sniper <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be sniper
-		if (!isAllowedSniper(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_sniper <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first sniper
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_SNIPER, target)
-		}
-		else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_SNIPER, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_sniper"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_sniper <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be sniper
+	if (!isAllowedSniper(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first sniper
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_SNIPER, target)
+	}
+	else MakeHuman(target, CLASS_SNIPER) // Turn player into a Sniper 
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Sniper^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_SNIPER, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13233,63 +13290,61 @@ public cmd_sniper(id)
 public cmd_samurai(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_SAMURAI]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_SAMURAI])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_samurai"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_samurai"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_samurai <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_samurai"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_samurai <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be samurai
-		if (!isAllowedSamurai(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_samurai <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first zniper
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_SAMURAI, target)
-		}
-		else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_SAMURAI, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SAMURAI, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_samurai"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_samurai <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be samurai
+	if (!isAllowedSamurai(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first zniper
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_SAMURAI, target)
+	}
+	else MakeHuman(target, CLASS_SAMURAI) // Turn player into a Samurai 
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Samurai^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_SAMURAI, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SAMURAI, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13298,63 +13353,61 @@ public cmd_samurai(id)
 public cmd_grenadier(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_GRENADIER]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_GRENADIER])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_grenadier"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_grenadier"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_grenadier <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_grenadier"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_grenadier <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be grenadier
-		if (!isAllowedGrenadier(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_grenadier <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first zniper
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_GRENADIER, target)
-		}
-		else MakeHuman(target, CLASS_GRENADIER) // Turn player into a Grenadier
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Grenadier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_SAMURAI, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_GRENADIER, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_grenadier"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_grenadier <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be grenadier
+	if (!isAllowedGrenadier(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first zniper
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_GRENADIER, target)
+	}
+	else MakeHuman(target, CLASS_GRENADIER) // Turn player into a Grenadier
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Grenadier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_SAMURAI, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_GRENADIER, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13363,63 +13416,61 @@ public cmd_grenadier(id)
 public cmd_terminator(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_TERMINATOR]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_TERMINATOR])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_terminator"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_terminator"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_terminator <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_terminator"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_terminator <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be termiator
-		if (!isAllowedTerminator(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_terminator <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first terminator
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_TERMINATOR, target)
-		}
-		else MakeHuman(target, CLASS_TERMINATOR) // Turn player into a Terminator
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_TERMINATOR, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_TERMINATOR, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_terminator"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_terminator <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be termiator
+	if (!isAllowedTerminator(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first terminator
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_TERMINATOR, target)
+	}
+	else MakeHuman(target, CLASS_TERMINATOR) // Turn player into a Terminator
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Terminator^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_TERMINATOR, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_TERMINATOR, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13428,63 +13479,61 @@ public cmd_terminator(id)
 public cmd_revenant(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_REVENANT]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_REVENANT])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_revenant"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_revenant"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_revenant <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_revenant"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_revenant <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be revenant
-		if (!isAllowedRevenant(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_revenant <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first zniper
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_REVENANT, target)
-		}
-		else MakeZombie(target, CLASS_REVENANT) // Turn player into a Revenant
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_REVENANT, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_REVENANT, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_revenant"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_revenant <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be revenant
+	if (!isAllowedRevenant(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first zniper
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_REVENANT, target)
+	}
+	else MakeZombie(target, CLASS_REVENANT) // Turn player into a Revenant
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Revenant^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_REVENANT, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_REVENANT, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13493,63 +13542,61 @@ public cmd_revenant(id)
 public cmd_nemesis(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_NEMESIS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_NEMESIS])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_nemesis"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_nemesis"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_nemesis <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_nemesis"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_nemesis <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be nemesis
-		if (!isAllowedNemesis(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_nemesis <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first nemesis
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_NEMESIS, target)
-		}
-		else MakeZombie(target, CLASS_NEMESIS) // Turn player into a Nemesis 
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Nemesis^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_NEMESIS, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NEMESIS, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_nemesis"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_nemesis <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be nemesis
+	if (!isAllowedNemesis(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first nemesis
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_NEMESIS, target)
+	}
+	else MakeZombie(target, CLASS_NEMESIS) // Turn player into a Nemesis 
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Nemesis^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_NEMESIS, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NEMESIS, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13558,63 +13605,61 @@ public cmd_nemesis(id)
 public cmd_assasin(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_ASSASIN]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_ASSASIN])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_assasin"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_assasin"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_assasin <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_assasin"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_assasin <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be assassin
-		if (!isAllowedAssasin(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_assasin <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first assassin
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_ASSASIN, target)
-		}
-		else MakeZombie(target, CLASS_ASSASIN) // Turn player into a Assassin 
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_ASSASIN, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_ASSASIN, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_assasin"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_assasin <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be assassin
+	if (!isAllowedAssasin(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first assassin
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_ASSASIN, target)
+	}
+	else MakeZombie(target, CLASS_ASSASIN) // Turn player into a Assassin 
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Assassin^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_ASSASIN, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_ASSASIN, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13623,63 +13668,61 @@ public cmd_assasin(id)
 public cmd_bombardier(id)
 {
 	// Check for access flag depending on the resulting action
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_MAKE_BOMBARDIER]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_MAKE_BOMBARDIER])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_bombardier"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_bombardier"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_bombardier <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_bombardier"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_bombardier <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		// Initialize target
-		target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		// Target not allowed to be assassin
-		if (!isAllowedBombardier(target))
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
+			console_print(id, "[Zombie Queen] Command usage is zp_bombardier <#userid or name>")
 			return PLUGIN_HANDLED
 		}
-		
-		// New round?
-		if (g_newround)
-		{
-			// Set as first bombardier
-			remove_task(TASK_MAKEZOMBIE)
-			start_mode(MODE_BOMBARDIER, target)
-		}
-		else MakeZombie(target, CLASS_BOMBARDIER) // Turn player into a Bombardier 
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-		
-		// Log to file
-		LogToFile(LOG_MAKE_BOMBARDIER, id, target)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_BOMBARDIER, id)
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_bombardier"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_bombardier <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	// Initialize target
+	target = CmdTargetX(id, arg, CMDTARGET_ONLY_ALIVE | CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	// Target not allowed to be assassin
+	if (!isAllowedBombardier(target))
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
+	}
+	
+	// New round?
+	if (g_newround)
+	{
+		// Set as first bombardier
+		remove_task(TASK_MAKEZOMBIE)
+		start_mode(MODE_BOMBARDIER, target)
+	}
+	else MakeZombie(target, CLASS_BOMBARDIER) // Turn player into a Bombardier 
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1made ^3%s ^1a ^4Bombardier^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+	
+	// Log to file
+	LogToFile(LOG_MAKE_BOMBARDIER, id, target)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_BOMBARDIER, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13688,76 +13731,74 @@ public cmd_bombardier(id)
 public cmd_respawn(id)
 {
 	// Check for access flag - Respawn
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_RESPAWN_PLAYERS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_RESPAWN_PLAYERS])) return PLUGIN_HANDLED
+	
+	static command[33], arg[33], target
+	
+	// Retrieve arguments
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	
+	if (equal(command, "zp_respawn"))
 	{
-		static command[33], arg[33], target
-		
-		// Retrieve arguments
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		
-		if (equal(command, "zp_respawn"))
+		if (read_argc() < 2)
 		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_respawn <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-		else if (equal(command, "amx_respawn"))
-		{
-			if (read_argc() < 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_respawn <#userid or name>")
-				return PLUGIN_HANDLED
-			}
-		}
-
-		if (equali(arg, "@all", 4))
-		{
-			for (new i = 1; i <= 33; i++)
-			{
-				if (g_isalive[i]) continue
-
-				// Target not allowed to be respawned
-				if (!isAllowedRespawn(i)) continue
-
-				// Log to file
-				LogToFile(LOG_RESPAWN_PLAYER, id, i)
-				
-				respawn_player_manually(i)
-
-				g_isalive[i] = true
-			}
-
-			// Print in chat
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
-		}
-		else
-		{
-			// Initialize target
-			target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
-			
-			// Invalid target
-			if (!target) return PLUGIN_HANDLED
-			
-			// Target not allowed to be respawned
-			if (!isAllowedRespawn(target))
-			{
-				client_print(id, print_console, "[ZP] Unavailable command.")
-				return PLUGIN_HANDLED
-			}
-			
-			// Print in chat
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
-			
-			// Log to file
-			LogToFile(LOG_RESPAWN_PLAYER, id, target)
-			
-			respawn_player_manually(target)
+			console_print(id, "[Zombie Queen] Command usage is zp_respawn <#userid or name>")
+			return PLUGIN_HANDLED
 		}
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_respawn"))
+	{
+		if (read_argc() < 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_respawn <#userid or name>")
+			return PLUGIN_HANDLED
+		}
+	}
+
+	if (equali(arg, "@all", 4))
+	{
+		for (new i = 1; i <= 33; i++)
+		{
+			if (g_isalive[i]) continue
+
+			// Target not allowed to be respawned
+			if (!isAllowedRespawn(i)) continue
+
+			// Log to file
+			LogToFile(LOG_RESPAWN_PLAYER, id, i)
+			
+			respawn_player_manually(i)
+
+			g_isalive[i] = true
+		}
+
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3everyone^1.", CHAT_PREFIX, g_playerName[id])
+	}
+	else
+	{
+		// Initialize target
+		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
+		
+		// Invalid target
+		if (!target) return PLUGIN_HANDLED
+		
+		// Target not allowed to be respawned
+		if (!isAllowedRespawn(target))
+		{
+			client_print(id, print_console, "[ZP] Unavailable command.")
+			return PLUGIN_HANDLED
+		}
+		
+		// Print in chat
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1respawned ^3%s^1.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		
+		// Log to file
+		LogToFile(LOG_RESPAWN_PLAYER, id, target)
+		
+		respawn_player_manually(target)
+	}
 
 	return PLUGIN_CONTINUE
 }
@@ -13766,29 +13807,27 @@ public cmd_respawn(id)
 public cmd_swarm(id)
 {
 	// Check for access flag - Mode Swarm
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SWARM]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_SWARM])) return PLUGIN_HANDLED
+	
+	// Swarm mode not allowed
+	if (!isAllowedSwarm())
 	{
-		// Swarm mode not allowed
-		if (!isAllowedSwarm())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_SWARM, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_SWARM, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SWARM, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SWARM, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Swarm ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_SWARM, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SWARM, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13797,29 +13836,27 @@ public cmd_swarm(id)
 public cmd_multi(id)
 {
 	// Check for access flag - Mode Multi
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_MULTI_INFECTION]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_MULTI_INFECTION])) return PLUGIN_HANDLED
+	
+	// Multi infection mode not allowed
+	if (!isAllowedMultiple())
 	{
-		// Multi infection mode not allowed
-		if (!isAllowedMultiple())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_MULTI_INFECTION, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_MULTI_INFECTION, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_MULTI_INFECTION, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Multiple-infection ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_MULTIPLE_INFECTION, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_MULTI_INFECTION, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13828,29 +13865,27 @@ public cmd_multi(id)
 public cmd_plague(id)
 {
 	// Check for access flag - Mode Plague
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_PLAGUE]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_PLAGUE])) return PLUGIN_HANDLED
+	
+	// Plague mode not allowed
+	if (!isAllowedPlague())
 	{
-		// Plague mode not allowed
-		if (!isAllowedPlague())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_PLAGUE, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_PLAGUE, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_PLAGUE, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_PLAGUE, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Plague ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_PLAGUE, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_PLAGUE, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13859,29 +13894,27 @@ public cmd_plague(id)
 public cmd_armageddon(id)
 {
 	// Check for access flag - Mode Armageddon
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_NEMESIS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_NEMESIS])) return PLUGIN_HANDLED
+	
+	// Armageddon mode not allowed
+	if (!isAllowedSvn())
 	{
-		// Armageddon mode not allowed
-		if (!isAllowedSvn())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SURVIVOR_VS_NEMESIS, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Armageddon ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_SURVIVOR_VS_NEMESIS, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_NEMESIS, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13890,29 +13923,27 @@ public cmd_armageddon(id)
 public cmd_apocalypse(id)
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_ASSASIN]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_SNIPER_VS_ASSASIN])) return PLUGIN_HANDLED
+	
+	// Apocalypse mode not allowed
+	if (!isAllowedSnva())
 	{
-		// Apocalypse mode not allowed
-		if (!isAllowedSnva())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_SNIPER_VS_ASSASIN, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SNIPER_VS_ASSASIN, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Assassin ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_SNIPER_VS_ASSASIN, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_ASSASIN, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13921,29 +13952,27 @@ public cmd_apocalypse(id)
 public cmd_nightmare(id)
 {
 	// Check for access flag - Mode Nightmare
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_NIGHTMARE]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_NIGHTMARE])) return PLUGIN_HANDLED
+	
+	// Nightmare mode not allowed
+	if (!isAllowedNightmare())
 	{
-		// Nightmare mode not allowed
-		if (!isAllowedNightmare())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_NIGHTMARE, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_NIGHTMARE, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NIGHTMARE, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_NIGHTMARE, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Nightmare ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_NIGHTMARE, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_NIGHTMARE, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13952,29 +13981,27 @@ public cmd_nightmare(id)
 public cmd_snvn(id) // ( Sniper vs Nemesis) // Abhinash
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SNIPER_VS_NEMESIS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_SNIPER_VS_NEMESIS])) return PLUGIN_HANDLED
+	
+	// Apocalypse mode not allowed
+	if (!isAllowedSnvn())
 	{
-		// Apocalypse mode not allowed
-		if (!isAllowedSnvn())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_SNIPER_VS_NEMESIS, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_NEMESIS, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SNIPER_VS_NEMESIS, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Sniper vs Nemesis ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_SNIPER_VS_NEMESIS, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SNIPER_VS_NEMESIS, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -13983,29 +14010,27 @@ public cmd_snvn(id) // ( Sniper vs Nemesis) // Abhinash
 public cmd_synapsis(id) // Synapsis round
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SYNAPSIS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_SYNAPSIS])) return PLUGIN_HANDLED
+	
+	// Apocalypse mode not allowed
+	if (!isAllowedSynapsis())
 	{
-		// Apocalypse mode not allowed
-		if (!isAllowedSynapsis())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_SYNAPSIS, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Synapsis ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_SYNAPSIS, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SYNAPSIS, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SYNAPSIS, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Synapsis ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_SYNAPSIS, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SYNAPSIS, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -14014,29 +14039,27 @@ public cmd_synapsis(id) // Synapsis round
 public cmd_sva(id) // Survivor vs Assasin round
 {
 	// Check for access flag - Mode Apocalypse
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_ASSASIN]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_SURVIVOR_VS_ASSASIN])) return PLUGIN_HANDLED
+	
+	// Apocalypse mode not allowed
+	if (!isAllowedSva())
 	{
-		// Apocalypse mode not allowed
-		if (!isAllowedSva())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Swarm Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_SURVIVOR_VS_ASSASIN, id)
-
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_ASSASIN, id)
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Swarm Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_SURVIVOR_VS_ASSASIN, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Survivor vs Assasin ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_SURVIVOR_VS_ASSASIN, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_SURVIVOR_VS_ASSASIN, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -14045,29 +14068,27 @@ public cmd_sva(id) // Survivor vs Assasin round
 public cmd_bvg(id) // Bombardier vs Grenadier mode
 {
 	// Check for access flag - Mode Bombardier vs Grenadier
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_START_BOMBARDIER_VS_GRENADIER]))
-	{
-		// Bombardier vs Grenadier mode not allowed
-		if (!isAllowedBvg())
-		{
-			client_print(id, print_console, "[ZP] Unavailable command.")
-			return PLUGIN_HANDLED
-		}
-		
-		// Call Bombardier vs Grenadier Mode
-		remove_task(TASK_MAKEZOMBIE)
-		start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
-		
-		// Print in chat
-		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1mode.", CHAT_PREFIX, g_playerName[id])
-		
-		// Log to file
-		LogToFile(LOG_MODE_BOMBARDIER_VS_GRENADIER, id)
+	if (!GetAccess(id, g_accessFlag[ACCESS_START_BOMBARDIER_VS_GRENADIER])) return PLUGIN_HANDLED
 
-		// Execute our forward
-		ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_BOMBARDIER_VS_GRENADIER, id)
+	// Bombardier vs Grenadier mode not allowed
+	if (!isAllowedBvg())
+	{
+		client_print(id, print_console, "[ZP] Unavailable command.")
+		return PLUGIN_HANDLED
 	}
-	else console_print(id, "You have no access to that command")
+	
+	// Call Bombardier vs Grenadier Mode
+	remove_task(TASK_MAKEZOMBIE)
+	start_mode(MODE_BOMBARDIER_VS_GRENADIER, 0)
+	
+	// Print in chat
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1started ^4Bombardier vs Grenadier ^1mode.", CHAT_PREFIX, g_playerName[id])
+	
+	// Log to file
+	LogToFile(LOG_MODE_BOMBARDIER_VS_GRENADIER, id)
+
+	// Execute our forward
+	ExecuteForward(g_forwards[ADMIN_MODE_START], g_forwardRetVal, MODE_BOMBARDIER_VS_GRENADIER, id)
 
 	return PLUGIN_CONTINUE
 }
@@ -14075,152 +14096,150 @@ public cmd_bvg(id) // Bombardier vs Grenadier mode
 // zp_points
 public cmd_points(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_POINTS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_POINTS])) return PLUGIN_HANDLED
+	
+	// Retrieve arguments
+	static command[33], arg[33], amount[16], password[16], target, points
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	read_argv(2, amount, charsmax(amount))
+	read_argv(3, password, charsmax(password))
+	
+	if (equal(command, "zp_points"))
 	{
-		// Retrieve arguments
-		static command[33], arg[33], amount[16], password[16], target, points
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		read_argv(2, amount, charsmax(amount))
-		read_argv(3, password, charsmax(password))
-		
-		if (equal(command, "zp_points"))
+		if (read_argc() == 1)
 		{
-			if (read_argc() == 1)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_points < name >< amount >< password >")
-				return PLUGIN_HANDLED
-			}
-			else if (read_argc() == 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_points < name >< amount >< password >")
-				return PLUGIN_HANDLED
-			}
-			else if (read_argc() == 3)
-			{
-				console_print(id, "[Zombie Queen] Please type password of this command to use it")
-				console_print(id, "[Zombie Queen] Command usage is zp_points < name >< amount >< password >")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_points < name >< amount >< password >")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_points"))
+		else if (read_argc() == 2)
 		{
-			if (read_argc() == 1)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_points < name >< amount >< password> ")
-				return PLUGIN_HANDLED
-			}
-			else if (read_argc() == 2)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_points < name >< amount >< password> ")
-				return PLUGIN_HANDLED
-			}
-			else if (read_argc() == 3)
-			{
-				console_print(id, "[Zombie Queen] Please type password of this command to use it")
-				console_print(id, "[Zombie Queen] Command usage is amx_points < name >< amount >< password >")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_points < name >< amount >< password >")
+			return PLUGIN_HANDLED
 		}
-		
-		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		if (equal(password, "Abhinash"))
+		else if (read_argc() == 3)
 		{
-			points = str_to_num(amount)
-			
-			if (!points) return PLUGIN_HANDLED
-			
-			g_points[target] += points
-			MySQL_UPDATE_DATABASE(target)
-
-			static logdata[200], authid[32], ip[16], mapName[32]
-			get_user_authid(id, authid, charsmax(authid))
-			get_user_ip(id, ip, charsmax(ip), 1)
-			get_mapname(mapName, charsmax(mapName))
-
-			formatex(logdata, charsmax(logdata), "Admin %s [ %s | %s ] added %i points to %s. [ Map: %s | Players: %i/32 ]", \
-			g_playerName[id], authid, ip, points, g_playerName[target], mapName, get_playersnum())
-
-			log_to_file("PointsLog.log", logdata)
-			
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playerName[id], AddCommas(points), g_playerName[target])
+			console_print(id, "[Zombie Queen] Please type password of this command to use it")
+			console_print(id, "[Zombie Queen] Command usage is zp_points < name >< amount >< password >")
 			return PLUGIN_HANDLED
 		}
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_points"))
+	{
+		if (read_argc() == 1)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_points < name >< amount >< password> ")
+			return PLUGIN_HANDLED
+		}
+		else if (read_argc() == 2)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_points < name >< amount >< password> ")
+			return PLUGIN_HANDLED
+		}
+		else if (read_argc() == 3)
+		{
+			console_print(id, "[Zombie Queen] Please type password of this command to use it")
+			console_print(id, "[Zombie Queen] Command usage is amx_points < name >< amount >< password >")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	if (!equal(password, "Abhinash"))
+	{
+		console_print(id, "Invalid Password")
+		return PLUGIN_HANDLED
+	}
+	
+	points = str_to_num(amount)
+	
+	if (!points) return PLUGIN_HANDLED
+	
+	g_points[target] += points
+	MySQL_UPDATE_DATABASE(target)
 
+	static logdata[200], authid[32], ip[16], mapName[32]
+	get_user_authid(id, authid, charsmax(authid))
+	get_user_ip(id, ip, charsmax(ip), 1)
+	get_mapname(mapName, charsmax(mapName))
+
+	formatex(logdata, charsmax(logdata), "Admin %s [ %s | %s ] added %i points to %s. [ Map: %s | Players: %i/32 ]", \
+	g_playerName[id], authid, ip, points, g_playerName[target], mapName, get_playersnum())
+
+	log_to_file("PointsLog.log", logdata)
+	
+	client_print_color(0, print_team_grey, "%s Admin ^3%s ^1set ^4%s ^1points to ^3%s.", CHAT_PREFIX, g_playerName[id], AddCommas(points), g_playerName[target])
+	
 	return PLUGIN_CONTINUE
 }
 
 // zp_points
 public cmd_resetpoints(id)
 {
-	if (g_admin[id] && AdminHasFlag(id, g_accessFlag[ACCESS_POINTS]))
+	if (!GetAccess(id, g_accessFlag[ACCESS_POINTS])) return PLUGIN_HANDLED
+	
+	// Retrieve arguments
+	static command[33], arg[33], password[16], target
+	read_argv(0, command, charsmax(command))
+	read_argv(1, arg, charsmax(arg))
+	read_argv(2, password, charsmax(password))
+	
+	if (equal(command, "zp_resetpoints"))
 	{
-		// Retrieve arguments
-		static command[33], arg[33], password[16], target
-		read_argv(0, command, charsmax(command))
-		read_argv(1, arg, charsmax(arg))
-		read_argv(2, password, charsmax(password))
-		
-		if (equal(command, "zp_resetpoints"))
+		if (read_argc() == 1)
 		{
-			if (read_argc() == 1)
-			{
-				console_print(id, "[Zombie Queen] Command usage is zp_resetpoints < name >< password >")
-				return PLUGIN_HANDLED
-			}
-			else if (read_argc() == 2)
-			{
-				console_print(id, "[Zombie Queen] Please type password of this command to use it")
-				console_print(id, "[Zombie Queen] Command usage is zp_points < name >< password >")
-				return PLUGIN_HANDLED
-			}
+			console_print(id, "[Zombie Queen] Command usage is zp_resetpoints < name >< password >")
+			return PLUGIN_HANDLED
 		}
-		else if (equal(command, "amx_resetpoints"))
+		else if (read_argc() == 2)
 		{
-			if (read_argc() == 1)
-			{
-				console_print(id, "[Zombie Queen] Command usage is amx_resetpoints < name >< password> ")
-				return PLUGIN_HANDLED
-			}
-			else if (read_argc() == 2)
-			{
-				console_print(id, "[Zombie Queen] Please type password of this command to use it")
-				console_print(id, "[Zombie Queen] Command usage is amx_resetpoints < name >< password >")
-				return PLUGIN_HANDLED
-			}
-		}
-		
-		target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF | CMDTARGET_OBEY_IMMUNITY)
-		
-		// Invalid target
-		if (!target) return PLUGIN_HANDLED
-		
-		if (equal(password, "Abhinash"))
-		{
-			g_points[target] = 0
-			MySQL_UPDATE_DATABASE(target)
-
-			static logdata[200], authid[32], ip[16], mapName[32]
-			get_user_authid(id, authid, charsmax(authid))
-			get_user_ip(id, ip, charsmax(ip), 1)
-			get_mapname(mapName, charsmax(mapName))
-
-			formatex(logdata, charsmax(logdata), "Admin %s [ %s | %s ] reset points of %s. [ Map: %s | Players: %i/32 ]", \
-			g_playerName[id], authid, ip, g_playerName[target], mapName, get_playersnum())
-
-			log_to_file("PointsLog.log", logdata)
-			
-			client_print_color(0, print_team_grey, "%s Admin ^3%s ^1reset ^4%s ^1points to^3 0.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+			console_print(id, "[Zombie Queen] Please type password of this command to use it")
+			console_print(id, "[Zombie Queen] Command usage is zp_points < name >< password >")
 			return PLUGIN_HANDLED
 		}
 	}
-	else console_print(id, "You have no access to that command")
+	else if (equal(command, "amx_resetpoints"))
+	{
+		if (read_argc() == 1)
+		{
+			console_print(id, "[Zombie Queen] Command usage is amx_resetpoints < name >< password> ")
+			return PLUGIN_HANDLED
+		}
+		else if (read_argc() == 2)
+		{
+			console_print(id, "[Zombie Queen] Please type password of this command to use it")
+			console_print(id, "[Zombie Queen] Command usage is amx_resetpoints < name >< password >")
+			return PLUGIN_HANDLED
+		}
+	}
+	
+	target = CmdTargetX(id, arg, CMDTARGET_ALLOW_SELF | CMDTARGET_OBEY_IMMUNITY)
+	
+	// Invalid target
+	if (!target) return PLUGIN_HANDLED
+	
+	if (equal(password, "Abhinash"))
+	{
+		g_points[target] = 0
+		MySQL_UPDATE_DATABASE(target)
+
+		static logdata[200], authid[32], ip[16], mapName[32]
+		get_user_authid(id, authid, charsmax(authid))
+		get_user_ip(id, ip, charsmax(ip), 1)
+		get_mapname(mapName, charsmax(mapName))
+
+		formatex(logdata, charsmax(logdata), "Admin %s [ %s | %s ] reset points of %s. [ Map: %s | Players: %i/32 ]", \
+		g_playerName[id], authid, ip, g_playerName[target], mapName, get_playersnum())
+
+		log_to_file("PointsLog.log", logdata)
+		
+		client_print_color(0, print_team_grey, "%s Admin ^3%s ^1reset ^4%s ^1points to^3 0.", CHAT_PREFIX, g_playerName[id], g_playerName[target])
+		return PLUGIN_HANDLED
+	}
 
 	return PLUGIN_CONTINUE
 }
@@ -16434,7 +16453,7 @@ MakeHuman(id, class = CLASS_HUMAN)
 			}
 			
 			// Give Grenadier his own weapon	
-			set_weapon(id, CSW_HEGRENADE, 1)
+			set_weapon(id, CSW_HEGRENADE, 100)
 			client_cmd(id, "weapon_hegrenade")	           
 			
 			// Models fix
@@ -17499,7 +17518,7 @@ public OnExplosionExplode(ent)
 	// Get rid of the grenade
 	engfunc(EngFunc_RemoveEntity, ent)
 
-	if (IsBombardierVsGrenadierRound()) if (IsBombardier(attacker)) fm_give_item(attacker, "weapon_hegrenade")
+	if (IsBombardierVsGrenadierRound()) if (IsBombardier(attacker) || IsGrenadier(attacker)) fm_give_item(attacker, "weapon_hegrenade")
 
 	// Give Grenadier his grenade
 	if (IsGrenadier(attacker)) fm_give_item(attacker, "weapon_hegrenade")
@@ -17843,11 +17862,7 @@ replace_weapon_models(id, weaponid)
 				set_pdata_float(id, 83, 1.0, OFFSET_LINUX)
 			}
 		}
-	case CSW_AK47:
-	{
-		//if (GetPaladin(id)) SetPaladinModels(id)
-		if (g_goldenweapons[id]) set_goldenak47(id)
-	}    
+	case CSW_AK47: if (g_goldenweapons[id]) set_goldenak47(id)  
 	case CSW_M4A1: if (g_goldenweapons[id]) set_goldenm4a1(id) 
 	case CSW_XM1014: if (g_goldenweapons[id]) set_goldenxm1014(id) 
 	case CSW_DEAGLE: if (g_goldenweapons[id]) set_goldendeagle(id)    
@@ -20035,6 +20050,99 @@ public register_extra_item(name[100], price, team)
 	return (g_extraitemsCount - 1)
 }
 
+public native_register_extra_item(plugin, params)
+{
+	// Create an array to hold our item data
+	new ItemData[extraItemsDataStructure]
+
+	// Get item name from function
+	static tempName[100], tempName2[100]
+    get_string(1, tempName, charsmax(tempName))
+
+	if (AmxLoadString(ZP_EXTRA_ITEMS_FILE, tempName, "NAME", tempName2, charsmax(tempName2)))
+	{
+		if (!equali(tempName, tempName2, charsmax(tempName)))
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName2)
+		else formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName)
+	}
+	else 
+	{
+		AmxSaveString(ZP_EXTRA_ITEMS_FILE, tempName, "NAME", tempName)
+		formatex(ItemData[ItemName], charsmax(ItemData[ItemName]), tempName)
+	}
+
+	// Get item cost from function
+	static tempPrice, tempPrice2
+	tempPrice = get_param(2)
+
+	if (AmxLoadInt(ZP_EXTRA_ITEMS_FILE, tempName, "PRICE", tempPrice2))
+	{
+		if (tempPrice != tempPrice2) ItemData[ItemCost] = tempPrice2
+		else ItemData[ItemCost] = tempPrice
+	}
+	else
+	{
+		AmxSaveInt(ZP_EXTRA_ITEMS_FILE, tempName, "PRICE", tempPrice)
+		ItemData[ItemCost] = tempPrice
+	}
+
+	// Load Team from Function
+	static szTeam[32], Array:ArrTeam, team; team = get_param(3)
+	ArrTeam = ArrayCreate(32, 1)
+
+	if (AmxLoadStringArray(ZP_EXTRA_ITEMS_FILE, tempName, "TEAMS", ArrTeam)) 
+	{
+		log_amx("EXTRA ITEAM %s TEAMS = ", tempName)
+		for (new i = 0; i < ArraySize(ArrTeam); i++)
+		{
+			static buffer[40]
+			ArrayGetString(ArrTeam, i, buffer, charsmax(buffer))
+			log_amx(" %s ", buffer)
+		}
+
+		static szTeamList[32];
+		team = 0
+
+		for (new t = 0; t < ArraySize(ZP_TEAM_NAMES); t++) 
+		{
+			for (new i = 0; i < ArraySize(ArrTeam); i++) 
+			{
+				ArrayGetString(ArrTeam, i, szTeam, charsmax(szTeam))
+				ArrayGetString(ZP_TEAM_NAMES, t, szTeamList, charsmax(szTeamList))
+
+				if (equal(szTeam, szTeamList)) team |= GetTeamIndex(t)
+			}
+		}
+	}
+	else 
+	{
+		log_amx("Writing configs for first time...")
+		for (new i = 0; i < ArraySize(ZP_TEAM_NAMES); i++) 
+		{
+			if (IsTeam(team, i)) 
+			{
+				ArrayGetString(ZP_TEAM_NAMES, i, szTeam, charsmax(szTeam))
+				ArrayPushString(ArrTeam, szTeam)
+			}
+		}
+		AmxSaveStringArray(ZP_EXTRA_ITEMS_FILE, tempName, "TEAMS", ArrTeam) // Add Team
+	}
+
+	// Get item team from function
+	ItemData[ItemTeam] |= team
+
+	// Destroy the temporary Array
+	ArrayDestroy(ArrTeam)
+
+	// Add item to array and increase size
+	ArrayPushArray(g_extraitems, ItemData)
+	g_extraitemsCount++
+
+	// Return the index of this item in the array
+	// This creates the unique item index
+	return (g_extraitemsCount - 1)
+}
+
 /*================================================================================
 	[Custom Messages]
 =================================================================================*/
@@ -20613,6 +20721,18 @@ stock CmdTargetX(id, const arg[], flags = CMDTARGET_OBEY_IMMUNITY)
 
 	return player;
 }
+
+bool:GetAccess(id, iFlag)
+{
+	if (!(g_admin[id] && AdminHasFlag(id, iFlag)))
+	{
+		console_print(id, "You have no access to that command");
+		return false
+	}
+
+	return true
+}
+
 
 // Send User Team Message
 public fm_cs_set_user_team_msg(taskid)
